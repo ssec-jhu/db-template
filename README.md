@@ -50,7 +50,7 @@ For additional cmds see the [Conda cheat-sheet](https://docs.conda.io/projects/c
 
   #### with Python ecosystem:
   * Follow the above [Build with Python ecosystem instructions](#with-python-ecosystem).
-  * Run ``uvicorn biospecdb.asgi:application --host 0.0.0.0 --port", "8000``. _NOTE: This is just an example and is obviously application dependent._
+  * Run ``uvicorn biospecdb.asgi:application --host 0.0.0.0 --port 8000``. _NOTE: This is just an example and is obviously application dependent._
 
 ### Usage:
 To be completed by child repo.
