@@ -1,5 +1,5 @@
-from package_name.util import find_package_location, find_repo_location
-from package_name import __project__, __version__
+from biospecdb.util import find_package_location, find_repo_location
+from biospecdb import __project__, __version__
 
 
 def test_version():

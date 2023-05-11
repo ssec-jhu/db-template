@@ -1,16 +1,17 @@
 [project]
-name = "package_name"  # Replace package_name with actual name (it's just a template).
+name = "biospecdb"
 dynamic = ["version"]
 authors = [
     {name = "Scientifc Software Engineering Center at JHU", email = "ssec@jhu.edu"},
 ]
-description = ""
+description = "Biosample Spectral Repository"
 readme = "README.md"
 license = {file = "LICENSE"}
 
 requires-python = ">=3.11"
 dependencies = [
-    "fastapi[all]",
+    "django",
+    "uvicorn",
 ]
 
 [project.optional-dependencies]
@@ -40,12 +41,12 @@ requires = ["setuptools>=61.2", "setuptools_scm[toml]>=7"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["package_name"]  # Replace package_name with actual name (it's just a template).
+packages = ["biospecdb"]
 zip-safe = false
 include-package-data = true
 
 [tool.setuptools_scm]
-write_to = "package_name/_version.py"  # Replace package_name with actual name (it's just a template).
+write_to = "biospecdb/_version.py"
 
 [tool.ruff]
 line-length = 120
