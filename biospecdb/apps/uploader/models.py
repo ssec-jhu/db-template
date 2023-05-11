@@ -1,7 +1,15 @@
 from django.db import models
 
+# Changes here need to be migrated, committed, and activated.
+# See https://docs.djangoproject.com/en/4.2/intro/tutorial02/#activating-models
+# python manage.py makemigrations uploader
+# git add biospecdb/apps/uploader/migrations
+# git commit -asm"Update uploader model(s)"
+# python manage.py migrate
+# python manage.py sqlmigrate uploader <migration_version>
 
-class BioSampleData(models.Model):
+
+class BioSample(models.Model):
     # Sample meta.
     sample_type = models.CharField(max_length=128)
     sample_processing = models.CharField(max_length=128)
@@ -21,7 +29,7 @@ class BioSampleData(models.Model):
     intensities = models.IntegerField(default=0)
 
 
-class PatientMetaData(models.Model):
+class Patient(models.Model):
     patient_id = models.IntegerField(default=0, unique=True, primary_key=True)
 
     # Meta
@@ -51,4 +59,4 @@ class PatientMetaData(models.Model):
     chronic_or_neuromuscular_neurological_disease = models.BooleanField(default=False)
 
     # Sample meta data & spectral data.
-    data = models.ForeignKey(BioSampleData, on_delete=models.CASCADE)
+    data = models.ForeignKey(BioSample, on_delete=models.CASCADE)
