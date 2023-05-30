@@ -2,7 +2,7 @@
 
 # -- Project information
 
-project = '<package_name>'
+project = 'biospecdb'
 copyright = '2023, SSEC-JHU'
 author = 'SSEC-JHU'
 
