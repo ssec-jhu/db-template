@@ -19,8 +19,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 from uploader import views
 
+
 urlpatterns = [
-    path('', views.home, name='Home'),
+    path("uploader/", include("biospecdb.apps.uploader.urls")),
+    path('admin/', admin.site.urls),
+    # path('', views.home, name='Home'),
     #path('', views.upload_file, name='MetadataFileUpload'),
     #path('', admin.site.urls),
     #path("Uploader/", include("uploader.urls")),

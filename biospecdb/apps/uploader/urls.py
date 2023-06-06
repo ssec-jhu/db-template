@@ -1,10 +1,14 @@
-from django.urls import path, include
+from django.contrib import admin
+from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
 from . import views
 
+app_name = "uploader"
+
 urlpatterns = [
-    #path('home/', views.home, name='Home'),
+    path("", views.home, name="home"),
+    # path('home/', views.home, name='Home'),
     #path('', views.upload_file, name='MetadataFileUpload'),
     #path('', views.upload_file, name='SpectradataFileUpload'),
     #path('', views.display_xlsx, name='MetadataDisplay'),
