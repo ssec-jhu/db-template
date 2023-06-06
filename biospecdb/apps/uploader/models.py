@@ -8,7 +8,10 @@ from django.db import models
 # python manage.py migrate
 # python manage.py sqlmigrate uploader <migration_version>
 
-
+class UploadedFile(models.Model):
+    file = models.FileField(upload_to='./biospecdb/apps/uploader/uploads/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    
 class BioSample(models.Model):
     # Sample meta.
     sample_type = models.CharField(max_length=128)

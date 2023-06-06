@@ -15,8 +15,23 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.conf import settings
+from django.conf.urls.static import static
+from uploader import views
 
 urlpatterns = [
-    path("uploader/", include("biospecdb.apps.uploader.urls")),
-    path('admin/', admin.site.urls),
+    path('', views.home, name='Home'),
+    #path('', views.upload_file, name='MetadataFileUpload'),
+    #path('', admin.site.urls),
+    #path("Uploader/", include("uploader.urls")),
+    #path('', views.display_xlsx, name='MetadataDisplay'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    
+#urlpatterns = [
+#    path("uploader/", include("biospecdb.apps.uploader.urls")),
+#    path('admin/', admin.site.urls),
+#]
