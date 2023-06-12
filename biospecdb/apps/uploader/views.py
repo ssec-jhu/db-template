@@ -1,8 +1,5 @@
-from django.http import HttpResponse
-from django.shortcuts import render, redirect
-from .forms import FileUploadForm
-
 from django.shortcuts import render
+from .forms import FileUploadForm
 from openpyxl import load_workbook
 
 
@@ -11,7 +8,6 @@ def home(request):
     render(request, 'Home.html', context)
     return upload_file(request)
     #return render(request, 'Home.html', context)
-    #return HttpResponse("Hello, world. You're at BioSpectral Repository website!!!")
 
 
 def upload_file(request):
