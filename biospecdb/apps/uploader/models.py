@@ -34,66 +34,35 @@ class Patient(models.Model):
     gender = models.CharField(max_length=1, choices=Gender)
 
 
-class BaseJSONType:
-    def to_dict(self):
-        return vars(self)
+class Visit(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name="visit")
+    previous_visit = models.ForeignKey("self", on_delete=models.SET_NULL(), related_name="next_visit")
+
+    patient_age = models.IntegerField(validators=[MinValueValidator(Patient.MIN_AGE),
+                                                  MaxValueValidator(Patient.MAX_AGE)])
 
 
-class Symptom(BaseJSONType):
-    def __int__(self, name: str, symptomatic: bool, duration: int, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.name = name
-        self.symptomatic = symptomatic
-        self.duration = duration  # days
+# class Disease(models.Model):
+#     name = models.CharField(max_length=128)
+#     description = models.CharField(max_length=256)
+#     disease_value = models.CharField(max_length=128)
 
 
-class SymptomField(models.JSONField):
-    # TODO: Abstract most of this to base field class.
-
-    class Creator:
-        def __init__(self, field):
-            self.field = field
-
-        def __get__(self, obj):
-            if obj is None:
-                return self
-
-            return obj.__dict__(self.field.name)
-
-        def __set__(self, obj, value):
-            obj.__dict__[self.field.name] = self.convert_input(value)
-
-        def convert_input(self, value):
-            if value is None:
-                return None
-
-            if isinstance(value, Symptom):
-                return value
-            else:
-                return Symptom(**value)
-
-    def from_db_value(self, value, expression, connection):
-        db_val = super().from_db_value(value, expression, connection)
-
-        if db_val is None:
-            return db_val
-
-        return Symptom(**db_val)
-
-    def get_prep_value(self, value):
-        dict_value = value.to_dict()
-        prep_value = super().get_prep_value(dict_value)
-        return prep_value
-
-    def contribute_to_class(self, cls, name, private_only=False):
-        super().contribute_to_class(cls, name, private_only=private_only)
-        setattr(cls, self.name, self.Creator(self))
+# class Symptom(models.Model):
+#     MIN_SEVERITY = 0
+#     MAX_SEVERITY = 10
+#
+#     visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="symptom")
+#     disease = models.ForeignKey(Disease, on_delete=models.CASCADE, related_name="symptom")
+#
+#     was_asked = models.BooleanField(default=True)
+#     severity = models.IntegerField(default=10, validators=[MinValueValidator(MIN_SEVERITY),
+#                                                            MaxValueValidator(MAX_SEVERITY)])  # blank=True, null=True)
+#     disease_value = models.IntegerField(blank=True, null=True)  # How to do we spec type here?
 
 
 class Symptoms(models.Model):
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name="symptoms")
-    patient_age = models.IntegerField(validators=[MinValueValidator(Patient.MIN_AGE),
-                                                  MaxValueValidator(Patient.MAX_AGE)])
+    visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="symptoms")
 
     # moved to BaseSymptom
     # days_of_symptoms = models.IntegerField(default=0, null=True)  # DurationField?
@@ -102,29 +71,29 @@ class Symptoms(models.Model):
     Ct_gene_N = models.FloatField()
     Ct_gene_ORF1ab = models.FloatField()
     Covid_RT_qPCR = models.CharField(default=NEGATIVE, choices=(NEGATIVE, POSITIVE))
+    suspicious_contact = models.BooleanField(default=False)
 
     # Symptoms/Diseases
-    fever = SymptomField(default=False)
-    dyspnoea = SymptomField(default=False)
-    oxygen_saturation_lt_95 = SymptomField(default=False)
-    cough = SymptomField(default=False)
-    coryza = SymptomField(default=False)
-    odinophagy = SymptomField(default=False)
-    diarrhea = SymptomField(default=False)
-    nausea = SymptomField(default=False)
-    headache = SymptomField(default=False)
-    weakness = SymptomField(default=False)
-    anosmia = SymptomField(default=False)
-    myalgia = SymptomField(default=False)
-    no_appetite = SymptomField(default=False)
-    vomiting = SymptomField(default=False)
-    suspicious_contact = SymptomField(default=False)
-    chronic_pulmonary_inc_asthma = SymptomField(default=False)
-    cardiovascular_disease_inc_hypertension = SymptomField(default=False)
-    diabetes = SymptomField(default=False)
-    chronic_or_neuromuscular_neurological_disease = SymptomField(default=False)
+    fever = models.BooleanField(default=False)
+    dyspnoea = models.BooleanField(default=False)
+    oxygen_saturation_lt_95 = models.BooleanField(default=False)
+    cough = models.BooleanField(default=False)
+    coryza = models.BooleanField(default=False)
+    odinophagy = models.BooleanField(default=False)
+    diarrhea = models.BooleanField(default=False)
+    nausea = models.BooleanField(default=False)
+    headache = models.BooleanField(default=False)
+    weakness = models.BooleanField(default=False)
+    anosmia = models.BooleanField(default=False)
+    myalgia = models.BooleanField(default=False)
+    no_appetite = models.BooleanField(default=False)
+    vomiting = models.BooleanField(default=False)
+    chronic_pulmonary_inc_asthma = models.BooleanField(default=False)
+    cardiovascular_disease_inc_hypertension = models.BooleanField(default=False)
+    diabetes = models.BooleanField(default=False)
+    chronic_or_neuromuscular_neurological_disease = models.BooleanField(default=False)
 
-    more = SymptomListField()  # TODO: Write this.
+    more = models.JSONField()
 
 
 class BioSample(models.Model):
@@ -140,9 +109,7 @@ class BioSample(models.Model):
     class SpectrometerCrystal(StrEnum):
         ZNSE = auto()
 
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name="samples")
-    # SET_NULL | CASCADE?
-    symptoms = models.ForeignKey(Symptoms, null=True, on_delete=models.SET_NULL, related_name="samples")
+    visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="samples")
 
     # Sample meta.
     sample_type = models.CharField(default=SampleKind.PHARYNGEAL_SWAB, max_length=128, choices=SampleKind)
