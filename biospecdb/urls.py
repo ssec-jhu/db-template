@@ -23,11 +23,10 @@ from uploader import views
 urlpatterns = [
     path("uploader/", include("biospecdb.apps.uploader.urls")),
     path('admin/', admin.site.urls),
-    # path('', views.home, name='Home'),
+    path('home/', views.home, name='Home'),
     #path('', views.upload_file, name='MetadataFileUpload'),
-    #path('', admin.site.urls),
     #path("Uploader/", include("uploader.urls")),
-    #path('', views.display_xlsx, name='MetadataDisplay'),
+    path('display/', views.display_xlsx, name='MetadataDisplay'),
 ]
 
 if settings.DEBUG:
