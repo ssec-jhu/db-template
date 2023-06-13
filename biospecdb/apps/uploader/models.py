@@ -42,73 +42,76 @@ class Visit(models.Model):
                                                   MaxValueValidator(Patient.MAX_AGE)])
 
 
-# class Disease(models.Model):
-#     name = models.CharField(max_length=128)
-#     description = models.CharField(max_length=256)
-#     disease_value_semantics = models.CharField(max_length=128)
+class Disease(models.Model):
+    name = models.CharField(max_length=128)
+    description = models.CharField(max_length=256)
+    value_class = models.CharField(max_length=128)
 
 
-# class Symptom(models.Model):
-#     MIN_SEVERITY = 0
-#     MAX_SEVERITY = 10
+class Symptom(models.Model):
+    MIN_SEVERITY = 0
+    MAX_SEVERITY = 10
+
+    visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="symptom")
+    disease = models.ForeignKey(Disease, on_delete=models.CASCADE, related_name="symptom")
+
+    was_asked = models.BooleanField(default=True)
+    is_symptomatic = models.BooleanField(default=True)
+    days_symptomatic = models.IntegerField(default=0, null=True, validators=[MinValueValidator(0)])  # max <= age
+    severity = models.IntegerField(default=10, validators=[MinValueValidator(MIN_SEVERITY),
+                                                           MaxValueValidator(MAX_SEVERITY)],
+                                   blank=True, null=True)
+    disease_value = models.CharField(blank=True, null=True, max_length=128)
+
+
+# class Symptoms(models.Model):
+#     visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="symptoms")
 #
-#     visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="symptom")
-#     disease = models.ForeignKey(Disease, on_delete=models.CASCADE, related_name="symptom")
+#     # SARS-CoV-2 (COVID) viral load indicators.
+#     Ct_gene_N = models.FloatField()
+#     Ct_gene_ORF1ab = models.FloatField()
+#     Covid_RT_qPCR = models.CharField(default=NEGATIVE, choices=(NEGATIVE, POSITIVE))
+#     suspicious_contact = models.BooleanField(default=False)
 #
-#     is_symptomatic = models.BooleanField(default=True)
-#     days_symptomatic = models.IntegerField(default=0, null=True, validators=[MinValueValidator(0))  # DurationField?
-#     severity = models.IntegerField(default=10, validators=[MinValueValidator(MIN_SEVERITY),
-#                                                            MaxValueValidator(MAX_SEVERITY)],
-#                                                            blank=True, null=True)
-#     disease_value = models.FloatField(blank=True, null=True)  # How to do we spec type here? Overlaps sem of severity?
+#     # Symptoms/Diseases
+#     fever = models.BooleanField(default=False)
+#     dyspnoea = models.BooleanField(default=False)
+#     oxygen_saturation_lt_95 = models.BooleanField(default=False)
+#     cough = models.BooleanField(default=False)
+#     coryza = models.BooleanField(default=False)
+#     odinophagy = models.BooleanField(default=False)
+#     diarrhea = models.BooleanField(default=False)
+#     nausea = models.BooleanField(default=False)
+#     headache = models.BooleanField(default=False)
+#     weakness = models.BooleanField(default=False)
+#     anosmia = models.BooleanField(default=False)
+#     myalgia = models.BooleanField(default=False)
+#     no_appetite = models.BooleanField(default=False)
+#     vomiting = models.BooleanField(default=False)
+#     chronic_pulmonary_inc_asthma = models.BooleanField(default=False)
+#     cardiovascular_disease_inc_hypertension = models.BooleanField(default=False)
+#     diabetes = models.BooleanField(default=False)
+#     chronic_or_neuromuscular_neurological_disease = models.BooleanField(default=False)
+#
+#     more = models.JSONField()
 
 
-class Symptoms(models.Model):
-    visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="symptoms")
-
-    # SARS-CoV-2 (COVID) viral load indicators.
-    Ct_gene_N = models.FloatField()
-    Ct_gene_ORF1ab = models.FloatField()
-    Covid_RT_qPCR = models.CharField(default=NEGATIVE, choices=(NEGATIVE, POSITIVE))
-    suspicious_contact = models.BooleanField(default=False)
-
-    # Symptoms/Diseases
-    fever = models.BooleanField(default=False)
-    dyspnoea = models.BooleanField(default=False)
-    oxygen_saturation_lt_95 = models.BooleanField(default=False)
-    cough = models.BooleanField(default=False)
-    coryza = models.BooleanField(default=False)
-    odinophagy = models.BooleanField(default=False)
-    diarrhea = models.BooleanField(default=False)
-    nausea = models.BooleanField(default=False)
-    headache = models.BooleanField(default=False)
-    weakness = models.BooleanField(default=False)
-    anosmia = models.BooleanField(default=False)
-    myalgia = models.BooleanField(default=False)
-    no_appetite = models.BooleanField(default=False)
-    vomiting = models.BooleanField(default=False)
-    chronic_pulmonary_inc_asthma = models.BooleanField(default=False)
-    cardiovascular_disease_inc_hypertension = models.BooleanField(default=False)
-    diabetes = models.BooleanField(default=False)
-    chronic_or_neuromuscular_neurological_disease = models.BooleanField(default=False)
-
-    more = models.JSONField()
-
-
-class BioSample(models.Model):
+class Instrument(models.Model):
     class Spectrometers(StrEnum):
         AGILENT_COREY_630 = auto()
-
-    class SpectralMeasurementKind(StrEnum):
-        ATR_FTIR = auto()
-
-    class SampleKind(StrEnum):
-        PHARYNGEAL_SWAB = auto()
 
     class SpectrometerCrystal(StrEnum):
         ZNSE = auto()
 
-    visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="samples")
+    spectrometer = models.CharField(default=Spectrometers.AGILENT_COREY_630, max_length=128, choices=Spectrometers)
+    atr_crystal = models.CharField(default=SpectrometerCrystal.ZNSE, max_length=128, choices=SpectrometerCrystal)
+
+
+class BioSample(models.Model):
+    class SampleKind(StrEnum):
+        PHARYNGEAL_SWAB = auto()
+
+    visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="bio_sample")
 
     # Sample meta.
     sample_type = models.CharField(default=SampleKind.PHARYNGEAL_SWAB, max_length=128, choices=SampleKind)
@@ -116,11 +119,17 @@ class BioSample(models.Model):
     freezing_time = models.IntegerField(blank=True, null=True)
     thawing_time = models.IntegerField(blank=True, null=True)
 
+
+class SpectralData(models.Model):
+    class SpectralMeasurementKind(StrEnum):
+        ATR_FTIR = auto()
+
+    instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE, related_name="spectral_data")
+    bio_sample = models.ForeignKey(BioSample, on_delete=models.CASCADE, related_name="spectral_data")
+
     # Spectrometer meta.
     spectra_measurement = models.CharField(default=SpectralMeasurementKind.ATR_FTIR, max_length=128,
                                            choices=SpectralMeasurementKind)
-    spectrometer = models.CharField(default=Spectrometers.AGILENT_COREY_630, max_length=128, choices=Spectrometers)
-    atr_crystal = models.CharField(default=SpectrometerCrystal.ZNSE, max_length=128, choices=SpectrometerCrystal)
     acquisition_time = models.IntegerField(blank=True, null=True)
     n_coadditions = models.IntegerField(default=32)
     resolution = models.IntegerField(blank=True, null=True)
