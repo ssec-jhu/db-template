@@ -45,7 +45,7 @@ class Visit(models.Model):
 # class Disease(models.Model):
 #     name = models.CharField(max_length=128)
 #     description = models.CharField(max_length=256)
-#     disease_value = models.CharField(max_length=128)
+#     disease_value_semantics = models.CharField(max_length=128)
 
 
 # class Symptom(models.Model):
@@ -55,17 +55,16 @@ class Visit(models.Model):
 #     visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="symptom")
 #     disease = models.ForeignKey(Disease, on_delete=models.CASCADE, related_name="symptom")
 #
-#     was_asked = models.BooleanField(default=True)
+#     is_symptomatic = models.BooleanField(default=True)
+#     days_symptomatic = models.IntegerField(default=0, null=True, validators=[MinValueValidator(0))  # DurationField?
 #     severity = models.IntegerField(default=10, validators=[MinValueValidator(MIN_SEVERITY),
-#                                                            MaxValueValidator(MAX_SEVERITY)])  # blank=True, null=True)
-#     disease_value = models.IntegerField(blank=True, null=True)  # How to do we spec type here?
+#                                                            MaxValueValidator(MAX_SEVERITY)],
+#                                                            blank=True, null=True)
+#     disease_value = models.FloatField(blank=True, null=True)  # How to do we spec type here? Overlaps sem of severity?
 
 
 class Symptoms(models.Model):
     visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="symptoms")
-
-    # moved to BaseSymptom
-    # days_of_symptoms = models.IntegerField(default=0, null=True)  # DurationField?
 
     # SARS-CoV-2 (COVID) viral load indicators.
     Ct_gene_N = models.FloatField()
