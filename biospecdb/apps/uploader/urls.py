@@ -3,10 +3,10 @@ from django.conf import settings
 from django.conf.urls.static import static
 from . import views
 
-app_name = "uploader"
+app_name = 'uploader'
 
 urlpatterns = [
-    path("", views.home, name="home"),
+    path('', views.home, name='home'),
     # path('home/', views.home, name='Home'),
     #path('', views.upload_file, name='MetadataFileUpload'),
     #path('', views.upload_file, name='SpectradataFileUpload'),

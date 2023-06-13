@@ -21,7 +21,7 @@ from uploader import views
 
 
 urlpatterns = [
-    path("uploader/", include("biospecdb.apps.uploader.urls")),
+    path('uploader/', include('biospecdb.apps.uploader.urls')),
     path('admin/', admin.site.urls),
     path('home/', views.home, name='Home'),
     #path('', views.upload_file, name='MetadataFileUpload'),
