@@ -1,0 +1,200 @@
+[
+  {
+    "model": "uploader.Disease",
+    "pk": 1,
+    "fields": {
+      "name": "Ct_gene_N",
+      "description": "Covid cycle threshold N gene detection",
+      "value_class": "float"
+    }
+  },
+  {
+    "model": "uploader.Disease",
+    "pk": 2,
+    "fields": {
+      "name": "Ct_gene_ORF1ab",
+      "description": "Covid cycle threshold for ORF1ab detection",
+      "value_class": "float"
+    }
+  },
+  {
+    "model": "uploader.Disease",
+    "pk": 3,
+    "fields": {
+      "name": "Covid_RT_qPCR",
+      "description": "Covid RT qPCR results",
+      "value_class": "str"
+    }
+  },
+  {
+    "model": "uploader.Disease",
+    "pk": 4,
+    "fields": {
+      "name": "covid_suspicious_contact",
+      "description": "Suspicious contact of Covid",
+      "value_class": "str"
+    }
+  },
+  {
+    "model": "uploader.Disease",
+    "pk": 5,
+    "fields": {
+      "name": "fever",
+      "description": "Patient experiences a fever?",
+      "value_class": "bool"
+    }
+  },
+  {
+    "model": "uploader.Disease",
+    "pk": 6,
+    "fields": {
+      "name": "dyspnoea",
+      "description": "Difficult or labored breathing",
+      "value_class": "bool"
+    }
+  },
+  {
+    "model": "uploader.Disease",
+    "pk": 7,
+    "fields": {
+      "name": "oxygen_saturation_lt_95",
+      "description": "Blood oxygen saturation less than 95%",
+      "value_class": "bool"
+    }
+  },
+  {
+    "model": "uploader.Disease",
+    "pk": 8,
+    "fields": {
+      "name": "cough",
+      "description": "Patient experiences cough-like symptoms.",
+      "value_class": "bool"
+    }
+  },
+  {
+    "model": "uploader.Disease",
+    "pk": 9,
+    "fields": {
+      "name": "coryza",
+      "description": "Irritation and inflammation of the nasal mucous membrane.",
+      "value_class": "bool"
+    }
+  },
+  {
+    "model": "uploader.Disease",
+    "pk": 10,
+    "fields": {
+      "name": "odinophagy",
+      "description": "Pain when swallowing.",
+      "value_class": "bool"
+    }
+  },
+  {
+    "model": "uploader.Disease",
+    "pk": 11,
+    "fields": {
+      "name": "diarrhea",
+      "description": "Patient experiences diarrhea.",
+      "value_class": "bool"
+    }
+  },
+  {
+    "model": "uploader.Disease",
+    "pk": 12,
+    "fields": {
+      "name": "nausea",
+      "description": "Patient experiences nausea.",
+      "value_class": "bool"
+    }
+  },
+  {
+    "model": "uploader.Disease",
+    "pk": 13,
+    "fields": {
+      "name": "headache",
+      "description": "Patient experiences headaches.",
+      "value_class": "bool"
+    }
+  },
+  {
+    "model": "uploader.Disease",
+    "pk": 14,
+    "fields": {
+      "name": "weakness",
+      "description": "Patient experiences weakness or fatigue.",
+      "value_class": "bool"
+    }
+  },
+  {
+    "model": "uploader.Disease",
+    "pk": 15,
+    "fields": {
+      "name": "anosmia",
+      "description": "Partial or complete loss of smell.",
+      "value_class": "bool"
+    }
+  },
+  {
+    "model": "uploader.Disease",
+    "pk": 16,
+    "fields": {
+      "name": "myalgia",
+      "description": "Muscular aches and pains.",
+      "value_class": "bool"
+    }
+  },
+  {
+    "model": "uploader.Disease",
+    "pk": 17,
+    "fields": {
+      "name": "no_appetite",
+      "description": "Lack of appetite",
+      "value_class": "bool"
+    }
+  },
+  {
+    "model": "uploader.Disease",
+    "pk": 18,
+    "fields": {
+      "name": "vomiting",
+      "description": "Patient experiences vomiting",
+      "value_class": "bool"
+    }
+  },
+  {
+    "model": "uploader.Disease",
+    "pk": 19,
+    "fields": {
+      "name": "chronic_pulmonary_inc_asthma",
+      "description": "Chronic pulmonary conditions including asthma",
+      "value_class": "bool"
+    }
+  },
+  {
+    "model": "uploader.Disease",
+    "pk": 20,
+    "fields": {
+      "name": "cardiovascular_disease_inc_hypertension",
+      "description": "Cardiovascular disease including hypertension.",
+      "value_class": "bool"
+    }
+  },
+  {
+    "model": "uploader.Disease",
+    "pk": 21,
+    "fields": {
+      "name": "diabetes",
+      "description": "Diabetes type 1 & type 2.",
+      "value_class": "bool"
+    }
+  },
+  {
+    "model": "uploader.Disease",
+    "pk": 22,
+    "fields": {
+      "name": "chronic_or_neuromuscular_neurological_disease",
+      "description": "Chronic or neuromuscular neurological disease.",
+      "value_class": "bool"
+    }
+  }
+]
