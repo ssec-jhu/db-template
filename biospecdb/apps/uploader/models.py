@@ -45,7 +45,9 @@ class Visit(models.Model):
 class Disease(models.Model):
     name = models.CharField(max_length=128)
     description = models.CharField(max_length=256)
-    value_class = models.CharField(max_length=128)
+
+    # This represents ths type/class for Symptom.disease_value.
+    value_class = models.CharField(max_length=128, blank=True, null=True)
 
 
 class Symptom(models.Model):
@@ -61,6 +63,8 @@ class Symptom(models.Model):
     severity = models.IntegerField(default=10, validators=[MinValueValidator(MIN_SEVERITY),
                                                            MaxValueValidator(MAX_SEVERITY)],
                                    blank=True, null=True)
+
+    # Str format for actual type/class spec'd by Disease.value_class.
     disease_value = models.CharField(blank=True, null=True, max_length=128)
 
 
