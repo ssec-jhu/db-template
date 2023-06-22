@@ -138,7 +138,7 @@ class SpectralData(models.Model):
     n_coadditions = models.IntegerField(default=32)
     resolution = models.IntegerField(blank=True, null=True)
 
-    qc_metrics = models.JSONField()
+    qc_metrics = models.JSONField()  # TODO See https://github.com/ssec-jhu/biospecdb/issues/27
 
     # Spectral data.
     # TODO: We could write a custom storage class to write these all to a parquet table instead of individual files.
