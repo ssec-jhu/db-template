@@ -1,4 +1,4 @@
-from enum import StrEnum, auto
+from enum import auto
 import uuid
 
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -25,18 +25,17 @@ class Patient(models.Model):
     MIN_AGE = 0
     MAX_AGE = 150
 
-    class Gender(StrEnum):
+    class Gender(models.TextChoices):
         MALE = auto()
         FEMALE = auto()
-        # NA = auto()  # ?
 
-    patient_id = models.UUIDFIELD(unique=True, primary_key=True, default=uuid.uuid4, editable=False)
-    gender = models.CharField(max_length=1, choices=Gender)
+    patient_id = models.UUIDField(unique=True, primary_key=True, default=uuid.uuid4, editable=False)
+    gender = models.CharField(max_length=8, choices=Gender.choices, null=True)
 
 
 class Visit(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name="visit")
-    previous_visit = models.ForeignKey("self", on_delete=models.SET_NULL(), related_name="next_visit")
+    previous_visit = models.ForeignKey("self", null=True, on_delete=models.SET_NULL, related_name="next_visit")
 
     patient_age = models.IntegerField(validators=[MinValueValidator(Patient.MIN_AGE),
                                                   MaxValueValidator(Patient.MAX_AGE)])
@@ -59,13 +58,63 @@ class Symptom(models.Model):
 
     was_asked = models.BooleanField(default=True)
     is_symptomatic = models.BooleanField(default=True)
-    days_symptomatic = models.IntegerField(default=0, null=True, validators=[MinValueValidator(0)])  # max <= age
-    severity = models.IntegerField(default=10, validators=[MinValueValidator(MIN_SEVERITY),
-                                                           MaxValueValidator(MAX_SEVERITY)],
+    days_symptomatic = models.IntegerField(default=0, blank=True, null=True,
+                                           validators=[MinValueValidator(0)])  # TODO: max <= age
+    severity = models.IntegerField(default=None, validators=[MinValueValidator(MIN_SEVERITY),
+                                                             MaxValueValidator(MAX_SEVERITY)],
                                    blank=True, null=True)
 
     # Str format for actual type/class spec'd by Disease.value_class.
     disease_value = models.CharField(blank=True, null=True, max_length=128)
+
+
+class Instrument(models.Model):
+    class Spectrometers(models.TextChoices):
+        AGILENT_COREY_630 = auto()
+
+    class SpectrometerCrystal(models.TextChoices):
+        ZNSE = auto()
+
+    spectrometer = models.CharField(default=Spectrometers.AGILENT_COREY_630, max_length=128,
+                                    choices=Spectrometers.choices)
+    atr_crystal = models.CharField(default=SpectrometerCrystal.ZNSE, max_length=128,
+                                   choices=SpectrometerCrystal.choices)
+
+
+class BioSample(models.Model):
+    class SampleKind(models.TextChoices):
+        PHARYNGEAL_SWAB = auto()
+
+    visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="bio_sample")
+
+    # Sample meta.
+    sample_type = models.CharField(default=SampleKind.PHARYNGEAL_SWAB, max_length=128, choices=SampleKind.choices)
+    sample_processing = models.CharField(default="None", max_length=128)
+    freezing_time = models.IntegerField(blank=True, null=True)
+    thawing_time = models.IntegerField(blank=True, null=True)
+
+
+class SpectralData(models.Model):
+    class SpectralMeasurementKind(models.TextChoices):
+        ATR_FTIR = auto()
+
+    instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE, related_name="spectral_data")
+    bio_sample = models.ForeignKey(BioSample, on_delete=models.CASCADE, related_name="spectral_data")
+
+    # Spectrometer meta.
+    spectra_measurement = models.CharField(default=SpectralMeasurementKind.ATR_FTIR, max_length=128,
+                                           choices=SpectralMeasurementKind.choices)
+    acquisition_time = models.IntegerField(blank=True, null=True)
+    n_coadditions = models.IntegerField(default=32)  # TODO: What is this? Could this belong to Instrument?
+    resolution = models.IntegerField(blank=True, null=True)
+
+    qc_metrics = models.JSONField()  # TODO See https://github.com/ssec-jhu/biospecdb/issues/27
+
+    # Spectral data.
+    # TODO: We could write a custom storage class to write these all to a parquet table instead of individual files.
+    # See https://docs.djangoproject.com/en/4.2/howto/custom-file-storage/
+    data = models.FileField(upload_to="uploads/")
+
 
 # This is Model B wo/ disease table https://miro.com/app/board/uXjVMAAlj9Y=/
 # class Symptoms(models.Model):
@@ -98,49 +147,3 @@ class Symptom(models.Model):
 #     chronic_or_neuromuscular_neurological_disease = models.BooleanField(default=False)
 #
 #     more = models.JSONField()
-
-
-class Instrument(models.Model):
-    class Spectrometers(StrEnum):
-        AGILENT_COREY_630 = auto()
-
-    class SpectrometerCrystal(StrEnum):
-        ZNSE = auto()
-
-    spectrometer = models.CharField(default=Spectrometers.AGILENT_COREY_630, max_length=128, choices=Spectrometers)
-    atr_crystal = models.CharField(default=SpectrometerCrystal.ZNSE, max_length=128, choices=SpectrometerCrystal)
-
-
-class BioSample(models.Model):
-    class SampleKind(StrEnum):
-        PHARYNGEAL_SWAB = auto()
-
-    visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="bio_sample")
-
-    # Sample meta.
-    sample_type = models.CharField(default=SampleKind.PHARYNGEAL_SWAB, max_length=128, choices=SampleKind)
-    sample_processing = models.CharField(default="None", max_length=128)
-    freezing_time = models.IntegerField(blank=True, null=True)
-    thawing_time = models.IntegerField(blank=True, null=True)
-
-
-class SpectralData(models.Model):
-    class SpectralMeasurementKind(StrEnum):
-        ATR_FTIR = auto()
-
-    instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE, related_name="spectral_data")
-    bio_sample = models.ForeignKey(BioSample, on_delete=models.CASCADE, related_name="spectral_data")
-
-    # Spectrometer meta.
-    spectra_measurement = models.CharField(default=SpectralMeasurementKind.ATR_FTIR, max_length=128,
-                                           choices=SpectralMeasurementKind)
-    acquisition_time = models.IntegerField(blank=True, null=True)
-    n_coadditions = models.IntegerField(default=32)
-    resolution = models.IntegerField(blank=True, null=True)
-
-    qc_metrics = models.JSONField()  # TODO See https://github.com/ssec-jhu/biospecdb/issues/27
-
-    # Spectral data.
-    # TODO: We could write a custom storage class to write these all to a parquet table instead of individual files.
-    # See https://docs.djangoproject.com/en/4.2/howto/custom-file-storage/
-    data = models.FileField(upload_to="uploads/")
