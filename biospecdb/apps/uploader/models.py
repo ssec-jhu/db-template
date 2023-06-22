@@ -67,7 +67,7 @@ class Symptom(models.Model):
     # Str format for actual type/class spec'd by Disease.value_class.
     disease_value = models.CharField(blank=True, null=True, max_length=128)
 
-
+# This is Model B wo/ disease table https://miro.com/app/board/uXjVMAAlj9Y=/
 # class Symptoms(models.Model):
 #     visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="symptoms")
 #
