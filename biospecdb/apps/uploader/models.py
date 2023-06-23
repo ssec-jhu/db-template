@@ -98,7 +98,8 @@ class Visit(models.Model):
         if self.previous_visit is not None and (self.patient_age < self.previous_visit.patient_age):
             raise ValidationError(_("Previous visit must NOT be older than this one: patient age before %(prior_age)i "
                                     " > %(current_age)i"),
-                                  params={"current_age": self.patient_age, "prior_age": self.previous_visit.patient_age},
+                                  params={"current_age": self.patient_age,
+                                          "prior_age": self.previous_visit.patient_age},
                                   code="invalid")
 
     def count_prior_visits(self):

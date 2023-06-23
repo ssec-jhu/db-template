@@ -70,6 +70,7 @@ exclude = [
     "build",
     "dist",
     "docs",
+    "migrations",
     "node_modules",
     "venv",
 ]
