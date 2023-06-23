@@ -234,6 +234,14 @@ class SpectralData(models.Model):
     def __str__(self):
         return f"{self.bio_sample.visit}_pk{self.pk}"
 
+    def clean(self):
+        """ Model validation. """
+        if hasattr(super, "clean"):
+            super.clean()
+
+        # Compute QC metrics.
+        ...
+
 
 # This is Model B wo/ disease table https://miro.com/app/board/uXjVMAAlj9Y=/
 # class Symptoms(models.Model):
