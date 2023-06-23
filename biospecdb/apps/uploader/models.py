@@ -224,6 +224,7 @@ class SpectralData(models.Model):
     n_coadditions = models.IntegerField(default=32)  # TODO: What is this? Could this belong to Instrument?
     resolution = models.IntegerField(blank=True, null=True)
 
+    # NOTE: This is excluded from input forms (inc. admin) as it's computed in self.clean().
     qc_metrics = models.JSONField()  # TODO See https://github.com/ssec-jhu/biospecdb/issues/27
 
     # Spectral data.
