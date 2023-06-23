@@ -144,7 +144,7 @@ class Symptom(models.Model):
     was_asked = models.BooleanField(default=True)  # Whether the patient was asked whether they have this symptom.
     is_symptomatic = models.BooleanField(default=True)
     days_symptomatic = models.IntegerField(default=0, blank=True, null=True,
-                                           validators=[MinValueValidator(0)])  # TODO: max <= age
+                                           validators=[MinValueValidator(0)])
     severity = models.IntegerField(default=None, validators=[MinValueValidator(MIN_SEVERITY),
                                                              MaxValueValidator(MAX_SEVERITY)],
                                    blank=True, null=True)
@@ -160,6 +160,14 @@ class Symptom(models.Model):
         if self.disease_value and not self.disease.value_class:
             raise ValidationError(_("The field 'disease_value' is not permitted when `Disease` has no"
                                     "`field:value_class` type specified."),
+                                  code="invalid")
+
+        if self.days_symptomatic and self.visit.patient_age and (self.days_symptomatic >
+                                                                 (self.visit.patient_age * 365)):
+            raise ValidationError(_("The field `days_symptomatic` can't be greater than the patients age (in days):"
+                                    " %(days_symptomatic)i > %(age)i"),
+                                  params={"days_symptomatic": self.days_symptomatic,
+                                          "age": self.visit.patient_age * 365},
                                   code="invalid")
 
     def __str__(self):
