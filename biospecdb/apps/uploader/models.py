@@ -125,9 +125,9 @@ class Disease(models.Model):
     name = models.CharField(max_length=128)
     description = models.CharField(max_length=256)
 
-    # This represents ths type/class for Symptom.disease_value.
+    # This represents the type/class for Symptom.disease_value.
     # NOTE: For bool types, Symptom.is_symptomatic may suffice.
-    value_class = models.CharField(max_length=128, default=None, blank=True, null=True, choices=Types.choices)
+    value_class = models.CharField(max_length=128, default='', blank=True, null=True, choices=Types.choices)
 
     def __str__(self):
         return self.name
@@ -151,6 +151,16 @@ class Symptom(models.Model):
 
     # Str format for actual type/class spec'd by Disease.value_class.
     disease_value = models.CharField(blank=True, null=True, max_length=128)
+
+    def clean(self):
+        """ Model validation. """
+        if hasattr(super, "clean"):
+            super.clean()
+
+        if self.disease_value and not self.disease.value_class:
+            raise ValidationError(_("The field 'disease_value' is not permitted when `Disease` has no"
+                                    "`field:value_class` type specified."),
+                                  code="invalid")
 
     def __str__(self):
         return f"patient:{self.visit.patient.short_id()}_{self.disease.name}"
