@@ -2,7 +2,7 @@ from enum import auto
 import uuid
 
 from django.core.exceptions import ValidationError
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import FileExtensionValidator, MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -50,7 +50,10 @@ NEGATIVE = "negative"
 
 
 class UploadedFile(models.Model):
-    file = models.FileField(upload_to='./biospecdb/apps/uploader/uploads/')
+    ALLOWED_FILE_FORMATS = (".csv", ".xlsx")
+
+    file = models.FileField(upload_to='./biospecdb/apps/uploader/uploads/',
+                            validators=[FileExtensionValidator(ALLOWED_FILE_FORMATS)])
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
 
@@ -227,7 +230,8 @@ class SpectralData(models.Model):
     # Spectral data.
     # TODO: We could write a custom storage class to write these all to a parquet table instead of individual files.
     # See https://docs.djangoproject.com/en/4.2/howto/custom-file-storage/
-    data = models.FileField(upload_to="uploads/")
+    data = models.FileField(upload_to="uploads/",
+                            validators=[FileExtensionValidator(UploadedFile.ALLOWED_FILE_FORMATS)])
 
     def __str__(self):
         return f"{self.bio_sample.visit}_pk{self.pk}"
