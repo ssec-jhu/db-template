@@ -1,0 +1,10 @@
+[
+  {
+    "model": "uploader.Instrument",
+    "pk": 1,
+    "fields": {
+      "spectrometer": "AGILENT_COREY_630",
+      "atr_crystal": "ZNSE"
+    }
+  }
+]

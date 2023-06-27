@@ -20,6 +20,7 @@ dev = [
     "build",
     "pytest",
     "pytest-cov",
+    "pytest-django",
     "ruff",
     "tox"
 ]
@@ -48,6 +49,9 @@ include-package-data = true
 [tool.setuptools_scm]
 write_to = "biospecdb/_version.py"
 
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "biospecdb.settings"
+
 [tool.ruff]
 line-length = 120
 exclude = [
@@ -70,6 +74,7 @@ exclude = [
     "build",
     "dist",
     "docs",
+    "migrations",
     "node_modules",
     "venv",
 ]

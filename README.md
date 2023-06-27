@@ -41,7 +41,7 @@ For additional cmds see the [Conda cheat-sheet](https://docs.conda.io/projects/c
     _NOTE: If you didn't install dependencies from ``requirements/dev.txt``, you can install
     a looser constrained set of deps using: ``pip install -e .[dev]``._
 
-### Run
+### Run:
 
   #### with Docker:
   * Follow the above [Build with Docker instructions](#with-docker).
@@ -51,6 +51,27 @@ For additional cmds see the [Conda cheat-sheet](https://docs.conda.io/projects/c
   #### with Python ecosystem:
   * Follow the above [Build with Python ecosystem instructions](#with-python-ecosystem).
   * Run ``uvicorn biospecdb.asgi:application --host 0.0.0.0 --port 8000``. _NOTE: This is just an example and is obviously application dependent._
+
+
+### DB Management:
+We're currently using sqlite requiring the following setup instructions:
+
+* cd into repo
+* ``python manage.py migrate``
+* ``python manage.py sqlmigrate uploader <migration_version>``, e.g., ``python manage.py sqlmigrate uploader 001``
+* ``python manage.py createsuperuser``
+* ``python manage.py loaddata diseases instruments``
+* ``python manage.py runserver``
+
+On subsequent deployments only ``python manage.py runserver`` is  needed, unless the db (db.sqlite) is nuked from
+disk.
+
+When the models are changed only the following migration commands are required:
+* ``python manage.py makemigrations uploader``
+* ``git add biospecdb/apps/uploader/migrations``
+* ``git commit -asm"Update uploader model(s)"``
+* ``python manage.py migrate``
+* ``python manage.py sqlmigrate uploader <migration_version>``
 
 ### Usage:
 To be completed by child repo.
