@@ -6,20 +6,20 @@ from uploader.models import Disease, Instrument, Patient, Symptom, Visit
 
 class TestPatient:
     def test_creation(self):
-        Patient(gender="MALE")
+        Patient(gender=Patient.Gender.MALE)
         Patient(gender="FEMALE")
 
     def test_db_creation(self, db):
-        Patient.objects.create(gender="MALE")
-        Patient.objects.create(gender="FEMALE")
+        Patient.objects.create(gender=Patient.Gender.MALE)
+        Patient.objects.create(gender=Patient.Gender.FEMALE)
 
         assert len(Patient.objects.all()) == 2
 
-        Patient.objects.create(gender="MALE")
+        Patient.objects.create(gender=Patient.Gender.MALE)
         assert len(Patient.objects.all()) == 3
 
-        males = Patient.objects.filter(gender="MALE")
-        females = Patient.objects.filter(gender="FEMALE")
+        males = Patient.objects.filter(gender=Patient.Gender.MALE)
+        females = Patient.objects.filter(gender=Patient.Gender.FEMALE)
 
         assert len(males) == 2
         assert len(females) == 1
@@ -27,11 +27,11 @@ class TestPatient:
         assert males[0].patient_id != males[1].patient_id
 
     def test_short_name(self):
-        patient = Patient(gender="MALE")
+        patient = Patient(gender=Patient.Gender.MALE)
         assert patient.short_id() in str(patient)
 
     def test_gender_validation(self, db):
-        Patient(gender="MALE").full_clean()
+        Patient(gender=Patient.Gender.MALE).full_clean()
 
         with pytest.raises(ValidationError):
             Patient(gender="blah").full_clean()
