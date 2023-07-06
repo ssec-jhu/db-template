@@ -224,9 +224,6 @@ class SpectralData(models.Model):
     n_coadditions = models.IntegerField(default=32)  # TODO: What is this? Could this belong to Instrument?
     resolution = models.IntegerField(blank=True, null=True)
 
-    # NOTE: This is excluded from input forms (inc. admin) as it's computed in self.clean().
-    qc_metrics = models.JSONField()  # TODO See https://github.com/ssec-jhu/biospecdb/issues/27
-
     # Spectral data.
     # TODO: We could write a custom storage class to write these all to a parquet table instead of individual files.
     # See https://docs.djangoproject.com/en/4.2/howto/custom-file-storage/
@@ -241,6 +238,8 @@ class SpectralData(models.Model):
             super.clean()
 
         # Compute QC metrics.
+        # TODO: Even with the QC model being its own thing rather than fields here, we may still want to run here
+        # such that new data is complete such that it has associated QC metrics.
         ...
 
 
