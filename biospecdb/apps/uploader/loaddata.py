@@ -3,6 +3,7 @@ from tempfile import TemporaryFile
 
 from django.core.exceptions import ValidationError
 from django.core.files import File
+from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 
 import pandas as pd
@@ -10,10 +11,10 @@ import pandas as pd
 import biospecdb.util
 
 
+@transaction.atomic
 def save_data_to_db(meta_data_file, spectral_data_file):
     from .models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, UploadedFile, Visit
 
-    # TODO: Rip this out of here and to some other func elsewhere (perhaps utils).
     # Read in all data.
     meta_data = biospecdb.util.read_meta_data(meta_data_file)
     spec_data = biospecdb.util.read_spectral_data_table(spectral_data_file)
@@ -31,9 +32,8 @@ def save_data_to_db(meta_data_file, spectral_data_file):
         raise ValidationError(_("meta and spectral data must have unique and identical patient IDs")) from error
 
     # Ingest into db.
-    # TODO: Should this go in self.save() instead?
     for index, row in data.iterrows():
-        # NOTE: The patter for column lookup is to use get(..., default=None) and defer the field validation, i.e.,
+        # NOTE: The pattern for column lookup is to use get(..., default=None) and defer the field validation, i.e.,
         # whether null/blank etc., to the actual field def.
 
         # Patient
@@ -41,16 +41,16 @@ def save_data_to_db(meta_data_file, spectral_data_file):
             # NOTE: ValidationError is raised when ``index`` is not a UUID.
             patient = Patient.objects.get(pk=index)
         except (Patient.DoesNotExist, ValidationError):
-            # Create new (in mem only - not saved to db).
             gender = row.get(Patient.gender.field.verbose_name.lower())
             patient = Patient(gender=Patient.Gender(gender))
             patient.full_clean()
+
             patient.save()
 
         # Visit
         visit = Visit(patient=patient,
                       patient_age=row.get(Visit.patient_age.field.verbose_name.lower()),
-                      )  # TODO: Add logic to auto-find previous_visit.
+                      )  # TODO: Add logic to auto-find previous_visit. https://github.com/ssec-jhu/biospecdb/issues/37
         visit.full_clean()
         visit.save()
 
@@ -100,7 +100,6 @@ def save_data_to_db(meta_data_file, spectral_data_file):
             spectraldata.save()
 
         # Symptoms
-        # TODO: For symptom/disease parsing see https://github.com/ssec-jhu/biospecdb/issues/30 (aliases).
         for disease in Disease.objects.all():
             symptom_value = row.get(disease.alias.lower(), None)
             if not symptom_value:

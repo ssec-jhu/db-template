@@ -3,7 +3,7 @@ import uuid
 
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator, MinValueValidator, MaxValueValidator
-from django.db import models, transaction
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 import biospecdb.util
@@ -81,7 +81,6 @@ class UploadedFile(models.Model):
                                                     " meta data file.")
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
-    @transaction.atomic
     def clean(self):
         """ Model validation. """
         if hasattr(super, "clean"):
@@ -128,8 +127,6 @@ class Visit(models.Model):
         """ Model validation. """
         if hasattr(super, "clean"):
             super.clean()
-
-
 
         # Validate visits belong to same patient.
         if self.previous_visit is not None and (self.previous_visit.patient_id != self.patient_id):
