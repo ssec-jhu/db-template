@@ -3,7 +3,7 @@
     "model": "uploader.Instrument",
     "pk": 1,
     "fields": {
-      "spectrometer": "AGILENT_COREY_630",
+      "spectrometer": "AGILENT_CORY_630",
       "atr_crystal": "ZNSE"
     }
   }

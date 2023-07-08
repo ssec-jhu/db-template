@@ -75,7 +75,7 @@ class TestDisease:
 class TestInstrument:
     def test_fixture_data(self, db, instruments):
         instrument = Instrument.objects.get(pk=1)
-        assert instrument.spectrometer == "AGILENT_COREY_630"
+        assert instrument.spectrometer == "AGILENT_CORY_630"
         assert instrument.atr_crystal == "ZNSE"
 
 

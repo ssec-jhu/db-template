@@ -45,6 +45,7 @@
     "fields": {
       "name": "fever",
       "description": "Patient experiences a fever?",
+      "alias": "fever",
       "value_class": ""
     }
   },
@@ -54,6 +55,7 @@
     "fields": {
       "name": "dyspnoea",
       "description": "Difficult or labored breathing",
+      "alias": "dyspnoea",
       "value_class": ""
     }
   },
@@ -73,6 +75,7 @@
     "fields": {
       "name": "cough",
       "description": "Patient experiences cough-like symptoms.",
+      "alias": "cough",
       "value_class": ""
     }
   },
@@ -82,6 +85,7 @@
     "fields": {
       "name": "coryza",
       "description": "Irritation and inflammation of the nasal mucous membrane.",
+      "alias": "coryza",
       "value_class": ""
     }
   },
@@ -91,6 +95,7 @@
     "fields": {
       "name": "odinophagy",
       "description": "Pain when swallowing.",
+      "alias": "odinophagy",
       "value_class": ""
     }
   },
@@ -100,6 +105,7 @@
     "fields": {
       "name": "diarrhea",
       "description": "Patient experiences diarrhea.",
+      "alias": "diarrhea",
       "value_class": ""
     }
   },
@@ -109,6 +115,7 @@
     "fields": {
       "name": "nausea",
       "description": "Patient experiences nausea.",
+      "alias": "nausea",
       "value_class": ""
     }
   },
@@ -118,6 +125,7 @@
     "fields": {
       "name": "headache",
       "description": "Patient experiences headaches.",
+      "alias": "headache",
       "value_class": ""
     }
   },
@@ -127,6 +135,7 @@
     "fields": {
       "name": "weakness",
       "description": "Patient experiences weakness or fatigue.",
+      "alias": "weakness",
       "value_class": ""
     }
   },
@@ -136,6 +145,7 @@
     "fields": {
       "name": "anosmia",
       "description": "Partial or complete loss of smell.",
+      "alias": "anosmia",
       "value_class": ""
     }
   },
@@ -145,6 +155,7 @@
     "fields": {
       "name": "myalgia",
       "description": "Muscular aches and pains.",
+      "alias": "myalgia",
       "value_class": ""
     }
   },
@@ -164,6 +175,7 @@
     "fields": {
       "name": "vomiting",
       "description": "Patient experiences vomiting",
+      "alias": "vomiting",
       "value_class": ""
     }
   },
@@ -193,6 +205,7 @@
     "fields": {
       "name": "diabetes",
       "description": "Diabetes type 1 & type 2.",
+      "alias": "diabetes",
       "value_class": ""
     }
   },
@@ -202,6 +215,7 @@
     "fields": {
       "name": "chronic_or_neuromuscular_neurological_disease",
       "description": "Chronic or neuromuscular neurological disease.",
+      "alias": "Chronic or neuromuscular neurological disease",
       "value_class": ""
     }
   }

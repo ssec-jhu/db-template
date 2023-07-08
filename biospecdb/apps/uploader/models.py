@@ -178,18 +178,18 @@ class UploadedFile(models.Model):
             # Symptoms
             # TODO: For symptom/disease parsing see https://github.com/ssec-jhu/biospecdb/issues/30 (aliases).
             for disease in Disease.objects.all():
-                symptom_value = row.get(disease.alias, None)
+                symptom_value = row.get(disease.alias.lower(), None)
                 if not symptom_value:
                     continue
 
                 if disease.value_class:
                     symptom_value = Disease.Types(disease.value_class).cast(symptom_value)
-                    symptom = Symptom(disease=disease, visit=visit, disease_value=symptom_value)
+                    symptom = Symptom(disease=disease, visit=visit, is_symptomatic=True, disease_value=symptom_value)
                 else:
                     symptom_value = biospecdb.util.to_bool(symptom_value)
                     symptom = Symptom(disease=disease, visit=visit, is_symptomatic=symptom_value)
 
-                symptom.disease.add(disease, bulk=False)
+                disease.symptom.add(symptom, bulk=False)
                 symptom.full_clean()
                 symptom.save()
 
@@ -307,7 +307,7 @@ class Symptom(models.Model):
 
     was_asked = models.BooleanField(default=True)  # Whether the patient was asked whether they have this symptom.
     is_symptomatic = models.BooleanField(default=True)
-    days_symptomatic = models.IntegerField(default=0, blank=True, null=True,
+    days_symptomatic = models.IntegerField(default=None, blank=True, null=True,
                                            validators=[MinValueValidator(0)])
     severity = models.IntegerField(default=None, validators=[MinValueValidator(MIN_SEVERITY),
                                                              MaxValueValidator(MAX_SEVERITY)],

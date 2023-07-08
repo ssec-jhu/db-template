@@ -44,7 +44,7 @@ def read_raw_data(file_path):
     # ‘’, ‘  # N/A’, ‘#N/A N/A’, ‘#NA’, ‘-1.#IND’, ‘-1.#QNAN’, ‘-NaN’, ‘-nan’, ‘1.#IND’, ‘1.#QNAN’, ‘<NA>’, ‘N/A’, ‘NA’,
     # ‘NULL’, ‘NaN’, ‘None’, ‘n/a’, ‘nan’, ‘null’.
 
-    if (ext := path.suffix.lower()) == FileFormats.CSV:  # NOTE: ``suffix[1:]`` to strip leading '.'
+    if (ext := path.suffix.lower()) == FileFormats.CSV:
         data = pd.read_csv(path, **kwargs)
     elif ext == FileFormats.XLSX:
         data = pd.read_excel(path, **kwargs)
@@ -114,12 +114,13 @@ def to_bool(value: str):
     FALSE = ("false", "no")
 
     if isinstance(value, str):
-        if value := value.lower() in TRUE:
+        value = value.lower()
+        if value in TRUE:
             return True
         elif value in FALSE:
             return False
         else:
-            raise ValueError(f"Bool aliases are {TRUE}|{FALSE}, not {value}")
+            raise ValueError(f"Bool aliases are '{TRUE}|{FALSE}', not '{value}'")
     elif isinstance(value, (int, float)):
         return bool(value)
     else:
