@@ -36,9 +36,9 @@ class FileFormats(StrEnum):
 def read_raw_data(file_path):
     path = Path(file_path)
 
-    kwargs = dict(true_values=["true", "True", "yes", "Yes"],
-                  false_values=["false", "False", "no", "No"],
-                  na_values=[' ', '', "unknown", "Unknown", "na", "NA", "n/a", "N/A", "NULL", "null", "None", "none"]
+    kwargs = dict(true_values=["yes", "Yes"],  # In addition to case-insensitive variants of True.
+                  false_values=["no", "No"],  # In addition to case-insensitive variants of False.
+                  na_values=[' ', "unknown", "Unknown", "na", "none"]
                   )
     # NOTE: The following default na_values are also used:
     # ‘’, ‘  # N/A’, ‘#N/A N/A’, ‘#NA’, ‘-1.#IND’, ‘-1.#QNAN’, ‘-NaN’, ‘-nan’, ‘1.#IND’, ‘1.#QNAN’, ‘<NA>’, ‘N/A’, ‘NA’,
