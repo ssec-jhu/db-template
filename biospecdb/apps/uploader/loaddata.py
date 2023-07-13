@@ -107,7 +107,7 @@ def save_data_to_db(meta_data, spectral_data, joined_data=None, validate=True):
         # Symptoms
         for disease in Disease.objects.all():
             symptom_value = row.get(disease.alias.lower(), None)
-            if not symptom_value:
+            if symptom_value is None:
                 continue
 
             if disease.value_class:

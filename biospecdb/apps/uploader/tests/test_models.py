@@ -105,3 +105,9 @@ class TestBioSample:
 
 class TestSpectralData:
     ...
+
+
+class TestUploadedFile:
+    def test_number_symptoms(self, db):
+        """ The total number of symptoms := N_patients * N_diseases. """
+        ...
