@@ -1,38 +1,43 @@
 from pathlib import Path
 from tempfile import TemporaryFile
 
+import pandas as pd
 from django.core.exceptions import ValidationError
 from django.core.files import File
 from django.db import transaction
-from django.utils.translation import gettext_lazy as _
-
-import pandas as pd
 
 import biospecdb.util
 
 
 @transaction.atomic
-def save_data_to_db(meta_data_file, spectral_data_file):
+def save_data_to_db(meta_data, spectral_data, joined_data=None, validate=True):
+    """
+    Ingest into the database large tables of symptom & disease data (aka "meta" data) along with associated spectral
+    data.
+
+    Note: Data can be passed in pre-joined, i.e., save_data_to_db(None, None, joined_data). If so, data can't be
+          validated.
+    Note: This func is called by UploadedFile.clean() which, therefore, can't also be called here.
+    """
     from .models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, UploadedFile, Visit
 
-    # Read in all data.
-    meta_data = biospecdb.util.read_meta_data(meta_data_file)
-    spec_data = biospecdb.util.read_spectral_data_table(spectral_data_file)
+    if joined_data is None:
+        # Read in all data.
+        meta_data = meta_data if isinstance(meta_data, pd.DataFrame) else biospecdb.util.read_meta_data(meta_data)
+        spec_data = spectral_data if isinstance(spectral_data, pd.DataFrame) else \
+            biospecdb.util.read_spectral_data_table(spectral_data)
 
-    # Files must be of equal length (same number of rows).
-    if len(meta_data) != len(spec_data):
-        raise ValidationError(_("meta and spectral data must be of equal length (%(a)i!=%(b)i)."),
-                              params={"a": len(meta_data), "b": len(spec_data)},
-                              code="invalid")
-
-    # Join and check primary keys are unique and associative.
-    try:
-        data = meta_data.join(spec_data, validate="1:1")
-    except pd.errors.MergeError as error:
-        raise ValidationError(_("meta and spectral data must have unique and identical patient IDs")) from error
+        if validate:
+            UploadedFile.validate_lengths(meta_data, spec_data)
+            # This uses a join so returns the joined data so that it doesn't go to waste if needed, which it is here.
+            joined_data = UploadedFile.validate_primary_keys(meta_data, spec_data)
+    else:
+        if validate:
+            raise ValueError("When using pre-joined data, validation isn't possible so please pre-validate and "
+                             "pass ``validate=False``.")
 
     # Ingest into db.
-    for index, row in data.iterrows():
+    for index, row in joined_data.iterrows():
         # NOTE: The pattern for column lookup is to use get(..., default=None) and defer the field validation, i.e.,
         # whether null/blank etc., to the actual field def.
 

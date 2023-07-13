@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator, MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+import pandas as pd
 
 import biospecdb.util
 from .loaddata import save_data_to_db
@@ -81,14 +82,40 @@ class UploadedFile(models.Model):
                                                     " meta data file.")
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
+    @staticmethod
+    def validate_lengths(meta_data, spec_data):
+        """ Validate that files must be of equal length (same number of rows). """
+        if len(meta_data) != len(spec_data):
+            raise ValidationError(_("meta and spectral data must be of equal length (%(a)i!=%(b)i)."),
+                                  params={"a": len(meta_data), "b": len(spec_data)},
+                                  code="invalid")
+
+    @staticmethod
+    def validate_primary_keys(meta_data, spec_data):
+        """ Validate primary keys are unique and associative. """
+        try:
+            # The simplest way to do this is to utilize pandas.DataFrame.join().
+            return meta_data.join(spec_data, how="left", validate="1:1")  # Might as well return the join.
+        except pd.errors.MergeError as error:
+            raise ValidationError(_("meta and spectral data must have unique and identical patient IDs")) from error
+
     def clean(self):
         """ Model validation. """
         if hasattr(super, "clean"):
             super.clean()
 
+        # Read in all data.
         # Note: When accessing ``models.FileField`` Django returns ``models.FieldFile`` as a proxy.
-        save_data_to_db(self.meta_data_file.file.temporary_file_path(),
-                        self.spectral_data_file.file.temporary_file_path())
+        meta_data = biospecdb.util.read_meta_data(self.meta_data_file.file.temporary_file_path())
+        spec_data = biospecdb.util.read_spectral_data_table(self.spectral_data_file.file.temporary_file_path())
+
+        # Validate.
+        UploadedFile.validate_lengths(meta_data, spec_data)
+        # This uses a join so returns the joined data so that it doesn't go to waste if needed, which it is here.
+        joined_data = UploadedFile.validate_primary_keys(meta_data, spec_data)
+
+        # Ingest into DB.
+        save_data_to_db(None, None, joined_data=joined_data, validate=False)
 
 
 class Patient(models.Model):
