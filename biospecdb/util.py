@@ -5,6 +5,7 @@ from io import IOBase
 import os
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 from . import __project__  # Keep as relative for templating reasons.
@@ -33,8 +34,18 @@ class FileFormats(StrEnum):
         return [x.value.replace('.', '') for x in cls]  # Remove '.' for django validator.
 
 
-def read_raw_data(file_path):
-    path = Path(file_path)
+def read_raw_data(file, ext=None):
+    """ Read data either from file path or IOStream. """
+
+    if isinstance(file, IOBase):
+        # In this mode the ext must be given as it can't be determined from a file path, since one isn't given.
+        if ext:
+            ext = ext.lower()
+        else:
+            raise ValueError(f"When passing an IO stream, ext must be specified as one of '{FileFormats.list()}'.")
+    else:
+        file = Path(file)
+        ext = ext if ext else file.suffix.lower()
 
     kwargs = dict(true_values=["yes", "Yes"],  # In addition to case-insensitive variants of True.
                   false_values=["no", "No"],  # In addition to case-insensitive variants of False.
@@ -44,18 +55,20 @@ def read_raw_data(file_path):
     # ‘’, ‘  # N/A’, ‘#N/A N/A’, ‘#NA’, ‘-1.#IND’, ‘-1.#QNAN’, ‘-NaN’, ‘-nan’, ‘1.#IND’, ‘1.#QNAN’, ‘<NA>’, ‘N/A’, ‘NA’,
     # ‘NULL’, ‘NaN’, ‘None’, ‘n/a’, ‘nan’, ‘null’.
 
-    if (ext := path.suffix.lower()) == FileFormats.CSV:
-        data = pd.read_csv(path, **kwargs)
+    # NOTE: When the file size is > 2.5M Django will chunk and this will need to be handled. See
+    # https://github.com/ssec-jhu/biospecdb/issues/38
+    if ext == FileFormats.CSV:
+        data = pd.read_csv(file, **kwargs)
     elif ext == FileFormats.XLSX:
-        data = pd.read_excel(path, **kwargs)
+        data = pd.read_excel(file, **kwargs)
     else:
         raise NotImplementedError(f"File ext must be one of {FileFormats.list()} not '{ext}'.")
 
     return data
 
 
-def read_meta_data(file_path):
-    data = read_raw_data(file_path)
+def read_meta_data(file, ext=None):
+    data = read_raw_data(file, ext=ext)
 
     # Clean.
     # TODO: Raise on null patient_id instead of silently dropping possible data.
@@ -66,8 +79,8 @@ def read_meta_data(file_path):
     return cleaned_data
 
 
-def read_spectral_data_table(file_path):
-    data = read_raw_data(file_path)
+def read_spectral_data_table(file, ext=None):
+    data = read_raw_data(file, ext=ext)
 
     # Clean.
     # TODO: Raise on null patient id instead of silently dropping possible data.
@@ -125,3 +138,18 @@ def to_bool(value: str):
         return bool(value)
     else:
         raise NotImplementedError
+
+
+def mock_bulk_spectral_data(path=Path.home(),
+                            max_wavelength=4000,
+                            min_wavelength=651,
+                            n_bins=1798,
+                            n_patients=10):
+    path = Path(path)
+    data = pd.DataFrame(data=np.random.rand(n_patients, n_bins),
+                        columns=np.arange(max_wavelength, min_wavelength, (min_wavelength - max_wavelength) / n_bins))
+    data.index.name = "PATIENT ID"
+    data.index += 1  # Make index 1 based.
+
+    data.to_excel(path / "spectral_data.xlsx")
+    data.to_csv(path / "spectral_data.csv")

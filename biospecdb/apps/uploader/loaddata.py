@@ -19,7 +19,7 @@ def save_data_to_db(meta_data, spectral_data, joined_data=None, validate=True):
           validated.
     Note: This func is called by UploadedFile.clean() which, therefore, can't also be called here.
     """
-    from .models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, UploadedFile, Visit
+    from uploader.models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, UploadedFile, Visit
 
     if joined_data is None:
         # Read in all data.
@@ -98,8 +98,11 @@ def save_data_to_db(meta_data, spectral_data, joined_data=None, validate=True):
                                             SpectralData.acquisition_time.field.verbose_name.lower()),
                                         n_coadditions=row.get(SpectralData.n_coadditions.field.verbose_name.lower()),
                                         resolution=row.get(SpectralData.resolution.field.verbose_name.lower()),
+
+                                        # TODO: See https://github.com/ssec-jhu/biospecdb/issues/40
                                         data=File(data_file, name=data_filename))
             biosample.spectral_data.add(spectraldata, bulk=False)
+
             instrument.spectral_data.add(spectraldata, bulk=False)
             spectraldata.full_clean()
             spectraldata.save()

@@ -1,7 +1,10 @@
 from enum import auto
+from pathlib import Path
 import uuid
 
+
 from django.core.exceptions import ValidationError
+import django.core.files.uploadedfile
 from django.core.validators import FileExtensionValidator, MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -104,11 +107,20 @@ class UploadedFile(models.Model):
         if hasattr(super, "clean"):
             super.clean()
 
+        def _get_file_info(file_wrapper):
+            """ The actual file buffer is nested at different levels depending on container class. """
+            if isinstance(file_wrapper, django.core.files.uploadedfile.TemporaryUploadedFile):
+                file = file_wrapper.file.file
+            elif isinstance(file_wrapper, django.core.files.File):
+                file = file_wrapper.file
+            else:
+                raise NotImplementedError(type(file_wrapper))
+            return file, Path(file_wrapper.name).suffix
+
         # Read in all data.
         # Note: When accessing ``models.FileField`` Django returns ``models.FieldFile`` as a proxy.
-        meta_data = biospecdb.util.read_meta_data(self.meta_data_file.file.temporary_file_path())
-        spec_data = biospecdb.util.read_spectral_data_table(self.spectral_data_file.file.temporary_file_path())
-
+        meta_data = biospecdb.util.read_meta_data(*_get_file_info(self.meta_data_file.file))
+        spec_data = biospecdb.util.read_spectral_data_table(*_get_file_info(self.spectral_data_file.file))
         # Validate.
         UploadedFile.validate_lengths(meta_data, spec_data)
         # This uses a join so returns the joined data so that it doesn't go to waste if needed, which it is here.
