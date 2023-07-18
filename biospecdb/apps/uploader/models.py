@@ -127,7 +127,7 @@ class UploadedFile(models.Model):
         joined_data = UploadedFile.join_with_validation(meta_data, spec_data)
 
         # Ingest into DB.
-        save_data_to_db(None, None, joined_data=joined_data, validate=False)
+        save_data_to_db(None, None, joined_data=joined_data)
 
 
 class Patient(models.Model):
@@ -240,12 +240,16 @@ class Symptom(models.Model):
     disease = models.ForeignKey(Disease, on_delete=models.CASCADE, related_name="symptom")
 
     was_asked = models.BooleanField(default=True)  # Whether the patient was asked whether they have this symptom.
-    is_symptomatic = models.BooleanField(default=True)
-    days_symptomatic = models.IntegerField(default=None, blank=True, null=True,
+    is_symptomatic = models.BooleanField(default=True, blank=True, null=True)
+    days_symptomatic = models.IntegerField(default=None,
+                                           blank=True,
+                                           null=True,
                                            validators=[MinValueValidator(0)])
-    severity = models.IntegerField(default=None, validators=[MinValueValidator(MIN_SEVERITY),
+    severity = models.IntegerField(default=None,
+                                   validators=[MinValueValidator(MIN_SEVERITY),
                                                              MaxValueValidator(MAX_SEVERITY)],
-                                   blank=True, null=True)
+                                   blank=True,
+                                   null=True)
 
     # Str format for actual type/class spec'd by Disease.value_class.
     disease_value = models.CharField(blank=True, null=True, max_length=128)

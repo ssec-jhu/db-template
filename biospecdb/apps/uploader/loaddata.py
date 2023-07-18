@@ -9,7 +9,7 @@ import biospecdb.util
 
 
 @transaction.atomic
-def save_data_to_db(meta_data, spectral_data, joined_data=None, validate=True):
+def save_data_to_db(meta_data, spectral_data, joined_data=None):
     """
     Ingest into the database large tables of symptom & disease data (aka "meta" data) along with associated spectral
     data.
@@ -26,13 +26,8 @@ def save_data_to_db(meta_data, spectral_data, joined_data=None, validate=True):
         spec_data = spectral_data if isinstance(spectral_data, pd.DataFrame) else \
             biospecdb.util.read_spectral_data_table(spectral_data)
 
-        if validate:
-            UploadedFile.validate_lengths(meta_data, spec_data)
-            joined_data = UploadedFile.join_with_validation(meta_data, spec_data)
-    else:
-        if validate:
-            raise ValueError("When using pre-joined data, validation isn't possible so please pre-validate and "
-                             "pass ``validate=False``.")
+        UploadedFile.validate_lengths(meta_data, spec_data)
+        joined_data = UploadedFile.join_with_validation(meta_data, spec_data)
 
     # Ingest into db.
     for index, row in joined_data.iterrows():
@@ -108,7 +103,10 @@ def save_data_to_db(meta_data, spectral_data, joined_data=None, validate=True):
             #  See https://github.com/ssec-jhu/biospecdb/issues/42
             if disease.value_class:
                 symptom_value = Disease.Types(disease.value_class).cast(symptom_value)
-                symptom = Symptom(disease=disease, visit=visit, is_symptomatic=True, disease_value=symptom_value)
+                symptom = Symptom(disease=disease,
+                                  visit=visit,
+                                  is_symptomatic=None,  # This info is deferred to the semantics of disease_value.
+                                  disease_value=symptom_value)
             else:
                 symptom_value = biospecdb.util.to_bool(symptom_value)
                 symptom = Symptom(disease=disease, visit=visit, is_symptomatic=symptom_value)
