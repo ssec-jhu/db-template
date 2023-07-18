@@ -115,14 +115,13 @@ class TestUploadedFile:
     def test_upload_without_error(self, db, diseases, instruments, file_ext):
         meta_data_path = (DATA_PATH/"meta_data").with_suffix(file_ext)
         spectral_file_path = (DATA_PATH / "spectral_data").with_suffix(file_ext)
-        with meta_data_path.open(mode="rb") as meta_data:
-            with spectral_file_path.open(mode="rb") as spectral_data:
-                data_upload = UploadedFile(meta_data_file=django.core.files.File(meta_data,
-                                                                                 name=meta_data_path.name),
-                                           spectral_data_file=django.core.files.File(spectral_data,
-                                                                                     name=spectral_file_path.name))
-                data_upload.clean()
-                data_upload.save()
+        with meta_data_path.open(mode="rb") as meta_data, spectral_file_path.open(mode="rb") as spectral_data:
+            data_upload = UploadedFile(meta_data_file=django.core.files.File(meta_data,
+                                                                             name=meta_data_path.name),
+                                       spectral_data_file=django.core.files.File(spectral_data,
+                                                                                 name=spectral_file_path.name))
+            data_upload.clean()
+            data_upload.save()
 
     def test_all_data_fixture(self, all_data):
         n_patients = 10

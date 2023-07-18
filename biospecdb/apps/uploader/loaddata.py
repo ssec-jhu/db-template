@@ -1,9 +1,8 @@
 from pathlib import Path
-from tempfile import TemporaryFile
 
 import pandas as pd
 from django.core.exceptions import ValidationError
-from django.core.files import File
+from django.core.files.base import ContentFile
 from django.db import transaction
 
 import biospecdb.util
@@ -29,8 +28,7 @@ def save_data_to_db(meta_data, spectral_data, joined_data=None, validate=True):
 
         if validate:
             UploadedFile.validate_lengths(meta_data, spec_data)
-            # This uses a join so returns the joined data so that it doesn't go to waste if needed, which it is here.
-            joined_data = UploadedFile.validate_primary_keys(meta_data, spec_data)
+            joined_data = UploadedFile.join_with_validation(meta_data, spec_data)
     else:
         if validate:
             raise ValueError("When using pre-joined data, validation isn't possible so please pre-validate and "
@@ -46,8 +44,7 @@ def save_data_to_db(meta_data, spectral_data, joined_data=None, validate=True):
             # NOTE: ValidationError is raised when ``index`` is not a UUID.
             patient = Patient.objects.get(pk=index)
         except (Patient.DoesNotExist, ValidationError):
-            gender = row.get(Patient.gender.field.verbose_name.lower())
-            patient = Patient(gender=Patient.Gender(gender))
+            patient = Patient(gender=Patient.Gender(row.get(Patient.gender.field.verbose_name.lower())))
             patient.full_clean()
 
             patient.save()
@@ -73,39 +70,33 @@ def save_data_to_db(meta_data, spectral_data, joined_data=None, validate=True):
         # SpectralData
         spectrometer = Instrument.Spectrometers(row.get(Instrument.spectrometer.field.verbose_name.lower()))
         atr_crystal = Instrument.SpectrometerCrystal(row.get(Instrument.atr_crystal.field.verbose_name.lower()))
-        try:
-            instrument = Instrument.objects.get(spectrometer=spectrometer, atr_crystal=atr_crystal)
-        except Instrument.DoesNotExist:
-            instrument = Instrument(spectrometer=spectrometer, atr_crystal=atr_crystal)
-            instrument.full_clean()
-            instrument.save()  # Makes sense to save this now for reuse in future data rows.
+        # NOTE: get_or_create() returns a tuple of (object, created), where created is a bool.
+        instrument = Instrument.objects.get_or_create(spectrometer=spectrometer, atr_crystal=atr_crystal)[0]
 
         # Create datafile
         wavelengths = row["wavelength"]
         intensities = row["intensity"]
 
-        with TemporaryFile("w+") as data_file:
-            # Write data to tempfile.
-            biospecdb.util.spectral_data_to_csv(data_file, wavelengths, intensities)
-            data_filename = Path(str(Visit)).with_suffix(str(UploadedFile.FileFormats.CSV))
+        csv_data = biospecdb.util.spectral_data_to_csv(file=None, wavelengths=wavelengths, intensities=intensities)
+        data_filename = Path(str(Visit)).with_suffix(str(UploadedFile.FileFormats.CSV))
 
-            spectraldata = SpectralData(instrument=instrument,
-                                        bio_sample=biosample,
-                                        spectra_measurement=SpectralData.SpectralMeasurementKind(
-                                            row.get(SpectralData.spectra_measurement.field.verbose_name.lower())
-                                        ),
-                                        acquisition_time=row.get(
-                                            SpectralData.acquisition_time.field.verbose_name.lower()),
-                                        n_coadditions=row.get(SpectralData.n_coadditions.field.verbose_name.lower()),
-                                        resolution=row.get(SpectralData.resolution.field.verbose_name.lower()),
+        spectraldata = SpectralData(instrument=instrument,
+                                    bio_sample=biosample,
+                                    spectra_measurement=SpectralData.SpectralMeasurementKind(
+                                        row.get(SpectralData.spectra_measurement.field.verbose_name.lower())
+                                    ),
+                                    acquisition_time=row.get(
+                                        SpectralData.acquisition_time.field.verbose_name.lower()),
+                                    n_coadditions=row.get(SpectralData.n_coadditions.field.verbose_name.lower()),
+                                    resolution=row.get(SpectralData.resolution.field.verbose_name.lower()),
 
-                                        # TODO: See https://github.com/ssec-jhu/biospecdb/issues/40
-                                        data=File(data_file, name=data_filename))
-            biosample.spectral_data.add(spectraldata, bulk=False)
+                                    # TODO: See https://github.com/ssec-jhu/biospecdb/issues/40
+                                    data=ContentFile(csv_data, name=data_filename))
+        biosample.spectral_data.add(spectraldata, bulk=False)
 
-            instrument.spectral_data.add(spectraldata, bulk=False)
-            spectraldata.full_clean()
-            spectraldata.save()
+        instrument.spectral_data.add(spectraldata, bulk=False)
+        spectraldata.full_clean()
+        spectraldata.save()
 
         # Symptoms
         for disease in Disease.objects.all():
@@ -113,6 +104,8 @@ def save_data_to_db(meta_data, spectral_data, joined_data=None, validate=True):
             if symptom_value is None:
                 continue
 
+            # TODO: Should the following logic belong to Symptom.__init__()?
+            #  See https://github.com/ssec-jhu/biospecdb/issues/42
             if disease.value_class:
                 symptom_value = Disease.Types(disease.value_class).cast(symptom_value)
                 symptom = Symptom(disease=disease, visit=visit, is_symptomatic=True, disease_value=symptom_value)

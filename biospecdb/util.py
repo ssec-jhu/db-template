@@ -1,4 +1,3 @@
-import csv
 import enum
 import importlib
 from io import IOBase
@@ -35,7 +34,11 @@ class FileFormats(StrEnum):
 
 
 def read_raw_data(file, ext=None):
-    """ Read data either from file path or IOStream. """
+    """
+    Read data either from file path or IOStream.
+
+    NOTE: `ext` is ignored when `file` is pathlike.
+    """
 
     if isinstance(file, IOBase):
         # In this mode the ext must be given as it can't be determined from a file path, since one isn't given.
@@ -45,7 +48,7 @@ def read_raw_data(file, ext=None):
             raise ValueError(f"When passing an IO stream, ext must be specified as one of '{FileFormats.list()}'.")
     else:
         file = Path(file)
-        ext = ext if ext else file.suffix.lower()
+        ext = file.suffix.lower()
 
     kwargs = dict(true_values=["yes", "Yes"],  # In addition to case-insensitive variants of True.
                   false_values=["no", "No"],  # In addition to case-insensitive variants of False.
@@ -93,33 +96,11 @@ def read_spectral_data_table(file, ext=None):
 
 
 def spectral_data_to_csv(file, wavelengths, intensities):
-    if len(wavelengths) != len(intensities):
-        raise ValueError("wavelengths and intensities must be of the same length"
-                         " ({len(wavelengths)} != {len(intensities))")
-
-    def write(io):
-        writer = csv.writer(io)
-        writer.writerow(wavelengths)
-        writer.writerow(intensities)
-
-    if isinstance(file, IOBase):
-        write(file)
-    else:
-        with open(file, 'w+', newline='') as f:
-            write(f)
+    return pd.DataFrame(dict(intensity=intensities), index=wavelengths).rename_axis("wavelength").to_csv(file)
 
 
 def spectral_data_from_csv(filename):
-    with open(filename, 'r', newline='') as file:
-        reader = csv.reader(file, quoting=csv.QUOTE_NONNUMERIC)
-        wavelengths = reader.__next__()
-        intensities = reader.__next__()
-
-        if len(wavelengths) != len(intensities):
-            raise ValueError("CSV read error. Wavelengths and intensities must be of the same length"
-                             " ({len(wavelengths)} != {len(intensities))")
-
-        return wavelengths, intensities
+    return pd.read_csv(filename)
 
 
 def to_bool(value: str):

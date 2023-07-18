@@ -94,7 +94,7 @@ class UploadedFile(models.Model):
                                   code="invalid")
 
     @staticmethod
-    def validate_primary_keys(meta_data, spec_data):
+    def join_with_validation(meta_data, spec_data):
         """ Validate primary keys are unique and associative. """
         try:
             # The simplest way to do this is to utilize pandas.DataFrame.join().
@@ -124,7 +124,7 @@ class UploadedFile(models.Model):
         # Validate.
         UploadedFile.validate_lengths(meta_data, spec_data)
         # This uses a join so returns the joined data so that it doesn't go to waste if needed, which it is here.
-        joined_data = UploadedFile.validate_primary_keys(meta_data, spec_data)
+        joined_data = UploadedFile.join_with_validation(meta_data, spec_data)
 
         # Ingest into DB.
         save_data_to_db(None, None, joined_data=joined_data, validate=False)
@@ -302,7 +302,9 @@ class BioSample(models.Model):
     visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="bio_sample")
 
     # Sample meta.
-    sample_type = models.CharField(default=SampleKind.PHARYNGEAL_SWAB, max_length=128, choices=SampleKind.choices,
+    sample_type = models.CharField(default=SampleKind.PHARYNGEAL_SWAB,
+                                   max_length=128,
+                                   choices=SampleKind.choices,
                                    verbose_name="Sample Type")
     sample_processing = models.CharField(default="None",
                                          blank=True,

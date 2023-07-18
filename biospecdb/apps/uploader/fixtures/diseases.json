@@ -165,7 +165,7 @@
     "fields": {
       "name": "no_appetite",
       "description": "Lack of appetite",
-      "alias": "Lack of Appetite",
+      "alias": "Lack of appetite",
       "value_class": ""
     }
   },
@@ -185,7 +185,7 @@
     "fields": {
       "name": "chronic_pulmonary_inc_asthma",
       "description": "Chronic pulmonary conditions including asthma",
-      "alias": "CHRONIC PULMONARY DISEASE INCLUDING ASTHMA",
+      "alias": "Chronic pulmonary disease including asthma",
       "value_class": ""
     }
   },
@@ -195,7 +195,7 @@
     "fields": {
       "name": "cardiovascular_disease_inc_hypertension",
       "description": "Cardiovascular disease including hypertension.",
-      "alias": "CARDIOVASCULAR DISEASE INCLUDING HYPERTENSION",
+      "alias": "Cardiovascular disease including hypertension",
       "value_class": ""
     }
   },
