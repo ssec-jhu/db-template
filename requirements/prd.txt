@@ -3,3 +3,4 @@ django-sql-explorer==3.2.1
 openpyxl==3.1.2
 pandas==2.0.3
 uvicorn[standard]==0.22.0
+xlsxwriter==3.1.2

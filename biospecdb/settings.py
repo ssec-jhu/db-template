@@ -163,3 +163,16 @@ EXPLORER_SQL_BLACKLIST = (
      'GRANT',
      'REVOKE',
  )
+
+EXPLORER_SCHEMA_EXCLUDE_TABLE_PREFIXES = (
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.admin'
+)
+
+EXPLORER_DATA_EXPORTERS = [
+    ('csv', 'explorer.exporters.CSVExporter'),
+    ('excel', 'explorer.exporters.ExcelExporter'),
+    ('json', 'explorer.exporters.JSONExporter')
+]
