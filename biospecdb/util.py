@@ -134,3 +134,5 @@ def mock_bulk_spectral_data(path=Path.home(),
 
     data.to_excel(path / "spectral_data.xlsx")
     data.to_csv(path / "spectral_data.csv")
+
+    return data
