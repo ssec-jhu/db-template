@@ -34,7 +34,13 @@ def visits(patients, django_db_blocker):
 
 
 @pytest.fixture(scope="function")
-def all_data(db, diseases, django_db_blocker, instruments):
+def mock_data(db, django_db_blocker):
+    with django_db_blocker.unblock():
+        call_command('loaddata', 'test_data.json')
+
+
+@pytest.fixture(scope="function")
+def mock_data_from_files(db, diseases, django_db_blocker, instruments):
     meta_data_path = (DATA_PATH / "meta_data").with_suffix(UploadedFile.FileFormats.XLSX)
     spectral_file_path = (DATA_PATH / "spectral_data").with_suffix(UploadedFile.FileFormats.XLSX)
     with django_db_blocker.unblock():
