@@ -11,9 +11,11 @@ license = {file = "LICENSE"}
 requires-python = ">=3.11"
 dependencies = [
     "django",
+    "django-sql-explorer",
     "openpyxl",
     "pandas",
     "uvicorn",
+    "xlsxwriter"
 ]
 
 [project.optional-dependencies]

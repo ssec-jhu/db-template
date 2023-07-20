@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "explorer",
     "uploader.apps.UploaderConfig",
 ]
 
@@ -129,3 +130,49 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# SQL explorer settings.
+
+EXPLORER_CONNECTIONS = {'Default': 'default'}
+EXPLORER_DEFAULT_CONNECTION = 'default'
+
+EXPLORER_DEFAULT_ROWS = 1000
+
+EXPLORER_SQL_BLACKLIST = (
+     # DML
+     'COMMIT',
+     'DELETE',
+     'INSERT',
+     'MERGE',
+     'REPLACE',
+     'ROLLBACK',
+     'SET',
+     'START',
+     'UPDATE',
+     'UPSERT',
+
+     # DDL
+     'ALTER',
+     'CREATE',
+     'DROP',
+     'RENAME',
+     'TRUNCATE',
+
+     # DCL
+     'GRANT',
+     'REVOKE',
+ )
+
+EXPLORER_SCHEMA_EXCLUDE_TABLE_PREFIXES = (
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.admin'
+)
+
+EXPLORER_DATA_EXPORTERS = [
+    ('csv', 'explorer.exporters.CSVExporter'),
+    ('excel', 'explorer.exporters.ExcelExporter'),
+    ('json', 'explorer.exporters.JSONExporter')
+]
