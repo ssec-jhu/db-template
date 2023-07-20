@@ -1,10 +1,17 @@
 from enum import auto
+from pathlib import Path
 import uuid
 
+
 from django.core.exceptions import ValidationError
-from django.core.validators import MinValueValidator, MaxValueValidator
+import django.core.files.uploadedfile
+from django.core.validators import FileExtensionValidator, MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+import pandas as pd
+
+import biospecdb.util
+from .loaddata import save_data_to_db
 
 
 # Changes here need to be migrated, committed, and activated.
@@ -49,22 +56,91 @@ NEGATIVE = "negative"
 # Any other unique identifying numbers, characteristics, or codes.
 
 
+class TextChoices(models.TextChoices):
+    @classmethod
+    def _missing_(cls, value):
+        if not isinstance(value, str):
+            return
+
+        for item in cls:
+            if value.lower() in (item.name.lower(),
+                                 item.label.lower(),
+                                 item.value.lower(),
+                                 item.name.lower().replace('_', '-'),
+                                 item.label.lower().replace('_', '-'),
+                                 item.value.lower().replace('_', '-')):
+                return item
+
+
 class UploadedFile(models.Model):
-    file = models.FileField(upload_to='./biospecdb/apps/uploader/uploads/')
+    FileFormats = biospecdb.util.FileFormats
+    UPLOAD_DIR = "raw_data/"  # MEDIA_ROOT/raw_data
+
+    meta_data_file = models.FileField(upload_to=UPLOAD_DIR,
+                                      validators=[FileExtensionValidator(biospecdb.util.FileFormats.choices())],
+                                      help_text="File containing rows of all patient, symptom, and other meta data.")
+    spectral_data_file = models.FileField(upload_to=UPLOAD_DIR,
+                                          validators=[FileExtensionValidator(biospecdb.util.FileFormats.choices())],
+                                          help_text="File containing rows of spectral intensities for the corresponding"
+                                                    " meta data file.")
     uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    @staticmethod
+    def validate_lengths(meta_data, spec_data):
+        """ Validate that files must be of equal length (same number of rows). """
+        if len(meta_data) != len(spec_data):
+            raise ValidationError(_("meta and spectral data must be of equal length (%(a)i!=%(b)i)."),
+                                  params={"a": len(meta_data), "b": len(spec_data)},
+                                  code="invalid")
+
+    @staticmethod
+    def join_with_validation(meta_data, spec_data):
+        """ Validate primary keys are unique and associative. """
+        try:
+            # The simplest way to do this is to utilize pandas.DataFrame.join().
+            return meta_data.join(spec_data, how="left", validate="1:1")  # Might as well return the join.
+        except pd.errors.MergeError as error:
+            raise ValidationError(_("meta and spectral data must have unique and identical patient IDs")) from error
+
+    def clean(self):
+        """ Model validation. """
+        if hasattr(super, "clean"):
+            super.clean()
+
+        def _get_file_info(file_wrapper):
+            """ The actual file buffer is nested at different levels depending on container class. """
+            if isinstance(file_wrapper, django.core.files.uploadedfile.TemporaryUploadedFile):
+                file = file_wrapper.file.file
+            elif isinstance(file_wrapper, django.core.files.File):
+                file = file_wrapper.file
+            else:
+                raise NotImplementedError(type(file_wrapper))
+            return file, Path(file_wrapper.name).suffix
+
+        # Read in all data.
+        # Note: When accessing ``models.FileField`` Django returns ``models.FieldFile`` as a proxy.
+        meta_data = biospecdb.util.read_meta_data(*_get_file_info(self.meta_data_file.file))
+        spec_data = biospecdb.util.read_spectral_data_table(*_get_file_info(self.spectral_data_file.file))
+        # Validate.
+        UploadedFile.validate_lengths(meta_data, spec_data)
+        # This uses a join so returns the joined data so that it doesn't go to waste if needed, which it is here.
+        joined_data = UploadedFile.join_with_validation(meta_data, spec_data)
+
+        # Ingest into DB.
+        save_data_to_db(None, None, joined_data=joined_data)
 
 
 class Patient(models.Model):
     """ Model an individual patient. """
     MIN_AGE = 0
-    MAX_AGE = 90  # Required by HIPAA.
+    MAX_AGE = 150  # NOTE: HIPAA requires a max age of 90 to be stored. However, this is GDPR data so... :shrug:
 
-    class Gender(models.TextChoices):
-        MALE = auto()
-        FEMALE = auto()
+    class Gender(TextChoices):
+        MALE = ("M", _("Male"))  # NOTE: Here variation here act as aliases for bulk column ingestion.
+        FEMALE = ("F", _("Female"))  # NOTE: Here variation here act as aliases for bulk column ingestion.
 
     patient_id = models.UUIDField(unique=True, primary_key=True, default=uuid.uuid4, editable=False)
-    gender = models.CharField(max_length=8, choices=Gender.choices, null=True)
+    gender = models.CharField(max_length=8, choices=Gender.choices, null=True, verbose_name="Gender (M/F)")
 
     def __str__(self):
         return str(self.patient_id)
@@ -83,7 +159,8 @@ class Visit(models.Model):
                                        related_name="next_visit")
 
     patient_age = models.IntegerField(validators=[MinValueValidator(Patient.MIN_AGE),
-                                                  MaxValueValidator(Patient.MAX_AGE)])
+                                                  MaxValueValidator(Patient.MAX_AGE)],
+                                      verbose_name="Age")
 
     def clean(self):
         """ Model validation. """
@@ -116,14 +193,28 @@ class Visit(models.Model):
 class Disease(models.Model):
     """ Model an individual disease, symptom, or health condition. A patient's instance are stored as models.Symptom"""
 
-    class Types(models.TextChoices):
+    class Types(TextChoices):
         BOOL = auto()
         STR = auto()
         INT = auto()
         FLOAT = auto()
 
+        def cast(self, value):
+            if self.name == "BOOL":
+                return bool(value)
+            elif self.name == "STR":
+                return str(value)
+            elif self.name == "INT":
+                return int(value)
+            elif self.name == "FLOAT":
+                return float(value)
+            else:
+                raise NotImplementedError
+
     name = models.CharField(max_length=128)
     description = models.CharField(max_length=256)
+    alias = models.CharField(max_length=128, blank=True,
+                             help_text="Alias column name for bulk data ingestion from .csv, etc.")
 
     # This represents the type/class for Symptom.disease_value.
     # NOTE: For bool types, Symptom.is_symptomatic may suffice.
@@ -131,6 +222,13 @@ class Disease(models.Model):
 
     def __str__(self):
         return self.name
+
+    def clean(self):
+        if hasattr(super, "clean"):
+            super.clean()
+
+        if not self.alias:
+            self.alias = self.name.replace('_', ' ')
 
 
 class Symptom(models.Model):
@@ -142,12 +240,16 @@ class Symptom(models.Model):
     disease = models.ForeignKey(Disease, on_delete=models.CASCADE, related_name="symptom")
 
     was_asked = models.BooleanField(default=True)  # Whether the patient was asked whether they have this symptom.
-    is_symptomatic = models.BooleanField(default=True)
-    days_symptomatic = models.IntegerField(default=0, blank=True, null=True,
+    is_symptomatic = models.BooleanField(default=True, blank=True, null=True)
+    days_symptomatic = models.IntegerField(default=None,
+                                           blank=True,
+                                           null=True,
                                            validators=[MinValueValidator(0)])
-    severity = models.IntegerField(default=None, validators=[MinValueValidator(MIN_SEVERITY),
+    severity = models.IntegerField(default=None,
+                                   validators=[MinValueValidator(MIN_SEVERITY),
                                                              MaxValueValidator(MAX_SEVERITY)],
-                                   blank=True, null=True)
+                                   blank=True,
+                                   null=True)
 
     # Str format for actual type/class spec'd by Disease.value_class.
     disease_value = models.CharField(blank=True, null=True, max_length=128)
@@ -177,16 +279,20 @@ class Symptom(models.Model):
 class Instrument(models.Model):
     """ Model the instrument/device used to measure spectral data (not the collection of the bio sample). """
 
-    class Spectrometers(models.TextChoices):
-        AGILENT_COREY_630 = auto()
+    class Spectrometers(TextChoices):
+        AGILENT_CORY_630 = auto()
 
-    class SpectrometerCrystal(models.TextChoices):
+    class SpectrometerCrystal(TextChoices):
         ZNSE = auto()
 
-    spectrometer = models.CharField(default=Spectrometers.AGILENT_COREY_630, max_length=128,
-                                    choices=Spectrometers.choices)
-    atr_crystal = models.CharField(default=SpectrometerCrystal.ZNSE, max_length=128,
-                                   choices=SpectrometerCrystal.choices)
+    spectrometer = models.CharField(default=Spectrometers.AGILENT_CORY_630,
+                                    max_length=128,
+                                    choices=Spectrometers.choices,
+                                    verbose_name="Spectrometer")
+    atr_crystal = models.CharField(default=SpectrometerCrystal.ZNSE,
+                                   max_length=128,
+                                   choices=SpectrometerCrystal.choices,
+                                   verbose_name="ATR Crystal")
 
     def __str__(self):
         return self.spectrometer
@@ -194,16 +300,23 @@ class Instrument(models.Model):
 
 class BioSample(models.Model):
     """ Model biological sample and collection method. """
-    class SampleKind(models.TextChoices):
+    class SampleKind(TextChoices):
         PHARYNGEAL_SWAB = auto()
 
     visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="bio_sample")
 
     # Sample meta.
-    sample_type = models.CharField(default=SampleKind.PHARYNGEAL_SWAB, max_length=128, choices=SampleKind.choices)
-    sample_processing = models.CharField(default="None", max_length=128)
-    freezing_time = models.IntegerField(blank=True, null=True)
-    thawing_time = models.IntegerField(blank=True, null=True)
+    sample_type = models.CharField(default=SampleKind.PHARYNGEAL_SWAB,
+                                   max_length=128,
+                                   choices=SampleKind.choices,
+                                   verbose_name="Sample Type")
+    sample_processing = models.CharField(default="None",
+                                         blank=True,
+                                         null=True,
+                                         max_length=128,
+                                         verbose_name="Sample Processing")
+    freezing_temp = models.FloatField(blank=True, null=True, verbose_name="Freezing Temperature")
+    thawing_time = models.IntegerField(blank=True, null=True, verbose_name="Thawing time")
 
     def __str__(self):
         return f"{self.visit}_type:{self.sample_type}_pk{self.pk}"  # NOTE: str(self.visit) contains patient ID.
@@ -211,23 +324,32 @@ class BioSample(models.Model):
 
 class SpectralData(models.Model):
     """ Model spectral data measured by spectrometer instrument. """
-    class SpectralMeasurementKind(models.TextChoices):
+
+    UPLOAD_DIR = "spectral_data/"  # MEDIA_ROOT/spectral_data
+
+    class SpectralMeasurementKind(TextChoices):
         ATR_FTIR = auto()
 
     instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE, related_name="spectral_data")
     bio_sample = models.ForeignKey(BioSample, on_delete=models.CASCADE, related_name="spectral_data")
 
     # Spectrometer meta.
-    spectra_measurement = models.CharField(default=SpectralMeasurementKind.ATR_FTIR, max_length=128,
-                                           choices=SpectralMeasurementKind.choices)
-    acquisition_time = models.IntegerField(blank=True, null=True)
-    n_coadditions = models.IntegerField(default=32)  # TODO: What is this? Could this belong to Instrument?
-    resolution = models.IntegerField(blank=True, null=True)
+    spectra_measurement = models.CharField(default=SpectralMeasurementKind.ATR_FTIR,
+                                           max_length=128,
+                                           choices=SpectralMeasurementKind.choices,
+                                           verbose_name="Spectra Measurement")
+    acquisition_time = models.IntegerField(blank=True, null=True, verbose_name="Acquisition time [s]")
+
+    # TODO: What is this? Could this belong to Instrument?
+    n_coadditions = models.IntegerField(default=32, verbose_name="Number of coadditions")
+
+    resolution = models.IntegerField(blank=True, null=True, verbose_name="Resolution [cm-1]")
 
     # Spectral data.
     # TODO: We could write a custom storage class to write these all to a parquet table instead of individual files.
     # See https://docs.djangoproject.com/en/4.2/howto/custom-file-storage/
-    data = models.FileField(upload_to="uploads/")
+    data = models.FileField(upload_to=UPLOAD_DIR,
+                            validators=[FileExtensionValidator(UploadedFile.FileFormats.choices())])
 
     def __str__(self):
         return f"{self.bio_sample.visit}_pk{self.pk}"

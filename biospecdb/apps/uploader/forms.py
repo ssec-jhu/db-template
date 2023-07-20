@@ -5,4 +5,4 @@ from uploader.models import UploadedFile
 class FileUploadForm(forms.ModelForm):
     class Meta:
         model = UploadedFile
-        fields = ['file']
+        fields = ["meta_data_file", "spectral_data_file"]
