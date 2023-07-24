@@ -165,10 +165,12 @@ EXPLORER_SQL_BLACKLIST = (
  )
 
 EXPLORER_SCHEMA_EXCLUDE_TABLE_PREFIXES = (
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.admin'
+    'auth',
+    'contenttypes',
+    'sessions',
+    'admin',
+    "django",
+    "explorer"
 )
 
 EXPLORER_DATA_EXPORTERS = [
