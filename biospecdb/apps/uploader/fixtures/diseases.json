@@ -46,7 +46,7 @@
       "name": "fever",
       "description": "Patient experiences a fever?",
       "alias": "fever",
-      "value_class": ""
+      "value_class": "BOOL"
     }
   },
   {
@@ -56,7 +56,7 @@
       "name": "dyspnoea",
       "description": "Difficult or labored breathing",
       "alias": "dyspnoea",
-      "value_class": ""
+      "value_class": "BOOL"
     }
   },
   {
@@ -66,7 +66,7 @@
       "name": "oxygen_saturation_lt_95",
       "description": "Blood oxygen saturation less than 95%",
       "alias": "O2 Sat <95%",
-      "value_class": ""
+      "value_class": "BOOL"
     }
   },
   {
@@ -76,7 +76,7 @@
       "name": "cough",
       "description": "Patient experiences cough-like symptoms.",
       "alias": "cough",
-      "value_class": ""
+      "value_class": "BOOL"
     }
   },
   {
@@ -86,7 +86,7 @@
       "name": "coryza",
       "description": "Irritation and inflammation of the nasal mucous membrane.",
       "alias": "coryza",
-      "value_class": ""
+      "value_class": "BOOL"
     }
   },
   {
@@ -96,7 +96,7 @@
       "name": "odinophagy",
       "description": "Pain when swallowing.",
       "alias": "odinophagy",
-      "value_class": ""
+      "value_class": "BOOL"
     }
   },
   {
@@ -106,7 +106,7 @@
       "name": "diarrhea",
       "description": "Patient experiences diarrhea.",
       "alias": "diarrhea",
-      "value_class": ""
+      "value_class": "BOOL"
     }
   },
   {
@@ -116,7 +116,7 @@
       "name": "nausea",
       "description": "Patient experiences nausea.",
       "alias": "nausea",
-      "value_class": ""
+      "value_class": "BOOL"
     }
   },
   {
@@ -126,7 +126,7 @@
       "name": "headache",
       "description": "Patient experiences headaches.",
       "alias": "headache",
-      "value_class": ""
+      "value_class": "BOOL"
     }
   },
   {
@@ -136,7 +136,7 @@
       "name": "weakness",
       "description": "Patient experiences weakness or fatigue.",
       "alias": "weakness",
-      "value_class": ""
+      "value_class": "BOOL"
     }
   },
   {
@@ -146,7 +146,7 @@
       "name": "anosmia",
       "description": "Partial or complete loss of smell.",
       "alias": "anosmia",
-      "value_class": ""
+      "value_class": "BOOL"
     }
   },
   {
@@ -156,7 +156,7 @@
       "name": "myalgia",
       "description": "Muscular aches and pains.",
       "alias": "myalgia",
-      "value_class": ""
+      "value_class": "BOOL"
     }
   },
   {
@@ -166,7 +166,7 @@
       "name": "no_appetite",
       "description": "Lack of appetite",
       "alias": "Lack of appetite",
-      "value_class": ""
+      "value_class": "BOOL"
     }
   },
   {
@@ -176,7 +176,7 @@
       "name": "vomiting",
       "description": "Patient experiences vomiting",
       "alias": "vomiting",
-      "value_class": ""
+      "value_class": "BOOL"
     }
   },
   {
@@ -186,7 +186,7 @@
       "name": "chronic_pulmonary_inc_asthma",
       "description": "Chronic pulmonary conditions including asthma",
       "alias": "Chronic pulmonary disease including asthma",
-      "value_class": ""
+      "value_class": "BOOL"
     }
   },
   {
@@ -196,7 +196,7 @@
       "name": "cardiovascular_disease_inc_hypertension",
       "description": "Cardiovascular disease including hypertension.",
       "alias": "Cardiovascular disease including hypertension",
-      "value_class": ""
+      "value_class": "BOOL"
     }
   },
   {
@@ -206,7 +206,7 @@
       "name": "diabetes",
       "description": "Diabetes type 1 & type 2.",
       "alias": "diabetes",
-      "value_class": ""
+      "value_class": "BOOL"
     }
   },
   {
@@ -216,7 +216,7 @@
       "name": "chronic_or_neuromuscular_neurological_disease",
       "description": "Chronic or neuromuscular neurological disease.",
       "alias": "Chronic or neuromuscular neurological disease",
-      "value_class": ""
+      "value_class": "BOOL"
     }
   }
 ]
