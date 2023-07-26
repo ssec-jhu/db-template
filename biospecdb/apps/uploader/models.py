@@ -236,8 +236,8 @@ class Symptom(models.Model):
     MIN_SEVERITY = 0
     MAX_SEVERITY = 10
 
-    visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="symptom")
-    disease = models.ForeignKey(Disease, on_delete=models.CASCADE, related_name="symptom")
+    #visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="symptom")
+    #disease = models.ForeignKey(Disease, on_delete=models.CASCADE, related_name="symptom")
 
     was_asked = models.BooleanField(default=True)  # Whether the patient was asked whether they have this symptom.
     is_symptomatic = models.BooleanField(default=True, blank=True, null=True)
@@ -363,6 +363,12 @@ class SpectralData(models.Model):
         # TODO: Even with the QC model being its own thing rather than fields here, we may still want to run here
         # such that new data is complete such that it has associated QC metrics.
         ...
+
+class DataInputForm(models.Model):
+    visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="symptom")
+    symptom = models.ForeignKey(Symptom, on_delete=models.CASCADE, related_name="symptom")
+    disease = models.ForeignKey(Disease, on_delete=models.CASCADE, related_name="symptom")
+    #visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="bio_sample")
 
 
 # This is Model B wo/ disease table https://miro.com/app/board/uXjVMAAlj9Y=/

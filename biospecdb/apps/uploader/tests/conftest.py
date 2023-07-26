@@ -46,3 +46,8 @@ def all_data(db, diseases, django_db_blocker, instruments):
                                                                                      name=spectral_file_path.name))
                 data_upload.clean()
                 data_upload.save()
+
+@pytest.fixture(scope="function")
+def data_input_form(django_db_blocker):
+    with django_db_blocker.unblock():
+        call_command('loaddata', 'data_input_form.json')
