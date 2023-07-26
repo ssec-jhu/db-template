@@ -93,14 +93,6 @@ class TestSymptom:
         with pytest.raises(ValidationError):
             symptom.full_clean()
 
-    def test_disease_value_validation(self, db, diseases, visits):
-        symptom = Symptom.objects.create(visit=Visit.objects.get(pk=1),
-                                         disease=Disease.objects.get(name="fever"),
-                                         days_symptomatic=7,
-                                         disease_value=10)
-        with pytest.raises(ValidationError):
-            symptom.full_clean()
-
 
 class TestBioSample:
     ...

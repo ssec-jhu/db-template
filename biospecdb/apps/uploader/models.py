@@ -216,8 +216,7 @@ class Disease(models.Model):
                              help_text="Alias column name for bulk data ingestion from .csv, etc.")
 
     # This represents the type/class for Symptom.disease_value.
-    # NOTE: For bool types, Symptom.is_symptomatic may suffice.
-    value_class = models.CharField(max_length=128, default='', blank=True, null=True, choices=Types.choices)
+    value_class = models.CharField(max_length=128, default=Types.BOOL, blank=True, choices=Types.choices)
 
     def __str__(self):
         return self.name
@@ -237,8 +236,6 @@ class Symptom(models.Model):
     visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="symptom")
     disease = models.ForeignKey(Disease, on_delete=models.CASCADE, related_name="symptom")
 
-    was_asked = models.BooleanField(default=True)  # Whether the patient was asked whether they have this symptom.
-    is_symptomatic = models.BooleanField(default=True, blank=True, null=True)
     days_symptomatic = models.IntegerField(default=None,
                                            blank=True,
                                            null=True,
@@ -255,11 +252,6 @@ class Symptom(models.Model):
     def clean(self):
         """ Model validation. """
         super().clean()
-
-        if self.disease_value and not self.disease.value_class:
-            raise ValidationError(_("The field 'disease_value' is not permitted when `Disease` has no"
-                                    "`field:value_class` type specified."),
-                                  code="invalid")
 
         if self.days_symptomatic and self.visit.patient_age and (self.days_symptomatic >
                                                                  (self.visit.patient_age * 365)):
