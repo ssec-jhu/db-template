@@ -104,8 +104,8 @@ class UploadedFile(models.Model):
 
     def clean(self):
         """ Model validation. """
-        if hasattr(super, "clean"):
-            super.clean()
+
+        super().clean()
 
         def _get_file_info(file_wrapper):
             """ The actual file buffer is nested at different levels depending on container class. """
@@ -164,8 +164,7 @@ class Visit(models.Model):
 
     def clean(self):
         """ Model validation. """
-        if hasattr(super, "clean"):
-            super.clean()
+        super().clean()
 
         # Validate visits belong to same patient.
         if self.previous_visit is not None and (self.previous_visit.patient_id != self.patient_id):
@@ -224,8 +223,7 @@ class Disease(models.Model):
         return self.name
 
     def clean(self):
-        if hasattr(super, "clean"):
-            super.clean()
+        super().clean()
 
         if not self.alias:
             self.alias = self.name.replace('_', ' ')
@@ -256,8 +254,7 @@ class Symptom(models.Model):
 
     def clean(self):
         """ Model validation. """
-        if hasattr(super, "clean"):
-            super.clean()
+        super().clean()
 
         if self.disease_value and not self.disease.value_class:
             raise ValidationError(_("The field 'disease_value' is not permitted when `Disease` has no"
@@ -356,8 +353,7 @@ class SpectralData(models.Model):
 
     def clean(self):
         """ Model validation. """
-        if hasattr(super, "clean"):
-            super.clean()
+        super().clean()
 
         # Compute QC metrics.
         # TODO: Even with the QC model being its own thing rather than fields here, we may still want to run here
