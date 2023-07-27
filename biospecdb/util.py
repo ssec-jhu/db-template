@@ -104,24 +104,25 @@ def spectral_data_from_csv(filename):
 
 
 def to_bool(value):
-    TRUE = ("true", "yes")
-    FALSE = ("false", "no")
+    TRUE = ("true", "yes", True)
+    FALSE = ("false", "no", False)
 
     if value is None or value == '':
         return None
 
     if isinstance(value, str):
         value = value.lower()
-        if value in TRUE:
-            return True
-        elif value in FALSE:
-            return False
+
+    if value in TRUE:
+        return True
+    elif value in FALSE:
+        return False
+    else:
+        if isinstance(value, (int, float)):
+            raise ValueError(f"int|float casts to bool must have explicit values of 0|1 (inc. their flt equivalents.), "
+                             f"not '{value}'")
         else:
             raise ValueError(f"Bool aliases are '{TRUE}|{FALSE}', not '{value}'")
-    elif isinstance(value, (int, float)):  # NOTE: bool is a subclass of int so is implicitly included here.
-        return bool(value)
-    else:
-        raise NotImplementedError(f"Value: '{value}' of type: '{type(value)}' has no implemented cast.")
 
 
 def mock_bulk_spectral_data(path=Path.home(),
