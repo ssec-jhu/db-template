@@ -103,9 +103,12 @@ def spectral_data_from_csv(filename):
     return pd.read_csv(filename)
 
 
-def to_bool(value: str):
+def to_bool(value):
     TRUE = ("true", "yes")
     FALSE = ("false", "no")
+
+    if value is None or value == '':
+        return None
 
     if isinstance(value, str):
         value = value.lower()
@@ -115,10 +118,10 @@ def to_bool(value: str):
             return False
         else:
             raise ValueError(f"Bool aliases are '{TRUE}|{FALSE}', not '{value}'")
-    elif isinstance(value, (int, float)):
+    elif isinstance(value, (int, float)):  # NOTE: bool is a subclass of int so is implicitly included here.
         return bool(value)
     else:
-        raise NotImplementedError
+        raise NotImplementedError(f"Value: '{value}' of type: '{type(value)}' has no implemented cast.")
 
 
 def mock_bulk_spectral_data(path=Path.home(),

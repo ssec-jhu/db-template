@@ -101,6 +101,15 @@ class TestSymptom:
         with pytest.raises(ValidationError):
             symptom.full_clean()
 
+    @pytest.mark.parametrize("value", (True, False))
+    def test_disease_value_bool_cast(self, db, diseases, visits, value):
+        symptom = Symptom.objects.create(visit=Visit.objects.get(pk=1),
+                                         disease=Disease.objects.get(name="fever"),
+                                         days_symptomatic=7,
+                                         disease_value=str(value))
+        symptom.full_clean()
+        assert symptom.disease_value is value
+
 
 class TestBioSample:
     ...

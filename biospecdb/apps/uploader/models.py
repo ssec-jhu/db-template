@@ -200,7 +200,7 @@ class Disease(models.Model):
 
         def cast(self, value):
             if self.name == "BOOL":
-                return bool(value)
+                return biospecdb.util.to_bool(value)
             elif self.name == "STR":
                 return str(value)
             elif self.name == "INT":
