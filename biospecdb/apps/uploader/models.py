@@ -200,7 +200,7 @@ class Disease(models.Model):
 
         def cast(self, value):
             if self.name == "BOOL":
-                return bool(value)
+                return biospecdb.util.to_bool(value)
             elif self.name == "STR":
                 return str(value)
             elif self.name == "INT":
@@ -252,6 +252,19 @@ class Symptom(models.Model):
     def clean(self):
         """ Model validation. """
         super().clean()
+
+        # Check that value is castable by casting.
+        # NOTE: ``disease_value`` is a ``CharField`` so this will get cast back to a str again, and it could be argued
+        # that there's no point in storing the cast value... but :shrug:.
+        try:
+            self.disease_value = Disease.Types(self.disease.value_class).cast(self.disease_value)
+        except ValueError:
+            raise ValidationError(_("The value '%(value)s' can not be cast to the expected type of '%(type)s' for"
+                                    " '%(disease_name)s'"),
+                                  params={"disease_name": self.disease.name,
+                                          "type": self.disease.value_class,
+                                          "value": self.disease_value},
+                                  code="invalid")
 
         if self.days_symptomatic and self.visit.patient_age and (self.days_symptomatic >
                                                                  (self.visit.patient_age * 365)):

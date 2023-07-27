@@ -93,6 +93,23 @@ class TestSymptom:
         with pytest.raises(ValidationError):
             symptom.full_clean()
 
+    def test_disease_value_validation(self, db, diseases, visits):
+        symptom = Symptom.objects.create(visit=Visit.objects.get(pk=1),
+                                         disease=Disease.objects.get(name="Ct_gene_N"),
+                                         days_symptomatic=7,
+                                         disease_value="strings can't cast to floats")
+        with pytest.raises(ValidationError):
+            symptom.full_clean()
+
+    @pytest.mark.parametrize("value", (True, False))
+    def test_disease_value_bool_cast(self, db, diseases, visits, value):
+        symptom = Symptom.objects.create(visit=Visit.objects.get(pk=1),
+                                         disease=Disease.objects.get(name="fever"),
+                                         days_symptomatic=7,
+                                         disease_value=str(value))
+        symptom.full_clean()
+        assert symptom.disease_value is value
+
 
 class TestBioSample:
     ...
