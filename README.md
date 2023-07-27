@@ -73,6 +73,11 @@ When the models are changed only the following migration commands are required:
 * ``python manage.py migrate``
 * ``python manage.py sqlmigrate uploader <migration_version>``
 
+The DB can be dumped to a file using the following:
+
+`` python manage.py dumpdata --indent 4 uploader --exclude uploader.uploadedfile --output test_data.json``
+
+
 ### Usage:
 To be completed by child repo.
 

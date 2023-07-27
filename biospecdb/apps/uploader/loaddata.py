@@ -107,15 +107,10 @@ def save_data_to_db(meta_data, spectral_data, joined_data=None):
 
             # TODO: Should the following logic belong to Symptom.__init__()?
             #  See https://github.com/ssec-jhu/biospecdb/issues/42
-            if disease.value_class:
-                symptom_value = Disease.Types(disease.value_class).cast(symptom_value)
-                symptom = Symptom(disease=disease,
-                                  visit=visit,
-                                  is_symptomatic=None,  # This info is deferred to the semantics of disease_value.
-                                  disease_value=symptom_value)
-            else:
-                symptom_value = biospecdb.util.to_bool(symptom_value)
-                symptom = Symptom(disease=disease, visit=visit, is_symptomatic=symptom_value)
+            symptom_value = Disease.Types(disease.value_class).cast(symptom_value)
+            symptom = Symptom(disease=disease,
+                              visit=visit,
+                              disease_value=symptom_value)
 
             disease.symptom.add(symptom, bulk=False)
             symptom.full_clean()
