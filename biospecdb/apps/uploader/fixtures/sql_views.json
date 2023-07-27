@@ -1,0 +1,17 @@
+[
+{
+    "model": "explorer.query",
+    "pk": 1,
+    "fields": {
+        "title": "Symptom View",
+        "sql": "CREATE VIEW v_symptoms AS\r\nSELECT s.visit_id,\r\n       s.id AS symptom_id,\r\n       d.id AS disease_id,\r\n       d.name AS disease,\r\n       d.value_class,\r\n       cast(s.disease_value AS tinyint) AS disease_value -- note, casting to some integer is important as the max() function is applied to it\r\n,\r\n       s.days_symptomatic,\r\n       s.severity,\r\n       s.disease_value\r\nFROM uploader_symptom s\r\nJOIN uploader_disease d ON d.id=s.disease_id",
+        "description": "Create a simple view joining symptoms, diseases, and visits together.",
+        "created_by_user": null,
+        "created_at": "2023-07-27T18:12:28.904Z",
+        "last_run_date": "2023-07-27T18:58:03.986Z",
+        "snapshot": false,
+        "connection": "default"
+    }
+}
+]
+
