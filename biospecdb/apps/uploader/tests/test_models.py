@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 import django.core.files
+from django.db.utils import IntegrityError
 import pytest
 
 from uploader.models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, Visit, UploadedFile
@@ -74,6 +75,16 @@ class TestDisease:
         disease = Disease.objects.get(pk=1)
         assert disease.name == "Ct_gene_N"
         assert disease.value_class == Disease.Types.FLOAT
+
+    def test_name_uniqueness(self, db):
+        Disease.objects.create(name="A", description="blah", alias="a")
+        with pytest.raises(IntegrityError, match="unique_disease_name"):
+            Disease.objects.create(name="a", description="blah", alias="b")
+
+    def test_alias_uniqueness(self, db):
+        Disease.objects.create(name="A", description="blah", alias="a")
+        with pytest.raises(IntegrityError, match="unique_alias_name"):
+            Disease.objects.create(name="b", description="blah", alias="A")
 
 
 class TestInstrument:

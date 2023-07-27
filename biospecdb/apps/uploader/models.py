@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 import django.core.files.uploadedfile
 from django.core.validators import FileExtensionValidator, MinValueValidator, MaxValueValidator
 from django.db import models
+from django.db.models.functions import Lower
 from django.utils.translation import gettext_lazy as _
 import pandas as pd
 
@@ -192,6 +193,12 @@ class Visit(models.Model):
 class Disease(models.Model):
     """ Model an individual disease, symptom, or health condition. A patient's instance are stored as models.Symptom"""
 
+    class Meta:
+        constraints = [models.UniqueConstraint(Lower("name"),
+                                               name="unique_disease_name"),
+                       models.UniqueConstraint(Lower("alias"),
+                                               name="unique_alias_name")]
+
     class Types(TextChoices):
         BOOL = auto()
         STR = auto()
@@ -210,13 +217,16 @@ class Disease(models.Model):
             else:
                 raise NotImplementedError
 
+    # NOTE: See above constraint for case-insensitive uniqueness.
     name = models.CharField(max_length=128)
     description = models.CharField(max_length=256)
-    alias = models.CharField(max_length=128, blank=True,
+
+    # NOTE: See meta class constraint for case-insensitive uniqueness.
+    alias = models.CharField(max_length=128,
                              help_text="Alias column name for bulk data ingestion from .csv, etc.")
 
     # This represents the type/class for Symptom.disease_value.
-    value_class = models.CharField(max_length=128, default=Types.BOOL, blank=True, choices=Types.choices)
+    value_class = models.CharField(max_length=128, default=Types.BOOL, choices=Types.choices)
 
     def __str__(self):
         return self.name
