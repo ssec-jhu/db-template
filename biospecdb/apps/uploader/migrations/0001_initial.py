@@ -4,6 +4,7 @@ import django.core.validators
 from django.db import migrations, models
 import django.db.models.deletion
 import django.db.models.functions.text
+import uploader.models
 import uuid
 
 
@@ -15,6 +16,39 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.CreateModel(
+            name='FullPatientView',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+            ],
+            options={
+                'db_table': 'full_patient',
+                'managed': False,
+            },
+            bases=(uploader.models.SqlView, models.Model),
+        ),
+        migrations.CreateModel(
+            name='SymptomsView',
+            fields=[
+                ('id', models.BigIntegerField(primary_key=True, serialize=False)),
+            ],
+            options={
+                'db_table': 'v_symptoms',
+                'managed': False,
+            },
+            bases=(uploader.models.SqlView, models.Model),
+        ),
+        migrations.CreateModel(
+            name='VisitSymptomsView',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+            ],
+            options={
+                'db_table': 'v_visit_symptoms',
+                'managed': False,
+            },
+            bases=(uploader.models.SqlView, models.Model),
+        ),
         migrations.CreateModel(
             name='BioSample',
             fields=[

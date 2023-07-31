@@ -2,17 +2,18 @@ from enum import auto
 from pathlib import Path
 import uuid
 
-
 from django.core.exceptions import ValidationError
 import django.core.files.uploadedfile
 from django.core.validators import FileExtensionValidator, MinValueValidator, MaxValueValidator
 from django.db import models
 from django.db.models.functions import Lower
 from django.utils.translation import gettext_lazy as _
+
 import pandas as pd
 
 import biospecdb.util
 from .loaddata import save_data_to_db
+from .sql import drop_view, update_view
 
 
 # Changes here need to be migrated, committed, and activated.
@@ -375,6 +376,114 @@ class SpectralData(models.Model):
         # TODO: Even with the QC model being its own thing rather than fields here, we may still want to run here
         # such that new data is complete such that it has associated QC metrics.
         ...
+
+
+class SqlView:
+    sql_view_dependencies = tuple()
+
+    # TODO: Add functionality to auto create own view if doesn't already exist.
+
+    @classmethod
+    def sql(cls):
+        raise NotImplementedError
+
+    @classmethod
+    def drop_view(cls, *args, **kwargs):
+        return drop_view(cls._meta.db_table, *args, **kwargs)
+
+    @classmethod
+    def update_view(cls, *args, **kwargs):
+        for view_dependency in cls.sql_view_dependencies:
+            view_dependency.update_view()
+
+        return update_view(cls._meta.db_table, cls.sql(), *args, **kwargs)
+
+
+class SymptomsView(SqlView, models.Model):
+    class Meta:
+        managed = False
+        db_table = "v_symptoms"
+
+    visit_id = models.BigIntegerField(primary_key=True)
+    symptom = models.ForeignKey(Symptom, on_delete=models.DO_NOTHING)
+    disease = models.ForeignKey(Disease, on_delete=models.DO_NOTHING)
+    value_class = Disease.value_class.__class__
+    disease_value = Symptom.disease_value.__class__
+    days_symptomatic = Symptom.days_symptomatic.__class__
+    severity = Symptom.severity.__class__
+
+    @classmethod
+    def sql(cls):
+        return f"""
+        CREATE VIEW {cls._meta.db_table} AS
+        SELECT s.visit_id,
+               s.id AS symptom_id,
+               d.id AS disease_id,
+               d.name AS disease,
+               d.value_class,
+               s.days_symptomatic,
+               s.severity,
+               s.disease_value
+        FROM uploader_symptom s
+        JOIN uploader_disease d ON d.id=s.disease_id
+        """
+
+
+class VisitSymptomsView(SqlView, models.Model):
+    class Meta:
+        managed = False
+        db_table = "v_visit_symptoms"
+
+    sql_view_dependencies = (SymptomsView,)
+
+    @classmethod
+    def sql(cls):
+        diseases = Disease.objects.all()
+        view = cls._meta.db_table
+        d = []
+        for disease in diseases:
+            if disease.value_class == "FLOAT":
+                value = 'cast(disease_value AS REAL)'
+            elif disease.value_class == "INTEGER":
+                value = "cast(disease_value AS INTEGER)"
+            else:
+                value = "disease_value"
+            d.append(f"max(case when disease = '{disease.name}' then {value} else null end) as [{disease.name}]")
+
+        d = "\n,      ".join(d)
+
+        return f"""
+        create view {view} as
+        select visit_id
+        ,      {d} 
+          from v_symptoms 
+         group by visit_id
+        """
+
+
+class FullPatientView(SqlView, models.Model):
+    class Meta:
+        managed = False
+        db_table = "full_patient"
+
+    sql_view_dependencies = (VisitSymptomsView,)
+
+    @classmethod
+    def sql(cls):
+        return f"""
+                create view {cls._meta.db_table} as 
+                select p.patient_id, p.gender, v.patient_age
+                ,      bs.sample_type, bs.sample_processing, bs.freezing_temp, bs.thawing_time
+                ,      i.spectrometer, i.atr_crystal
+                ,      sd.spectra_measurement, sd.acquisition_time, sd.n_coadditions, sd.resolution, sd.data
+                ,      vs.*
+                  from uploader_patient p
+                  join uploader_visit v on p.patient_id=v.patient_id
+                  join uploader_biosample bs on bs.visit_id=v.id
+                  join uploader_spectraldata sd on sd.bio_sample_id=bs.id
+                  join uploader_instrument i on i.id=sd.instrument_id
+                  left outer join v_visit_symptoms vs on vs.visit_id=v.id
+                """
 
 
 # This is Model B wo/ disease table https://miro.com/app/board/uXjVMAAlj9Y=/
