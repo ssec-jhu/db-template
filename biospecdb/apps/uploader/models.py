@@ -13,7 +13,7 @@ import pandas as pd
 
 import biospecdb.util
 from .loaddata import save_data_to_db
-from .sql import drop_view, update_view
+from .sql import drop_view, secure_name, update_view
 
 
 # Changes here need to be migrated, committed, and activated.
@@ -445,6 +445,7 @@ class VisitSymptomsView(SqlView, models.Model):
         view = cls._meta.db_table
         d = []
         for disease in diseases:
+            secure_name(disease.name)
             if disease.value_class == "FLOAT":
                 value = 'cast(disease_value AS REAL)'
             elif disease.value_class == "INTEGER":
@@ -455,15 +456,18 @@ class VisitSymptomsView(SqlView, models.Model):
 
         d = "\n,      ".join(d)
 
+        # NOTE: Params aren't allowed in view statements with sqlite. Since disease can be added to the DB this poses
+        # as a risk since someone with access to creating diseases could inject into disease.name arbitrary SQL. Calling
+        # secure_name(disease.name) may not entirely guard against this even though its intention is to do so.
         sql = f"""
         create view {view} as
         select visit_id
-        ,      %s 
+        ,      {d} 
           from v_symptoms 
          group by visit_id
         """  # nosec B608
-        params = [d]
-        return sql, params
+
+        return sql, None
 
 
 class FullPatientView(SqlView, models.Model):

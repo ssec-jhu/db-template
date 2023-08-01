@@ -1,12 +1,13 @@
 import re
 
+from django.core.exceptions import SuspiciousOperation
 from django.db import connection
 from django.db.utils import OperationalError
 
 
 def secure_name(name):
-    if re.search(name, r"[^_a-zA-Z]"):
-        raise RuntimeError(f"SQL security issue! Expected table_name consisting of only [_a-zA-Z] but got '{name}'")
+    if re.search(r"[^_a-zA-Z0-9]", name):
+        raise SuspiciousOperation(f"SQL security issue! Expected name consisting of only [_a-zA-Z] but got '{name}'")
 
 
 def execute_sql(sql, params=None):
