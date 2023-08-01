@@ -1,5 +1,12 @@
+import re
+
 from django.db import connection
 from django.db.utils import OperationalError
+
+
+def secure_name(name):
+    if re.search(name, r"[^_a-zA-Z]"):
+        raise RuntimeError(f"SQL security issue! Expected table_name consisting of only [_a-zA-Z] but got '{name}'")
 
 
 def execute_sql(sql, params=None):
@@ -13,21 +20,24 @@ def execute_sql(sql, params=None):
 
 
 def drop_view(view):
+    secure_name(view)
     try:
-        execute_sql("drop view %s", params=[view])
-    except OperationalError:
-        pass
+        execute_sql(f"drop view {view}")  # nosec B608
+    except OperationalError as error:
+        if "no such view:" not in str(error):
+            raise
 
 
 def update_view(view, sql, params=None, check=True, limit=1):
+    secure_name(view)
     drop_view(view)
     execute_sql(sql, params=params)
 
     # The view isn't actually used upon creation so may contain latent errors. To check for errors, we query it so that
     # it complains upon creation not later upon usage.
     if check:
-        sql = "select * from %s"
-        params = [view]
+        sql = f"select * from {view}"  # nosec B608
+        params = []
         if limit:
             sql += " limit %s"
             params.append(limit)

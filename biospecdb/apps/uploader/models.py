@@ -416,8 +416,8 @@ class SymptomsView(SqlView, models.Model):
 
     @classmethod
     def sql(cls):
-        sql = """
-        CREATE VIEW %s AS
+        sql = f"""
+        CREATE VIEW {cls._meta.db_table} AS
         SELECT s.visit_id,
                s.id AS symptom_id,
                d.id AS disease_id,
@@ -428,9 +428,8 @@ class SymptomsView(SqlView, models.Model):
                s.disease_value
         FROM uploader_symptom s
         JOIN uploader_disease d ON d.id=s.disease_id
-        """
-        params = [cls._meta.db_table]
-        return sql, params
+        """  # nosec B608
+        return sql, None
 
 
 class VisitSymptomsView(SqlView, models.Model):
@@ -456,14 +455,14 @@ class VisitSymptomsView(SqlView, models.Model):
 
         d = "\n,      ".join(d)
 
-        sql = """
-        create view %s as
+        sql = f"""
+        create view {view} as
         select visit_id
         ,      %s 
           from v_symptoms 
          group by visit_id
-        """
-        params = [view, d]
+        """  # nosec B608
+        params = [d]
         return sql, params
 
 
@@ -476,8 +475,8 @@ class FullPatientView(SqlView, models.Model):
 
     @classmethod
     def sql(cls):
-        sql = """
-                create view %s as 
+        sql = f"""
+                create view {cls._meta.db_table} as 
                 select p.patient_id, p.gender, v.patient_age
                 ,      bs.sample_type, bs.sample_processing, bs.freezing_temp, bs.thawing_time
                 ,      i.spectrometer, i.atr_crystal
@@ -489,9 +488,8 @@ class FullPatientView(SqlView, models.Model):
                   join uploader_spectraldata sd on sd.bio_sample_id=bs.id
                   join uploader_instrument i on i.id=sd.instrument_id
                   left outer join v_visit_symptoms vs on vs.visit_id=v.id
-                """
-        params = [cls._meta.db_table]
-        return sql, params
+                """  # nosec B608
+        return sql, None
 
 # This is Model B wo/ disease table https://miro.com/app/board/uXjVMAAlj9Y=/
 # class Symptoms(models.Model):
