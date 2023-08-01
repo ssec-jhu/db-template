@@ -385,6 +385,7 @@ class SqlView:
 
     @classmethod
     def sql(cls):
+        """ Returns the SQL string and an optional list of params used in string. """
         raise NotImplementedError
 
     @classmethod
@@ -396,7 +397,8 @@ class SqlView:
         for view_dependency in cls.sql_view_dependencies:
             view_dependency.update_view()
 
-        return update_view(cls._meta.db_table, cls.sql(), *args, **kwargs)
+        sql, params = cls.sql()
+        return update_view(cls._meta.db_table, sql, *args, params=params, **kwargs)
 
 
 class SymptomsView(SqlView, models.Model):
@@ -414,8 +416,8 @@ class SymptomsView(SqlView, models.Model):
 
     @classmethod
     def sql(cls):
-        return f"""
-        CREATE VIEW {cls._meta.db_table} AS
+        sql = """
+        CREATE VIEW %s AS
         SELECT s.visit_id,
                s.id AS symptom_id,
                d.id AS disease_id,
@@ -427,6 +429,8 @@ class SymptomsView(SqlView, models.Model):
         FROM uploader_symptom s
         JOIN uploader_disease d ON d.id=s.disease_id
         """
+        params = [cls._meta.db_table]
+        return sql, params
 
 
 class VisitSymptomsView(SqlView, models.Model):
@@ -452,13 +456,15 @@ class VisitSymptomsView(SqlView, models.Model):
 
         d = "\n,      ".join(d)
 
-        return f"""
-        create view {view} as
+        sql = """
+        create view %s as
         select visit_id
-        ,      {d} 
+        ,      %s 
           from v_symptoms 
          group by visit_id
         """
+        params = [view, d]
+        return sql, params
 
 
 class FullPatientView(SqlView, models.Model):
@@ -470,8 +476,8 @@ class FullPatientView(SqlView, models.Model):
 
     @classmethod
     def sql(cls):
-        return f"""
-                create view {cls._meta.db_table} as 
+        sql = """
+                create view %s as 
                 select p.patient_id, p.gender, v.patient_age
                 ,      bs.sample_type, bs.sample_processing, bs.freezing_temp, bs.thawing_time
                 ,      i.spectrometer, i.atr_crystal
@@ -484,7 +490,8 @@ class FullPatientView(SqlView, models.Model):
                   join uploader_instrument i on i.id=sd.instrument_id
                   left outer join v_visit_symptoms vs on vs.visit_id=v.id
                 """
-
+        params = [cls._meta.db_table]
+        return sql, params
 
 # This is Model B wo/ disease table https://miro.com/app/board/uXjVMAAlj9Y=/
 # class Symptoms(models.Model):
