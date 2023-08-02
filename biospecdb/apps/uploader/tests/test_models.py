@@ -179,3 +179,11 @@ class TestUploadedFile:
         n_empty_covid_symptoms = len((Symptom.objects.filter(disease=Disease.objects.get(name="Covid_RT_qPCR")))
                                      .filter(disease_value="Negative"))
         assert n_symptoms == n_patients * n_diseases - n_empty_covid_symptoms * 2
+
+    def test_days_of_symptoms(self, mock_data_from_files):
+        week_long_symptoms = Symptom.objects.filter(days_symptomatic=7)
+        assert len(week_long_symptoms) > 1
+        assert week_long_symptoms[0].days_symptomatic == 7
+        null_days = len(Symptom.objects.filter(days_symptomatic=None))
+        assert null_days > 1
+        assert null_days < len(Symptom.objects.all())

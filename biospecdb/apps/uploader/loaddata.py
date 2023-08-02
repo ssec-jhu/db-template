@@ -100,6 +100,8 @@ def save_data_to_db(meta_data, spectral_data, joined_data=None):
         spectraldata.save()
 
         # Symptoms
+        # NOTE: Bulk data from client doesn't contain data for `days_symptomatic` per symptom, but instead per patient.
+        days_symptomatic = row.get(Symptom.days_symptomatic.field.verbose_name.lower(), None)
         for disease in Disease.objects.all():
             symptom_value = row.get(disease.alias.lower(), None)
             if symptom_value is None:
@@ -110,7 +112,8 @@ def save_data_to_db(meta_data, spectral_data, joined_data=None):
             symptom_value = Disease.Types(disease.value_class).cast(symptom_value)
             symptom = Symptom(disease=disease,
                               visit=visit,
-                              disease_value=symptom_value)
+                              disease_value=symptom_value,
+                              days_symptomatic=days_symptomatic)
 
             disease.symptom.add(symptom, bulk=False)
             symptom.full_clean()
