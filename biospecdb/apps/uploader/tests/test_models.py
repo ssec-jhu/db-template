@@ -143,9 +143,16 @@ class TestUploadedFile:
             data_upload.clean()
             data_upload.save()
 
-    def test_all_data_fixture(self, all_data):
+    def test_mock_data_from_files_fixture(self, mock_data_from_files):
         n_patients = 10
         assert len(UploadedFile.objects.all()) == 1
+        assert len(Patient.objects.all()) == n_patients
+        assert len(Visit.objects.all()) == n_patients
+        assert len(BioSample.objects.all()) == n_patients
+        assert len(SpectralData.objects.all()) == n_patients
+
+    def test_mock_data_fixture(self, mock_data):
+        n_patients = 10
         assert len(Patient.objects.all()) == n_patients
         assert len(Visit.objects.all()) == n_patients
         assert len(BioSample.objects.all()) == n_patients
