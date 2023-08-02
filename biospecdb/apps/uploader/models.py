@@ -409,10 +409,10 @@ class SymptomsView(SqlView, models.Model):
     visit_id = models.BigIntegerField(primary_key=True)
     symptom = models.ForeignKey(Symptom, on_delete=models.DO_NOTHING)
     disease = models.ForeignKey(Disease, on_delete=models.DO_NOTHING)
-    value_class = Disease.value_class.__class__
-    disease_value = Symptom.disease_value.__class__
-    days_symptomatic = Symptom.days_symptomatic.__class__
-    severity = Symptom.severity.__class__
+    value_class = Disease.value_class.field
+    disease_value = Symptom.disease_value.field
+    days_symptomatic = Symptom.days_symptomatic.field
+    severity = Symptom.severity.field
 
     @classmethod
     def sql(cls):
