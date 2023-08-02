@@ -29,5 +29,5 @@ jobs:
           pip3 install bandit>=1.7
         shell: bash
       - name: Run bandit
-        run: bandit --severity-level=medium -r biospecdb
+        run: bandit -c pyproject.toml --severity-level=medium -r biospecdb
         shell: bash
