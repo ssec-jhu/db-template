@@ -249,7 +249,8 @@ class Symptom(models.Model):
     days_symptomatic = models.IntegerField(default=None,
                                            blank=True,
                                            null=True,
-                                           validators=[MinValueValidator(0)])
+                                           validators=[MinValueValidator(0)],
+                                           verbose_name="Days of Symptoms onset")
     severity = models.IntegerField(default=None,
                                    validators=[MinValueValidator(MIN_SEVERITY),
                                                              MaxValueValidator(MAX_SEVERITY)],
