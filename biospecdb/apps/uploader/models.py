@@ -1,3 +1,4 @@
+from copy import deepcopy
 from enum import auto
 from pathlib import Path
 import uuid
@@ -407,12 +408,14 @@ class SymptomsView(SqlView, models.Model):
         db_table = "v_symptoms"
 
     visit_id = models.BigIntegerField(primary_key=True)
-    symptom = models.ForeignKey(Symptom, on_delete=models.DO_NOTHING)
-    disease = models.ForeignKey(Disease, on_delete=models.DO_NOTHING)
-    value_class = Disease.value_class.field
-    disease_value = Symptom.disease_value.field
-    days_symptomatic = Symptom.days_symptomatic.field
-    severity = Symptom.severity.field
+    symptom_id = models.ForeignKey(Symptom, db_column="symptom_id", on_delete=models.DO_NOTHING)
+    disease_id = models.ForeignKey(Disease, db_column="disease_id", on_delete=models.DO_NOTHING)
+    disease = deepcopy(Disease.name.field)
+    disease.name = disease.db_column = "disease"
+    value_class = deepcopy(Disease.value_class.field)
+    days_symptomatic = deepcopy(Symptom.days_symptomatic.field)
+    severity = deepcopy(Symptom.severity.field)
+    disease_value = deepcopy(Symptom.disease_value.field)
 
     @classmethod
     def sql(cls):
@@ -438,6 +441,8 @@ class VisitSymptomsView(SqlView, models.Model):
         db_table = "v_visit_symptoms"
 
     sql_view_dependencies = (SymptomsView,)
+
+    visit_id = models.BigIntegerField(primary_key=True)
 
     @classmethod
     def sql(cls):
