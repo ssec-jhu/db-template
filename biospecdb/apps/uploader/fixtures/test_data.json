@@ -1,160 +1,160 @@
 [
 {
     "model": "uploader.patient",
-    "pk": "26fa4622-1c3a-499c-91c7-a91fa60683a1",
+    "pk": "0d545f26-2fc8-4c0e-bb2b-557419a6c9f5",
+    "fields": {
+        "gender": "M"
+    }
+},
+{
+    "model": "uploader.patient",
+    "pk": "32c203d7-e91b-40d8-8a1f-7efc21a65986",
     "fields": {
         "gender": "F"
     }
 },
 {
     "model": "uploader.patient",
-    "pk": "422527ff-b08b-4353-b9a4-70a776f60e48",
+    "pk": "5a19aa92-1620-4459-990b-92ccfd203a77",
     "fields": {
         "gender": "M"
     }
 },
 {
     "model": "uploader.patient",
-    "pk": "67e0b8e4-bbe7-4d81-b5b9-8d2adfa0553b",
-    "fields": {
-        "gender": "M"
-    }
-},
-{
-    "model": "uploader.patient",
-    "pk": "8a752966-335b-4255-9e1f-686f503410a3",
+    "pk": "613f660d-2e9f-422f-9f4c-5093b7d5ae2e",
     "fields": {
         "gender": "F"
     }
 },
 {
     "model": "uploader.patient",
-    "pk": "a705b1d1-4bfa-4081-bf48-ae06a6afabe1",
+    "pk": "8f18c408-5cbe-43f8-a850-da41a356e01a",
+    "fields": {
+        "gender": "M"
+    }
+},
+{
+    "model": "uploader.patient",
+    "pk": "9c4b7f69-b9af-47f7-a5e7-9cfd4354e021",
+    "fields": {
+        "gender": "M"
+    }
+},
+{
+    "model": "uploader.patient",
+    "pk": "b69ff30d-3e73-46aa-9135-2d184fd90e5a",
+    "fields": {
+        "gender": "M"
+    }
+},
+{
+    "model": "uploader.patient",
+    "pk": "bc32b8d9-508d-43cc-9ea2-936b71d625e6",
+    "fields": {
+        "gender": "M"
+    }
+},
+{
+    "model": "uploader.patient",
+    "pk": "e6ae2d34-99fe-4392-bb2e-0c977a9fc0af",
     "fields": {
         "gender": "F"
     }
 },
 {
     "model": "uploader.patient",
-    "pk": "a9162f13-2d38-4d1b-9097-286c10af5a4d",
-    "fields": {
-        "gender": "M"
-    }
-},
-{
-    "model": "uploader.patient",
-    "pk": "be3decd4-0e89-485b-8c9a-d866fc87da95",
-    "fields": {
-        "gender": "M"
-    }
-},
-{
-    "model": "uploader.patient",
-    "pk": "be882a9b-e634-410a-9792-7d59ad11927b",
-    "fields": {
-        "gender": "M"
-    }
-},
-{
-    "model": "uploader.patient",
-    "pk": "cf950bce-8bdd-4933-9729-48a4c50472c1",
-    "fields": {
-        "gender": "M"
-    }
-},
-{
-    "model": "uploader.patient",
-    "pk": "e1c34297-cfca-4095-8585-f3e490bb3811",
+    "pk": "ec1d65b8-bf7e-48ce-9186-89ffda275141",
     "fields": {
         "gender": "F"
     }
 },
 {
     "model": "uploader.visit",
-    "pk": 2424,
+    "pk": 1118,
     "fields": {
-        "patient": "be3decd4-0e89-485b-8c9a-d866fc87da95",
+        "patient": "9c4b7f69-b9af-47f7-a5e7-9cfd4354e021",
         "previous_visit": null,
         "patient_age": 21
     }
 },
 {
     "model": "uploader.visit",
-    "pk": 2425,
+    "pk": 1119,
     "fields": {
-        "patient": "be882a9b-e634-410a-9792-7d59ad11927b",
+        "patient": "0d545f26-2fc8-4c0e-bb2b-557419a6c9f5",
         "previous_visit": null,
         "patient_age": 97
     }
 },
 {
     "model": "uploader.visit",
-    "pk": 2426,
+    "pk": 1120,
     "fields": {
-        "patient": "26fa4622-1c3a-499c-91c7-a91fa60683a1",
+        "patient": "32c203d7-e91b-40d8-8a1f-7efc21a65986",
         "previous_visit": null,
         "patient_age": 6
     }
 },
 {
     "model": "uploader.visit",
-    "pk": 2427,
+    "pk": 1121,
     "fields": {
-        "patient": "e1c34297-cfca-4095-8585-f3e490bb3811",
+        "patient": "e6ae2d34-99fe-4392-bb2e-0c977a9fc0af",
         "previous_visit": null,
         "patient_age": 44
     }
 },
 {
     "model": "uploader.visit",
-    "pk": 2428,
+    "pk": 1122,
     "fields": {
-        "patient": "8a752966-335b-4255-9e1f-686f503410a3",
+        "patient": "ec1d65b8-bf7e-48ce-9186-89ffda275141",
         "previous_visit": null,
         "patient_age": 55
     }
 },
 {
     "model": "uploader.visit",
-    "pk": 2429,
+    "pk": 1123,
     "fields": {
-        "patient": "a705b1d1-4bfa-4081-bf48-ae06a6afabe1",
+        "patient": "613f660d-2e9f-422f-9f4c-5093b7d5ae2e",
         "previous_visit": null,
         "patient_age": 22
     }
 },
 {
     "model": "uploader.visit",
-    "pk": 2430,
+    "pk": 1124,
     "fields": {
-        "patient": "a9162f13-2d38-4d1b-9097-286c10af5a4d",
+        "patient": "bc32b8d9-508d-43cc-9ea2-936b71d625e6",
         "previous_visit": null,
         "patient_age": 17
     }
 },
 {
     "model": "uploader.visit",
-    "pk": 2431,
+    "pk": 1125,
     "fields": {
-        "patient": "cf950bce-8bdd-4933-9729-48a4c50472c1",
+        "patient": "5a19aa92-1620-4459-990b-92ccfd203a77",
         "previous_visit": null,
         "patient_age": 57
     }
 },
 {
     "model": "uploader.visit",
-    "pk": 2432,
+    "pk": 1126,
     "fields": {
-        "patient": "422527ff-b08b-4353-b9a4-70a776f60e48",
+        "patient": "b69ff30d-3e73-46aa-9135-2d184fd90e5a",
         "previous_visit": null,
         "patient_age": 9
     }
 },
 {
     "model": "uploader.visit",
-    "pk": 2433,
+    "pk": 1127,
     "fields": {
-        "patient": "67e0b8e4-bbe7-4d81-b5b9-8d2adfa0553b",
+        "patient": "8f18c408-5cbe-43f8-a850-da41a356e01a",
         "previous_visit": null,
         "patient_age": 31
     }
@@ -206,7 +206,7 @@
         "name": "fever",
         "description": "Patient experiences a fever?",
         "alias": "fever",
-        "value_class": ""
+        "value_class": "BOOL"
     }
 },
 {
@@ -216,7 +216,7 @@
         "name": "dyspnoea",
         "description": "Difficult or labored breathing",
         "alias": "dyspnoea",
-        "value_class": ""
+        "value_class": "BOOL"
     }
 },
 {
@@ -226,7 +226,7 @@
         "name": "oxygen_saturation_lt_95",
         "description": "Blood oxygen saturation less than 95%",
         "alias": "O2 Sat <95%",
-        "value_class": ""
+        "value_class": "BOOL"
     }
 },
 {
@@ -236,7 +236,7 @@
         "name": "cough",
         "description": "Patient experiences cough-like symptoms.",
         "alias": "cough",
-        "value_class": ""
+        "value_class": "BOOL"
     }
 },
 {
@@ -246,7 +246,7 @@
         "name": "coryza",
         "description": "Irritation and inflammation of the nasal mucous membrane.",
         "alias": "coryza",
-        "value_class": ""
+        "value_class": "BOOL"
     }
 },
 {
@@ -256,7 +256,7 @@
         "name": "odinophagy",
         "description": "Pain when swallowing.",
         "alias": "odinophagy",
-        "value_class": ""
+        "value_class": "BOOL"
     }
 },
 {
@@ -266,7 +266,7 @@
         "name": "diarrhea",
         "description": "Patient experiences diarrhea.",
         "alias": "diarrhea",
-        "value_class": ""
+        "value_class": "BOOL"
     }
 },
 {
@@ -276,7 +276,7 @@
         "name": "nausea",
         "description": "Patient experiences nausea.",
         "alias": "nausea",
-        "value_class": ""
+        "value_class": "BOOL"
     }
 },
 {
@@ -286,7 +286,7 @@
         "name": "headache",
         "description": "Patient experiences headaches.",
         "alias": "headache",
-        "value_class": ""
+        "value_class": "BOOL"
     }
 },
 {
@@ -296,7 +296,7 @@
         "name": "weakness",
         "description": "Patient experiences weakness or fatigue.",
         "alias": "weakness",
-        "value_class": ""
+        "value_class": "BOOL"
     }
 },
 {
@@ -306,7 +306,7 @@
         "name": "anosmia",
         "description": "Partial or complete loss of smell.",
         "alias": "anosmia",
-        "value_class": ""
+        "value_class": "BOOL"
     }
 },
 {
@@ -316,7 +316,7 @@
         "name": "myalgia",
         "description": "Muscular aches and pains.",
         "alias": "myalgia",
-        "value_class": ""
+        "value_class": "BOOL"
     }
 },
 {
@@ -325,8 +325,8 @@
     "fields": {
         "name": "no_appetite",
         "description": "Lack of appetite",
-        "alias": "Lack of Appetite",
-        "value_class": ""
+        "alias": "Lack of appetite",
+        "value_class": "BOOL"
     }
 },
 {
@@ -336,7 +336,7 @@
         "name": "vomiting",
         "description": "Patient experiences vomiting",
         "alias": "vomiting",
-        "value_class": ""
+        "value_class": "BOOL"
     }
 },
 {
@@ -345,8 +345,8 @@
     "fields": {
         "name": "chronic_pulmonary_inc_asthma",
         "description": "Chronic pulmonary conditions including asthma",
-        "alias": "CHRONIC PULMONARY DISEASE INCLUDING ASTHMA",
-        "value_class": ""
+        "alias": "Chronic pulmonary disease including asthma",
+        "value_class": "BOOL"
     }
 },
 {
@@ -355,8 +355,8 @@
     "fields": {
         "name": "cardiovascular_disease_inc_hypertension",
         "description": "Cardiovascular disease including hypertension.",
-        "alias": "CARDIOVASCULAR DISEASE INCLUDING HYPERTENSION",
-        "value_class": ""
+        "alias": "Cardiovascular disease including hypertension",
+        "value_class": "BOOL"
     }
 },
 {
@@ -366,7 +366,7 @@
         "name": "diabetes",
         "description": "Diabetes type 1 & type 2.",
         "alias": "diabetes",
-        "value_class": ""
+        "value_class": "BOOL"
     }
 },
 {
@@ -376,1317 +376,1115 @@
         "name": "chronic_or_neuromuscular_neurological_disease",
         "description": "Chronic or neuromuscular neurological disease.",
         "alias": "Chronic or neuromuscular neurological disease",
-        "value_class": ""
+        "value_class": "BOOL"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17419,
+    "pk": 23174,
     "fields": {
-        "visit": 2424,
+        "visit": 1118,
         "disease": 3,
-        "was_asked": true,
-        "is_symptomatic": null,
-        "days_symptomatic": null,
+        "days_symptomatic": 7,
         "severity": null,
         "disease_value": "Negative"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17420,
+    "pk": 23175,
     "fields": {
-        "visit": 2424,
+        "visit": 1118,
         "disease": 4,
-        "was_asked": true,
-        "is_symptomatic": null,
-        "days_symptomatic": null,
+        "days_symptomatic": 7,
         "severity": null,
         "disease_value": "True"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17421,
+    "pk": 23176,
     "fields": {
-        "visit": 2424,
+        "visit": 1118,
         "disease": 5,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 7,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17422,
+    "pk": 23177,
     "fields": {
-        "visit": 2424,
+        "visit": 1118,
         "disease": 6,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 7,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17423,
+    "pk": 23178,
     "fields": {
-        "visit": 2424,
+        "visit": 1118,
         "disease": 7,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 7,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17424,
+    "pk": 23179,
     "fields": {
-        "visit": 2424,
+        "visit": 1118,
         "disease": 8,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17425,
-    "fields": {
-        "visit": 2424,
-        "disease": 9,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17426,
-    "fields": {
-        "visit": 2424,
-        "disease": 10,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17427,
-    "fields": {
-        "visit": 2424,
-        "disease": 11,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17428,
-    "fields": {
-        "visit": 2424,
-        "disease": 12,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17429,
-    "fields": {
-        "visit": 2424,
-        "disease": 13,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17430,
-    "fields": {
-        "visit": 2424,
-        "disease": 14,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17431,
-    "fields": {
-        "visit": 2424,
-        "disease": 15,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17432,
-    "fields": {
-        "visit": 2424,
-        "disease": 16,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17433,
-    "fields": {
-        "visit": 2424,
-        "disease": 17,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17434,
-    "fields": {
-        "visit": 2424,
-        "disease": 18,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17435,
-    "fields": {
-        "visit": 2424,
-        "disease": 19,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17436,
-    "fields": {
-        "visit": 2424,
-        "disease": 20,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17437,
-    "fields": {
-        "visit": 2424,
-        "disease": 21,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17438,
-    "fields": {
-        "visit": 2424,
-        "disease": 22,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17439,
-    "fields": {
-        "visit": 2425,
-        "disease": 3,
-        "was_asked": true,
-        "is_symptomatic": null,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": "Negative"
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17440,
-    "fields": {
-        "visit": 2425,
-        "disease": 4,
-        "was_asked": true,
-        "is_symptomatic": null,
-        "days_symptomatic": null,
+        "days_symptomatic": 7,
         "severity": null,
         "disease_value": "True"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17441,
+    "pk": 23180,
     "fields": {
-        "visit": 2425,
-        "disease": 5,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17442,
-    "fields": {
-        "visit": 2425,
-        "disease": 6,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17443,
-    "fields": {
-        "visit": 2425,
-        "disease": 7,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17444,
-    "fields": {
-        "visit": 2425,
-        "disease": 8,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17445,
-    "fields": {
-        "visit": 2425,
+        "visit": 1118,
         "disease": 9,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
+        "days_symptomatic": 7,
         "severity": null,
-        "disease_value": null
+        "disease_value": "True"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17446,
+    "pk": 23181,
     "fields": {
-        "visit": 2425,
+        "visit": 1118,
         "disease": 10,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17447,
-    "fields": {
-        "visit": 2425,
-        "disease": 11,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17448,
-    "fields": {
-        "visit": 2425,
-        "disease": 12,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17449,
-    "fields": {
-        "visit": 2425,
-        "disease": 13,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17450,
-    "fields": {
-        "visit": 2425,
-        "disease": 14,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17451,
-    "fields": {
-        "visit": 2425,
-        "disease": 15,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17452,
-    "fields": {
-        "visit": 2425,
-        "disease": 16,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17453,
-    "fields": {
-        "visit": 2425,
-        "disease": 17,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17454,
-    "fields": {
-        "visit": 2425,
-        "disease": 18,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17455,
-    "fields": {
-        "visit": 2425,
-        "disease": 19,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17456,
-    "fields": {
-        "visit": 2425,
-        "disease": 20,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17457,
-    "fields": {
-        "visit": 2425,
-        "disease": 21,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17458,
-    "fields": {
-        "visit": 2425,
-        "disease": 22,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17459,
-    "fields": {
-        "visit": 2426,
-        "disease": 3,
-        "was_asked": true,
-        "is_symptomatic": null,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": "Negative"
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17460,
-    "fields": {
-        "visit": 2426,
-        "disease": 4,
-        "was_asked": true,
-        "is_symptomatic": null,
-        "days_symptomatic": null,
+        "days_symptomatic": 7,
         "severity": null,
         "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17461,
+    "pk": 23182,
     "fields": {
-        "visit": 2426,
-        "disease": 5,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17462,
-    "fields": {
-        "visit": 2426,
-        "disease": 6,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17463,
-    "fields": {
-        "visit": 2426,
-        "disease": 7,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17464,
-    "fields": {
-        "visit": 2426,
-        "disease": 8,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17465,
-    "fields": {
-        "visit": 2426,
-        "disease": 9,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17466,
-    "fields": {
-        "visit": 2426,
-        "disease": 10,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17467,
-    "fields": {
-        "visit": 2426,
+        "visit": 1118,
         "disease": 11,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 7,
         "severity": null,
-        "disease_value": null
+        "disease_value": "True"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17468,
+    "pk": 23183,
     "fields": {
-        "visit": 2426,
+        "visit": 1118,
         "disease": 12,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17469,
-    "fields": {
-        "visit": 2426,
-        "disease": 13,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17470,
-    "fields": {
-        "visit": 2426,
-        "disease": 14,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17471,
-    "fields": {
-        "visit": 2426,
-        "disease": 15,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17472,
-    "fields": {
-        "visit": 2426,
-        "disease": 16,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17473,
-    "fields": {
-        "visit": 2426,
-        "disease": 17,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17474,
-    "fields": {
-        "visit": 2426,
-        "disease": 18,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17475,
-    "fields": {
-        "visit": 2426,
-        "disease": 19,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17476,
-    "fields": {
-        "visit": 2426,
-        "disease": 20,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17477,
-    "fields": {
-        "visit": 2426,
-        "disease": 21,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17478,
-    "fields": {
-        "visit": 2426,
-        "disease": 22,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17479,
-    "fields": {
-        "visit": 2427,
-        "disease": 3,
-        "was_asked": true,
-        "is_symptomatic": null,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": "Negative"
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17480,
-    "fields": {
-        "visit": 2427,
-        "disease": 4,
-        "was_asked": true,
-        "is_symptomatic": null,
-        "days_symptomatic": null,
+        "days_symptomatic": 7,
         "severity": null,
         "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17481,
+    "pk": 23184,
     "fields": {
-        "visit": 2427,
-        "disease": 5,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17482,
-    "fields": {
-        "visit": 2427,
-        "disease": 6,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17483,
-    "fields": {
-        "visit": 2427,
-        "disease": 7,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17484,
-    "fields": {
-        "visit": 2427,
-        "disease": 8,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17485,
-    "fields": {
-        "visit": 2427,
-        "disease": 9,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17486,
-    "fields": {
-        "visit": 2427,
-        "disease": 10,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17487,
-    "fields": {
-        "visit": 2427,
-        "disease": 11,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17488,
-    "fields": {
-        "visit": 2427,
-        "disease": 12,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17489,
-    "fields": {
-        "visit": 2427,
+        "visit": 1118,
         "disease": 13,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
+        "days_symptomatic": 7,
         "severity": null,
-        "disease_value": null
+        "disease_value": "True"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17490,
+    "pk": 23185,
     "fields": {
-        "visit": 2427,
+        "visit": 1118,
         "disease": 14,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17491,
-    "fields": {
-        "visit": 2427,
-        "disease": 15,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17492,
-    "fields": {
-        "visit": 2427,
-        "disease": 16,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17493,
-    "fields": {
-        "visit": 2427,
-        "disease": 17,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17494,
-    "fields": {
-        "visit": 2427,
-        "disease": 18,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17495,
-    "fields": {
-        "visit": 2427,
-        "disease": 19,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17496,
-    "fields": {
-        "visit": 2427,
-        "disease": 20,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17497,
-    "fields": {
-        "visit": 2427,
-        "disease": 21,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17498,
-    "fields": {
-        "visit": 2427,
-        "disease": 22,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17499,
-    "fields": {
-        "visit": 2428,
-        "disease": 3,
-        "was_asked": true,
-        "is_symptomatic": null,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": "Negative"
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17500,
-    "fields": {
-        "visit": 2428,
-        "disease": 4,
-        "was_asked": true,
-        "is_symptomatic": null,
-        "days_symptomatic": null,
+        "days_symptomatic": 7,
         "severity": null,
         "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17501,
+    "pk": 23186,
     "fields": {
-        "visit": 2428,
-        "disease": 5,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17502,
-    "fields": {
-        "visit": 2428,
-        "disease": 6,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17503,
-    "fields": {
-        "visit": 2428,
-        "disease": 7,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17504,
-    "fields": {
-        "visit": 2428,
-        "disease": 8,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17505,
-    "fields": {
-        "visit": 2428,
-        "disease": 9,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17506,
-    "fields": {
-        "visit": 2428,
-        "disease": 10,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17507,
-    "fields": {
-        "visit": 2428,
-        "disease": 11,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17508,
-    "fields": {
-        "visit": 2428,
-        "disease": 12,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17509,
-    "fields": {
-        "visit": 2428,
-        "disease": 13,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17510,
-    "fields": {
-        "visit": 2428,
-        "disease": 14,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
-        "severity": null,
-        "disease_value": null
-    }
-},
-{
-    "model": "uploader.symptom",
-    "pk": 17511,
-    "fields": {
-        "visit": 2428,
+        "visit": 1118,
         "disease": 15,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 7,
         "severity": null,
-        "disease_value": null
+        "disease_value": "True"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17512,
+    "pk": 23187,
     "fields": {
-        "visit": 2428,
+        "visit": 1118,
         "disease": 16,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 7,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17513,
+    "pk": 23188,
     "fields": {
-        "visit": 2428,
+        "visit": 1118,
         "disease": 17,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 7,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17514,
+    "pk": 23189,
     "fields": {
-        "visit": 2428,
+        "visit": 1118,
         "disease": 18,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 7,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17515,
+    "pk": 23190,
     "fields": {
-        "visit": 2428,
+        "visit": 1118,
         "disease": 19,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 7,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17516,
+    "pk": 23191,
     "fields": {
-        "visit": 2428,
+        "visit": 1118,
         "disease": 20,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 7,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17517,
+    "pk": 23192,
     "fields": {
-        "visit": 2428,
+        "visit": 1118,
         "disease": 21,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 7,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17518,
+    "pk": 23193,
     "fields": {
-        "visit": 2428,
+        "visit": 1118,
         "disease": 22,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 7,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17519,
+    "pk": 23194,
     "fields": {
-        "visit": 2429,
+        "visit": 1119,
+        "disease": 3,
+        "days_symptomatic": 1,
+        "severity": null,
+        "disease_value": "Negative"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23195,
+    "fields": {
+        "visit": 1119,
+        "disease": 4,
+        "days_symptomatic": 1,
+        "severity": null,
+        "disease_value": "True"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23196,
+    "fields": {
+        "visit": 1119,
+        "disease": 5,
+        "days_symptomatic": 1,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23197,
+    "fields": {
+        "visit": 1119,
+        "disease": 6,
+        "days_symptomatic": 1,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23198,
+    "fields": {
+        "visit": 1119,
+        "disease": 7,
+        "days_symptomatic": 1,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23199,
+    "fields": {
+        "visit": 1119,
+        "disease": 8,
+        "days_symptomatic": 1,
+        "severity": null,
+        "disease_value": "True"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23200,
+    "fields": {
+        "visit": 1119,
+        "disease": 9,
+        "days_symptomatic": 1,
+        "severity": null,
+        "disease_value": "True"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23201,
+    "fields": {
+        "visit": 1119,
+        "disease": 10,
+        "days_symptomatic": 1,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23202,
+    "fields": {
+        "visit": 1119,
+        "disease": 11,
+        "days_symptomatic": 1,
+        "severity": null,
+        "disease_value": "True"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23203,
+    "fields": {
+        "visit": 1119,
+        "disease": 12,
+        "days_symptomatic": 1,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23204,
+    "fields": {
+        "visit": 1119,
+        "disease": 13,
+        "days_symptomatic": 1,
+        "severity": null,
+        "disease_value": "True"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23205,
+    "fields": {
+        "visit": 1119,
+        "disease": 14,
+        "days_symptomatic": 1,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23206,
+    "fields": {
+        "visit": 1119,
+        "disease": 15,
+        "days_symptomatic": 1,
+        "severity": null,
+        "disease_value": "True"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23207,
+    "fields": {
+        "visit": 1119,
+        "disease": 16,
+        "days_symptomatic": 1,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23208,
+    "fields": {
+        "visit": 1119,
+        "disease": 17,
+        "days_symptomatic": 1,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23209,
+    "fields": {
+        "visit": 1119,
+        "disease": 18,
+        "days_symptomatic": 1,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23210,
+    "fields": {
+        "visit": 1119,
+        "disease": 19,
+        "days_symptomatic": 1,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23211,
+    "fields": {
+        "visit": 1119,
+        "disease": 20,
+        "days_symptomatic": 1,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23212,
+    "fields": {
+        "visit": 1119,
+        "disease": 21,
+        "days_symptomatic": 1,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23213,
+    "fields": {
+        "visit": 1119,
+        "disease": 22,
+        "days_symptomatic": 1,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23214,
+    "fields": {
+        "visit": 1120,
+        "disease": 3,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "Negative"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23215,
+    "fields": {
+        "visit": 1120,
+        "disease": 4,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23216,
+    "fields": {
+        "visit": 1120,
+        "disease": 5,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "True"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23217,
+    "fields": {
+        "visit": 1120,
+        "disease": 6,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23218,
+    "fields": {
+        "visit": 1120,
+        "disease": 7,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23219,
+    "fields": {
+        "visit": 1120,
+        "disease": 8,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "True"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23220,
+    "fields": {
+        "visit": 1120,
+        "disease": 9,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "True"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23221,
+    "fields": {
+        "visit": 1120,
+        "disease": 10,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23222,
+    "fields": {
+        "visit": 1120,
+        "disease": 11,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23223,
+    "fields": {
+        "visit": 1120,
+        "disease": 12,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23224,
+    "fields": {
+        "visit": 1120,
+        "disease": 13,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "True"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23225,
+    "fields": {
+        "visit": 1120,
+        "disease": 14,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "True"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23226,
+    "fields": {
+        "visit": 1120,
+        "disease": 15,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23227,
+    "fields": {
+        "visit": 1120,
+        "disease": 16,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "True"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23228,
+    "fields": {
+        "visit": 1120,
+        "disease": 17,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23229,
+    "fields": {
+        "visit": 1120,
+        "disease": 18,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23230,
+    "fields": {
+        "visit": 1120,
+        "disease": 19,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23231,
+    "fields": {
+        "visit": 1120,
+        "disease": 20,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23232,
+    "fields": {
+        "visit": 1120,
+        "disease": 21,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23233,
+    "fields": {
+        "visit": 1120,
+        "disease": 22,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23234,
+    "fields": {
+        "visit": 1121,
+        "disease": 3,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "Negative"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23235,
+    "fields": {
+        "visit": 1121,
+        "disease": 4,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23236,
+    "fields": {
+        "visit": 1121,
+        "disease": 5,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "True"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23237,
+    "fields": {
+        "visit": 1121,
+        "disease": 6,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23238,
+    "fields": {
+        "visit": 1121,
+        "disease": 7,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23239,
+    "fields": {
+        "visit": 1121,
+        "disease": 8,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "True"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23240,
+    "fields": {
+        "visit": 1121,
+        "disease": 9,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "True"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23241,
+    "fields": {
+        "visit": 1121,
+        "disease": 10,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23242,
+    "fields": {
+        "visit": 1121,
+        "disease": 11,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23243,
+    "fields": {
+        "visit": 1121,
+        "disease": 12,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23244,
+    "fields": {
+        "visit": 1121,
+        "disease": 13,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "True"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23245,
+    "fields": {
+        "visit": 1121,
+        "disease": 14,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "True"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23246,
+    "fields": {
+        "visit": 1121,
+        "disease": 15,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23247,
+    "fields": {
+        "visit": 1121,
+        "disease": 16,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "True"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23248,
+    "fields": {
+        "visit": 1121,
+        "disease": 17,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23249,
+    "fields": {
+        "visit": 1121,
+        "disease": 18,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23250,
+    "fields": {
+        "visit": 1121,
+        "disease": 19,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23251,
+    "fields": {
+        "visit": 1121,
+        "disease": 20,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23252,
+    "fields": {
+        "visit": 1121,
+        "disease": 21,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23253,
+    "fields": {
+        "visit": 1121,
+        "disease": 22,
+        "days_symptomatic": 2,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23254,
+    "fields": {
+        "visit": 1122,
+        "disease": 3,
+        "days_symptomatic": 3,
+        "severity": null,
+        "disease_value": "Negative"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23255,
+    "fields": {
+        "visit": 1122,
+        "disease": 4,
+        "days_symptomatic": 3,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23256,
+    "fields": {
+        "visit": 1122,
+        "disease": 5,
+        "days_symptomatic": 3,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23257,
+    "fields": {
+        "visit": 1122,
+        "disease": 6,
+        "days_symptomatic": 3,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23258,
+    "fields": {
+        "visit": 1122,
+        "disease": 7,
+        "days_symptomatic": 3,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23259,
+    "fields": {
+        "visit": 1122,
+        "disease": 8,
+        "days_symptomatic": 3,
+        "severity": null,
+        "disease_value": "True"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23260,
+    "fields": {
+        "visit": 1122,
+        "disease": 9,
+        "days_symptomatic": 3,
+        "severity": null,
+        "disease_value": "True"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23261,
+    "fields": {
+        "visit": 1122,
+        "disease": 10,
+        "days_symptomatic": 3,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23262,
+    "fields": {
+        "visit": 1122,
+        "disease": 11,
+        "days_symptomatic": 3,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23263,
+    "fields": {
+        "visit": 1122,
+        "disease": 12,
+        "days_symptomatic": 3,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23264,
+    "fields": {
+        "visit": 1122,
+        "disease": 13,
+        "days_symptomatic": 3,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23265,
+    "fields": {
+        "visit": 1122,
+        "disease": 14,
+        "days_symptomatic": 3,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23266,
+    "fields": {
+        "visit": 1122,
+        "disease": 15,
+        "days_symptomatic": 3,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23267,
+    "fields": {
+        "visit": 1122,
+        "disease": 16,
+        "days_symptomatic": 3,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23268,
+    "fields": {
+        "visit": 1122,
+        "disease": 17,
+        "days_symptomatic": 3,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23269,
+    "fields": {
+        "visit": 1122,
+        "disease": 18,
+        "days_symptomatic": 3,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23270,
+    "fields": {
+        "visit": 1122,
+        "disease": 19,
+        "days_symptomatic": 3,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23271,
+    "fields": {
+        "visit": 1122,
+        "disease": 20,
+        "days_symptomatic": 3,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23272,
+    "fields": {
+        "visit": 1122,
+        "disease": 21,
+        "days_symptomatic": 3,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23273,
+    "fields": {
+        "visit": 1122,
+        "disease": 22,
+        "days_symptomatic": 3,
+        "severity": null,
+        "disease_value": "False"
+    }
+},
+{
+    "model": "uploader.symptom",
+    "pk": 23274,
+    "fields": {
+        "visit": 1123,
         "disease": 1,
-        "was_asked": true,
-        "is_symptomatic": null,
         "days_symptomatic": null,
         "severity": null,
         "disease_value": "24.8"
@@ -1694,12 +1492,10 @@
 },
 {
     "model": "uploader.symptom",
-    "pk": 17520,
+    "pk": 23275,
     "fields": {
-        "visit": 2429,
+        "visit": 1123,
         "disease": 2,
-        "was_asked": true,
-        "is_symptomatic": null,
         "days_symptomatic": null,
         "severity": null,
         "disease_value": "24.8"
@@ -1707,12 +1503,10 @@
 },
 {
     "model": "uploader.symptom",
-    "pk": 17521,
+    "pk": 23276,
     "fields": {
-        "visit": 2429,
+        "visit": 1123,
         "disease": 3,
-        "was_asked": true,
-        "is_symptomatic": null,
         "days_symptomatic": null,
         "severity": null,
         "disease_value": "Positive"
@@ -1720,12 +1514,10 @@
 },
 {
     "model": "uploader.symptom",
-    "pk": 17522,
+    "pk": 23277,
     "fields": {
-        "visit": 2429,
+        "visit": 1123,
         "disease": 4,
-        "was_asked": true,
-        "is_symptomatic": null,
         "days_symptomatic": null,
         "severity": null,
         "disease_value": "False"
@@ -1733,1302 +1525,1102 @@
 },
 {
     "model": "uploader.symptom",
-    "pk": 17523,
+    "pk": 23278,
     "fields": {
-        "visit": 2429,
+        "visit": 1123,
         "disease": 5,
-        "was_asked": true,
-        "is_symptomatic": false,
         "days_symptomatic": null,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17524,
+    "pk": 23279,
     "fields": {
-        "visit": 2429,
+        "visit": 1123,
         "disease": 6,
-        "was_asked": true,
-        "is_symptomatic": false,
         "days_symptomatic": null,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17525,
+    "pk": 23280,
     "fields": {
-        "visit": 2429,
+        "visit": 1123,
         "disease": 7,
-        "was_asked": true,
-        "is_symptomatic": false,
         "days_symptomatic": null,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17526,
+    "pk": 23281,
     "fields": {
-        "visit": 2429,
+        "visit": 1123,
         "disease": 8,
-        "was_asked": true,
-        "is_symptomatic": false,
         "days_symptomatic": null,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17527,
+    "pk": 23282,
     "fields": {
-        "visit": 2429,
+        "visit": 1123,
         "disease": 9,
-        "was_asked": true,
-        "is_symptomatic": false,
         "days_symptomatic": null,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17528,
+    "pk": 23283,
     "fields": {
-        "visit": 2429,
+        "visit": 1123,
         "disease": 10,
-        "was_asked": true,
-        "is_symptomatic": false,
         "days_symptomatic": null,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17529,
+    "pk": 23284,
     "fields": {
-        "visit": 2429,
+        "visit": 1123,
         "disease": 11,
-        "was_asked": true,
-        "is_symptomatic": false,
         "days_symptomatic": null,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17530,
+    "pk": 23285,
     "fields": {
-        "visit": 2429,
+        "visit": 1123,
         "disease": 12,
-        "was_asked": true,
-        "is_symptomatic": false,
         "days_symptomatic": null,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17531,
+    "pk": 23286,
     "fields": {
-        "visit": 2429,
+        "visit": 1123,
         "disease": 13,
-        "was_asked": true,
-        "is_symptomatic": false,
         "days_symptomatic": null,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17532,
+    "pk": 23287,
     "fields": {
-        "visit": 2429,
+        "visit": 1123,
         "disease": 14,
-        "was_asked": true,
-        "is_symptomatic": false,
         "days_symptomatic": null,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17533,
+    "pk": 23288,
     "fields": {
-        "visit": 2429,
+        "visit": 1123,
         "disease": 15,
-        "was_asked": true,
-        "is_symptomatic": false,
         "days_symptomatic": null,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17534,
+    "pk": 23289,
     "fields": {
-        "visit": 2429,
+        "visit": 1123,
         "disease": 16,
-        "was_asked": true,
-        "is_symptomatic": false,
         "days_symptomatic": null,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17535,
+    "pk": 23290,
     "fields": {
-        "visit": 2429,
+        "visit": 1123,
         "disease": 17,
-        "was_asked": true,
-        "is_symptomatic": false,
         "days_symptomatic": null,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17536,
+    "pk": 23291,
     "fields": {
-        "visit": 2429,
+        "visit": 1123,
         "disease": 18,
-        "was_asked": true,
-        "is_symptomatic": false,
         "days_symptomatic": null,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17537,
+    "pk": 23292,
     "fields": {
-        "visit": 2429,
+        "visit": 1123,
         "disease": 19,
-        "was_asked": true,
-        "is_symptomatic": false,
         "days_symptomatic": null,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17538,
+    "pk": 23293,
     "fields": {
-        "visit": 2429,
+        "visit": 1123,
         "disease": 20,
-        "was_asked": true,
-        "is_symptomatic": false,
         "days_symptomatic": null,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17539,
+    "pk": 23294,
     "fields": {
-        "visit": 2429,
+        "visit": 1123,
         "disease": 21,
-        "was_asked": true,
-        "is_symptomatic": false,
         "days_symptomatic": null,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17540,
+    "pk": 23295,
     "fields": {
-        "visit": 2429,
+        "visit": 1123,
         "disease": 22,
-        "was_asked": true,
-        "is_symptomatic": false,
         "days_symptomatic": null,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17541,
+    "pk": 23296,
     "fields": {
-        "visit": 2430,
+        "visit": 1124,
         "disease": 1,
-        "was_asked": true,
-        "is_symptomatic": null,
-        "days_symptomatic": null,
+        "days_symptomatic": 3,
         "severity": null,
         "disease_value": "18.18"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17542,
+    "pk": 23297,
     "fields": {
-        "visit": 2430,
+        "visit": 1124,
         "disease": 2,
-        "was_asked": true,
-        "is_symptomatic": null,
-        "days_symptomatic": null,
+        "days_symptomatic": 3,
         "severity": null,
         "disease_value": "18.18"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17543,
+    "pk": 23298,
     "fields": {
-        "visit": 2430,
+        "visit": 1124,
         "disease": 3,
-        "was_asked": true,
-        "is_symptomatic": null,
-        "days_symptomatic": null,
+        "days_symptomatic": 3,
         "severity": null,
         "disease_value": "Positive"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17544,
+    "pk": 23299,
     "fields": {
-        "visit": 2430,
+        "visit": 1124,
         "disease": 4,
-        "was_asked": true,
-        "is_symptomatic": null,
-        "days_symptomatic": null,
+        "days_symptomatic": 3,
         "severity": null,
         "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17545,
+    "pk": 23300,
     "fields": {
-        "visit": 2430,
+        "visit": 1124,
         "disease": 5,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
+        "days_symptomatic": 3,
         "severity": null,
-        "disease_value": null
+        "disease_value": "True"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17546,
+    "pk": 23301,
     "fields": {
-        "visit": 2430,
+        "visit": 1124,
         "disease": 6,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 3,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17547,
+    "pk": 23302,
     "fields": {
-        "visit": 2430,
+        "visit": 1124,
         "disease": 7,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 3,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17548,
+    "pk": 23303,
     "fields": {
-        "visit": 2430,
+        "visit": 1124,
         "disease": 8,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
+        "days_symptomatic": 3,
         "severity": null,
-        "disease_value": null
+        "disease_value": "True"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17549,
+    "pk": 23304,
     "fields": {
-        "visit": 2430,
+        "visit": 1124,
         "disease": 9,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 3,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17550,
+    "pk": 23305,
     "fields": {
-        "visit": 2430,
+        "visit": 1124,
         "disease": 10,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
+        "days_symptomatic": 3,
         "severity": null,
-        "disease_value": null
+        "disease_value": "True"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17551,
+    "pk": 23306,
     "fields": {
-        "visit": 2430,
+        "visit": 1124,
         "disease": 11,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 3,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17552,
+    "pk": 23307,
     "fields": {
-        "visit": 2430,
+        "visit": 1124,
         "disease": 12,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 3,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17553,
+    "pk": 23308,
     "fields": {
-        "visit": 2430,
+        "visit": 1124,
         "disease": 13,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 3,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17554,
+    "pk": 23309,
     "fields": {
-        "visit": 2430,
+        "visit": 1124,
         "disease": 14,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
+        "days_symptomatic": 3,
         "severity": null,
-        "disease_value": null
+        "disease_value": "True"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17555,
+    "pk": 23310,
     "fields": {
-        "visit": 2430,
+        "visit": 1124,
         "disease": 15,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 3,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17556,
+    "pk": 23311,
     "fields": {
-        "visit": 2430,
+        "visit": 1124,
         "disease": 16,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 3,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17557,
+    "pk": 23312,
     "fields": {
-        "visit": 2430,
+        "visit": 1124,
         "disease": 17,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 3,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17558,
+    "pk": 23313,
     "fields": {
-        "visit": 2430,
+        "visit": 1124,
         "disease": 18,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 3,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17559,
+    "pk": 23314,
     "fields": {
-        "visit": 2430,
+        "visit": 1124,
         "disease": 19,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 3,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17560,
+    "pk": 23315,
     "fields": {
-        "visit": 2430,
+        "visit": 1124,
         "disease": 20,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 3,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17561,
+    "pk": 23316,
     "fields": {
-        "visit": 2430,
+        "visit": 1124,
         "disease": 21,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 3,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17562,
+    "pk": 23317,
     "fields": {
-        "visit": 2430,
+        "visit": 1124,
         "disease": 22,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 3,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17563,
+    "pk": 23318,
     "fields": {
-        "visit": 2431,
+        "visit": 1125,
         "disease": 3,
-        "was_asked": true,
-        "is_symptomatic": null,
-        "days_symptomatic": null,
+        "days_symptomatic": 5,
         "severity": null,
         "disease_value": "Negative"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17564,
+    "pk": 23319,
     "fields": {
-        "visit": 2431,
+        "visit": 1125,
         "disease": 4,
-        "was_asked": true,
-        "is_symptomatic": null,
-        "days_symptomatic": null,
+        "days_symptomatic": 5,
         "severity": null,
         "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17565,
+    "pk": 23320,
     "fields": {
-        "visit": 2431,
+        "visit": 1125,
         "disease": 5,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
+        "days_symptomatic": 5,
         "severity": null,
-        "disease_value": null
+        "disease_value": "True"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17566,
+    "pk": 23321,
     "fields": {
-        "visit": 2431,
+        "visit": 1125,
         "disease": 6,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 5,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17567,
+    "pk": 23322,
     "fields": {
-        "visit": 2431,
+        "visit": 1125,
         "disease": 7,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 5,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17568,
+    "pk": 23323,
     "fields": {
-        "visit": 2431,
+        "visit": 1125,
         "disease": 8,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
+        "days_symptomatic": 5,
         "severity": null,
-        "disease_value": null
+        "disease_value": "True"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17569,
+    "pk": 23324,
     "fields": {
-        "visit": 2431,
+        "visit": 1125,
         "disease": 9,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
+        "days_symptomatic": 5,
         "severity": null,
-        "disease_value": null
+        "disease_value": "True"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17570,
+    "pk": 23325,
     "fields": {
-        "visit": 2431,
+        "visit": 1125,
         "disease": 10,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
+        "days_symptomatic": 5,
         "severity": null,
-        "disease_value": null
+        "disease_value": "True"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17571,
+    "pk": 23326,
     "fields": {
-        "visit": 2431,
+        "visit": 1125,
         "disease": 11,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 5,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17572,
+    "pk": 23327,
     "fields": {
-        "visit": 2431,
+        "visit": 1125,
         "disease": 12,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
+        "days_symptomatic": 5,
         "severity": null,
-        "disease_value": null
+        "disease_value": "True"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17573,
+    "pk": 23328,
     "fields": {
-        "visit": 2431,
+        "visit": 1125,
         "disease": 13,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
+        "days_symptomatic": 5,
         "severity": null,
-        "disease_value": null
+        "disease_value": "True"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17574,
+    "pk": 23329,
     "fields": {
-        "visit": 2431,
+        "visit": 1125,
         "disease": 14,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
+        "days_symptomatic": 5,
         "severity": null,
-        "disease_value": null
+        "disease_value": "True"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17575,
+    "pk": 23330,
     "fields": {
-        "visit": 2431,
+        "visit": 1125,
         "disease": 15,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 5,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17576,
+    "pk": 23331,
     "fields": {
-        "visit": 2431,
+        "visit": 1125,
         "disease": 16,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 5,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17577,
+    "pk": 23332,
     "fields": {
-        "visit": 2431,
+        "visit": 1125,
         "disease": 17,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 5,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17578,
+    "pk": 23333,
     "fields": {
-        "visit": 2431,
+        "visit": 1125,
         "disease": 18,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 5,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17579,
+    "pk": 23334,
     "fields": {
-        "visit": 2431,
+        "visit": 1125,
         "disease": 19,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 5,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17580,
+    "pk": 23335,
     "fields": {
-        "visit": 2431,
+        "visit": 1125,
         "disease": 20,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 5,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17581,
+    "pk": 23336,
     "fields": {
-        "visit": 2431,
+        "visit": 1125,
         "disease": 21,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 5,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17582,
+    "pk": 23337,
     "fields": {
-        "visit": 2431,
+        "visit": 1125,
         "disease": 22,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 5,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17583,
+    "pk": 23338,
     "fields": {
-        "visit": 2432,
+        "visit": 1126,
         "disease": 3,
-        "was_asked": true,
-        "is_symptomatic": null,
-        "days_symptomatic": null,
+        "days_symptomatic": 11,
         "severity": null,
         "disease_value": "Negative"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17584,
+    "pk": 23339,
     "fields": {
-        "visit": 2432,
+        "visit": 1126,
         "disease": 4,
-        "was_asked": true,
-        "is_symptomatic": null,
-        "days_symptomatic": null,
+        "days_symptomatic": 11,
         "severity": null,
         "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17585,
+    "pk": 23340,
     "fields": {
-        "visit": 2432,
+        "visit": 1126,
         "disease": 5,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 11,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17586,
+    "pk": 23341,
     "fields": {
-        "visit": 2432,
+        "visit": 1126,
         "disease": 6,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 11,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17587,
+    "pk": 23342,
     "fields": {
-        "visit": 2432,
+        "visit": 1126,
         "disease": 7,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 11,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17588,
+    "pk": 23343,
     "fields": {
-        "visit": 2432,
+        "visit": 1126,
         "disease": 8,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
+        "days_symptomatic": 11,
         "severity": null,
-        "disease_value": null
+        "disease_value": "True"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17589,
+    "pk": 23344,
     "fields": {
-        "visit": 2432,
+        "visit": 1126,
         "disease": 9,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 11,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17590,
+    "pk": 23345,
     "fields": {
-        "visit": 2432,
+        "visit": 1126,
         "disease": 10,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
+        "days_symptomatic": 11,
         "severity": null,
-        "disease_value": null
+        "disease_value": "True"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17591,
+    "pk": 23346,
     "fields": {
-        "visit": 2432,
+        "visit": 1126,
         "disease": 11,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 11,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17592,
+    "pk": 23347,
     "fields": {
-        "visit": 2432,
+        "visit": 1126,
         "disease": 12,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 11,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17593,
+    "pk": 23348,
     "fields": {
-        "visit": 2432,
+        "visit": 1126,
         "disease": 13,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 11,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17594,
+    "pk": 23349,
     "fields": {
-        "visit": 2432,
+        "visit": 1126,
         "disease": 14,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 11,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17595,
+    "pk": 23350,
     "fields": {
-        "visit": 2432,
+        "visit": 1126,
         "disease": 15,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 11,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17596,
+    "pk": 23351,
     "fields": {
-        "visit": 2432,
+        "visit": 1126,
         "disease": 16,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 11,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17597,
+    "pk": 23352,
     "fields": {
-        "visit": 2432,
+        "visit": 1126,
         "disease": 17,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 11,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17598,
+    "pk": 23353,
     "fields": {
-        "visit": 2432,
+        "visit": 1126,
         "disease": 18,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 11,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17599,
+    "pk": 23354,
     "fields": {
-        "visit": 2432,
+        "visit": 1126,
         "disease": 19,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
+        "days_symptomatic": 11,
         "severity": null,
-        "disease_value": null
+        "disease_value": "True"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17600,
+    "pk": 23355,
     "fields": {
-        "visit": 2432,
+        "visit": 1126,
         "disease": 20,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 11,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17601,
+    "pk": 23356,
     "fields": {
-        "visit": 2432,
+        "visit": 1126,
         "disease": 21,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 11,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17602,
+    "pk": 23357,
     "fields": {
-        "visit": 2432,
+        "visit": 1126,
         "disease": 22,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 11,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17603,
+    "pk": 23358,
     "fields": {
-        "visit": 2433,
+        "visit": 1127,
         "disease": 3,
-        "was_asked": true,
-        "is_symptomatic": null,
-        "days_symptomatic": null,
+        "days_symptomatic": 12,
         "severity": null,
         "disease_value": "Negative"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17604,
+    "pk": 23359,
     "fields": {
-        "visit": 2433,
+        "visit": 1127,
         "disease": 4,
-        "was_asked": true,
-        "is_symptomatic": null,
-        "days_symptomatic": null,
+        "days_symptomatic": 12,
         "severity": null,
         "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17605,
+    "pk": 23360,
     "fields": {
-        "visit": 2433,
+        "visit": 1127,
         "disease": 5,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
+        "days_symptomatic": 12,
         "severity": null,
-        "disease_value": null
+        "disease_value": "True"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17606,
+    "pk": 23361,
     "fields": {
-        "visit": 2433,
+        "visit": 1127,
         "disease": 6,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 12,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17607,
+    "pk": 23362,
     "fields": {
-        "visit": 2433,
+        "visit": 1127,
         "disease": 7,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 12,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17608,
+    "pk": 23363,
     "fields": {
-        "visit": 2433,
+        "visit": 1127,
         "disease": 8,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
+        "days_symptomatic": 12,
         "severity": null,
-        "disease_value": null
+        "disease_value": "True"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17609,
+    "pk": 23364,
     "fields": {
-        "visit": 2433,
+        "visit": 1127,
         "disease": 9,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
+        "days_symptomatic": 12,
         "severity": null,
-        "disease_value": null
+        "disease_value": "True"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17610,
+    "pk": 23365,
     "fields": {
-        "visit": 2433,
+        "visit": 1127,
         "disease": 10,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
+        "days_symptomatic": 12,
         "severity": null,
-        "disease_value": null
+        "disease_value": "True"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17611,
+    "pk": 23366,
     "fields": {
-        "visit": 2433,
+        "visit": 1127,
         "disease": 11,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
+        "days_symptomatic": 12,
         "severity": null,
-        "disease_value": null
+        "disease_value": "True"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17612,
+    "pk": 23367,
     "fields": {
-        "visit": 2433,
+        "visit": 1127,
         "disease": 12,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 12,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17613,
+    "pk": 23368,
     "fields": {
-        "visit": 2433,
+        "visit": 1127,
         "disease": 13,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 12,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17614,
+    "pk": 23369,
     "fields": {
-        "visit": 2433,
+        "visit": 1127,
         "disease": 14,
-        "was_asked": true,
-        "is_symptomatic": true,
-        "days_symptomatic": null,
+        "days_symptomatic": 12,
         "severity": null,
-        "disease_value": null
+        "disease_value": "True"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17615,
+    "pk": 23370,
     "fields": {
-        "visit": 2433,
+        "visit": 1127,
         "disease": 15,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 12,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17616,
+    "pk": 23371,
     "fields": {
-        "visit": 2433,
+        "visit": 1127,
         "disease": 16,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 12,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17617,
+    "pk": 23372,
     "fields": {
-        "visit": 2433,
+        "visit": 1127,
         "disease": 17,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 12,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17618,
+    "pk": 23373,
     "fields": {
-        "visit": 2433,
+        "visit": 1127,
         "disease": 18,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 12,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17619,
+    "pk": 23374,
     "fields": {
-        "visit": 2433,
+        "visit": 1127,
         "disease": 19,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 12,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17620,
+    "pk": 23375,
     "fields": {
-        "visit": 2433,
+        "visit": 1127,
         "disease": 20,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 12,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17621,
+    "pk": 23376,
     "fields": {
-        "visit": 2433,
+        "visit": 1127,
         "disease": 21,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 12,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
     "model": "uploader.symptom",
-    "pk": 17622,
+    "pk": 23377,
     "fields": {
-        "visit": 2433,
+        "visit": 1127,
         "disease": 22,
-        "was_asked": true,
-        "is_symptomatic": false,
-        "days_symptomatic": null,
+        "days_symptomatic": 12,
         "severity": null,
-        "disease_value": null
+        "disease_value": "False"
     }
 },
 {
@@ -3041,9 +2633,9 @@
 },
 {
     "model": "uploader.biosample",
-    "pk": 2424,
+    "pk": 1117,
     "fields": {
-        "visit": 2424,
+        "visit": 1118,
         "sample_type": "PHARYNGEAL_SWAB",
         "sample_processing": "None",
         "freezing_temp": null,
@@ -3052,9 +2644,9 @@
 },
 {
     "model": "uploader.biosample",
-    "pk": 2425,
+    "pk": 1118,
     "fields": {
-        "visit": 2425,
+        "visit": 1119,
         "sample_type": "PHARYNGEAL_SWAB",
         "sample_processing": "None",
         "freezing_temp": null,
@@ -3063,9 +2655,9 @@
 },
 {
     "model": "uploader.biosample",
-    "pk": 2426,
+    "pk": 1119,
     "fields": {
-        "visit": 2426,
+        "visit": 1120,
         "sample_type": "PHARYNGEAL_SWAB",
         "sample_processing": "None",
         "freezing_temp": null,
@@ -3074,9 +2666,9 @@
 },
 {
     "model": "uploader.biosample",
-    "pk": 2427,
+    "pk": 1120,
     "fields": {
-        "visit": 2427,
+        "visit": 1121,
         "sample_type": "PHARYNGEAL_SWAB",
         "sample_processing": "None",
         "freezing_temp": null,
@@ -3085,9 +2677,9 @@
 },
 {
     "model": "uploader.biosample",
-    "pk": 2428,
+    "pk": 1121,
     "fields": {
-        "visit": 2428,
+        "visit": 1122,
         "sample_type": "PHARYNGEAL_SWAB",
         "sample_processing": "None",
         "freezing_temp": null,
@@ -3096,9 +2688,9 @@
 },
 {
     "model": "uploader.biosample",
-    "pk": 2429,
+    "pk": 1122,
     "fields": {
-        "visit": 2429,
+        "visit": 1123,
         "sample_type": "PHARYNGEAL_SWAB",
         "sample_processing": "None",
         "freezing_temp": null,
@@ -3107,9 +2699,9 @@
 },
 {
     "model": "uploader.biosample",
-    "pk": 2430,
+    "pk": 1123,
     "fields": {
-        "visit": 2430,
+        "visit": 1124,
         "sample_type": "PHARYNGEAL_SWAB",
         "sample_processing": "None",
         "freezing_temp": null,
@@ -3118,9 +2710,9 @@
 },
 {
     "model": "uploader.biosample",
-    "pk": 2431,
+    "pk": 1124,
     "fields": {
-        "visit": 2431,
+        "visit": 1125,
         "sample_type": "PHARYNGEAL_SWAB",
         "sample_processing": "None",
         "freezing_temp": null,
@@ -3129,9 +2721,9 @@
 },
 {
     "model": "uploader.biosample",
-    "pk": 2432,
+    "pk": 1125,
     "fields": {
-        "visit": 2432,
+        "visit": 1126,
         "sample_type": "PHARYNGEAL_SWAB",
         "sample_processing": "None",
         "freezing_temp": null,
@@ -3140,9 +2732,9 @@
 },
 {
     "model": "uploader.biosample",
-    "pk": 2433,
+    "pk": 1126,
     "fields": {
-        "visit": 2433,
+        "visit": 1127,
         "sample_type": "PHARYNGEAL_SWAB",
         "sample_processing": "None",
         "freezing_temp": null,
@@ -3151,132 +2743,132 @@
 },
 {
     "model": "uploader.spectraldata",
-    "pk": 2424,
+    "pk": 1117,
     "fields": {
         "instrument": 1,
-        "bio_sample": 2424,
+        "bio_sample": 1117,
         "spectra_measurement": "ATR_FTIR",
         "acquisition_time": null,
         "n_coadditions": 32,
         "resolution": null,
-        "data": "spectral_data/class_uploader.models_Svd27Vz.csv"
+        "data": "spectral_data/class_uploader.models_7GOLfEP.csv"
     }
 },
 {
     "model": "uploader.spectraldata",
-    "pk": 2425,
+    "pk": 1118,
     "fields": {
         "instrument": 1,
-        "bio_sample": 2425,
+        "bio_sample": 1118,
         "spectra_measurement": "ATR_FTIR",
         "acquisition_time": null,
         "n_coadditions": 32,
         "resolution": null,
-        "data": "spectral_data/class_uploader.models_CKEvtrv.csv"
+        "data": "spectral_data/class_uploader.models_02z3Zqt.csv"
     }
 },
 {
     "model": "uploader.spectraldata",
-    "pk": 2426,
+    "pk": 1119,
     "fields": {
         "instrument": 1,
-        "bio_sample": 2426,
+        "bio_sample": 1119,
         "spectra_measurement": "ATR_FTIR",
         "acquisition_time": null,
         "n_coadditions": 32,
         "resolution": null,
-        "data": "spectral_data/class_uploader.models_FmyzwNY.csv"
+        "data": "spectral_data/class_uploader.models_y6CI6Qs.csv"
     }
 },
 {
     "model": "uploader.spectraldata",
-    "pk": 2427,
+    "pk": 1120,
     "fields": {
         "instrument": 1,
-        "bio_sample": 2427,
+        "bio_sample": 1120,
         "spectra_measurement": "ATR_FTIR",
         "acquisition_time": null,
         "n_coadditions": 32,
         "resolution": null,
-        "data": "spectral_data/class_uploader.models_2pxi5Y8.csv"
+        "data": "spectral_data/class_uploader.models_8bK4evK.csv"
     }
 },
 {
     "model": "uploader.spectraldata",
-    "pk": 2428,
+    "pk": 1121,
     "fields": {
         "instrument": 1,
-        "bio_sample": 2428,
+        "bio_sample": 1121,
         "spectra_measurement": "ATR_FTIR",
         "acquisition_time": null,
         "n_coadditions": 32,
         "resolution": null,
-        "data": "spectral_data/class_uploader.models_U4OpHc9.csv"
+        "data": "spectral_data/class_uploader.models_83JcnDj.csv"
     }
 },
 {
     "model": "uploader.spectraldata",
-    "pk": 2429,
+    "pk": 1122,
     "fields": {
         "instrument": 1,
-        "bio_sample": 2429,
+        "bio_sample": 1122,
         "spectra_measurement": "ATR_FTIR",
         "acquisition_time": null,
         "n_coadditions": 32,
         "resolution": null,
-        "data": "spectral_data/class_uploader.models_4wnZhsT.csv"
+        "data": "spectral_data/class_uploader.models_oTQYhIJ.csv"
     }
 },
 {
     "model": "uploader.spectraldata",
-    "pk": 2430,
+    "pk": 1123,
     "fields": {
         "instrument": 1,
-        "bio_sample": 2430,
+        "bio_sample": 1123,
         "spectra_measurement": "ATR_FTIR",
         "acquisition_time": null,
         "n_coadditions": 32,
         "resolution": null,
-        "data": "spectral_data/class_uploader.models_pPNZZ4w.csv"
+        "data": "spectral_data/class_uploader.models_n8JSA1k.csv"
     }
 },
 {
     "model": "uploader.spectraldata",
-    "pk": 2431,
+    "pk": 1124,
     "fields": {
         "instrument": 1,
-        "bio_sample": 2431,
+        "bio_sample": 1124,
         "spectra_measurement": "ATR_FTIR",
         "acquisition_time": null,
         "n_coadditions": 32,
         "resolution": null,
-        "data": "spectral_data/class_uploader.models_zleI8Um.csv"
+        "data": "spectral_data/class_uploader.models_xsCNQjJ.csv"
     }
 },
 {
     "model": "uploader.spectraldata",
-    "pk": 2432,
+    "pk": 1125,
     "fields": {
         "instrument": 1,
-        "bio_sample": 2432,
+        "bio_sample": 1125,
         "spectra_measurement": "ATR_FTIR",
         "acquisition_time": null,
         "n_coadditions": 32,
         "resolution": null,
-        "data": "spectral_data/class_uploader.models_6iGdzUb.csv"
+        "data": "spectral_data/class_uploader.models_QkF6GzX.csv"
     }
 },
 {
     "model": "uploader.spectraldata",
-    "pk": 2433,
+    "pk": 1126,
     "fields": {
         "instrument": 1,
-        "bio_sample": 2433,
+        "bio_sample": 1126,
         "spectra_measurement": "ATR_FTIR",
         "acquisition_time": null,
         "n_coadditions": 32,
         "resolution": null,
-        "data": "spectral_data/class_uploader.models_k6nHhPX.csv"
+        "data": "spectral_data/class_uploader.models_qrNWV5h.csv"
     }
 }
 ]

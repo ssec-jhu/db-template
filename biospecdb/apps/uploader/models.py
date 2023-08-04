@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 import django.core.files.uploadedfile
 from django.core.validators import FileExtensionValidator, MinValueValidator, MaxValueValidator
 from django.db import models
+from django.db.models.functions import Lower
 from django.utils.translation import gettext_lazy as _
 import pandas as pd
 
@@ -192,6 +193,12 @@ class Visit(models.Model):
 class Disease(models.Model):
     """ Model an individual disease, symptom, or health condition. A patient's instance are stored as models.Symptom"""
 
+    class Meta:
+        constraints = [models.UniqueConstraint(Lower("name"),
+                                               name="unique_disease_name"),
+                       models.UniqueConstraint(Lower("alias"),
+                                               name="unique_alias_name")]
+
     class Types(TextChoices):
         BOOL = auto()
         STR = auto()
@@ -200,7 +207,7 @@ class Disease(models.Model):
 
         def cast(self, value):
             if self.name == "BOOL":
-                return bool(value)
+                return biospecdb.util.to_bool(value)
             elif self.name == "STR":
                 return str(value)
             elif self.name == "INT":
@@ -210,14 +217,16 @@ class Disease(models.Model):
             else:
                 raise NotImplementedError
 
+    # NOTE: See above constraint for case-insensitive uniqueness.
     name = models.CharField(max_length=128)
     description = models.CharField(max_length=256)
-    alias = models.CharField(max_length=128, blank=True,
+
+    # NOTE: See meta class constraint for case-insensitive uniqueness.
+    alias = models.CharField(max_length=128,
                              help_text="Alias column name for bulk data ingestion from .csv, etc.")
 
     # This represents the type/class for Symptom.disease_value.
-    # NOTE: For bool types, Symptom.is_symptomatic may suffice.
-    value_class = models.CharField(max_length=128, default='', blank=True, null=True, choices=Types.choices)
+    value_class = models.CharField(max_length=128, default=Types.BOOL, choices=Types.choices)
 
     def __str__(self):
         return self.name
@@ -237,12 +246,11 @@ class Symptom(models.Model):
     visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="symptom")
     disease = models.ForeignKey(Disease, on_delete=models.CASCADE, related_name="symptom")
 
-    was_asked = models.BooleanField(default=True)  # Whether the patient was asked whether they have this symptom.
-    is_symptomatic = models.BooleanField(default=True, blank=True, null=True)
     days_symptomatic = models.IntegerField(default=None,
                                            blank=True,
                                            null=True,
-                                           validators=[MinValueValidator(0)])
+                                           validators=[MinValueValidator(0)],
+                                           verbose_name="Days of Symptoms onset")
     severity = models.IntegerField(default=None,
                                    validators=[MinValueValidator(MIN_SEVERITY),
                                                              MaxValueValidator(MAX_SEVERITY)],
@@ -256,9 +264,17 @@ class Symptom(models.Model):
         """ Model validation. """
         super().clean()
 
-        if self.disease_value and not self.disease.value_class:
-            raise ValidationError(_("The field 'disease_value' is not permitted when `Disease` has no"
-                                    "`field:value_class` type specified."),
+        # Check that value is castable by casting.
+        # NOTE: ``disease_value`` is a ``CharField`` so this will get cast back to a str again, and it could be argued
+        # that there's no point in storing the cast value... but :shrug:.
+        try:
+            self.disease_value = Disease.Types(self.disease.value_class).cast(self.disease_value)
+        except ValueError:
+            raise ValidationError(_("The value '%(value)s' can not be cast to the expected type of '%(type)s' for"
+                                    " '%(disease_name)s'"),
+                                  params={"disease_name": self.disease.name,
+                                          "type": self.disease.value_class,
+                                          "value": self.disease_value},
                                   code="invalid")
 
         if self.days_symptomatic and self.visit.patient_age and (self.days_symptomatic >

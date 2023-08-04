@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 import django.core.files
+from django.db.utils import IntegrityError
 import pytest
 
 from uploader.models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, Visit, UploadedFile
@@ -75,6 +76,16 @@ class TestDisease:
         assert disease.name == "Ct_gene_N"
         assert disease.value_class == Disease.Types.FLOAT
 
+    def test_name_uniqueness(self, db):
+        Disease.objects.create(name="A", description="blah", alias="a")
+        with pytest.raises(IntegrityError, match="unique_disease_name"):
+            Disease.objects.create(name="a", description="blah", alias="b")
+
+    def test_alias_uniqueness(self, db):
+        Disease.objects.create(name="A", description="blah", alias="a")
+        with pytest.raises(IntegrityError, match="unique_alias_name"):
+            Disease.objects.create(name="b", description="blah", alias="A")
+
 
 class TestInstrument:
     def test_fixture_data(self, db, instruments):
@@ -95,11 +106,20 @@ class TestSymptom:
 
     def test_disease_value_validation(self, db, diseases, visits):
         symptom = Symptom.objects.create(visit=Visit.objects.get(pk=1),
-                                         disease=Disease.objects.get(name="fever"),
+                                         disease=Disease.objects.get(name="Ct_gene_N"),
                                          days_symptomatic=7,
-                                         disease_value=10)
+                                         disease_value="strings can't cast to floats")
         with pytest.raises(ValidationError):
             symptom.full_clean()
+
+    @pytest.mark.parametrize("value", (True, False))
+    def test_disease_value_bool_cast(self, db, diseases, visits, value):
+        symptom = Symptom.objects.create(visit=Visit.objects.get(pk=1),
+                                         disease=Disease.objects.get(name="fever"),
+                                         days_symptomatic=7,
+                                         disease_value=str(value))
+        symptom.full_clean()
+        assert symptom.disease_value is value
 
 
 class TestBioSample:
@@ -123,9 +143,16 @@ class TestUploadedFile:
             data_upload.clean()
             data_upload.save()
 
-    def test_all_data_fixture(self, all_data):
+    def test_mock_data_from_files_fixture(self, mock_data_from_files):
         n_patients = 10
         assert len(UploadedFile.objects.all()) == 1
+        assert len(Patient.objects.all()) == n_patients
+        assert len(Visit.objects.all()) == n_patients
+        assert len(BioSample.objects.all()) == n_patients
+        assert len(SpectralData.objects.all()) == n_patients
+
+    def test_mock_data_fixture(self, mock_data):
+        n_patients = 10
         assert len(Patient.objects.all()) == n_patients
         assert len(Visit.objects.all()) == n_patients
         assert len(BioSample.objects.all()) == n_patients
@@ -152,3 +179,11 @@ class TestUploadedFile:
         n_empty_covid_symptoms = len((Symptom.objects.filter(disease=Disease.objects.get(name="Covid_RT_qPCR")))
                                      .filter(disease_value="Negative"))
         assert n_symptoms == n_patients * n_diseases - n_empty_covid_symptoms * 2
+
+    def test_days_of_symptoms(self, mock_data_from_files):
+        week_long_symptoms = Symptom.objects.filter(days_symptomatic=7)
+        assert len(week_long_symptoms) > 1
+        assert week_long_symptoms[0].days_symptomatic == 7
+        null_days = len(Symptom.objects.filter(days_symptomatic=None))
+        assert null_days > 1
+        assert null_days < len(Symptom.objects.all())
