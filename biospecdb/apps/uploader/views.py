@@ -1,7 +1,7 @@
 from django.shortcuts import render
-from .forms import FileUploadForm
+from .forms import FileUploadForm, DataInputForm
 from openpyxl import load_workbook
-
+from .loaddata import save_data_to_db
 
 def home(request):
     context = {'name': 'World'}
@@ -29,3 +29,16 @@ def display_xlsx(request):
     for row in worksheet.iter_rows(values_only=True):
         data.append(row)
     return render(request, 'MetadataDisplay.html', {'data': data})
+
+def data_input_view(request):
+    if request.method == 'POST':
+        form = DataInputForm(request.POST, request.FILES)
+        if form.is_valid():
+            #form.save()
+
+            return render(request, 'success_template.html', {'form': form})
+        
+    else:
+        form = DataInputForm()
+
+    return render(request, 'DataInputForm.html', {'form': form})

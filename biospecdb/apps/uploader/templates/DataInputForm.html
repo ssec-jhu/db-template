@@ -1,0 +1,15 @@
+<!-- DataInputForm.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data Input Form</title>
+</head>
+<body>
+    <h1>Data Input Form</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>

@@ -28,6 +28,7 @@ urlpatterns = [
     #path("Uploader/", include("uploader.urls")),
     path('display/', views.display_xlsx, name='MetadataDisplay'),
     path('explorer/', include('explorer.urls')),
+    path('data_input_view/', views.data_input_view, name='DataInputForm'),
 ]
 
 if settings.DEBUG:
