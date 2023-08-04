@@ -25,7 +25,9 @@ class DataInputForm(forms.Form):
     patient_id = forms.IntegerField(validators=[MinValueValidator(1)], label="Patient ID") 
     #Patient_id = forms.UUIDField(unique=True, primary_key=True, initial=uuid.uuid4, editable=False)
 
-    # def __new__(cls):
+    # def __init__(self, *args, **kargs):
+    #     super().__init__(*args, **kwargs)
+    #
     #     for disease in Disease.objects.all():
     #         if (field_type := disease.value_class) == "BOOL":
     #             field_type = forms.BooleanField
@@ -33,9 +35,7 @@ class DataInputForm(forms.Form):
     #             field_type = forms.CharField
     #         ...
     #
-    #         object.__setattr__(cls, disease.name, field_type(label=disease.alias))
-    #
-    #     return cls.__new__(cls)
+    #         self.fields[disease.name] = field_type(label=disease.alias)
 
     gender = forms.ChoiceField(required=False,
                                choices=Patient.Gender.choices,
