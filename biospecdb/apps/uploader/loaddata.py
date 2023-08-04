@@ -42,7 +42,9 @@ def save_data_to_db(meta_data, spectral_data, joined_data=None):
         except (Patient.DoesNotExist, ValidationError):
             # NOTE: We do not use the ``index`` read from file as the pk even if it is a UUID. The above ``get()`` only
             # allows for existing patients to be re-used when _already_ in the db with their pk already auto-generated.
-            patient = Patient(gender=Patient.Gender(row.get(Patient.gender.field.verbose_name.lower())))
+            key = Patient.gender.field.verbose_name
+            gender = row.get(key)
+            patient = Patient(gender=Patient.Gender(gender))
             patient.full_clean()
             patient.save()
 

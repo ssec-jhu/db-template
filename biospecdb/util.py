@@ -69,57 +69,6 @@ def read_raw_data(file, ext=None):
 
     return data
 
-def populate_meta_data(form):
-    # Create a dictionary from the cleaned form data
-    data = {
-        'patient_id': form['patient_id'],
-        'Covid_RT_qPCR': form['Covid_RT_qPCR'],
-        'Ct_gene_N': form['Ct_gene_N'],
-        'Ct_gene_ORF1ab': form['Ct_gene_ORF1ab'],
-        'gender': form['gender'],
-        'patient_age': form['patient_age'],
-        'days_symptomatic': form['days_symptomatic'],
-        'fever': form['fever'],
-        'dyspnoea': form['dyspnoea'],
-        'oxygen_saturation_lt_95': form['oxygen_saturation_lt_95'],
-        'cough': form['cough'],
-        'coryza': form['coryza'],
-        'odinophagy': form['odinophagy'],
-        'diarrhea': form['diarrhea'],
-        'nausea': form['nausea'],
-        'headache': form['headache'],
-        'weakness': form['weakness'],
-        'anosmia': form['anosmia'],
-        'myalgia': form['myalgia'],
-        'lack_of_appetite': form['lack_of_appetite'],
-        'vomiting': form['vomiting'],
-        'suspicious_contact': form['suspicious_contact'],
-        'chronic_pulmonary': form['chronic_pulmonary'],
-        'cardiovascular_disease': form['cardiovascular_disease'],
-        'diabetes': form['diabetes'],
-        'chronic_or_neuromuscular': form['chronic_or_neuromuscular'],
-        'spectra_measurement': form['spectra_measurement'],
-        'spectrometer': form['spectrometer'],
-        'atr_crystal': form['atr_crystal'],
-        'acquisition_time': form['acquisition_time'],
-        'n_coadditions': form['n_coadditions'],
-        'resolution': form['resolution'],
-        'sample_type': form['sample_type'],
-        'sample_processing': form['sample_processing'],
-        'freezing_temp': form['freezing_temp'],
-        'thawing_time': form['thawing_time'],
-    }
-    
-    # Convert the dictionary to a Pandas DataFrame
-    df = pd.DataFrame([data])
-
-    cleaned_data = df.rename(columns=lambda x: x.lower()) \
-        .dropna(subset=['patient_id']) \
-        .set_index('patient_id') \
-        .fillna('').replace('', None)
-    
-    return cleaned_data
-
 def read_meta_data(file, ext=None):
     data = read_raw_data(file, ext=ext)
 

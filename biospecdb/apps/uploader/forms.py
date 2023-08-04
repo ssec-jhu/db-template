@@ -24,13 +24,32 @@ class DataInputForm(forms.Form):
         
     patient_id = forms.IntegerField(validators=[MinValueValidator(1)], label="Patient ID") 
     #Patient_id = forms.UUIDField(unique=True, primary_key=True, initial=uuid.uuid4, editable=False)
-    
+
+    # def __new__(cls):
+    #     for disease in Disease.objects.all():
+    #         if (field_type := disease.value_class) == "BOOL":
+    #             field_type = forms.BooleanField
+    #         elif field_type == "STR":
+    #             field_type = forms.CharField
+    #         ...
+    #
+    #         object.__setattr__(cls, disease.name, field_type(label=disease.alias))
+    #
+    #     return cls.__new__(cls)
+
+    gender = forms.ChoiceField(required=False,
+                               choices=Patient.Gender.choices,
+                               label=Patient.gender.field.verbose_name,
+                               validators=Patient.gender.field.validators)
+    from uploader.models import Symptom
+    days_symptomatic = forms.IntegerField(initial=None,
+                                          validators=Symptom.days_symptomatic.field.validators)
+
+
     Covid_RT_qPCR = forms.ChoiceField(choices=COVID_CHOICES, label="Covid RT qPCR results")
     Ct_gene_N = forms.FloatField(label="CTs (Gene N)")
     Ct_gene_ORF1ab = forms.FloatField(label="CTs (Gene ORF)")
-    gender = forms.ChoiceField(required=False, choices=Patient.Gender.choices, label="Gender (M/F)")
     patient_age = forms.IntegerField(validators=[MinValueValidator(Patient.MIN_AGE), MaxValueValidator(Patient.MAX_AGE)], label="Age")
-    days_symptomatic = forms.IntegerField(initial=None, validators=[MinValueValidator(0)])
     fever = forms.BooleanField(initial=False, required=False)
     dyspnoea = forms.BooleanField(initial=False, required=False)
     oxygen_saturation_lt_95 = forms.BooleanField(initial=False, required=False)
@@ -70,7 +89,28 @@ class DataInputForm(forms.Form):
     
     #def __str__(self):
     #    return f"{self.Patient_id}"
-    
+
+    def populate_meta_data(self):
+
+        # Create a dictionary from the cleaned form data
+        data = {}
+        for key, value in self.cleaned_data.items():
+            label = self.base_fields[key].label
+            if label:
+                data[label] = value
+            else:
+                data[key] = value
+        import pandas as pd
+        data.pop("Spectral data file")
+        df = pd.DataFrame(data, index=[0])#, columns=data.keys())
+
+        # cleaned_data = df.rename(columns=lambda x: x.lower()) \
+        #     .dropna(subset=['patient_id']) \
+        #     .set_index('patient_id') \
+        #     .fillna('').replace('', None)
+
+        return df#cleaned_data
+
     def clean(self):
         """ Model validation. """
 
@@ -87,7 +127,8 @@ class DataInputForm(forms.Form):
             return file, Path(file_wrapper.name).suffix
 
         # Read in all data.
-        meta_data = biospecdb.util.populate_meta_data(self.cleaned_data)
+        import pandas as pd
+        meta_data = self.populate_meta_data()
         spec_data = biospecdb.util.read_spectral_data_table(*_get_file_info(self.cleaned_data['spectral_data']))
 
         # This uses a join so returns the joined data so that it doesn't go to waste if needed, which it is here.
