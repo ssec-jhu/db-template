@@ -50,7 +50,7 @@ def save_data_to_db(meta_data, spectral_data, joined_data=None):
 
         # Visit
         visit = Visit(patient=patient,
-                      patient_age=row.get(Visit.patient_age.field.verbose_name.lower()),
+                      patient_age=row.get(Visit.patient_age.field.verbose_name),
                       )  # TODO: Add logic to auto-find previous_visit. https://github.com/ssec-jhu/biospecdb/issues/37
         visit.full_clean()
         visit.save()
@@ -58,17 +58,17 @@ def save_data_to_db(meta_data, spectral_data, joined_data=None):
         # BioSample
         biosample = BioSample(visit=visit,
                               sample_type=BioSample.SampleKind(
-                                  row.get(BioSample.sample_type.field.verbose_name.lower())),
-                              sample_processing=row.get(BioSample.sample_processing.field.verbose_name.lower()),
-                              freezing_temp=row.get(BioSample.freezing_temp.field.verbose_name.lower()),
-                              thawing_time=row.get(BioSample.thawing_time.field.verbose_name.lower()))
+                                  row.get(BioSample.sample_type.field.verbose_name)),
+                              sample_processing=row.get(BioSample.sample_processing.field.verbose_name),
+                              freezing_temp=row.get(BioSample.freezing_temp.field.verbose_name),
+                              thawing_time=row.get(BioSample.thawing_time.field.verbose_name))
         visit.bio_sample.add(biosample, bulk=False)
         biosample.full_clean()
         biosample.save()
 
         # SpectralData
-        spectrometer = Instrument.Spectrometers(row.get(Instrument.spectrometer.field.verbose_name.lower()))
-        atr_crystal = Instrument.SpectrometerCrystal(row.get(Instrument.atr_crystal.field.verbose_name.lower()))
+        spectrometer = Instrument.Spectrometers(row.get(Instrument.spectrometer.field.verbose_name))
+        atr_crystal = Instrument.SpectrometerCrystal(row.get(Instrument.atr_crystal.field.verbose_name))
         # NOTE: get_or_create() returns a tuple of (object, created), where created is a bool.
         instrument, _created = Instrument.objects.get_or_create(spectrometer=spectrometer, atr_crystal=atr_crystal)
         # NOTE: get_or_create() doesn't clean, so we clean after the fact. This is ok since this entire func is
@@ -86,12 +86,12 @@ def save_data_to_db(meta_data, spectral_data, joined_data=None):
         spectraldata = SpectralData(instrument=instrument,
                                     bio_sample=biosample,
                                     spectra_measurement=SpectralData.SpectralMeasurementKind(
-                                        row.get(SpectralData.spectra_measurement.field.verbose_name.lower())
+                                        row.get(SpectralData.spectra_measurement.field.verbose_name)
                                     ),
                                     acquisition_time=row.get(
-                                        SpectralData.acquisition_time.field.verbose_name.lower()),
-                                    n_coadditions=row.get(SpectralData.n_coadditions.field.verbose_name.lower()),
-                                    resolution=row.get(SpectralData.resolution.field.verbose_name.lower()),
+                                        SpectralData.acquisition_time.field.verbose_name),
+                                    n_coadditions=row.get(SpectralData.n_coadditions.field.verbose_name),
+                                    resolution=row.get(SpectralData.resolution.field.verbose_name),
 
                                     # TODO: See https://github.com/ssec-jhu/biospecdb/issues/40
                                     data=ContentFile(csv_data, name=data_filename))
@@ -103,9 +103,9 @@ def save_data_to_db(meta_data, spectral_data, joined_data=None):
 
         # Symptoms
         # NOTE: Bulk data from client doesn't contain data for `days_symptomatic` per symptom, but instead per patient.
-        days_symptomatic = row.get(Symptom.days_symptomatic.field.verbose_name.lower(), None)
+        days_symptomatic = row.get(Symptom.days_symptomatic.field.verbose_name, None)
         for disease in Disease.objects.all():
-            symptom_value = row.get(disease.alias.lower(), None)
+            symptom_value = row.get(disease.alias, None)
             if symptom_value is None:
                 continue
 

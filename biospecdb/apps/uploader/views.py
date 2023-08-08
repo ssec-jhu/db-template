@@ -34,10 +34,7 @@ def data_input_view(request):
     if request.method == 'POST':
         form = DataInputForm(request.POST, request.FILES)
         if form.is_valid():
-            #form.save()
-
-            return render(request, 'success_template.html', {'form': form})
-        
+            return render(request, 'DataInputForm_Success.html', {'form': form})
     else:
         form = DataInputForm()
 
