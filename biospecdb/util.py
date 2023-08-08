@@ -69,6 +69,7 @@ def read_raw_data(file, ext=None):
 
     return data
 
+
 def read_meta_data(file, ext=None):
     data = read_raw_data(file, ext=ext)
 

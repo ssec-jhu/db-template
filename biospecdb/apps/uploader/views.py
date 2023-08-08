@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from .forms import FileUploadForm, DataInputForm
 from openpyxl import load_workbook
-from .loaddata import save_data_to_db
 
 def home(request):
     context = {'name': 'World'}
