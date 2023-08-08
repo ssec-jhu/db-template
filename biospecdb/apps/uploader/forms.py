@@ -2,7 +2,7 @@ from pathlib import Path
 import pandas as pd
 from django import forms
 import django.core.files.uploadedfile
-from django.core.validators import MaxLengthValidator, FileExtensionValidator
+from django.core.validators import MaxLengthValidator
 
 from uploader.models import UploadedFile, Patient, SpectralData, Instrument, BioSample, Symptom, Disease, Visit
 import biospecdb.util
@@ -16,11 +16,12 @@ class FileUploadForm(forms.ModelForm):
 class DataInputForm(forms.Form):
         
     patient_id = forms.IntegerField(initial=False, required=True, label="Patient ID")
-    gender = forms.ChoiceField(required=False, choices=Patient.Gender.choices, validators=Patient.gender.field.validators,
-                               label=Patient.gender.field.verbose_name)
+    gender = forms.ChoiceField(required=False, choices=Patient.Gender.choices,
+                               validators=Patient.gender.field.validators, label=Patient.gender.field.verbose_name)
     days_symptomatic = forms.IntegerField(initial=0, validators=Symptom.days_symptomatic.field.validators,
                                           label=Symptom.days_symptomatic.field.verbose_name)
-    patient_age = forms.IntegerField(validators=Visit.patient_age.field.validators, label=Visit.patient_age.field.verbose_name)
+    patient_age = forms.IntegerField(validators=Visit.patient_age.field.validators,
+                                     label=Visit.patient_age.field.verbose_name)
 
     #Ct_gene_N = forms.FloatField(label="CTs (Gene N)")
     #Ct_gene_ORF1ab = forms.FloatField(label="CTs (Gene ORF)")
@@ -49,21 +50,26 @@ class DataInputForm(forms.Form):
                                             validators=[MaxLengthValidator(128)],
                                             choices=SpectralData.SpectralMeasurementKind.choices,
                                             label=SpectralData.spectra_measurement.field.verbose_name)
-    spectrometer = forms.ChoiceField(initial=Instrument.Spectrometers.AGILENT_CORY_630, validators=[MaxLengthValidator(128)],
-                                     choices=Instrument.Spectrometers.choices, label=Instrument.spectrometer.field.verbose_name)
+    spectrometer = forms.ChoiceField(initial=Instrument.Spectrometers.AGILENT_CORY_630,
+                                     validators=[MaxLengthValidator(128)],choices=Instrument.Spectrometers.choices,
+                                     label=Instrument.spectrometer.field.verbose_name)
     atr_crystal = forms.ChoiceField(initial=Instrument.SpectrometerCrystal.ZNSE, validators=[MaxLengthValidator(128)],
-                                    choices=Instrument.SpectrometerCrystal.choices, label=Instrument.atr_crystal.field.verbose_name)
+                                    choices=Instrument.SpectrometerCrystal.choices,
+                                    label=Instrument.atr_crystal.field.verbose_name)
     acquisition_time = forms.IntegerField(required=False, label=SpectralData.acquisition_time.field.verbose_name)
     n_coadditions = forms.IntegerField(initial=32, label=SpectralData.n_coadditions.field.verbose_name)
     resolution = forms.IntegerField(required=False, label=SpectralData.resolution.field.verbose_name)
-    sample_type = forms.ChoiceField(initial=BioSample.SampleKind.PHARYNGEAL_SWAB,  validators=[MaxLengthValidator(128)],
-                                    choices=BioSample.SampleKind.choices, label=BioSample.sample_type.field.verbose_name)
+    sample_type = forms.ChoiceField(initial=BioSample.SampleKind.PHARYNGEAL_SWAB, validators=[MaxLengthValidator(128)],
+                                    choices=BioSample.SampleKind.choices,
+                                    label=BioSample.sample_type.field.verbose_name)
     sample_processing = forms.CharField(initial=BioSample.sample_processing.field.default, required=False,
-                                        validators=[MaxLengthValidator(128)], label=BioSample.sample_processing.field.verbose_name)
+                                        validators=[MaxLengthValidator(128)],
+                                        label=BioSample.sample_processing.field.verbose_name)
     freezing_temp = forms.FloatField(required=False, label=BioSample.freezing_temp.field.verbose_name)
     thawing_time = forms.IntegerField(required=False, label=BioSample.thawing_time.field.verbose_name)
  
-    spectral_data = forms.FileField(validators=UploadedFile.spectral_data_file.field.validators, label="Spectral data file")
+    spectral_data = forms.FileField(validators=UploadedFile.spectral_data_file.field.validators,
+                                    label="Spectral data file")
     
     
     def __init__(self, *args, **kwargs):
