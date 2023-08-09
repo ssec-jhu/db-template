@@ -101,8 +101,8 @@ class DataInputForm(forms.Form):
                 data[key] = value
         data.pop("Spectral data file")
         df = pd.DataFrame(data, index=[data['Patient ID']])
-
-        return df
+        canonic_data = df.rename(columns=lambda x: x.lower())
+        return canonic_data
 
 
     def clean(self):
