@@ -1,10 +1,8 @@
-from pathlib import Path
 import pandas as pd
 from django import forms
-import django.core.files.uploadedfile
-from django.core.validators import MaxLengthValidator
 
-from uploader.models import UploadedFile, Patient, SpectralData, Instrument, BioSample, Symptom, Disease, Visit, POSITIVE, NEGATIVE
+from uploader.models import UploadedFile, Patient, SpectralData, Instrument, BioSample, Symptom, Disease, Visit
+from uploader.models import POSITIVE, NEGATIVE
 from biospecdb.util import read_spectral_data_table, _get_file_info
 from .loaddata import save_data_to_db
 
