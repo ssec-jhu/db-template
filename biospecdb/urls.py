@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
-from uploader import views
+from biospecdb.apps.uploader import views
 
 
 urlpatterns = [
@@ -27,8 +27,7 @@ urlpatterns = [
     #path('', views.upload_file, name='MetadataFileUpload'),
     #path("Uploader/", include("uploader.urls")),
     path('display/', views.display_xlsx, name='MetadataDisplay'),
-    path('explorer/', include('explorer.urls')),
-    path('data_input_view/', views.data_input_view, name='DataInputForm'),
+    path('explorer/', include('explorer.urls'))
 ]
 
 if settings.DEBUG:
