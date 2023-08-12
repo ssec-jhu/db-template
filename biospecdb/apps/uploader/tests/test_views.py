@@ -59,6 +59,7 @@ def test_view_dependencies(mock_data):
     FullPatientView.objects.exists()
 
 
+
 def test_view_caching(mock_data):
     """
         FullPatientView depends on VisitSymptomsView, if VisitSymptomsView is updated does FullPatientView see the
@@ -74,7 +75,9 @@ def test_view_caching(mock_data):
         execute_sql(f"select my_new_disease from {FullPatientView._meta.db_table}")
 
     # Add new disease.
-    Disease.objects.create(name="my_new_disease")
+    disease = Disease(name="my_new_disease")
+    disease.clean()
+    disease.save(update_view=False)
 
     # Sanity check it still doesn't exist without ANY view update.
     with pytest.raises(OperationalError, match="no such column:"):
@@ -82,6 +85,20 @@ def test_view_caching(mock_data):
 
     # Update view dependency
     FullPatientView.sql_view_dependencies[0].update_view()
+
+    # Assert that new disease exists without having updated actual view.
+    execute_sql(f"select my_new_disease from {FullPatientView._meta.db_table}")
+
+
+def test_view_update_on_disease_save(mock_data):
+    FullPatientView.update_view()
+
+    # Sanity check that the new disease does not exist.
+    with pytest.raises(OperationalError, match="no such column:"):
+        execute_sql(f"select my_new_disease from {FullPatientView._meta.db_table}")
+
+    # Add new disease.
+    Disease.objects.create(name="my_new_disease")
 
     # Assert that new disease exists without having updated actual view.
     execute_sql(f"select my_new_disease from {FullPatientView._meta.db_table}")

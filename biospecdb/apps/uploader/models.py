@@ -13,8 +13,9 @@ from django.utils.translation import gettext_lazy as _
 import pandas as pd
 
 import biospecdb.util
-from .loaddata import save_data_to_db
-from .sql import drop_view, secure_name, update_view
+from uploader.loaddata import save_data_to_db
+from uploader.sql import secure_name
+from uploader.base_models import ModelWithViewDependency, SqlView, TextChoices
 
 
 # Changes here need to be migrated, committed, and activated.
@@ -57,22 +58,6 @@ NEGATIVE = "negative"
 # Biometric identifiers such as fingerprints or voice prints.
 # Full-face photos.
 # Any other unique identifying numbers, characteristics, or codes.
-
-
-class TextChoices(models.TextChoices):
-    @classmethod
-    def _missing_(cls, value):
-        if not isinstance(value, str):
-            return
-
-        for item in cls:
-            if value.lower() in (item.name.lower(),
-                                 item.label.lower(),
-                                 item.value.lower(),
-                                 item.name.lower().replace('_', '-'),
-                                 item.label.lower().replace('_', '-'),
-                                 item.value.lower().replace('_', '-')):
-                return item
 
 
 class UploadedFile(models.Model):
@@ -192,8 +177,10 @@ class Visit(models.Model):
         return f"patient:{self.patient.short_id()}_visit:{self.visit_number}"
 
 
-class Disease(models.Model):
+class Disease(ModelWithViewDependency):
     """ Model an individual disease, symptom, or health condition. A patient's instance are stored as models.Symptom"""
+
+    sql_view_dependencies = ("uploader.models.VisitSymptomsView",)
 
     class Meta:
         constraints = [models.UniqueConstraint(Lower("name"),
@@ -377,29 +364,6 @@ class SpectralData(models.Model):
         # TODO: Even with the QC model being its own thing rather than fields here, we may still want to run here
         # such that new data is complete such that it has associated QC metrics.
         ...
-
-
-class SqlView:
-    sql_view_dependencies = tuple()
-
-    # TODO: Add functionality to auto create own view if doesn't already exist.
-
-    @classmethod
-    def sql(cls):
-        """ Returns the SQL string and an optional list of params used in string. """
-        raise NotImplementedError
-
-    @classmethod
-    def drop_view(cls, *args, **kwargs):
-        return drop_view(cls._meta.db_table, *args, **kwargs)
-
-    @classmethod
-    def update_view(cls, *args, **kwargs):
-        for view_dependency in cls.sql_view_dependencies:
-            view_dependency.update_view()
-
-        sql, params = cls.sql()
-        return update_view(cls._meta.db_table, sql, *args, params=params, **kwargs)
 
 
 class SymptomsView(SqlView, models.Model):
