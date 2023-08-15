@@ -15,7 +15,8 @@ class DataInputForm(forms.Form):
         
     patient_id = forms.IntegerField(initial=False, required=True, label="Patient ID")
     gender = forms.ChoiceField(required=not Patient.gender.field.blank,
-                               choices=Patient.Gender.choices, label=Patient.gender.field.verbose_name)
+                               choices=Patient.Gender.choices,
+                               label=Patient.gender.field.verbose_name)
     days_symptomatic = forms.IntegerField(initial=Symptom.days_symptomatic.field.default,
                                           label=Symptom.days_symptomatic.field.verbose_name)
     patient_age = forms.IntegerField(label=Visit.patient_age.field.verbose_name)

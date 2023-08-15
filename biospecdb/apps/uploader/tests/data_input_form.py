@@ -1,22 +1,26 @@
-from django.core.exceptions import ValidationError
+#from django.core.exceptions import ValidationError
 from django import forms
 import django.core.files
-from django.db.utils import IntegrityError
+#from django.db.utils import IntegrityError
 import pytest
 
-from uploader.models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, Visit, UploadedFile
+from uploader.models import UploadedFile, Patient, Symptom
 from uploader.forms import DataInputForm
-from uploader.loaddata import save_data_to_db
+#from uploader.loaddata import save_data_to_db
 from conftest import DATA_PATH
 
 
 class TestDataInputForm:
     @pytest.mark.parametrize("file_ext", UploadedFile.FileFormats.list())
-    def test_upload_without_error(self, db, diseases, instruments, file_ext):
+    def test_upload_without_error(self, #db, diseases, instruments, 
+                                  file_ext):
         spectral_file_path = (DATA_PATH / "sample").with_suffix(file_ext)
-        with spectral_file_path.open(mode="rb") as spectral_data_file:
+        with spectral_file_path.open(mode="rb") as spectral_record:
             data_input_form = DataInputForm(patient_id=forms.IntegerField(initial=1,label="Patient ID"),
-                                            spectral_data_file=django.core.files.File(label=spectral_file_path.name))
+                                            gender = forms.ChoiceField(initial='M'),
+                                            days_symptomatic = forms.IntegerField(initial=1),
+                                            spectral_data=django.core.files.File(spectral_record,
+                                                                                 name=spectral_file_path.name))
             data_input_form.clean()
             data_input_form.save()
 
