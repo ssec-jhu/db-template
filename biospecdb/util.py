@@ -144,7 +144,7 @@ def mock_bulk_spectral_data(path=Path.home(),
     return data
 
 
-def _get_file_info(file_wrapper):
+def get_file_info(file_wrapper):
     """ The actual file buffer is nested at different levels depending on container class. """
     if isinstance(file_wrapper, django.core.files.uploadedfile.TemporaryUploadedFile):
         file = file_wrapper.file.file

@@ -29,7 +29,7 @@ def display_xlsx(request):
         data.append(row)
     return render(request, 'MetadataDisplay.html', {'data': data})
 
-def data_input_view(request):
+def data_input(request):
     if request.method == 'POST':
         form = DataInputForm(request.POST, request.FILES)
         if form.is_valid():

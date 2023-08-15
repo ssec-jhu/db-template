@@ -12,7 +12,7 @@ urlpatterns = [
     #path('', views.upload_file, name='SpectradataFileUpload'),
     #path('', views.display_xlsx, name='MetadataDisplay'),
     #path("", views.index, name="index"),
-    path('data_input_view/', views.data_input_view, name='DataInputForm')
+    path('data_input/', views.data_input, name='DataInputForm')
 ]
 
 if settings.DEBUG:

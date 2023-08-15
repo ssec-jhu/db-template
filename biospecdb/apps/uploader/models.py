@@ -3,15 +3,13 @@ import uuid
 
 
 from django.core.exceptions import ValidationError
-#import django.core.files.uploadedfile
 from django.core.validators import FileExtensionValidator, MinValueValidator, MaxValueValidator
 from django.db import models
 from django.db.models.functions import Lower
 from django.utils.translation import gettext_lazy as _
 import pandas as pd
 
-import biospecdb.util 
-from biospecdb.util import _get_file_info
+import biospecdb.util
 from .loaddata import save_data_to_db
 
 
@@ -110,8 +108,8 @@ class UploadedFile(models.Model):
 
         # Read in all data.
         # Note: When accessing ``models.FileField`` Django returns ``models.FieldFile`` as a proxy.
-        meta_data = biospecdb.util.read_meta_data(*_get_file_info(self.meta_data_file.file))
-        spec_data = biospecdb.util.read_spectral_data_table(*_get_file_info(self.spectral_data_file.file))
+        meta_data = biospecdb.util.read_meta_data(*biospecdb.util.get_file_info(self.meta_data_file.file))
+        spec_data = biospecdb.util.read_spectral_data_table(*biospecdb.util.get_file_info(self.spectral_data_file.file))
         # Validate.
         UploadedFile.validate_lengths(meta_data, spec_data)
         # This uses a join so returns the joined data so that it doesn't go to waste if needed, which it is here.

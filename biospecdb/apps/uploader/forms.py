@@ -1,9 +1,9 @@
 import pandas as pd
 from django import forms
 
-from uploader.models import UploadedFile, Patient, SpectralData, Instrument, BioSample, Symptom, Disease, Visit
-from uploader.models import POSITIVE, NEGATIVE
-from biospecdb.util import read_spectral_data_table, _get_file_info
+from uploader.models import UploadedFile, Patient, SpectralData, Instrument, BioSample, Symptom, Disease, Visit, \
+                            POSITIVE, NEGATIVE
+from biospecdb.util import read_spectral_data_table, get_file_info
 from .loaddata import save_data_to_db
 
 class FileUploadForm(forms.ModelForm):
@@ -40,9 +40,7 @@ class DataInputForm(forms.Form):
                                      label=BioSample.freezing_temp.field.verbose_name)
     thawing_time = forms.IntegerField(required=not BioSample.thawing_time.field.blank,
                                       label=BioSample.thawing_time.field.verbose_name)
- 
     spectral_data = forms.FileField(label="Spectral data file")
-    
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -55,7 +53,6 @@ class DataInputForm(forms.Form):
                 field_type = forms.ChoiceField(required=False, label=disease.alias,
                                                choices=[(NEGATIVE, 'Negative'), (POSITIVE, 'Positive')])
             self.fields[disease.name] = field_type
-
 
     def populate_meta_data(self):
         # Create a dictionary from the cleaned form data
@@ -71,7 +68,6 @@ class DataInputForm(forms.Form):
         canonic_data = df.rename(columns=lambda x: x.lower())
         return canonic_data
 
-
     def clean(self):
         """ Model validation. """
 
@@ -79,11 +75,10 @@ class DataInputForm(forms.Form):
 
         # Read in all data
         meta_data = self.populate_meta_data()
-        spec_data = read_spectral_data_table(*_get_file_info(self.cleaned_data['spectral_data']))
+        spec_data = read_spectral_data_table(*get_file_info(self.cleaned_data['spectral_data']))
  
         # This uses a join so returns the joined data so that it doesn't go to waste if needed, which it is here.
         joined_data = UploadedFile.join_with_validation(meta_data, spec_data)
 
         # Ingest into DB.
         save_data_to_db(None, None, joined_data=joined_data)
-        
