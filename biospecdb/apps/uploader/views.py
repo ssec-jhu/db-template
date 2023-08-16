@@ -33,7 +33,8 @@ def data_input(request):
     if request.method == 'POST':
         form = DataInputForm(request.POST, request.FILES)
         if form.is_valid():
-            return render(request, 'DataInputForm_Success.html', {'form': form})
+            patient_id = form.cleaned_data['patient_id']
+            return render(request, 'DataInputForm_Success.html', {'form': form, 'patient_id': patient_id})
     else:
         form = DataInputForm()
 
