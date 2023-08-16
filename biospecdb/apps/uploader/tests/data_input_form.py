@@ -4,7 +4,7 @@ import django.core.files
 #from django.db.utils import IntegrityError
 import pytest
 
-from uploader.models import UploadedFile, Patient, Symptom
+from uploader.models import UploadedFile
 from uploader.forms import DataInputForm
 #from uploader.loaddata import save_data_to_db
 from conftest import DATA_PATH
@@ -55,7 +55,7 @@ class TestDataInputForm:
     #    assert n_diseases > 0
     #    assert n_symptoms > 0
 #
-    #    # When Covid_RT_qPCR is negative both Ct_gene_N & Ct_gene_ORF1ab symptoms will be null and omitted. This must be
+    # # When Covid_RT_qPCR is negative both Ct_gene_N & Ct_gene_ORF1ab symptoms will be null and omitted. This must be
     #    # accounted for in the total.
     #    n_empty_covid_symptoms = len((Symptom.objects.filter(disease=Disease.objects.get(name="Covid_RT_qPCR")))
     #                                 .filter(disease_value="Negative"))
