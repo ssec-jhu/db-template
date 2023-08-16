@@ -5,7 +5,9 @@
     <title>Data Input has been uploaded successfully!!!</title>
 </head>
 <body>
-    <h1>Data Input has been uploaded successfully!!! Upload new data.</h1>
+    <h1>Data Input has been uploaded successfully!!!</h1>
+    <h1>Patient (hospital provided) ID is: {{ patient_id }}</h1>
+    <h1>Upload new data:</h1>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
