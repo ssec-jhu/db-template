@@ -2,16 +2,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Data Input has been uploaded successfully!!!</title>
+    <title>Data Input has been submitted successfully!!!</title>
 </head>
 <body>
-    <h1>Data Input has been uploaded successfully!!!</h1>
-    <h1>Patient (hospital provided) ID is: {{ patient_id }}</h1>
-    <h1>Upload new data:</h1>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Submit</button>
-    </form>
+    <h1 class="center-text">Data Input with Patient ID {{ patient_id }} has been submitted successfully!!!</h1>
+    <div>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            {% include 'DataInputForm.html' %}
+        
+        </form>
+    </div>
 </body>
 </html>
