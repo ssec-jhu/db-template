@@ -3,11 +3,7 @@ from .forms import FileUploadForm, DataInputForm
 from openpyxl import load_workbook
 
 def home(request):
-    context = {'name': 'World'}
-    render(request, 'Home.html', context)
-    return upload_file(request)
-    #return render(request, 'Home.html', context)
-
+    return render(request, 'home.html')
 
 def upload_file(request):
     if request.method == 'POST':
@@ -19,7 +15,6 @@ def upload_file(request):
     else:
         form = FileUploadForm()
     return render(request, 'MetadataFileUpload.html', {'form': form})
-
 
 def display_xlsx(request):
     workbook = load_workbook('./biospecdb/apps/uploader/uploads/METADATA_barauna2021ultrarapid.xlsx')
@@ -37,5 +32,4 @@ def data_input(request):
             return render(request, 'DataInputForm_Success.html', {'form': form, 'patient_id': patient_id})
     else:
         form = DataInputForm()
-
     return render(request, 'DataInputForm.html', {'form': form})

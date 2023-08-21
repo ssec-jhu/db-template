@@ -1,2 +1,48 @@
-<h1>Hello, {{ name }}!! You're at BioSpectral Repository website!!!</h1>
-<!--{% include 'MetadataFileUpload.html' %}-->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home Page</title>
+    <style>
+        .center-text {
+            text-align: center;
+        }
+        .form-field {
+            margin-bottom: 20px; /* Add a margin at the bottom */
+        }
+        .flex-container {
+            display: flex;
+        }
+        .half_width {
+            width: 50%; /* Set the width to 50% of the container */
+        }
+    </style>
+</head>
+<body>
+    <h1 class="center-text">Hello!! You're at BioSpectral Repository website!!!</h1>
+    
+    <h2 class="center-text">Explore our content:</h2>
+    
+    <ul>
+        <div class="flex-container">
+            <div class=" half_width">
+                <li><a href="../admin/"><h3>Admin Page</h3></a></li>
+            </div>
+        </div>
+        <div class="flex-container">
+            <div class=" half_width">
+                <li><a href="../uploader/data_input/"><h3>Data Input form</h3></a></li>
+            </div>
+        </div>
+        <div class="flex-container">
+            <div class=" half_width">
+                <li><a href="../explorer/"><h3>SQL Explorer</h3></a></li>
+            </div>
+        </div>
+        <div class="flex-container">
+            <div class=" half_width">
+                <li><a href="https://ai.jhu.edu/ssec/events/"><h3>About Us</h3></a></li>
+            </div>
+        </div>
+    </ul>
+</body>
+</html>
