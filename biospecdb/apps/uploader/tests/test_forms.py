@@ -1,7 +1,7 @@
 import django.core.files
 import pytest
 
-from uploader.models import UploadedFile, Patient, Visit, BioSample, SpectralData
+from uploader.models import UploadedFile #, Patient, Visit, BioSample, SpectralData
 from uploader.forms import DataInputForm
 from conftest import DATA_PATH
 
