@@ -1,37 +1,37 @@
-#from django.core.exceptions import ValidationError
-from django import forms
 import django.core.files
-#from django.db.utils import IntegrityError
 import pytest
 
-from uploader.models import UploadedFile
+from uploader.models import UploadedFile, Patient, Visit, BioSample, SpectralData
 from uploader.forms import DataInputForm
-#from uploader.loaddata import save_data_to_db
 from conftest import DATA_PATH
 
 
 class TestDataInputForm:
     @pytest.mark.parametrize("file_ext", UploadedFile.FileFormats.list())
-    def test_upload_without_error(self, #db, diseases, instruments, 
-                                  file_ext):
-        spectral_file_path = (DATA_PATH / "sample").with_suffix(file_ext)
+    def test_upload_without_error(self, db, diseases, instruments, file_ext):
+        spectral_file_path = (DATA_PATH/"sample").with_suffix(file_ext)
         with spectral_file_path.open(mode="rb") as spectral_record:
-            data_input_form = DataInputForm(patient_id=forms.IntegerField(initial=1,label="Patient ID"),
-                                            gender = forms.ChoiceField(initial='M'),
-                                            days_symptomatic = forms.IntegerField(initial=1),
-                                            spectral_data=django.core.files.File(spectral_record,
-                                                                                 name=spectral_file_path.name))
-            data_input_form.clean()
-            data_input_form.save()
+            data_input_form = DataInputForm(
+                data={
+                    "patient_id": 1,
+                    "gender": 'M',
+                    "days_symptomatic": 1,
+                },
+                files={
+                    "spectral_data": django.core.files.File(spectral_record, name=spectral_file_path.name)
+                }
+            )
+            data_input_form.is_valid()
+            data_input_form.has_changed()
 
-    #def test_mock_data_from_files_fixture(self, mock_data_from_files):
-    #    n_patients = 10
+    #def test_mock_data_from_form_and_spectral_file_fixture(self, mock_data_from_form_and_spectral_file):
+    #    n_patients = 1
     #    assert len(UploadedFile.objects.all()) == 1
     #    assert len(Patient.objects.all()) == n_patients
     #    assert len(Visit.objects.all()) == n_patients
     #    assert len(BioSample.objects.all()) == n_patients
     #    assert len(SpectralData.objects.all()) == n_patients
-#
+
     #def test_mock_data_fixture(self, mock_data):
     #    n_patients = 10
     #    assert len(Patient.objects.all()) == n_patients
