@@ -1,9 +1,5 @@
 import django.core.files
 import pytest
-import os
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'biospecdb.settings')
-django.setup()
 
 from uploader.models import UploadedFile, Patient, Visit, BioSample, SpectralData
 from uploader.forms import DataInputForm
