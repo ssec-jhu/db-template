@@ -1,7 +1,11 @@
 import django.core.files
 import pytest
+import os
 
-from uploader.models import UploadedFile #, Patient, Visit, BioSample, SpectralData
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'biospecdb.settings')
+django.setup()
+
+from uploader.models import UploadedFile, Patient, Visit, BioSample, SpectralData
 from uploader.forms import DataInputForm
 from conftest import DATA_PATH
 
@@ -16,55 +20,29 @@ class TestDataInputForm:
                     "patient_id": 1,
                     "gender": 'M',
                     "days_symptomatic": 1,
+                    "patient_age": 1,
+                    "spectra_measurement": 'ATR_FTIR',
+                    "spectrometer": 'AGILENT_CORY_630',
+                    "atr_crystal": 'ZNSE',
+                    "acquisition_time": 1,
+                    "n_coadditions": 32,
+                    "resolution": 0,
+                    "sample_type": 'PHARYNGEAL_SWAB',
+                    "sample_processing": 'None',
+                    "freezing_temp": 0,
+                    "thawing_time": 0,
                 },
                 files={
                     "spectral_data": django.core.files.File(spectral_record, name=spectral_file_path.name)
                 }
-            )
+            )   
             data_input_form.is_valid()
             data_input_form.has_changed()
 
-    #def test_mock_data_from_form_and_spectral_file_fixture(self, mock_data_from_form_and_spectral_file):
-    #    n_patients = 1
-    #    assert len(UploadedFile.objects.all()) == 1
-    #    assert len(Patient.objects.all()) == n_patients
-    #    assert len(Visit.objects.all()) == n_patients
-    #    assert len(BioSample.objects.all()) == n_patients
-    #    assert len(SpectralData.objects.all()) == n_patients
 
-    #def test_mock_data_fixture(self, mock_data):
-    #    n_patients = 10
-    #    assert len(Patient.objects.all()) == n_patients
-    #    assert len(Visit.objects.all()) == n_patients
-    #    assert len(BioSample.objects.all()) == n_patients
-    #    assert len(SpectralData.objects.all()) == n_patients
-#
-    #def test_number_symptoms(self, db, diseases, instruments):
-    #    """ The total number of symptoms := N_patients * N_diseases. """
-    #    assert len(Patient.objects.all()) == 0  # Assert empty.
-#
-    #    save_data_to_db(DATA_PATH / "meta_data.csv",
-    #                    DATA_PATH / "spectral_data.csv")
-#
-    #    n_patients = len(Patient.objects.all())
-    #    n_diseases = len(Disease.objects.all())
-    #    n_symptoms = len(Symptom.objects.all())
-#
-    #    # Assert not empty.
-    #    assert n_patients > 0
-    #    assert n_diseases > 0
-    #    assert n_symptoms > 0
-#
-    # # When Covid_RT_qPCR is negative both Ct_gene_N & Ct_gene_ORF1ab symptoms will be null and omitted. This must be
-    #    # accounted for in the total.
-    #    n_empty_covid_symptoms = len((Symptom.objects.filter(disease=Disease.objects.get(name="Covid_RT_qPCR")))
-    #                                 .filter(disease_value="Negative"))
-    #    assert n_symptoms == n_patients * n_diseases - n_empty_covid_symptoms * 2
-#
-    #def test_days_of_symptoms(self, mock_data_from_files):
-    #    week_long_symptoms = Symptom.objects.filter(days_symptomatic=7)
-    #    assert len(week_long_symptoms) > 1
-    #    assert week_long_symptoms[0].days_symptomatic == 7
-    #    null_days = len(Symptom.objects.filter(days_symptomatic=None))
-    #    assert null_days > 1
-    #    assert null_days < len(Symptom.objects.all())
+    def test_mock_data_from_form_and_spectral_file_fixture(self, mock_data_from_form_and_spectral_file):
+        n_patients = 1
+        assert len(Patient.objects.all()) == n_patients
+        assert len(Visit.objects.all()) == n_patients
+        assert len(BioSample.objects.all()) == n_patients
+        assert len(SpectralData.objects.all()) == n_patients
