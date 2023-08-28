@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, transaction
 from django.utils.module_loading import import_string
 
 from uploader.sql import drop_view, update_view
@@ -35,7 +35,14 @@ class SqlView:
         return drop_view(cls._meta.db_table, *args, **kwargs)
 
     @classmethod
+    @transaction.atomic
     def update_view(cls, *args, **kwargs):
+        """ Update view and view dependencies.
+
+            NOTE: This func is transactional such that all views are updated or non are. However, also note that this
+                  can result in the views being rolled back to, being stale and outdated (depending on the cause of the
+                  update).
+        """
         for view_dependency in cls.sql_view_dependencies:
             view_dependency.update_view()
 
@@ -49,6 +56,7 @@ class ModelWithViewDependency(models.Model):
 
     sql_view_dependencies = None
 
+    @transaction.atomic
     def save(self, *args, update_view=True, **kwargs):
         super().save(*args, **kwargs)
 
@@ -57,3 +65,6 @@ class ModelWithViewDependency(models.Model):
                 if isinstance(sql_view, str):
                     sql_view = import_string(sql_view)
                 sql_view.update_view()
+
+    def asave(self, *args, **kwargs):
+        raise NotImplementedError("See https://github.com/ssec-jhu/biospecdb/issues/66")

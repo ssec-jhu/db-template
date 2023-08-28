@@ -78,6 +78,36 @@ def test_update_view_check(db, diseases):
                     )
 
 
+def test_update_view_check_transactional(db, diseases):
+    view = "my_view"
+
+    update_view(view,
+                f"""
+                create view {view} as
+                select *
+                from uploader_disease
+                """,
+                check=True,
+                )
+
+    with pytest.raises(OperationalError, match="syntax error"):
+        update_view(view,
+                    f"""
+                    ceate view {view} as -- note typo in create
+                    select *
+                    from uploader_disease
+                    """,
+                    check=True,
+                    )
+
+    # With SQLite views need to be dropped then re-added (there's no alter). ``update_view()`` isn't completely
+    # transactional such that a failed update won't roll back the previous view state. Therefore, the above failed
+    # update will result in the view not being present if it were before.
+    sql = f"select * from {view}"  # nosec B608
+    with pytest.raises(OperationalError, match="no such table:"):
+        execute_sql(sql)
+
+
 def test_drop_view(db, diseases):
     view = "my_view"
     update_view(view,

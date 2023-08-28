@@ -39,17 +39,22 @@ def test_django_raise_on_missing_view(mock_data):
         SymptomsView.objects.exists()
 
 
-def tes_visit_symptoms_view(mock_data):
+def test_visit_symptoms_view(mock_data):
     VisitSymptomsView.update_view(check=True)
 
 
-def tes_full_patient_view(mock_data):
+def test_full_patient_view(mock_data):
     FullPatientView.update_view(check=True)
 
 
 def test_view_dependencies(mock_data):
     SymptomsView.drop_view()
+    with pytest.raises(OperationalError, match="no such table:"):
+        SymptomsView.objects.exists()
+
     VisitSymptomsView.drop_view()
+    with pytest.raises(OperationalError, match="no such table:"):
+        VisitSymptomsView.objects.exists()
 
     # This view should create its view dependencies which are the two above.
     FullPatientView.update_view()
@@ -57,7 +62,6 @@ def test_view_dependencies(mock_data):
     SymptomsView.objects.exists()
     VisitSymptomsView.objects.exists()
     FullPatientView.objects.exists()
-
 
 
 def test_view_caching(mock_data):
