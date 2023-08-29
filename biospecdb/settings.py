@@ -178,3 +178,6 @@ EXPLORER_DATA_EXPORTERS = [
     ('excel', 'explorer.exporters.ExcelExporter'),
     ('json', 'explorer.exporters.JSONExporter')
 ]
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'biospecdb/apps/uploader/templates/static')]
