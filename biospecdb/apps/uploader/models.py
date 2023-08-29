@@ -1,6 +1,6 @@
+from copy import deepcopy
 from enum import auto
 import uuid
-
 
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator, MinValueValidator, MaxValueValidator
@@ -10,7 +10,9 @@ from django.utils.translation import gettext_lazy as _
 import pandas as pd
 
 import biospecdb.util
-from .loaddata import save_data_to_db
+from uploader.loaddata import save_data_to_db
+from uploader.sql import secure_name
+from uploader.base_models import ModelWithViewDependency, SqlView, TextChoices
 
 
 # Changes here need to be migrated, committed, and activated.
@@ -53,22 +55,6 @@ NEGATIVE = "negative"
 # Biometric identifiers such as fingerprints or voice prints.
 # Full-face photos.
 # Any other unique identifying numbers, characteristics, or codes.
-
-
-class TextChoices(models.TextChoices):
-    @classmethod
-    def _missing_(cls, value):
-        if not isinstance(value, str):
-            return
-
-        for item in cls:
-            if value.lower() in (item.name.lower(),
-                                 item.label.lower(),
-                                 item.value.lower(),
-                                 item.name.lower().replace('_', '-'),
-                                 item.label.lower().replace('_', '-'),
-                                 item.value.lower().replace('_', '-')):
-                return item
 
 
 class UploadedFile(models.Model):
@@ -178,8 +164,10 @@ class Visit(models.Model):
         return f"patient:{self.patient.short_id()}_visit:{self.visit_number}"
 
 
-class Disease(models.Model):
+class Disease(ModelWithViewDependency):
     """ Model an individual disease, symptom, or health condition. A patient's instance are stored as models.Symptom"""
+
+    sql_view_dependencies = ("uploader.models.VisitSymptomsView",)
 
     class Meta:
         constraints = [models.UniqueConstraint(Lower("name"),
@@ -364,6 +352,104 @@ class SpectralData(models.Model):
         # such that new data is complete such that it has associated QC metrics.
         ...
 
+
+class SymptomsView(SqlView, models.Model):
+    class Meta:
+        managed = False
+        db_table = "v_symptoms"
+
+    visit_id = models.BigIntegerField(primary_key=True)
+    symptom_id = models.ForeignKey(Symptom, db_column="symptom_id", on_delete=models.DO_NOTHING)
+    disease_id = models.ForeignKey(Disease, db_column="disease_id", on_delete=models.DO_NOTHING)
+    disease = deepcopy(Disease.name.field)
+    disease.name = disease.db_column = "disease"
+    value_class = deepcopy(Disease.value_class.field)
+    days_symptomatic = deepcopy(Symptom.days_symptomatic.field)
+    severity = deepcopy(Symptom.severity.field)
+    disease_value = deepcopy(Symptom.disease_value.field)
+
+    @classmethod
+    def sql(cls):
+        sql = f"""
+        CREATE VIEW {cls._meta.db_table} AS
+        SELECT s.visit_id,
+               s.id AS symptom_id,
+               d.id AS disease_id,
+               d.name AS disease,
+               d.value_class,
+               s.days_symptomatic,
+               s.severity,
+               s.disease_value
+        FROM uploader_symptom s
+        JOIN uploader_disease d ON d.id=s.disease_id
+        """  # nosec B608
+        return sql, None
+
+
+class VisitSymptomsView(SqlView, models.Model):
+    class Meta:
+        managed = False
+        db_table = "v_visit_symptoms"
+
+    sql_view_dependencies = (SymptomsView,)
+
+    visit_id = models.BigIntegerField(primary_key=True)
+
+    @classmethod
+    def sql(cls):
+        diseases = Disease.objects.all()
+        view = cls._meta.db_table
+        d = []
+        for disease in diseases:
+            secure_name(disease.name)
+            if disease.value_class == "FLOAT":
+                value = 'cast(disease_value AS REAL)'
+            elif disease.value_class == "INTEGER":
+                value = "cast(disease_value AS INTEGER)"
+            else:
+                value = "disease_value"
+            d.append(f"max(case when disease = '{disease.name}' then {value} else null end) as [{disease.name}]")
+
+        d = "\n,      ".join(d)
+
+        # NOTE: Params aren't allowed in view statements with sqlite. Since disease can be added to the DB this poses
+        # as a risk since someone with access to creating diseases could inject into disease.name arbitrary SQL. Calling
+        # secure_name(disease.name) may not entirely guard against this even though its intention is to do so.
+        sql = f"""
+        create view {view} as
+        select visit_id
+        ,      {d} 
+          from v_symptoms 
+         group by visit_id
+        """  # nosec B608
+
+        return sql, None
+
+
+class FullPatientView(SqlView, models.Model):
+    class Meta:
+        managed = False
+        db_table = "full_patient"
+
+    sql_view_dependencies = (VisitSymptomsView,)
+
+    @classmethod
+    def sql(cls):
+        sql = f"""
+                create view {cls._meta.db_table} as 
+                select p.patient_id, p.gender, v.patient_age
+                ,      bs.sample_type, bs.sample_processing, bs.freezing_temp, bs.thawing_time
+                ,      i.spectrometer, i.atr_crystal
+                ,      sd.spectra_measurement, sd.acquisition_time, sd.n_coadditions, sd.resolution, sd.data
+                ,      vs.*
+                  from uploader_patient p
+                  join uploader_visit v on p.patient_id=v.patient_id
+                  join uploader_biosample bs on bs.visit_id=v.id
+                  join uploader_spectraldata sd on sd.bio_sample_id=bs.id
+                  join uploader_instrument i on i.id=sd.instrument_id
+                  left outer join v_visit_symptoms vs on vs.visit_id=v.id
+                """  # nosec B608
+        return sql, None
 
 # This is Model B wo/ disease table https://miro.com/app/board/uXjVMAAlj9Y=/
 # class Symptoms(models.Model):

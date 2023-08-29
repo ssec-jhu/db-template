@@ -56,6 +56,9 @@ write_to = "biospecdb/_version.py"
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "biospecdb.settings"
 
+[tool.bandit]
+exclude_dirs = ["tests"]
+
 [tool.ruff]
 line-length = 120
 exclude = [
