@@ -178,3 +178,5 @@ EXPLORER_DATA_EXPORTERS = [
     ('excel', 'explorer.exporters.ExcelExporter'),
     ('json', 'explorer.exporters.JSONExporter')
 ]
+
+EXPLORER_SCHEMA_INCLUDE_VIEWS = True

@@ -97,7 +97,7 @@ Facilitates in testing typos, syntax, style, and other simple code analysis test
 ### Security Checks:
 Facilitates in checking for security concerns using [Bandit](https://bandit.readthedocs.io/en/latest/index.html).
  * ``cd`` into repo dir.
- * ``bandit --severity-level=medium -r biospecdb``
+ * ``bandit -c pyproject.toml --severity-level=medium -r biospecdb``
 
 ### Unit Tests:
 Facilitates in testing core package functionality at a modular level.
