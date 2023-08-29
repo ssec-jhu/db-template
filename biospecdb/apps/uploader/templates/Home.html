@@ -1,48 +1,117 @@
+{% load static %}
+
 <!DOCTYPE html>
-<html>
-<head>
-    <title>Home Page</title>
-    <style>
-        .center-text {
-            text-align: center;
-        }
-        .form-field {
-            margin-bottom: 20px; /* Add a margin at the bottom */
-        }
-        .flex-container {
-            display: flex;
-        }
-        .half_width {
-            width: 50%; /* Set the width to 50% of the container */
-        }
-    </style>
+
+<html lang="en-us" dir="ltr" data-theme="auto"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Home landing page</title>
+<link rel="stylesheet" href="{% static 'base.css' %}">
+<link rel="stylesheet" href="./static/dark_mode.css">
+<script src="./static/theme.js" defer=""></script>
+<link rel="stylesheet" href="./static/nav_sidebar.css">
+<script src="./static/nav_sidebar.js" defer=""></script>
+<link rel="stylesheet" href="./static/dashboard.css">
+
+<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<link rel="stylesheet" href="./static/responsive.css">
+
+<meta name="robots" content="NONE,NOARCHIVE">
 </head>
-<body>
-    <h1 class="center-text">BioSpectral Repository website</h1>
+
+<body class=" dashboard" data-admin-utc-offset="-18000">
+<a href="http://127.0.0.1:8000/admin/#content-start" class="skip-to-content-link">Skip to main content</a>
+<!-- Container -->
+<div id="container">  
+    <!-- Header -->
+    <div id="header">
+        <div id="branding"> 
+            <h1 id="site-name"><a href="http://127.0.0.1:8000/home/">BioSpectral Repository</a></h1>
+        </div> 
+    </div>
+    <!-- END Header -->
     
-    <h2 class="center-text">Explore our content:</h2>
-    
-    <ul>
-        <div class="flex-container">
-            <div class=" half_width">
-                <li><a href="../admin/"><h3>Admin Page</h3></a></li>
-            </div>
+    <div class="main" id="main">
+      <div id="content-start" class="content" tabindex="-1">
+        <!-- Content -->
+        <div id="content" class="colMS">
+          <h1>Explore our content:</h1>
+
+          
+<div id="content-main">
+  
+    <div class="admin module">
+      <table>
+        <caption>
+          <a href="../admin/" class="section" title="Admin Page">Admin Page</a>
+        </caption>
+        <tbody>
+            <tr class="model-group">
+              <th scope="row">For Admin use only</a></th>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <div class="app-explorer module">
+        <table>
+          <caption>
+            <a href="../explorer/" class="section" title="SQL Explorer">SQL Explorer</a>
+          </caption>
+          <tbody>
+              <tr class="model-group">
+                <th scope="row">Place your Query here</a></th>
+              </tr>
+          </tbody>
+        </table>
+    </div>
+  
+    <div class="app-uploader module">
+        <table>
+        <caption>
+          <a href="../uploader/data_input/" class="section" title="Data Input form">Data Input form</a>
+        </caption>
+            <tbody>
+              <tr class="model-biosample">
+                <th scope="row">Insert the patient's data</a></th>
+              </tr>
+            </tbody>
+        </table>
+    </div>
+  
+    <div class="owner module">
+        <table>
+          <caption>
+            <a href="https://schmidtsciencefellows.org/fellow/alvaro-fernandez-galiana/" class="section" title="About us">About us</a>
+          </caption>
+          <tbody>
+            <tr class="model-biosample">
+              <th scope="row">The research group's website</a></th>
+            </tr>
+          </tbody>
+        </table>
+    </div>
+
+    <div class="SSEC module">
+        <table>
+          <caption>
+            <a href="https://ai.jhu.edu/ssec/about/" class="section" title="Technical Support">Technical Support</a>
+          </caption>
+            <tbody>
+              <tr class="model-biosample">
+                <th scope="row">Scientiic Software Engineering Center</a></th>
+            </tr>
+          </tbody>
+        </table>
+    </div>
+
+    </a></caption> </table> </div></div>
+
+          <br class="clear">
         </div>
-        <div class="flex-container">
-            <div class=" half_width">
-                <li><a href="../uploader/data_input/"><h3>Data Input form</h3></a></li>
-            </div>
-        </div>
-        <div class="flex-container">
-            <div class=" half_width">
-                <li><a href="../explorer/"><h3>SQL Explorer</h3></a></li>
-            </div>
-        </div>
-        <div class="flex-container">
-            <div class=" half_width">
-                <li><a href="https://ai.jhu.edu/ssec/about/"><h3>About Us</h3></a></li>
-            </div>
-        </div>
-    </ul>
-</body>
-</html>
+        <!-- END Content -->
+        <div id="footer"></div>
+      </div>
+    </div>
+</div>
+<!-- END Container -->
+
+</body></html>
