@@ -17,7 +17,7 @@ class DataInputForm(forms.Form):
     gender = forms.ChoiceField(required=not Patient.gender.field.blank,
                                choices=Patient.Gender.choices,
                                label=Patient.gender.field.verbose_name)
-    days_symptomatic = forms.IntegerField(initial=Symptom.days_symptomatic.field.default,
+    days_symptomatic = forms.IntegerField(required=not Symptom.days_symptomatic.field.blank,
                                           label=Symptom.days_symptomatic.field.verbose_name)
     patient_age = forms.IntegerField(label=Visit.patient_age.field.verbose_name)
     spectra_measurement = forms.ChoiceField(choices=SpectralData.SpectralMeasurementKind.choices,

@@ -7,6 +7,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+import django.core.files
 import django.core.files.uploadedfile
 
 from . import __project__  # Keep as relative for templating reasons.
