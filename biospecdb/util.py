@@ -7,6 +7,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+import django.core.files
+import django.core.files.uploadedfile
+
 from . import __project__  # Keep as relative for templating reasons.
 
 
@@ -140,3 +143,14 @@ def mock_bulk_spectral_data(path=Path.home(),
     data.to_csv(path / "spectral_data.csv")
 
     return data
+
+
+def get_file_info(file_wrapper):
+    """ The actual file buffer is nested at different levels depending on container class. """
+    if isinstance(file_wrapper, django.core.files.uploadedfile.TemporaryUploadedFile):
+        file = file_wrapper.file.file
+    elif isinstance(file_wrapper, django.core.files.File):
+        file = file_wrapper.file
+    else:
+        raise NotImplementedError(type(file_wrapper))
+    return file, Path(file_wrapper.name).suffix
