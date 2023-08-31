@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 
-from uploader.models import BioSample
-from uploader.models import Patient as Symptoms
+import pandas as pd
 
 
 class QCValidationError(Exception):
@@ -11,8 +10,13 @@ class QCValidationError(Exception):
 class QcFilter(ABC):
 
     @abstractmethod
-    def validate(self, symptoms: Symptoms, sample: BioSample) -> bool:
+    def run(self, data) -> bool:
         """
             Raises QCValidationError.
         """
         ...
+
+
+class QcSum(QcFilter):
+    def run(self, data) -> bool:
+        return pd.DataFrame.sum(data)

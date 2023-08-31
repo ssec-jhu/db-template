@@ -34,6 +34,12 @@ def visits(patients, django_db_blocker):
 
 
 @pytest.fixture(scope="function")
+def qcannotators(db, django_db_blocker):
+    with django_db_blocker.unblock():
+        call_command('loaddata', 'qcannotators.json')
+
+
+@pytest.fixture(scope="function")
 def mock_data(db, django_db_blocker):
     with django_db_blocker.unblock():
         call_command('loaddata', 'test_data.json')

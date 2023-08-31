@@ -6,7 +6,7 @@ from biospecdb.qc.qcfilter import QcFilter, QCValidationError
 
 class TestFilter(QcFilter):
 
-    def validate(self, symptoms, sample):
+    def run(self, data):
         return True
 
 
@@ -32,7 +32,7 @@ class TestQc:
         m.validator = ('f', TestFilter())
         m.validator = ('g', TestFilter())
 
-        val = m.validate(None, None)
+        val = m.validate(None)
         assert val['f'] is True
         assert len(val) == 2
 
@@ -40,12 +40,12 @@ class TestQc:
         m = QcManager()
 
         f = TestFilter()
-        def raise_on_val(x, y):
+        def raise_on_val(*args, **kwargs):
             raise QCValidationError('error')
-        f.validate = raise_on_val  # Monkey patch TestFilter.validate.
+        f.run = raise_on_val  # Monkey patch TestFilter.run.
         with pytest.raises(QCValidationError):
-            f.validate(None, None)
+            f.run(None)
 
         m.validator = ('f', f)
-        val = m.validate(None, None)
+        val = m.validate(None)
         assert val['f'] is None
