@@ -1,8 +1,7 @@
 import pandas as pd
 from django import forms
 
-from uploader.models import UploadedFile, Patient, SpectralData, Instrument, BioSample, Symptom, Disease, Visit, \
-                            POSITIVE, NEGATIVE
+from uploader.models import UploadedFile, Patient, SpectralData, Instrument, BioSample, Symptom, Disease, Visit
 from biospecdb.util import read_spectral_data_table, get_file_info
 from .loaddata import save_data_to_db
 
@@ -51,8 +50,7 @@ class DataInputForm(forms.Form):
             elif field_type == "FLOAT":
                 field_type = forms.FloatField(initial=False, required=False, label=disease.alias)
             elif field_type == "STR":
-                field_type = forms.ChoiceField(required=False, label=disease.alias,
-                                               choices=[(NEGATIVE, 'Negative'), (POSITIVE, 'Positive')])
+                field_type = forms.CharField(required=False, label=disease.alias)
             self.fields[disease.name] = field_type
 
     def populate_meta_data(self):
