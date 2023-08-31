@@ -1,33 +1,41 @@
-from .qcfilter import QcFilter
+import logging
+
+from biospecdb.qc.qcfilter import QcFilter, QCValidationError
 from uploader.models import BioSample
 from uploader.models import Patient as Symptoms
 
-from typing import Callable, Union
-
-
-def wrap_validate(func: Callable[Symptoms, BioSample], symptoms, sample) -> Union[bool, None]:
-    try:
-        return func(symptoms, sample)
-    except Exception:
-        # we will need to log exception here, or maybe transmit exception name to output?
-        return None
+log = logging.getLogger()
 
 
 class QcManager:
 
     def __init__(self):
-        self.filters = {}
+        self._validators = {}
 
-    def get_validators(self):
-        return self.filters
+    @property
+    def validators(self):
+        return self._validators
 
-    def register_validator(self, name: str, filter: QcFilter) -> None:
-        assert(isinstance(filter, QcFilter))
-        self.filters[name] = filter
+    @validators.setter
+    def validator(self, value) -> None:  # NOTE: validator vs validatorS is intentional.
+        name, filter = value
 
-    def validate(self, symptoms: Symptoms, sample: BioSample) -> bool:
-        return {
-            name: wrap_validate(filter.validate, symptoms, sample)
-            for name, filter
-            in self.filters.items()
-        }
+        if not isinstance(filter, QcFilter):
+            raise TypeError(f"QC validators must be of type '{QcFilter.__qualname__}' not '{type(filter)}'")
+
+        # Don't clobber existing filters, require unique names.
+        if self.validators.get(name):
+            raise KeyError(f"'{name}' already exists - filter/validator names must be unique.")
+
+        self._validators[name] = filter
+
+    def validate(self, symptoms: Symptoms, sample: BioSample) -> dict:
+        results = {}
+        for name, filter in self.validators.items():
+            try:
+                results[name] = filter.validate(symptoms, sample)
+            except QCValidationError as error:
+                log.warning(f"The QC validator '{name}' failed: '{error}'")
+                results[name] = None
+
+        return results
