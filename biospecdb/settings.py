@@ -184,5 +184,8 @@ EXPLORER_SCHEMA_INCLUDE_VIEWS = True
 
 # Custom settings:
 
-AUTO_ANNOTATE = True  # Automatically run annotators when new spectral data is added.
-RUN_DEFAULT_ANNOTATORS_WHEN_ADDED = True  # Run newly added annotator on all spectral data if annotator.defult is True.
+# Automatically run annotators when new spectral data is added.
+AUTO_ANNOTATE = True
+
+# Run newly added/updated annotator on all spectral data if annotator.defult is True.
+RUN_DEFAULT_ANNOTATORS_WHEN_SAVED = True

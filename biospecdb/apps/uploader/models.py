@@ -347,17 +347,17 @@ class SpectralData(models.Model):
         return f"{self.bio_sample.visit}_pk{self.pk}"
 
     def get_annotators(self):
-        return [annotation.qc_annaotator for annotation in self.qc_annotation]
+        return list(set([annotation.qc_annaotator for annotation in self.qc_annotation]))
 
-    def get_new_annotators(self, existing_annotators=None):
+    def get_unrun_annotators(self, existing_annotators=None):
         # Get annotators from existing annotations.
         if existing_annotators is None:
             existing_annotators = self.get_annotators()
 
         # Some default annotators may not have been run yet (newly added), so check.
-        all_annotators = QCAnnotator.objects.get(default=True)
+        all_default_annotators = QCAnnotator.objects.get(default=True)
 
-        return list(set(all_annotators) - set(existing_annotators))
+        return list(set(all_default_annotators) - set(existing_annotators))
 
     #@transaction.atomic  # Really? Not sure if this even can be if run in background...
     def annotate(self, annotator=None, force=False):
@@ -368,6 +368,8 @@ class SpectralData(models.Model):
         # Run only the provided annotator.
         if annotator:
             if annotator in existing_annotators:
+                if not force:
+                    return
                 annotation = self.qc_annotation.get(annotator=annotator)
             else:
                 annotation = QCAnnotation(annotator=annotator, spectral_data=self)
@@ -379,7 +381,7 @@ class SpectralData(models.Model):
             for annotation in self.qc_annotation:
                 annotation.run()
 
-        new_annotators = self.get_new_annotators(existing_annotators=existing_annotators)
+        new_annotators = self.get_unrun_annotators(existing_annotators=existing_annotators)
 
         # Create new annotations.
         for annotator in new_annotators:
@@ -531,16 +533,22 @@ class QCAnnotator(models.Model):
         obj = import_string(self.qualified_class_name)
         return obj.run(*args, **kwargs)
 
-    def clean(self):
-        super().clean()
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
 
-        if settings.RUN_DEFAULT_ANNOTATORS_WHEN_ADDED and self.default:
+        if settings.RUN_DEFAULT_ANNOTATORS_WHEN_SAVED and self.default:
             # Run annotator on all spectral data samples.
             for data in SpectralData.objects.all():
-                data.annotate(annotator=self)
+                # Since this annotator could have been altered (from django) rather than being new, annotations
+                # of this annotator may already exist, thus we need to force them to be re-run.
+                data.annotate(annotator=self, force=True)
 
 
 class QCAnnotation(models.Model):
+
+    class Meta:
+        unique_together = [["annotator", "spectral_data"]]
+
     # TODO: Consider whether we require larger scope of value types.
     value = models.BooleanField(null=True)
 
