@@ -1,7 +1,7 @@
 import pytest
 from django.core.exceptions import ValidationError
 
-from uploader.models import QCAnnotator, SpectralData
+from uploader.models import QCAnnotator
 
 
 def test_qcannotators_django_fixture(qcannotators):

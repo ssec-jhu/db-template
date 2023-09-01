@@ -5,7 +5,7 @@ import uuid
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator, MinValueValidator, MaxValueValidator
-from django.db import models, transaction
+from django.db import models
 from django.db.models.functions import Lower
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
@@ -347,7 +347,7 @@ class SpectralData(models.Model):
         return f"{self.bio_sample.visit}_pk{self.pk}"
 
     def get_annotators(self):
-        return list(set([annotation.qc_annaotator for annotation in self.qc_annotation]))
+        return list(set([annotation.qc_annaotator for annotation in self.qc_annotation.all()]))
 
     def get_unrun_annotators(self, existing_annotators=None):
         # Get annotators from existing annotations.
@@ -355,7 +355,7 @@ class SpectralData(models.Model):
             existing_annotators = self.get_annotators()
 
         # Some default annotators may not have been run yet (newly added), so check.
-        all_default_annotators = QCAnnotator.objects.get(default=True)
+        all_default_annotators = QCAnnotator.objects.filter(default=True)
 
         return list(set(all_default_annotators) - set(existing_annotators))
 
@@ -378,7 +378,7 @@ class SpectralData(models.Model):
 
         # Rerun existing annotations.
         if force and existing_annotators:
-            for annotation in self.qc_annotation:
+            for annotation in self.qc_annotation.all():
                 annotation.run()
 
         new_annotators = self.get_unrun_annotators(existing_annotators=existing_annotators)

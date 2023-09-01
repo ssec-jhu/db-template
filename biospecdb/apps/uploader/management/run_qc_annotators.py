@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from uploader.models import SpectralData, QCAnnotator, QCAnnotation
+from uploader.models import SpectralData, QCAnnotator
 
 
 class Command(BaseCommand):
