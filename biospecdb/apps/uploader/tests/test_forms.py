@@ -1,14 +1,14 @@
 import django.core.files
 import pytest
 
-from uploader.models import UploadedFile, Patient, Visit, BioSample, SpectralData
+from uploader.models import UploadedFile, Patient, Visit, BioSample, SpectralData, Instrument
 from uploader.forms import DataInputForm
 from conftest import DATA_PATH
 
 
 class TestDataInputForm:
     @pytest.mark.parametrize("file_ext", UploadedFile.FileFormats.list())
-    def test_upload_without_error(self, db, diseases, instruments, file_ext):
+    def test_upload_without_error(self, db, file_ext):
         spectral_file_path = (DATA_PATH/"sample").with_suffix(file_ext)
         with spectral_file_path.open(mode="rb") as spectral_record:
             data_input_form = DataInputForm(
@@ -42,3 +42,39 @@ class TestDataInputForm:
         assert len(Visit.objects.all()) == n_patients
         assert len(BioSample.objects.all()) == n_patients
         assert len(SpectralData.objects.all()) == n_patients
+        
+        gender_exists = Patient.objects.filter(gender='M').exists()
+        assert gender_exists
+        
+        patient_age_exists = Visit.objects.filter(patient_age=1).exists()
+        assert patient_age_exists
+
+        spectra_measurement_exists = SpectralData.objects.filter(spectra_measurement='ATR_FTIR').exists()
+        assert spectra_measurement_exists
+        
+        acquisition_time_exists = SpectralData.objects.filter(acquisition_time=1).exists()
+        assert acquisition_time_exists
+        
+        n_coadditions_exists = SpectralData.objects.filter(n_coadditions=32).exists()
+        assert n_coadditions_exists
+        
+        resolution_exists = SpectralData.objects.filter(resolution=0).exists()
+        assert resolution_exists
+        
+        spectrometer_exists = Instrument.objects.filter(spectrometer='AGILENT_CORY_630').exists()
+        assert spectrometer_exists
+        
+        atr_crystal_exists = Instrument.objects.filter(atr_crystal='ZNSE').exists()
+        assert atr_crystal_exists
+        
+        sample_type_exists = BioSample.objects.filter(sample_type='PHARYNGEAL_SWAB').exists()
+        assert sample_type_exists
+        
+        sample_processing_exists = BioSample.objects.filter(sample_processing='None').exists()
+        assert sample_processing_exists
+        
+        freezing_temp_exists = BioSample.objects.filter(freezing_temp=0).exists()
+        assert freezing_temp_exists
+        
+        thawing_time_exists = BioSample.objects.filter(thawing_time=0).exists()
+        assert thawing_time_exists

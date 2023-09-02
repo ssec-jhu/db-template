@@ -56,7 +56,7 @@ def mock_data_from_files(db, diseases, django_db_blocker, instruments):
                 
  
 @pytest.fixture(scope="function")               
-def mock_data_from_form_and_spectral_file(db, diseases, django_db_blocker, instruments):
+def mock_data_from_form_and_spectral_file(db, django_db_blocker):
     spectral_file_path = (DATA_PATH/"sample").with_suffix(UploadedFile.FileFormats.XLSX)
     with django_db_blocker.unblock():
         with spectral_file_path.open(mode="rb") as spectral_record:
