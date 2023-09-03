@@ -49,9 +49,10 @@ def mock_data(db, django_db_blocker):
 
 
 @pytest.fixture(scope="function")
-def mock_data_from_files(monkeypatch, db, diseases, django_db_blocker, instruments):
-    # Turn off auto annotation such that functionality so that it isn't always being tested.
-    monkeypatch.setattr(settings, "AUTO_ANNOTATE", False)
+def mock_data_from_files(request, monkeypatch, db, diseases, django_db_blocker, instruments):
+    # Turn off auto annotation functionality so that it isn't always being tested.
+    auto_annotate = False if getattr(request, "param", None) is None else request.param
+    monkeypatch.setattr(settings, "AUTO_ANNOTATE", auto_annotate)
 
     meta_data_path = (DATA_PATH / "meta_data").with_suffix(UploadedFile.FileFormats.XLSX)
     spectral_file_path = (DATA_PATH / "spectral_data").with_suffix(UploadedFile.FileFormats.XLSX)
