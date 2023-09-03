@@ -10,7 +10,7 @@ class QCValidationError(Exception):
 class QcFilter(ABC):
 
     @abstractmethod
-    def run(self, data) -> bool:
+    def run(self, data):
         """
             Raises QCValidationError.
         """
@@ -19,4 +19,5 @@ class QcFilter(ABC):
 
 class QcSum(QcFilter):
     def run(self, data) -> bool:
-        return pd.DataFrame.sum(data)
+        res = pd.DataFrame.sum(data, axis=0)["intensity"]
+        return res

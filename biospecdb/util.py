@@ -43,7 +43,7 @@ def read_raw_data(file, ext=None):
     NOTE: `ext` is ignored when `file` is pathlike.
     """
 
-    if isinstance(file, IOBase):
+    if isinstance(file, (IOBase, django.core.files.File)):
         # In this mode the ext must be given as it can't be determined from a file path, since one isn't given.
         if ext:
             ext = ext.lower()

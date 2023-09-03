@@ -515,8 +515,9 @@ def validate_qc_annotator_import(value):
 
 
 class QCAnnotator(models.Model):
-    name = models.CharField(max_length=128)
+    name = models.CharField(max_length=128, unique=True)
     qualified_class_name = models.CharField(max_length=128,
+                                            unique=True,
                                             help_text="This must be the fully qualified Python name for an"
                                                       " implementation of QCFilter, e.g., 'myProject.qc.myQCFilter'.",
                                             validators=[validate_qc_annotator_import])
@@ -531,7 +532,7 @@ class QCAnnotator(models.Model):
 
     def run(self, *args, **kwargs):
         obj = import_string(self.qualified_class_name)
-        return obj.run(*args, **kwargs)
+        return obj.run(obj, *args, **kwargs)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -549,8 +550,7 @@ class QCAnnotation(models.Model):
     class Meta:
         unique_together = [["annotator", "spectral_data"]]
 
-    # TODO: Consider whether we require larger scope of value types.
-    value = models.BooleanField(null=True)
+    value = models.CharField(blank=True, null=True, max_length=128, editable=False)
 
     annotator = models.ForeignKey(QCAnnotator, on_delete=models.CASCADE, related_name="qc_annotation")
     spectral_data = models.ForeignKey(SpectralData, on_delete=models.CASCADE, related_name="qc_annotation")
@@ -559,13 +559,18 @@ class QCAnnotation(models.Model):
         return f"{self.annotator.name}: {self.value}"
 
     def run(self, save=True):
-        data_file = biospecdb.util.get_file_info(self.spectral_data.data)
-        spectral_data = biospecdb.util.read_spectral_data_table(data_file)
+        data_file, ext = biospecdb.util.get_file_info(self.spectral_data.data)
+        if ext != UploadedFile.FileFormats.CSV:
+            raise NotImplementedError()
+        spectral_data = biospecdb.util.spectral_data_from_csv(data_file)
 
-        self.value = self.annotator.run(spectral_data)  # NOTE: This waits.
+        value = self.annotator.run(spectral_data)  # NOTE: This waits.
+        self.value = value
 
         if save:
             self.save()
+
+        return self.value
 
     def clean(self):
         super().clean()
