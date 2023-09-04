@@ -527,8 +527,10 @@ def validate_qc_annotator_import(value):
 
 
 class QCAnnotator(models.Model):
-    name = models.CharField(max_length=128, unique=True)
+    name = models.CharField(max_length=128, unique=True, blank=False, null=False)
     fully_qualified_class_name = models.CharField(max_length=128,
+                                                  blank=False,
+                                                  null=False,
                                                   unique=True,
                                                   help_text="This must be the fully qualified Python name for an"
                                                             " implementation of QCFilter, e.g.,"
@@ -541,7 +543,7 @@ class QCAnnotator(models.Model):
                                   help_text="If True it will apply to all spectral data samples.")
 
     def __str__(self):
-        return f"{self.name}_{self.fully_qualified_class_name}"
+        return f"{self.name}: {self.fully_qualified_class_name}"
 
     def run(self, *args, **kwargs):
         obj = import_string(self.fully_qualified_class_name)
