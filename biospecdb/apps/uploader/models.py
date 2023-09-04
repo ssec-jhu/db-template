@@ -360,8 +360,10 @@ class SpectralData(models.Model):
         return list(set(all_default_annotators) - set(existing_annotators))
 
     #@transaction.atomic  # Really? Not sure if this even can be if run in background...
+    # See https://github.com/ssec-jhu/biospecdb/issues/77
     def annotate(self, annotator=None, force=False) -> list:
         # TODO: This needs to return early and run in the background.
+        # See https://github.com/ssec-jhu/biospecdb/issues/77
 
         existing_annotators = self.get_annotators()
 
@@ -398,7 +400,9 @@ class SpectralData(models.Model):
         # TODO: Even with the QC model being its own thing rather than fields here, we may still want to run here
         # such that new data is complete such that it has associated QC metrics.
         if settings.AUTO_ANNOTATE:
-            self.annotate()  # This returns early and runs async in the background.
+            # TODO: This should return early and runs async in the background.
+            # See https://github.com/ssec-jhu/biospecdb/issues/77
+            self.annotate()
 
 
 class SymptomsView(SqlView, models.Model):
@@ -566,7 +570,8 @@ class QCAnnotation(models.Model):
             raise NotImplementedError()
         spectral_data = biospecdb.util.spectral_data_from_csv(data_file)
 
-        value = self.annotator.run(spectral_data)  # NOTE: This waits.
+        # NOTE: This waits. See https://github.com/ssec-jhu/biospecdb/issues/77
+        value = self.annotator.run(spectral_data)
         self.value = value
 
         if save:

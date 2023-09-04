@@ -1,5 +1,7 @@
 import pytest
 
+from django.conf import settings
+
 from biospecdb.qc.qcmanager import QcManager
 from biospecdb.qc.qcfilter import QcFilter, QCValidationError
 
@@ -11,6 +13,9 @@ class TestFilter(QcFilter):
 
 
 class TestQc:
+    @pytest.fixture(autouse=True)
+    def activate_qcmanager(self, monkeypatch):
+        monkeypatch.setattr(settings, "DISABLE_QC_MANAGER", False)
 
     def test_manager_add_filter(self):
         m = QcManager()

@@ -191,3 +191,7 @@ AUTO_ANNOTATE = True
 # WARNING: This may be time-consuming if the annotators takes a while to run and there are a lot of
 # spectral data samples in the database.
 RUN_DEFAULT_ANNOTATORS_WHEN_SAVED = False
+
+# Disable this class for now as #69 made it obsolete, however, there's a very good chance it will be needed
+# when implementing background tasks for https://github.com/ssec-jhu/biospecdb/pull/77.
+DISABLE_QC_MANAGER = True
