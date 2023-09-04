@@ -347,7 +347,7 @@ class SpectralData(models.Model):
         return f"{self.bio_sample.visit}_pk{self.pk}"
 
     def get_annotators(self):
-        return list(set([annotation.qc_annaotator for annotation in self.qc_annotation.all()]))
+        return list(set([annotation.annotator for annotation in self.qc_annotation.all()]))
 
     def get_unrun_annotators(self, existing_annotators=None):
         # Get annotators from existing annotations.
@@ -360,7 +360,7 @@ class SpectralData(models.Model):
         return list(set(all_default_annotators) - set(existing_annotators))
 
     #@transaction.atomic  # Really? Not sure if this even can be if run in background...
-    def annotate(self, annotator=None, force=False):
+    def annotate(self, annotator=None, force=False) -> list:
         # TODO: This needs to return early and run in the background.
 
         existing_annotators = self.get_annotators()
@@ -373,20 +373,22 @@ class SpectralData(models.Model):
                 annotation = self.qc_annotation.get(annotator=annotator)
             else:
                 annotation = QCAnnotation(annotator=annotator, spectral_data=self)
-            annotation.run()
-            return
+            return [annotation.run()]
 
+        annotations = []
         # Rerun existing annotations.
         if force and existing_annotators:
             for annotation in self.qc_annotation.all():
-                annotation.run()
+                annotations.append(annotation.run())
 
         new_annotators = self.get_unrun_annotators(existing_annotators=existing_annotators)
 
         # Create new annotations.
         for annotator in new_annotators:
             annotation = QCAnnotation(annotator=annotator, spectral_data=self)
-            annotation.run()
+            annotations.append(annotation.run())
+
+        return annotations if annotations else None  # Don't ret empty list.
 
     def clean(self):
         """ Model validation. """
@@ -550,7 +552,7 @@ class QCAnnotation(models.Model):
     class Meta:
         unique_together = [["annotator", "spectral_data"]]
 
-    value = models.CharField(blank=True, null=True, max_length=128, editable=False)
+    value = models.CharField(blank=True, null=True, max_length=128)
 
     annotator = models.ForeignKey(QCAnnotator, on_delete=models.CASCADE, related_name="qc_annotation")
     spectral_data = models.ForeignKey(SpectralData, on_delete=models.CASCADE, related_name="qc_annotation")

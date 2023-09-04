@@ -6,7 +6,10 @@ class Command(BaseCommand):
     help = "Run all Quality Control annotators on the SpectralData database table."
 
     def add_arguments(self, parser):
-        parser.add_argument("no-reruns", nargs=0, default=False)
+        parser.add_argument("--no_reruns",
+                            action="store_true",
+                            default=False,
+                            help="Don't run annotators on existing annotations, leave computed values as is.")
 
     def handle(self, *args, **options):
         try:
@@ -39,12 +42,13 @@ class Command(BaseCommand):
 
         for i, data in enumerate(all_data):
             try:
-                data.annotate(force=not options["no-reruns"])
+                annotations = data.annotate(force=not options["no_reruns"])
+                if annotations:
+                    # TODO: Might not want to print everyone.
+                    self.stdout.write(f"{i * len(annotations)} out of {len(all_data)} completed...")
             except Exception:
                 raise CommandError(f"An error occurred when running annotators for '{data}'")
 
-            self.stdout.write(f"{i} out of {len(all_data)} completed...")  # TODO: Might not want to print everyone.
-
         self.stdout.write(
-            self.style.SUCCESS("All annotations complete.")
+            self.style.SUCCESS("Done.")
         )
