@@ -46,7 +46,8 @@ class DataInputForm(forms.Form):
         super().__init__(*args, **kwargs)
         for disease in Disease.objects.all(): # Dynamically add disease fields from the Disease table
             if (field_type := disease.value_class) == "BOOL":
-                field_type = forms.BooleanField(initial=False, required=False, label=disease.alias)
+                field_type = forms.BooleanField(required=False, label=disease.alias, widget=forms.NullBooleanSelect)
+                #field_type = forms.BooleanField(initial=False, required=False, label=disease.alias)
             elif field_type == "FLOAT":
                 field_type = forms.FloatField(initial=False, required=False, label=disease.alias)
             elif field_type == "STR":
