@@ -1,35 +1,35 @@
 from abc import ABC, abstractmethod
 
-import pandas as pd
-
 
 class QCValidationError(Exception):
     ...
 
 
 class QcFilter(ABC):
-
     @abstractmethod
-    def run(self, data):
+    def run(self, spectral_data):
         """
+            param: spectral_data - uploader.models.SpectralData
+
             Raises QCValidationError.
         """
         ...
 
 
 class QcSum(QcFilter):
-    def run(self, data):
-        res = pd.DataFrame.sum(data, axis=0)["intensity"]
+    def run(self, spectral_data):
+        df = spectral_data.get_spectral_df()
+        res = df.sum(axis=0)["intensity"]
         return res
 
 
 class QcTestDummyTrue(QcFilter):
     """ For testing purposes only. """
-    def run(self, data):
+    def run(self, spectral_data):
         return True
 
 
 class QcTestDummyFalse(QcFilter):
     """ For testing purposes only. """
-    def run(self, data):
+    def run(self, spectral_data):
         return False

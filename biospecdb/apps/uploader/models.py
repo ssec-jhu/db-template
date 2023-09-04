@@ -359,6 +359,12 @@ class SpectralData(models.Model):
 
         return list(set(all_default_annotators) - set(existing_annotators))
 
+    def get_spectral_df(self):
+        data_file, ext = biospecdb.util.get_file_info(self.data)
+        if ext != UploadedFile.FileFormats.CSV:
+            raise NotImplementedError()
+        return biospecdb.util.spectral_data_from_csv(data_file)
+
     #@transaction.atomic  # Really? Not sure if this even can be if run in background...
     # See https://github.com/ssec-jhu/biospecdb/issues/77
     def annotate(self, annotator=None, force=False) -> list:
@@ -566,13 +572,8 @@ class QCAnnotation(models.Model):
         return f"{self.annotator.name}: {self.value}"
 
     def run(self, save=True):
-        data_file, ext = biospecdb.util.get_file_info(self.spectral_data.data)
-        if ext != UploadedFile.FileFormats.CSV:
-            raise NotImplementedError()
-        spectral_data = biospecdb.util.spectral_data_from_csv(data_file)
-
         # NOTE: This waits. See https://github.com/ssec-jhu/biospecdb/issues/77
-        value = self.annotator.run(spectral_data)
+        value = self.annotator.run(self.spectral_data)
         self.value = value
 
         if save:
