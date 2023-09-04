@@ -20,18 +20,18 @@ def test_qcannotators_django_fixture(qcannotators):
 
 def test_qualified_class_name_import_validation_validator(db):
     with pytest.raises(ValidationError, match="cannot be imported"):
-        QCAnnotator(name="fail", qualified_class_name=1).full_clean()
+        QCAnnotator(name="fail", fully_qualified_class_name=1).full_clean()
 
 
 def test_unique_annotator(qcannotators):
     with pytest.raises(ValidationError, match="already exists"):
-        QCAnnotator(name="sum", qualified_class_name="biospecdb.qc.qcfilter.QcSum").full_clean()
+        QCAnnotator(name="sum", fully_qualified_class_name="biospecdb.qc.qcfilter.QcSum").full_clean()
 
     with pytest.raises(ValidationError, match="already exists"):
-        QCAnnotator(name="huh", qualified_class_name="biospecdb.qc.qcfilter.QcSum").full_clean()
+        QCAnnotator(name="huh", fully_qualified_class_name="biospecdb.qc.qcfilter.QcSum").full_clean()
 
     with pytest.raises(ValidationError, match="already exists"):
-        QCAnnotator(name="sum", qualified_class_name="biospecdb.qc.qcfilter.QcFilter").full_clean()
+        QCAnnotator(name="sum", fully_qualified_class_name="biospecdb.qc.qcfilter.QcFilter").full_clean()
 
 
 def test_new_annotation(qcannotators, mock_data_from_files):
@@ -82,7 +82,7 @@ def test_auto_annotate_with_new_default_annotator(monkeypatch, mock_data_from_fi
 
     monkeypatch.setattr(settings, "RUN_DEFAULT_ANNOTATORS_WHEN_SAVED", True)
 
-    annotator = QCAnnotator(name="sum", qualified_class_name="biospecdb.qc.qcfilter.QcSum")
+    annotator = QCAnnotator(name="sum", fully_qualified_class_name="biospecdb.qc.qcfilter.QcSum")
     annotator.full_clean()
     annotator.save()
 
@@ -114,7 +114,7 @@ def test_get_unrun_annotators(monkeypatch, qcannotators, mock_data_from_files):
 
     monkeypatch.setattr(settings, "RUN_DEFAULT_ANNOTATORS_WHEN_SAVED", False)
 
-    annotator = QCAnnotator(name="tets", qualified_class_name="biospecdb.qc.qcfilter.QcTestDummyTrue")
+    annotator = QCAnnotator(name="tets", fully_qualified_class_name="biospecdb.qc.qcfilter.QcTestDummyTrue")
     annotator.full_clean()
     annotator.save()
 
@@ -129,7 +129,7 @@ def test_get_new_unrun_annotators(monkeypatch, qcannotators, mock_data_from_file
 
     monkeypatch.setattr(settings, "RUN_DEFAULT_ANNOTATORS_WHEN_SAVED", True)
 
-    annotator = QCAnnotator(name="tets", qualified_class_name="biospecdb.qc.qcfilter.QcTestDummyTrue")
+    annotator = QCAnnotator(name="tets", fully_qualified_class_name="biospecdb.qc.qcfilter.QcTestDummyTrue")
     annotator.full_clean()
     annotator.save()
 

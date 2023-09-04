@@ -514,7 +514,7 @@ def validate_qc_annotator_import(value):
                               code="invalid")
 
     if obj and not issubclass(obj, QcFilter):  # NOTE: issubclass is used since QcFilter is abstract.
-        raise ValidationError(_("qualified_class_name must be of type %(a)s not"
+        raise ValidationError(_("fully_qualified_class_name must be of type %(a)s not"
                                 "'%(b)s'"),
                               params=dict(a=type(obj), b=QcFilter.__qualname__),
                               code="invalid")
@@ -522,11 +522,12 @@ def validate_qc_annotator_import(value):
 
 class QCAnnotator(models.Model):
     name = models.CharField(max_length=128, unique=True)
-    qualified_class_name = models.CharField(max_length=128,
-                                            unique=True,
-                                            help_text="This must be the fully qualified Python name for an"
-                                                      " implementation of QCFilter, e.g., 'myProject.qc.myQCFilter'.",
-                                            validators=[validate_qc_annotator_import])
+    fully_qualified_class_name = models.CharField(max_length=128,
+                                                  unique=True,
+                                                  help_text="This must be the fully qualified Python name for an"
+                                                            " implementation of QCFilter, e.g.,"
+                                                            "'myProject.qc.myQCFilter'.",
+                                                  validators=[validate_qc_annotator_import])
     description = models.CharField(blank=True, null=True, max_length=256)
     default = models.BooleanField(default=True,
                                   blank=False,
@@ -534,10 +535,10 @@ class QCAnnotator(models.Model):
                                   help_text="If True it will apply to all spectral data samples.")
 
     def __str__(self):
-        return f"{self.name}_{self.qualified_class_name}"
+        return f"{self.name}_{self.fully_qualified_class_name}"
 
     def run(self, *args, **kwargs):
-        obj = import_string(self.qualified_class_name)
+        obj = import_string(self.fully_qualified_class_name)
         return obj.run(obj, *args, **kwargs)
 
     def save(self, *args, **kwargs):

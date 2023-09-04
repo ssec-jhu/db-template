@@ -4,7 +4,7 @@
     "pk": 1,
     "fields": {
       "name": "sum",
-      "qualified_class_name": "biospecdb.qc.qcfilter.QcSum",
+      "fully_qualified_class_name": "biospecdb.qc.qcfilter.QcSum",
       "description": "Sum of the spectral data (total flux)",
       "default": true
     }
