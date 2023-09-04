@@ -188,4 +188,6 @@ EXPLORER_SCHEMA_INCLUDE_VIEWS = True
 AUTO_ANNOTATE = True
 
 # Run newly added/updated annotator on all spectral data if annotator.defult is True.
-RUN_DEFAULT_ANNOTATORS_WHEN_SAVED = True
+# WARNING: This may be time-consuming if the annotators takes a while to run and there are a lot of
+# spectral data samples in the database.
+RUN_DEFAULT_ANNOTATORS_WHEN_SAVED = False
