@@ -32,158 +32,32 @@
             </div>  
 
             <div class="flex-container">
-                <div class=" half_width">
-                    <div class="form-field">
-                        <label for="{{ form.gender.id_for_label }}">Gender (M/F):</label>
-                        {{ form.gender }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.days_symptomatic.id_for_label }}">Days of Symptoms onset:</label>
-                        {{ form.days_symptomatic }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.patient_age.id_for_label }}">Age:</label>
-                        {{ form.patient_age }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.spectra_measurement.id_for_label }}">Spectra Measurement:</label>
-                        {{ form.spectra_measurement }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.spectrometer.id_for_label }}">Spectrometer:</label>
-                        {{ form.spectrometer }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.atr_crystal.id_for_label }}">ATR Crystal:</label>
-                        {{ form.atr_crystal }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.acquisition_time.id_for_label }}">Acquisition time [s]:</label>
-                        {{ form.acquisition_time }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.patient_id.id_for_label }}">Number of coadditions:</label>
-                        {{ form.n_coadditions }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.resolution.id_for_label }}">Resolution [cm-1]:</label>
-                        {{ form.resolution }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.sample_type.id_for_label }}">Sample Type:</label>
-                        {{ form.sample_type }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.sample_processing.id_for_label }}">Sample Processing:</label>
-                        {{ form.sample_processing }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.freezing_temp.id_for_label }}">Freezing Temperature:</label>
-                        {{ form.freezing_temp }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.thawing_time.id_for_label }}">Thawing time:</label>
-                        {{ form.thawing_time }}
-                    </div>
+
+                <div class="half_width">
+                    {% for field in form %}
+                        {% if forloop.counter <= 15 and field.name != "patient_id" and field.name != "spectral_data" %}
+                            <div class="form-field">
+                                <label for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
+                                {{ field }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
                 </div>
 
                 <div class="half_width">
-                    <div class="form-field">
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.Ct_gene_N.id_for_label }}">CTs (Gene N):</label>
-                        {{ form.Ct_gene_N }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.Ct_gene_ORF1ab.id_for_label }}">CTs (Gene ORF):</label>
-                        {{ form.Ct_gene_ORF1ab }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.Covid_RT_qPCR.id_for_label }}">RESULT RT-qPCR:</label>
-                        {{ form.Covid_RT_qPCR }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.covid_suspicious_contact.id_for_label }}">Covid suspicious contact:</label>
-                        {{ form.covid_suspicious_contact }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.fever.id_for_label }}">Fever:</label>
-                        {{ form.fever }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.dyspnoea.id_for_label }}">Dyspnoea:</label>
-                        {{ form.dyspnoea }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.oxygen_saturation_lt_95.id_for_label }}">O2 Sat < 95%:</label>
-                        {{ form.oxygen_saturation_lt_95 }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.cough.id_for_label }}">Cough:</label>
-                        {{ form.cough }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.coryza.id_for_label }}">Coryza:</label>
-                        {{ form.coryza }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.odinophagy.id_for_label }}">Odinophagy:</label>
-                        {{ form.odinophagy }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.diarrhea.id_for_label }}">Diarrhea:</label>
-                        {{ form.diarrhea }}
-                    </div>
+                    {% for field in form %}
+                        {% if forloop.counter > 15 %}
+                            {% if forloop.counter|divisibleby:13 %}
+                                </div><div class="half_width">
+                            {% endif %}
+                            <div class="form-field">
+                                <label for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
+                                {{ field }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
                 </div>
 
-                <div class="half_width">
-                    <div class="form-field">
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.Ct_gene_N.nausea }}">Nausea:</label>
-                        {{ form.nausea }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.headache.id_for_label }}">Headache:</label>
-                        {{ form.headache }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.weakness.id_for_label }}">Weakness:</label>
-                        {{ form.weakness }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.anosmia.id_for_label }}">Anosmia:</label>
-                        {{ form.anosmia }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.myalgia.id_for_label }}">Myalgia:</label>
-                        {{ form.myalgia }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.no_appetite.id_for_label }}">Lack of appetite:</label>
-                        {{ form.no_appetite }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.vomiting.id_for_label }}">Vomiting:</label>
-                        {{ form.vomiting }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.chronic_pulmonary_inc_asthma.id_for_label }}">Chronic pulmonary disease including asthma:</label>
-                        {{ form.chronic_pulmonary_inc_asthma }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.cardiovascular_disease_inc_hypertension.id_for_label }}">Cardiovascular disease including hypertension:</label>
-                        {{ form.cardiovascular_disease_inc_hypertension }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.diabetes.id_for_label }}">Diabetes:</label>
-                        {{ form.diabetes }}
-                    </div>
-                    <div class="form-field">
-                        <label for="{{ form.chronic_or_neuromuscular_neurological_disease.id_for_label }}">Chronic or neuromuscular neurological disease:</label>
-                        {{ form.chronic_or_neuromuscular_neurological_disease }}
-                    </div>
-                </div>
             </div>
 
             <div class="center-text">
