@@ -174,9 +174,9 @@ EXPLORER_SCHEMA_EXCLUDE_TABLE_PREFIXES = (
 )
 
 EXPLORER_DATA_EXPORTERS = [
-    ('csv', 'explorer.exporters.CSVExporter'),
-    ('excel', 'explorer.exporters.ExcelExporter'),
-    ('json', 'explorer.exporters.JSONExporter')
+    ('csv', 'uploader.exporters.CSVExporter'),
+    ('excel', 'uploader.exporters.ExcelExporter'),
+    ('json', 'uploader.exporters.JSONExporter')
 ]
 
 STATIC_URL = '/static/'
@@ -185,6 +185,14 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'biospecdb/apps/uploader/templates/st
 EXPLORER_SCHEMA_INCLUDE_VIEWS = True
 
 EXPLORER_CHARTS_ENABLED = True
+
+# NOTE: The following two settings don't actually belong to explorer.
+
+# Include the spectral data files, if present in query results, for download as zip file.
+EXPLORER_DATA_EXPORTERS_INCLUDE_DATA_FILES = True
+# Exhaustively scan query result values for relevant filepaths to collect data files. Does nothing when
+# EXPLORER_DATA_EXPORTERS_INCLUDE_DATA_FILES == False.
+EXPLORER_DATA_EXPORTERS_ALLOW_DATA_FILE_ALIAS = False
 
 # Custom settings:
 
