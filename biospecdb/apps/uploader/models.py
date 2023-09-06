@@ -265,6 +265,9 @@ class Instrument(models.Model):
     class SpectrometerCrystal(TextChoices):
         ZNSE = auto()
 
+    class Meta:
+        unique_together = [["spectrometer", "atr_crystal"]]
+
     spectrometer = models.CharField(default=Spectrometers.AGILENT_CORY_630,
                                     max_length=128,
                                     choices=Spectrometers.choices,
@@ -286,8 +289,7 @@ class BioSample(models.Model):
     visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="bio_sample")
 
     # Sample meta.
-    sample_type = models.CharField(default=SampleKind.PHARYNGEAL_SWAB,
-                                   max_length=128,
+    sample_type = models.CharField(max_length=128,
                                    choices=SampleKind.choices,
                                    verbose_name="Sample Type")
     sample_processing = models.CharField(default="None",
@@ -304,6 +306,10 @@ class BioSample(models.Model):
 
 class SpectralData(models.Model):
     """ Model spectral data measured by spectrometer instrument. """
+
+    class Meta:
+        verbose_name = "Spectral Data"
+        verbose_name_plural = verbose_name
 
     UPLOAD_DIR = "spectral_data/"  # MEDIA_ROOT/spectral_data
 
