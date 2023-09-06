@@ -3,6 +3,8 @@
     "model": "uploader.patient",
     "pk": "0d545f26-2fc8-4c0e-bb2b-557419a6c9f5",
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "gender": "M"
     }
 },
@@ -10,6 +12,8 @@
     "model": "uploader.patient",
     "pk": "32c203d7-e91b-40d8-8a1f-7efc21a65986",
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "gender": "F"
     }
 },
@@ -17,6 +21,8 @@
     "model": "uploader.patient",
     "pk": "5a19aa92-1620-4459-990b-92ccfd203a77",
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "gender": "M"
     }
 },
@@ -24,6 +30,8 @@
     "model": "uploader.patient",
     "pk": "613f660d-2e9f-422f-9f4c-5093b7d5ae2e",
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "gender": "F"
     }
 },
@@ -31,6 +39,8 @@
     "model": "uploader.patient",
     "pk": "8f18c408-5cbe-43f8-a850-da41a356e01a",
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "gender": "M"
     }
 },
@@ -38,6 +48,8 @@
     "model": "uploader.patient",
     "pk": "9c4b7f69-b9af-47f7-a5e7-9cfd4354e021",
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "gender": "M"
     }
 },
@@ -45,6 +57,8 @@
     "model": "uploader.patient",
     "pk": "b69ff30d-3e73-46aa-9135-2d184fd90e5a",
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "gender": "M"
     }
 },
@@ -52,6 +66,8 @@
     "model": "uploader.patient",
     "pk": "bc32b8d9-508d-43cc-9ea2-936b71d625e6",
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "gender": "M"
     }
 },
@@ -59,6 +75,8 @@
     "model": "uploader.patient",
     "pk": "e6ae2d34-99fe-4392-bb2e-0c977a9fc0af",
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "gender": "F"
     }
 },
@@ -66,6 +84,8 @@
     "model": "uploader.patient",
     "pk": "ec1d65b8-bf7e-48ce-9186-89ffda275141",
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "gender": "F"
     }
 },
@@ -73,6 +93,8 @@
     "model": "uploader.visit",
     "pk": 1118,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "patient": "9c4b7f69-b9af-47f7-a5e7-9cfd4354e021",
         "previous_visit": null,
         "patient_age": 21
@@ -82,6 +104,8 @@
     "model": "uploader.visit",
     "pk": 1119,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "patient": "0d545f26-2fc8-4c0e-bb2b-557419a6c9f5",
         "previous_visit": null,
         "patient_age": 97
@@ -91,6 +115,8 @@
     "model": "uploader.visit",
     "pk": 1120,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "patient": "32c203d7-e91b-40d8-8a1f-7efc21a65986",
         "previous_visit": null,
         "patient_age": 6
@@ -100,6 +126,8 @@
     "model": "uploader.visit",
     "pk": 1121,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "patient": "e6ae2d34-99fe-4392-bb2e-0c977a9fc0af",
         "previous_visit": null,
         "patient_age": 44
@@ -109,6 +137,8 @@
     "model": "uploader.visit",
     "pk": 1122,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "patient": "ec1d65b8-bf7e-48ce-9186-89ffda275141",
         "previous_visit": null,
         "patient_age": 55
@@ -118,6 +148,8 @@
     "model": "uploader.visit",
     "pk": 1123,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "patient": "613f660d-2e9f-422f-9f4c-5093b7d5ae2e",
         "previous_visit": null,
         "patient_age": 22
@@ -127,6 +159,8 @@
     "model": "uploader.visit",
     "pk": 1124,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "patient": "bc32b8d9-508d-43cc-9ea2-936b71d625e6",
         "previous_visit": null,
         "patient_age": 17
@@ -136,6 +170,8 @@
     "model": "uploader.visit",
     "pk": 1125,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "patient": "5a19aa92-1620-4459-990b-92ccfd203a77",
         "previous_visit": null,
         "patient_age": 57
@@ -145,6 +181,8 @@
     "model": "uploader.visit",
     "pk": 1126,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "patient": "b69ff30d-3e73-46aa-9135-2d184fd90e5a",
         "previous_visit": null,
         "patient_age": 9
@@ -154,6 +192,8 @@
     "model": "uploader.visit",
     "pk": 1127,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "patient": "8f18c408-5cbe-43f8-a850-da41a356e01a",
         "previous_visit": null,
         "patient_age": 31
@@ -163,6 +203,8 @@
     "model": "uploader.disease",
     "pk": 1,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "name": "Ct_gene_N",
         "description": "Covid cycle threshold N gene detection",
         "alias": "CTs (Gene N)",
@@ -173,6 +215,8 @@
     "model": "uploader.disease",
     "pk": 2,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "name": "Ct_gene_ORF1ab",
         "description": "Covid cycle threshold for ORF1ab detection",
         "alias": "CTs (Gene ORF)",
@@ -183,6 +227,8 @@
     "model": "uploader.disease",
     "pk": 3,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "name": "Covid_RT_qPCR",
         "description": "Covid RT qPCR results",
         "alias": "RESULT RT-qPCR",
@@ -193,6 +239,8 @@
     "model": "uploader.disease",
     "pk": 4,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "name": "covid_suspicious_contact",
         "description": "Suspicious contact of Covid",
         "alias": "Suspicious contact",
@@ -203,6 +251,8 @@
     "model": "uploader.disease",
     "pk": 5,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "name": "fever",
         "description": "Patient experiences a fever?",
         "alias": "fever",
@@ -213,6 +263,8 @@
     "model": "uploader.disease",
     "pk": 6,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "name": "dyspnoea",
         "description": "Difficult or labored breathing",
         "alias": "dyspnoea",
@@ -223,6 +275,8 @@
     "model": "uploader.disease",
     "pk": 7,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "name": "oxygen_saturation_lt_95",
         "description": "Blood oxygen saturation less than 95%",
         "alias": "O2 Sat <95%",
@@ -233,6 +287,8 @@
     "model": "uploader.disease",
     "pk": 8,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "name": "cough",
         "description": "Patient experiences cough-like symptoms.",
         "alias": "cough",
@@ -243,6 +299,8 @@
     "model": "uploader.disease",
     "pk": 9,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "name": "coryza",
         "description": "Irritation and inflammation of the nasal mucous membrane.",
         "alias": "coryza",
@@ -253,6 +311,8 @@
     "model": "uploader.disease",
     "pk": 10,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "name": "odinophagy",
         "description": "Pain when swallowing.",
         "alias": "odinophagy",
@@ -263,6 +323,8 @@
     "model": "uploader.disease",
     "pk": 11,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "name": "diarrhea",
         "description": "Patient experiences diarrhea.",
         "alias": "diarrhea",
@@ -273,6 +335,8 @@
     "model": "uploader.disease",
     "pk": 12,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "name": "nausea",
         "description": "Patient experiences nausea.",
         "alias": "nausea",
@@ -283,6 +347,8 @@
     "model": "uploader.disease",
     "pk": 13,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "name": "headache",
         "description": "Patient experiences headaches.",
         "alias": "headache",
@@ -293,6 +359,8 @@
     "model": "uploader.disease",
     "pk": 14,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "name": "weakness",
         "description": "Patient experiences weakness or fatigue.",
         "alias": "weakness",
@@ -303,6 +371,8 @@
     "model": "uploader.disease",
     "pk": 15,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "name": "anosmia",
         "description": "Partial or complete loss of smell.",
         "alias": "anosmia",
@@ -313,6 +383,8 @@
     "model": "uploader.disease",
     "pk": 16,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "name": "myalgia",
         "description": "Muscular aches and pains.",
         "alias": "myalgia",
@@ -323,6 +395,8 @@
     "model": "uploader.disease",
     "pk": 17,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "name": "no_appetite",
         "description": "Lack of appetite",
         "alias": "Lack of appetite",
@@ -333,6 +407,8 @@
     "model": "uploader.disease",
     "pk": 18,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "name": "vomiting",
         "description": "Patient experiences vomiting",
         "alias": "vomiting",
@@ -343,6 +419,8 @@
     "model": "uploader.disease",
     "pk": 19,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "name": "chronic_pulmonary_inc_asthma",
         "description": "Chronic pulmonary conditions including asthma",
         "alias": "Chronic pulmonary disease including asthma",
@@ -353,6 +431,8 @@
     "model": "uploader.disease",
     "pk": 20,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "name": "cardiovascular_disease_inc_hypertension",
         "description": "Cardiovascular disease including hypertension.",
         "alias": "Cardiovascular disease including hypertension",
@@ -363,6 +443,8 @@
     "model": "uploader.disease",
     "pk": 21,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "name": "diabetes",
         "description": "Diabetes type 1 & type 2.",
         "alias": "diabetes",
@@ -373,6 +455,8 @@
     "model": "uploader.disease",
     "pk": 22,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "name": "chronic_or_neuromuscular_neurological_disease",
         "description": "Chronic or neuromuscular neurological disease.",
         "alias": "Chronic or neuromuscular neurological disease",
@@ -383,6 +467,8 @@
     "model": "uploader.symptom",
     "pk": 23174,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
         "disease": 3,
         "days_symptomatic": 7,
@@ -394,6 +480,8 @@
     "model": "uploader.symptom",
     "pk": 23175,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
         "disease": 4,
         "days_symptomatic": 7,
@@ -405,6 +493,8 @@
     "model": "uploader.symptom",
     "pk": 23176,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
         "disease": 5,
         "days_symptomatic": 7,
@@ -416,6 +506,8 @@
     "model": "uploader.symptom",
     "pk": 23177,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
         "disease": 6,
         "days_symptomatic": 7,
@@ -427,6 +519,8 @@
     "model": "uploader.symptom",
     "pk": 23178,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
         "disease": 7,
         "days_symptomatic": 7,
@@ -438,6 +532,8 @@
     "model": "uploader.symptom",
     "pk": 23179,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
         "disease": 8,
         "days_symptomatic": 7,
@@ -449,6 +545,8 @@
     "model": "uploader.symptom",
     "pk": 23180,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
         "disease": 9,
         "days_symptomatic": 7,
@@ -460,6 +558,8 @@
     "model": "uploader.symptom",
     "pk": 23181,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
         "disease": 10,
         "days_symptomatic": 7,
@@ -471,6 +571,8 @@
     "model": "uploader.symptom",
     "pk": 23182,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
         "disease": 11,
         "days_symptomatic": 7,
@@ -482,6 +584,8 @@
     "model": "uploader.symptom",
     "pk": 23183,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
         "disease": 12,
         "days_symptomatic": 7,
@@ -493,6 +597,8 @@
     "model": "uploader.symptom",
     "pk": 23184,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
         "disease": 13,
         "days_symptomatic": 7,
@@ -504,6 +610,8 @@
     "model": "uploader.symptom",
     "pk": 23185,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
         "disease": 14,
         "days_symptomatic": 7,
@@ -515,6 +623,8 @@
     "model": "uploader.symptom",
     "pk": 23186,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
         "disease": 15,
         "days_symptomatic": 7,
@@ -526,6 +636,8 @@
     "model": "uploader.symptom",
     "pk": 23187,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
         "disease": 16,
         "days_symptomatic": 7,
@@ -537,6 +649,8 @@
     "model": "uploader.symptom",
     "pk": 23188,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
         "disease": 17,
         "days_symptomatic": 7,
@@ -548,6 +662,8 @@
     "model": "uploader.symptom",
     "pk": 23189,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
         "disease": 18,
         "days_symptomatic": 7,
@@ -559,6 +675,8 @@
     "model": "uploader.symptom",
     "pk": 23190,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
         "disease": 19,
         "days_symptomatic": 7,
@@ -570,6 +688,8 @@
     "model": "uploader.symptom",
     "pk": 23191,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
         "disease": 20,
         "days_symptomatic": 7,
@@ -581,6 +701,8 @@
     "model": "uploader.symptom",
     "pk": 23192,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
         "disease": 21,
         "days_symptomatic": 7,
@@ -592,6 +714,8 @@
     "model": "uploader.symptom",
     "pk": 23193,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
         "disease": 22,
         "days_symptomatic": 7,
@@ -603,6 +727,8 @@
     "model": "uploader.symptom",
     "pk": 23194,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
         "disease": 3,
         "days_symptomatic": 1,
@@ -614,6 +740,8 @@
     "model": "uploader.symptom",
     "pk": 23195,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
         "disease": 4,
         "days_symptomatic": 1,
@@ -625,6 +753,8 @@
     "model": "uploader.symptom",
     "pk": 23196,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
         "disease": 5,
         "days_symptomatic": 1,
@@ -636,6 +766,8 @@
     "model": "uploader.symptom",
     "pk": 23197,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
         "disease": 6,
         "days_symptomatic": 1,
@@ -647,6 +779,8 @@
     "model": "uploader.symptom",
     "pk": 23198,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
         "disease": 7,
         "days_symptomatic": 1,
@@ -658,6 +792,8 @@
     "model": "uploader.symptom",
     "pk": 23199,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
         "disease": 8,
         "days_symptomatic": 1,
@@ -669,6 +805,8 @@
     "model": "uploader.symptom",
     "pk": 23200,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
         "disease": 9,
         "days_symptomatic": 1,
@@ -680,6 +818,8 @@
     "model": "uploader.symptom",
     "pk": 23201,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
         "disease": 10,
         "days_symptomatic": 1,
@@ -691,6 +831,8 @@
     "model": "uploader.symptom",
     "pk": 23202,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
         "disease": 11,
         "days_symptomatic": 1,
@@ -702,6 +844,8 @@
     "model": "uploader.symptom",
     "pk": 23203,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
         "disease": 12,
         "days_symptomatic": 1,
@@ -713,6 +857,8 @@
     "model": "uploader.symptom",
     "pk": 23204,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
         "disease": 13,
         "days_symptomatic": 1,
@@ -724,6 +870,8 @@
     "model": "uploader.symptom",
     "pk": 23205,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
         "disease": 14,
         "days_symptomatic": 1,
@@ -735,6 +883,8 @@
     "model": "uploader.symptom",
     "pk": 23206,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
         "disease": 15,
         "days_symptomatic": 1,
@@ -746,6 +896,8 @@
     "model": "uploader.symptom",
     "pk": 23207,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
         "disease": 16,
         "days_symptomatic": 1,
@@ -757,6 +909,8 @@
     "model": "uploader.symptom",
     "pk": 23208,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
         "disease": 17,
         "days_symptomatic": 1,
@@ -768,6 +922,8 @@
     "model": "uploader.symptom",
     "pk": 23209,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
         "disease": 18,
         "days_symptomatic": 1,
@@ -779,6 +935,8 @@
     "model": "uploader.symptom",
     "pk": 23210,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
         "disease": 19,
         "days_symptomatic": 1,
@@ -790,6 +948,8 @@
     "model": "uploader.symptom",
     "pk": 23211,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
         "disease": 20,
         "days_symptomatic": 1,
@@ -801,6 +961,8 @@
     "model": "uploader.symptom",
     "pk": 23212,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
         "disease": 21,
         "days_symptomatic": 1,
@@ -812,6 +974,8 @@
     "model": "uploader.symptom",
     "pk": 23213,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
         "disease": 22,
         "days_symptomatic": 1,
@@ -823,6 +987,8 @@
     "model": "uploader.symptom",
     "pk": 23214,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
         "disease": 3,
         "days_symptomatic": 2,
@@ -834,6 +1000,8 @@
     "model": "uploader.symptom",
     "pk": 23215,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
         "disease": 4,
         "days_symptomatic": 2,
@@ -845,6 +1013,8 @@
     "model": "uploader.symptom",
     "pk": 23216,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
         "disease": 5,
         "days_symptomatic": 2,
@@ -856,6 +1026,8 @@
     "model": "uploader.symptom",
     "pk": 23217,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
         "disease": 6,
         "days_symptomatic": 2,
@@ -867,6 +1039,8 @@
     "model": "uploader.symptom",
     "pk": 23218,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
         "disease": 7,
         "days_symptomatic": 2,
@@ -878,6 +1052,8 @@
     "model": "uploader.symptom",
     "pk": 23219,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
         "disease": 8,
         "days_symptomatic": 2,
@@ -889,6 +1065,8 @@
     "model": "uploader.symptom",
     "pk": 23220,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
         "disease": 9,
         "days_symptomatic": 2,
@@ -900,6 +1078,8 @@
     "model": "uploader.symptom",
     "pk": 23221,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
         "disease": 10,
         "days_symptomatic": 2,
@@ -911,6 +1091,8 @@
     "model": "uploader.symptom",
     "pk": 23222,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
         "disease": 11,
         "days_symptomatic": 2,
@@ -922,6 +1104,8 @@
     "model": "uploader.symptom",
     "pk": 23223,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
         "disease": 12,
         "days_symptomatic": 2,
@@ -933,6 +1117,8 @@
     "model": "uploader.symptom",
     "pk": 23224,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
         "disease": 13,
         "days_symptomatic": 2,
@@ -944,6 +1130,8 @@
     "model": "uploader.symptom",
     "pk": 23225,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
         "disease": 14,
         "days_symptomatic": 2,
@@ -955,6 +1143,8 @@
     "model": "uploader.symptom",
     "pk": 23226,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
         "disease": 15,
         "days_symptomatic": 2,
@@ -966,6 +1156,8 @@
     "model": "uploader.symptom",
     "pk": 23227,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
         "disease": 16,
         "days_symptomatic": 2,
@@ -977,6 +1169,8 @@
     "model": "uploader.symptom",
     "pk": 23228,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
         "disease": 17,
         "days_symptomatic": 2,
@@ -988,6 +1182,8 @@
     "model": "uploader.symptom",
     "pk": 23229,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
         "disease": 18,
         "days_symptomatic": 2,
@@ -999,6 +1195,8 @@
     "model": "uploader.symptom",
     "pk": 23230,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
         "disease": 19,
         "days_symptomatic": 2,
@@ -1010,6 +1208,8 @@
     "model": "uploader.symptom",
     "pk": 23231,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
         "disease": 20,
         "days_symptomatic": 2,
@@ -1021,6 +1221,8 @@
     "model": "uploader.symptom",
     "pk": 23232,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
         "disease": 21,
         "days_symptomatic": 2,
@@ -1032,6 +1234,8 @@
     "model": "uploader.symptom",
     "pk": 23233,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
         "disease": 22,
         "days_symptomatic": 2,
@@ -1043,6 +1247,8 @@
     "model": "uploader.symptom",
     "pk": 23234,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
         "disease": 3,
         "days_symptomatic": 2,
@@ -1054,6 +1260,8 @@
     "model": "uploader.symptom",
     "pk": 23235,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
         "disease": 4,
         "days_symptomatic": 2,
@@ -1065,6 +1273,8 @@
     "model": "uploader.symptom",
     "pk": 23236,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
         "disease": 5,
         "days_symptomatic": 2,
@@ -1076,6 +1286,8 @@
     "model": "uploader.symptom",
     "pk": 23237,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
         "disease": 6,
         "days_symptomatic": 2,
@@ -1087,6 +1299,8 @@
     "model": "uploader.symptom",
     "pk": 23238,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
         "disease": 7,
         "days_symptomatic": 2,
@@ -1098,6 +1312,8 @@
     "model": "uploader.symptom",
     "pk": 23239,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
         "disease": 8,
         "days_symptomatic": 2,
@@ -1109,6 +1325,8 @@
     "model": "uploader.symptom",
     "pk": 23240,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
         "disease": 9,
         "days_symptomatic": 2,
@@ -1120,6 +1338,8 @@
     "model": "uploader.symptom",
     "pk": 23241,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
         "disease": 10,
         "days_symptomatic": 2,
@@ -1131,6 +1351,8 @@
     "model": "uploader.symptom",
     "pk": 23242,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
         "disease": 11,
         "days_symptomatic": 2,
@@ -1142,6 +1364,8 @@
     "model": "uploader.symptom",
     "pk": 23243,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
         "disease": 12,
         "days_symptomatic": 2,
@@ -1153,6 +1377,8 @@
     "model": "uploader.symptom",
     "pk": 23244,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
         "disease": 13,
         "days_symptomatic": 2,
@@ -1164,6 +1390,8 @@
     "model": "uploader.symptom",
     "pk": 23245,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
         "disease": 14,
         "days_symptomatic": 2,
@@ -1175,6 +1403,8 @@
     "model": "uploader.symptom",
     "pk": 23246,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
         "disease": 15,
         "days_symptomatic": 2,
@@ -1186,6 +1416,8 @@
     "model": "uploader.symptom",
     "pk": 23247,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
         "disease": 16,
         "days_symptomatic": 2,
@@ -1197,6 +1429,8 @@
     "model": "uploader.symptom",
     "pk": 23248,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
         "disease": 17,
         "days_symptomatic": 2,
@@ -1208,6 +1442,8 @@
     "model": "uploader.symptom",
     "pk": 23249,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
         "disease": 18,
         "days_symptomatic": 2,
@@ -1219,6 +1455,8 @@
     "model": "uploader.symptom",
     "pk": 23250,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
         "disease": 19,
         "days_symptomatic": 2,
@@ -1230,6 +1468,8 @@
     "model": "uploader.symptom",
     "pk": 23251,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
         "disease": 20,
         "days_symptomatic": 2,
@@ -1241,6 +1481,8 @@
     "model": "uploader.symptom",
     "pk": 23252,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
         "disease": 21,
         "days_symptomatic": 2,
@@ -1252,6 +1494,8 @@
     "model": "uploader.symptom",
     "pk": 23253,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
         "disease": 22,
         "days_symptomatic": 2,
@@ -1263,6 +1507,8 @@
     "model": "uploader.symptom",
     "pk": 23254,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
         "disease": 3,
         "days_symptomatic": 3,
@@ -1274,6 +1520,8 @@
     "model": "uploader.symptom",
     "pk": 23255,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
         "disease": 4,
         "days_symptomatic": 3,
@@ -1285,6 +1533,8 @@
     "model": "uploader.symptom",
     "pk": 23256,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
         "disease": 5,
         "days_symptomatic": 3,
@@ -1296,6 +1546,8 @@
     "model": "uploader.symptom",
     "pk": 23257,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
         "disease": 6,
         "days_symptomatic": 3,
@@ -1307,6 +1559,8 @@
     "model": "uploader.symptom",
     "pk": 23258,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
         "disease": 7,
         "days_symptomatic": 3,
@@ -1318,6 +1572,8 @@
     "model": "uploader.symptom",
     "pk": 23259,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
         "disease": 8,
         "days_symptomatic": 3,
@@ -1329,6 +1585,8 @@
     "model": "uploader.symptom",
     "pk": 23260,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
         "disease": 9,
         "days_symptomatic": 3,
@@ -1340,6 +1598,8 @@
     "model": "uploader.symptom",
     "pk": 23261,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
         "disease": 10,
         "days_symptomatic": 3,
@@ -1351,6 +1611,8 @@
     "model": "uploader.symptom",
     "pk": 23262,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
         "disease": 11,
         "days_symptomatic": 3,
@@ -1362,6 +1624,8 @@
     "model": "uploader.symptom",
     "pk": 23263,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
         "disease": 12,
         "days_symptomatic": 3,
@@ -1373,6 +1637,8 @@
     "model": "uploader.symptom",
     "pk": 23264,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
         "disease": 13,
         "days_symptomatic": 3,
@@ -1384,6 +1650,8 @@
     "model": "uploader.symptom",
     "pk": 23265,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
         "disease": 14,
         "days_symptomatic": 3,
@@ -1395,6 +1663,8 @@
     "model": "uploader.symptom",
     "pk": 23266,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
         "disease": 15,
         "days_symptomatic": 3,
@@ -1406,6 +1676,8 @@
     "model": "uploader.symptom",
     "pk": 23267,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
         "disease": 16,
         "days_symptomatic": 3,
@@ -1417,6 +1689,8 @@
     "model": "uploader.symptom",
     "pk": 23268,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
         "disease": 17,
         "days_symptomatic": 3,
@@ -1428,6 +1702,8 @@
     "model": "uploader.symptom",
     "pk": 23269,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
         "disease": 18,
         "days_symptomatic": 3,
@@ -1439,6 +1715,8 @@
     "model": "uploader.symptom",
     "pk": 23270,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
         "disease": 19,
         "days_symptomatic": 3,
@@ -1450,6 +1728,8 @@
     "model": "uploader.symptom",
     "pk": 23271,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
         "disease": 20,
         "days_symptomatic": 3,
@@ -1461,6 +1741,8 @@
     "model": "uploader.symptom",
     "pk": 23272,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
         "disease": 21,
         "days_symptomatic": 3,
@@ -1472,6 +1754,8 @@
     "model": "uploader.symptom",
     "pk": 23273,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
         "disease": 22,
         "days_symptomatic": 3,
@@ -1483,6 +1767,8 @@
     "model": "uploader.symptom",
     "pk": 23274,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
         "disease": 1,
         "days_symptomatic": null,
@@ -1494,6 +1780,8 @@
     "model": "uploader.symptom",
     "pk": 23275,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
         "disease": 2,
         "days_symptomatic": null,
@@ -1505,6 +1793,8 @@
     "model": "uploader.symptom",
     "pk": 23276,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
         "disease": 3,
         "days_symptomatic": null,
@@ -1516,6 +1806,8 @@
     "model": "uploader.symptom",
     "pk": 23277,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
         "disease": 4,
         "days_symptomatic": null,
@@ -1527,6 +1819,8 @@
     "model": "uploader.symptom",
     "pk": 23278,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
         "disease": 5,
         "days_symptomatic": null,
@@ -1538,6 +1832,8 @@
     "model": "uploader.symptom",
     "pk": 23279,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
         "disease": 6,
         "days_symptomatic": null,
@@ -1549,6 +1845,8 @@
     "model": "uploader.symptom",
     "pk": 23280,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
         "disease": 7,
         "days_symptomatic": null,
@@ -1560,6 +1858,8 @@
     "model": "uploader.symptom",
     "pk": 23281,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
         "disease": 8,
         "days_symptomatic": null,
@@ -1571,6 +1871,8 @@
     "model": "uploader.symptom",
     "pk": 23282,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
         "disease": 9,
         "days_symptomatic": null,
@@ -1582,6 +1884,8 @@
     "model": "uploader.symptom",
     "pk": 23283,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
         "disease": 10,
         "days_symptomatic": null,
@@ -1593,6 +1897,8 @@
     "model": "uploader.symptom",
     "pk": 23284,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
         "disease": 11,
         "days_symptomatic": null,
@@ -1604,6 +1910,8 @@
     "model": "uploader.symptom",
     "pk": 23285,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
         "disease": 12,
         "days_symptomatic": null,
@@ -1615,6 +1923,8 @@
     "model": "uploader.symptom",
     "pk": 23286,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
         "disease": 13,
         "days_symptomatic": null,
@@ -1626,6 +1936,8 @@
     "model": "uploader.symptom",
     "pk": 23287,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
         "disease": 14,
         "days_symptomatic": null,
@@ -1637,6 +1949,8 @@
     "model": "uploader.symptom",
     "pk": 23288,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
         "disease": 15,
         "days_symptomatic": null,
@@ -1648,6 +1962,8 @@
     "model": "uploader.symptom",
     "pk": 23289,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
         "disease": 16,
         "days_symptomatic": null,
@@ -1659,6 +1975,8 @@
     "model": "uploader.symptom",
     "pk": 23290,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
         "disease": 17,
         "days_symptomatic": null,
@@ -1670,6 +1988,8 @@
     "model": "uploader.symptom",
     "pk": 23291,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
         "disease": 18,
         "days_symptomatic": null,
@@ -1681,6 +2001,8 @@
     "model": "uploader.symptom",
     "pk": 23292,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
         "disease": 19,
         "days_symptomatic": null,
@@ -1692,6 +2014,8 @@
     "model": "uploader.symptom",
     "pk": 23293,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
         "disease": 20,
         "days_symptomatic": null,
@@ -1703,6 +2027,8 @@
     "model": "uploader.symptom",
     "pk": 23294,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
         "disease": 21,
         "days_symptomatic": null,
@@ -1714,6 +2040,8 @@
     "model": "uploader.symptom",
     "pk": 23295,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
         "disease": 22,
         "days_symptomatic": null,
@@ -1725,6 +2053,8 @@
     "model": "uploader.symptom",
     "pk": 23296,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
         "disease": 1,
         "days_symptomatic": 3,
@@ -1736,6 +2066,8 @@
     "model": "uploader.symptom",
     "pk": 23297,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
         "disease": 2,
         "days_symptomatic": 3,
@@ -1747,6 +2079,8 @@
     "model": "uploader.symptom",
     "pk": 23298,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
         "disease": 3,
         "days_symptomatic": 3,
@@ -1758,6 +2092,8 @@
     "model": "uploader.symptom",
     "pk": 23299,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
         "disease": 4,
         "days_symptomatic": 3,
@@ -1769,6 +2105,8 @@
     "model": "uploader.symptom",
     "pk": 23300,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
         "disease": 5,
         "days_symptomatic": 3,
@@ -1780,6 +2118,8 @@
     "model": "uploader.symptom",
     "pk": 23301,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
         "disease": 6,
         "days_symptomatic": 3,
@@ -1791,6 +2131,8 @@
     "model": "uploader.symptom",
     "pk": 23302,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
         "disease": 7,
         "days_symptomatic": 3,
@@ -1802,6 +2144,8 @@
     "model": "uploader.symptom",
     "pk": 23303,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
         "disease": 8,
         "days_symptomatic": 3,
@@ -1813,6 +2157,8 @@
     "model": "uploader.symptom",
     "pk": 23304,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
         "disease": 9,
         "days_symptomatic": 3,
@@ -1824,6 +2170,8 @@
     "model": "uploader.symptom",
     "pk": 23305,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
         "disease": 10,
         "days_symptomatic": 3,
@@ -1835,6 +2183,8 @@
     "model": "uploader.symptom",
     "pk": 23306,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
         "disease": 11,
         "days_symptomatic": 3,
@@ -1846,6 +2196,8 @@
     "model": "uploader.symptom",
     "pk": 23307,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
         "disease": 12,
         "days_symptomatic": 3,
@@ -1857,6 +2209,8 @@
     "model": "uploader.symptom",
     "pk": 23308,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
         "disease": 13,
         "days_symptomatic": 3,
@@ -1868,6 +2222,8 @@
     "model": "uploader.symptom",
     "pk": 23309,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
         "disease": 14,
         "days_symptomatic": 3,
@@ -1879,6 +2235,8 @@
     "model": "uploader.symptom",
     "pk": 23310,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
         "disease": 15,
         "days_symptomatic": 3,
@@ -1890,6 +2248,8 @@
     "model": "uploader.symptom",
     "pk": 23311,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
         "disease": 16,
         "days_symptomatic": 3,
@@ -1901,6 +2261,8 @@
     "model": "uploader.symptom",
     "pk": 23312,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
         "disease": 17,
         "days_symptomatic": 3,
@@ -1912,6 +2274,8 @@
     "model": "uploader.symptom",
     "pk": 23313,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
         "disease": 18,
         "days_symptomatic": 3,
@@ -1923,6 +2287,8 @@
     "model": "uploader.symptom",
     "pk": 23314,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
         "disease": 19,
         "days_symptomatic": 3,
@@ -1934,6 +2300,8 @@
     "model": "uploader.symptom",
     "pk": 23315,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
         "disease": 20,
         "days_symptomatic": 3,
@@ -1945,6 +2313,8 @@
     "model": "uploader.symptom",
     "pk": 23316,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
         "disease": 21,
         "days_symptomatic": 3,
@@ -1956,6 +2326,8 @@
     "model": "uploader.symptom",
     "pk": 23317,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
         "disease": 22,
         "days_symptomatic": 3,
@@ -1967,6 +2339,8 @@
     "model": "uploader.symptom",
     "pk": 23318,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
         "disease": 3,
         "days_symptomatic": 5,
@@ -1978,6 +2352,8 @@
     "model": "uploader.symptom",
     "pk": 23319,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
         "disease": 4,
         "days_symptomatic": 5,
@@ -1989,6 +2365,8 @@
     "model": "uploader.symptom",
     "pk": 23320,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
         "disease": 5,
         "days_symptomatic": 5,
@@ -2000,6 +2378,8 @@
     "model": "uploader.symptom",
     "pk": 23321,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
         "disease": 6,
         "days_symptomatic": 5,
@@ -2011,6 +2391,8 @@
     "model": "uploader.symptom",
     "pk": 23322,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
         "disease": 7,
         "days_symptomatic": 5,
@@ -2022,6 +2404,8 @@
     "model": "uploader.symptom",
     "pk": 23323,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
         "disease": 8,
         "days_symptomatic": 5,
@@ -2033,6 +2417,8 @@
     "model": "uploader.symptom",
     "pk": 23324,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
         "disease": 9,
         "days_symptomatic": 5,
@@ -2044,6 +2430,8 @@
     "model": "uploader.symptom",
     "pk": 23325,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
         "disease": 10,
         "days_symptomatic": 5,
@@ -2055,6 +2443,8 @@
     "model": "uploader.symptom",
     "pk": 23326,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
         "disease": 11,
         "days_symptomatic": 5,
@@ -2066,6 +2456,8 @@
     "model": "uploader.symptom",
     "pk": 23327,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
         "disease": 12,
         "days_symptomatic": 5,
@@ -2077,6 +2469,8 @@
     "model": "uploader.symptom",
     "pk": 23328,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
         "disease": 13,
         "days_symptomatic": 5,
@@ -2088,6 +2482,8 @@
     "model": "uploader.symptom",
     "pk": 23329,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
         "disease": 14,
         "days_symptomatic": 5,
@@ -2099,6 +2495,8 @@
     "model": "uploader.symptom",
     "pk": 23330,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
         "disease": 15,
         "days_symptomatic": 5,
@@ -2110,6 +2508,8 @@
     "model": "uploader.symptom",
     "pk": 23331,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
         "disease": 16,
         "days_symptomatic": 5,
@@ -2121,6 +2521,8 @@
     "model": "uploader.symptom",
     "pk": 23332,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
         "disease": 17,
         "days_symptomatic": 5,
@@ -2132,6 +2534,8 @@
     "model": "uploader.symptom",
     "pk": 23333,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
         "disease": 18,
         "days_symptomatic": 5,
@@ -2143,6 +2547,8 @@
     "model": "uploader.symptom",
     "pk": 23334,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
         "disease": 19,
         "days_symptomatic": 5,
@@ -2154,6 +2560,8 @@
     "model": "uploader.symptom",
     "pk": 23335,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
         "disease": 20,
         "days_symptomatic": 5,
@@ -2165,6 +2573,8 @@
     "model": "uploader.symptom",
     "pk": 23336,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
         "disease": 21,
         "days_symptomatic": 5,
@@ -2176,6 +2586,8 @@
     "model": "uploader.symptom",
     "pk": 23337,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
         "disease": 22,
         "days_symptomatic": 5,
@@ -2187,6 +2599,8 @@
     "model": "uploader.symptom",
     "pk": 23338,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
         "disease": 3,
         "days_symptomatic": 11,
@@ -2198,6 +2612,8 @@
     "model": "uploader.symptom",
     "pk": 23339,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
         "disease": 4,
         "days_symptomatic": 11,
@@ -2209,6 +2625,8 @@
     "model": "uploader.symptom",
     "pk": 23340,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
         "disease": 5,
         "days_symptomatic": 11,
@@ -2220,6 +2638,8 @@
     "model": "uploader.symptom",
     "pk": 23341,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
         "disease": 6,
         "days_symptomatic": 11,
@@ -2231,6 +2651,8 @@
     "model": "uploader.symptom",
     "pk": 23342,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
         "disease": 7,
         "days_symptomatic": 11,
@@ -2242,6 +2664,8 @@
     "model": "uploader.symptom",
     "pk": 23343,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
         "disease": 8,
         "days_symptomatic": 11,
@@ -2253,6 +2677,8 @@
     "model": "uploader.symptom",
     "pk": 23344,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
         "disease": 9,
         "days_symptomatic": 11,
@@ -2264,6 +2690,8 @@
     "model": "uploader.symptom",
     "pk": 23345,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
         "disease": 10,
         "days_symptomatic": 11,
@@ -2275,6 +2703,8 @@
     "model": "uploader.symptom",
     "pk": 23346,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
         "disease": 11,
         "days_symptomatic": 11,
@@ -2286,6 +2716,8 @@
     "model": "uploader.symptom",
     "pk": 23347,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
         "disease": 12,
         "days_symptomatic": 11,
@@ -2297,6 +2729,8 @@
     "model": "uploader.symptom",
     "pk": 23348,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
         "disease": 13,
         "days_symptomatic": 11,
@@ -2308,6 +2742,8 @@
     "model": "uploader.symptom",
     "pk": 23349,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
         "disease": 14,
         "days_symptomatic": 11,
@@ -2319,6 +2755,8 @@
     "model": "uploader.symptom",
     "pk": 23350,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
         "disease": 15,
         "days_symptomatic": 11,
@@ -2330,6 +2768,8 @@
     "model": "uploader.symptom",
     "pk": 23351,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
         "disease": 16,
         "days_symptomatic": 11,
@@ -2341,6 +2781,8 @@
     "model": "uploader.symptom",
     "pk": 23352,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
         "disease": 17,
         "days_symptomatic": 11,
@@ -2352,6 +2794,8 @@
     "model": "uploader.symptom",
     "pk": 23353,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
         "disease": 18,
         "days_symptomatic": 11,
@@ -2363,6 +2807,8 @@
     "model": "uploader.symptom",
     "pk": 23354,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
         "disease": 19,
         "days_symptomatic": 11,
@@ -2374,6 +2820,8 @@
     "model": "uploader.symptom",
     "pk": 23355,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
         "disease": 20,
         "days_symptomatic": 11,
@@ -2385,6 +2833,8 @@
     "model": "uploader.symptom",
     "pk": 23356,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
         "disease": 21,
         "days_symptomatic": 11,
@@ -2396,6 +2846,8 @@
     "model": "uploader.symptom",
     "pk": 23357,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
         "disease": 22,
         "days_symptomatic": 11,
@@ -2407,6 +2859,8 @@
     "model": "uploader.symptom",
     "pk": 23358,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
         "disease": 3,
         "days_symptomatic": 12,
@@ -2418,6 +2872,8 @@
     "model": "uploader.symptom",
     "pk": 23359,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
         "disease": 4,
         "days_symptomatic": 12,
@@ -2429,6 +2885,8 @@
     "model": "uploader.symptom",
     "pk": 23360,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
         "disease": 5,
         "days_symptomatic": 12,
@@ -2440,6 +2898,8 @@
     "model": "uploader.symptom",
     "pk": 23361,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
         "disease": 6,
         "days_symptomatic": 12,
@@ -2451,6 +2911,8 @@
     "model": "uploader.symptom",
     "pk": 23362,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
         "disease": 7,
         "days_symptomatic": 12,
@@ -2462,6 +2924,8 @@
     "model": "uploader.symptom",
     "pk": 23363,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
         "disease": 8,
         "days_symptomatic": 12,
@@ -2473,6 +2937,8 @@
     "model": "uploader.symptom",
     "pk": 23364,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
         "disease": 9,
         "days_symptomatic": 12,
@@ -2484,6 +2950,8 @@
     "model": "uploader.symptom",
     "pk": 23365,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
         "disease": 10,
         "days_symptomatic": 12,
@@ -2495,6 +2963,8 @@
     "model": "uploader.symptom",
     "pk": 23366,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
         "disease": 11,
         "days_symptomatic": 12,
@@ -2506,6 +2976,8 @@
     "model": "uploader.symptom",
     "pk": 23367,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
         "disease": 12,
         "days_symptomatic": 12,
@@ -2517,6 +2989,8 @@
     "model": "uploader.symptom",
     "pk": 23368,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
         "disease": 13,
         "days_symptomatic": 12,
@@ -2528,6 +3002,8 @@
     "model": "uploader.symptom",
     "pk": 23369,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
         "disease": 14,
         "days_symptomatic": 12,
@@ -2539,6 +3015,8 @@
     "model": "uploader.symptom",
     "pk": 23370,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
         "disease": 15,
         "days_symptomatic": 12,
@@ -2550,6 +3028,8 @@
     "model": "uploader.symptom",
     "pk": 23371,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
         "disease": 16,
         "days_symptomatic": 12,
@@ -2561,6 +3041,8 @@
     "model": "uploader.symptom",
     "pk": 23372,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
         "disease": 17,
         "days_symptomatic": 12,
@@ -2572,6 +3054,8 @@
     "model": "uploader.symptom",
     "pk": 23373,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
         "disease": 18,
         "days_symptomatic": 12,
@@ -2583,6 +3067,8 @@
     "model": "uploader.symptom",
     "pk": 23374,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
         "disease": 19,
         "days_symptomatic": 12,
@@ -2594,6 +3080,8 @@
     "model": "uploader.symptom",
     "pk": 23375,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
         "disease": 20,
         "days_symptomatic": 12,
@@ -2605,6 +3093,8 @@
     "model": "uploader.symptom",
     "pk": 23376,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
         "disease": 21,
         "days_symptomatic": 12,
@@ -2616,6 +3106,8 @@
     "model": "uploader.symptom",
     "pk": 23377,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
         "disease": 22,
         "days_symptomatic": 12,
@@ -2628,13 +3120,17 @@
     "pk": 1,
     "fields": {
         "spectrometer": "Agilent Cory 630",
-        "atr_crystal": "ZnSe"
+        "atr_crystal": "ZnSe",
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
     }
 },
 {
     "model": "uploader.biosample",
     "pk": 1117,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
         "sample_type": "PHARYNGEAL_SWAB",
         "sample_processing": "None",
@@ -2646,6 +3142,8 @@
     "model": "uploader.biosample",
     "pk": 1118,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
         "sample_type": "PHARYNGEAL_SWAB",
         "sample_processing": "None",
@@ -2657,6 +3155,8 @@
     "model": "uploader.biosample",
     "pk": 1119,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
         "sample_type": "PHARYNGEAL_SWAB",
         "sample_processing": "None",
@@ -2668,6 +3168,8 @@
     "model": "uploader.biosample",
     "pk": 1120,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
         "sample_type": "PHARYNGEAL_SWAB",
         "sample_processing": "None",
@@ -2679,6 +3181,8 @@
     "model": "uploader.biosample",
     "pk": 1121,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
         "sample_type": "PHARYNGEAL_SWAB",
         "sample_processing": "None",
@@ -2690,6 +3194,8 @@
     "model": "uploader.biosample",
     "pk": 1122,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
         "sample_type": "PHARYNGEAL_SWAB",
         "sample_processing": "None",
@@ -2701,6 +3207,8 @@
     "model": "uploader.biosample",
     "pk": 1123,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
         "sample_type": "PHARYNGEAL_SWAB",
         "sample_processing": "None",
@@ -2712,6 +3220,8 @@
     "model": "uploader.biosample",
     "pk": 1124,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
         "sample_type": "PHARYNGEAL_SWAB",
         "sample_processing": "None",
@@ -2723,6 +3233,8 @@
     "model": "uploader.biosample",
     "pk": 1125,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
         "sample_type": "PHARYNGEAL_SWAB",
         "sample_processing": "None",
@@ -2734,6 +3246,8 @@
     "model": "uploader.biosample",
     "pk": 1126,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
         "sample_type": "PHARYNGEAL_SWAB",
         "sample_processing": "None",
@@ -2745,6 +3259,8 @@
     "model": "uploader.spectraldata",
     "pk": 1117,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "instrument": 1,
         "bio_sample": 1117,
         "spectra_measurement": "ATR_FTIR",
@@ -2758,6 +3274,8 @@
     "model": "uploader.spectraldata",
     "pk": 1118,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "instrument": 1,
         "bio_sample": 1118,
         "spectra_measurement": "ATR_FTIR",
@@ -2771,6 +3289,8 @@
     "model": "uploader.spectraldata",
     "pk": 1119,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "instrument": 1,
         "bio_sample": 1119,
         "spectra_measurement": "ATR_FTIR",
@@ -2784,6 +3304,8 @@
     "model": "uploader.spectraldata",
     "pk": 1120,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "instrument": 1,
         "bio_sample": 1120,
         "spectra_measurement": "ATR_FTIR",
@@ -2797,6 +3319,8 @@
     "model": "uploader.spectraldata",
     "pk": 1121,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "instrument": 1,
         "bio_sample": 1121,
         "spectra_measurement": "ATR_FTIR",
@@ -2810,6 +3334,8 @@
     "model": "uploader.spectraldata",
     "pk": 1122,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "instrument": 1,
         "bio_sample": 1122,
         "spectra_measurement": "ATR_FTIR",
@@ -2823,6 +3349,8 @@
     "model": "uploader.spectraldata",
     "pk": 1123,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "instrument": 1,
         "bio_sample": 1123,
         "spectra_measurement": "ATR_FTIR",
@@ -2836,6 +3364,8 @@
     "model": "uploader.spectraldata",
     "pk": 1124,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "instrument": 1,
         "bio_sample": 1124,
         "spectra_measurement": "ATR_FTIR",
@@ -2849,6 +3379,8 @@
     "model": "uploader.spectraldata",
     "pk": 1125,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "instrument": 1,
         "bio_sample": 1125,
         "spectra_measurement": "ATR_FTIR",
@@ -2862,6 +3394,8 @@
     "model": "uploader.spectraldata",
     "pk": 1126,
     "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
         "instrument": 1,
         "bio_sample": 1126,
         "spectra_measurement": "ATR_FTIR",

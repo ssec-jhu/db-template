@@ -7,6 +7,14 @@ import biospecdb.util
 from uploader.sql import drop_view, update_view
 
 
+class DatedModel(models.Model):
+    class Meta:
+        abstract = True
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
 class TextChoices(models.TextChoices):
     @classmethod
     def _missing_(cls, value):
@@ -72,7 +80,7 @@ class SqlView:
         return update_view(cls._meta.db_table, sql, *args, params=params, **kwargs)
 
 
-class ModelWithViewDependency(models.Model):
+class ModelWithViewDependency(DatedModel):
     class Meta:
         abstract = True
 
