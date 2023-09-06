@@ -1,6 +1,9 @@
+from enum import auto
+
 from django.db import models, transaction
 from django.utils.module_loading import import_string
 
+import biospecdb.util
 from uploader.sql import drop_view, update_view
 
 
@@ -18,6 +21,25 @@ class TextChoices(models.TextChoices):
                                  item.label.lower().replace('_', '-'),
                                  item.value.lower().replace('_', '-')):
                 return item
+
+
+class Types(TextChoices):
+    BOOL = auto()
+    STR = auto()
+    INT = auto()
+    FLOAT = auto()
+
+    def cast(self, value):
+        if self.name == "BOOL":
+            return biospecdb.util.to_bool(value)
+        elif self.name == "STR":
+            return str(value)
+        elif self.name == "INT":
+            return int(value)
+        elif self.name == "FLOAT":
+            return float(value)
+        else:
+            raise NotImplementedError
 
 
 class SqlView:

@@ -70,10 +70,22 @@ def test_pytest_fixture_order(mock_data_from_files, qcannotators):
         assert annotation.value is None
 
 
+def test_annotator_cast(qcannotators):
+    annotator = QCAnnotator.objects.get(pk=1)
+    assert annotator.cast("3.14") == 3.14
+
+
+def test_annotation_get_value(qcannotators):
+    annotator = QCAnnotator.objects.get(pk=1)
+    annotation = QCAnnotation(annotator=annotator)
+    annotation.value = "3.14"
+    assert annotation.get_value() == 3.14
+
+
 @pytest.mark.parametrize("mock_data_from_files", [True], indirect=True)  # AUTO_ANNOTATE = True
 def test_auto_annotate_with_new_spectral_data(qcannotators, mock_data_from_files):
     for expected_results, annotation in zip(expected_sum_results, QCAnnotation.objects.all()):
-        assert pytest.approx(float(annotation.value)) == expected_results
+        assert pytest.approx(annotation.get_value()) == expected_results
 
 
 def test_auto_annotate_with_new_default_annotator(monkeypatch, mock_data_from_files):
@@ -82,12 +94,12 @@ def test_auto_annotate_with_new_default_annotator(monkeypatch, mock_data_from_fi
 
     monkeypatch.setattr(settings, "RUN_DEFAULT_ANNOTATORS_WHEN_SAVED", True)
 
-    annotator = QCAnnotator(name="sum", fully_qualified_class_name="biospecdb.qc.qcfilter.QcSum")
+    annotator = QCAnnotator(name="sum", fully_qualified_class_name="biospecdb.qc.qcfilter.QcSum", value_type="FLOAT")
     annotator.full_clean()
     annotator.save()
 
     for expected_results, annotation in zip(expected_sum_results, QCAnnotation.objects.all()):
-        assert pytest.approx(float(annotation.value)) == expected_results
+        assert pytest.approx(annotation.get_value()) == expected_results
 
 
 def test_empty_get_annotators(mock_data_from_files):
@@ -114,7 +126,9 @@ def test_get_unrun_annotators(monkeypatch, qcannotators, mock_data_from_files):
 
     monkeypatch.setattr(settings, "RUN_DEFAULT_ANNOTATORS_WHEN_SAVED", False)
 
-    annotator = QCAnnotator(name="tets", fully_qualified_class_name="biospecdb.qc.qcfilter.QcTestDummyTrue")
+    annotator = QCAnnotator(name="test",
+                            fully_qualified_class_name="biospecdb.qc.qcfilter.QcTestDummyTrue",
+                            value_type="BOOL")
     annotator.full_clean()
     annotator.save()
 
@@ -129,7 +143,9 @@ def test_get_new_unrun_annotators(monkeypatch, qcannotators, mock_data_from_file
 
     monkeypatch.setattr(settings, "RUN_DEFAULT_ANNOTATORS_WHEN_SAVED", True)
 
-    annotator = QCAnnotator(name="tets", fully_qualified_class_name="biospecdb.qc.qcfilter.QcTestDummyTrue")
+    annotator = QCAnnotator(name="test",
+                            fully_qualified_class_name="biospecdb.qc.qcfilter.QcTestDummyTrue",
+                            value_type="BOOL")
     annotator.full_clean()
     annotator.save()
 
@@ -156,14 +172,14 @@ def test_management_command(mock_data_from_files, qcannotators):
     call_command("run_qc_annotators")
 
     for expected_results, annotation in zip(expected_sum_results, QCAnnotation.objects.all()):
-        assert pytest.approx(float(annotation.value)) == expected_results
+        assert pytest.approx(annotation.get_value()) == expected_results
 
 
 @pytest.mark.parametrize("mock_data_from_files", [True], indirect=True)  # AUTO_ANNOTATE = True
 def test_management_command_no_reruns(monkeypatch, qcannotators, mock_data_from_files):
     # Test annotation values are as expected (run when saving mock_data_from_files).
     for expected_results, annotation in zip(expected_sum_results, QCAnnotation.objects.all()):
-        assert pytest.approx(float(annotation.value)) == expected_results
+        assert pytest.approx(annotation.get_value()) == expected_results
 
     # We'll need this later.
     old_QcSum_run = biospecdb.qc.qcfilter.QcSum.run
@@ -189,7 +205,7 @@ def test_management_command_no_reruns(monkeypatch, qcannotators, mock_data_from_
 
     # Test that the patch reversion worked.
     for expected_results, annotation in zip(expected_sum_results, QCAnnotation.objects.all()):
-        assert pytest.approx(float(annotation.value)) == expected_results
+        assert pytest.approx(annotation.get_value()) == expected_results
 
     # Now this is the actual test... (everything above was just a sanity check for the test itself)
     # Re-patch with QcTestDummyTrue
@@ -198,4 +214,4 @@ def test_management_command_no_reruns(monkeypatch, qcannotators, mock_data_from_
     # ...and test that ``--no_reruns`` works as annotations != True.
     call_command("run_qc_annotators", "--no_reruns")
     for expected_results, annotation in zip(expected_sum_results, QCAnnotation.objects.all()):
-        assert pytest.approx(float(annotation.value)) == expected_results
+        assert pytest.approx(annotation.get_value()) == expected_results

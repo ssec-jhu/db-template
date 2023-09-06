@@ -15,7 +15,7 @@ import biospecdb.util
 from biospecdb.qc.qcfilter import QcFilter
 from uploader.loaddata import save_data_to_db
 from uploader.sql import secure_name
-from uploader.base_models import ModelWithViewDependency, SqlView, TextChoices
+from uploader.base_models import ModelWithViewDependency, SqlView, TextChoices, Types
 
 
 # Changes here need to be migrated, committed, and activated.
@@ -170,6 +170,8 @@ class Visit(models.Model):
 class Disease(ModelWithViewDependency):
     """ Model an individual disease, symptom, or health condition. A patient's instance are stored as models.Symptom"""
 
+    Types = Types
+
     sql_view_dependencies = ("uploader.models.VisitSymptomsView",)
 
     class Meta:
@@ -177,24 +179,6 @@ class Disease(ModelWithViewDependency):
                                                name="unique_disease_name"),
                        models.UniqueConstraint(Lower("alias"),
                                                name="unique_alias_name")]
-
-    class Types(TextChoices):
-        BOOL = auto()
-        STR = auto()
-        INT = auto()
-        FLOAT = auto()
-
-        def cast(self, value):
-            if self.name == "BOOL":
-                return biospecdb.util.to_bool(value)
-            elif self.name == "STR":
-                return str(value)
-            elif self.name == "INT":
-                return int(value)
-            elif self.name == "FLOAT":
-                return float(value)
-            else:
-                raise NotImplementedError
 
     # NOTE: See above constraint for case-insensitive uniqueness.
     name = models.CharField(max_length=128)
@@ -527,6 +511,8 @@ def validate_qc_annotator_import(value):
 
 
 class QCAnnotator(models.Model):
+    Types = Types
+
     name = models.CharField(max_length=128, unique=True, blank=False, null=False)
     fully_qualified_class_name = models.CharField(max_length=128,
                                                   blank=False,
@@ -536,6 +522,7 @@ class QCAnnotator(models.Model):
                                                             " implementation of QCFilter, e.g.,"
                                                             "'myProject.qc.myQCFilter'.",
                                                   validators=[validate_qc_annotator_import])
+    value_type = models.CharField(blank=False, null=False, max_length=128, default=Types.BOOL, choices=Types.choices)
     description = models.CharField(blank=True, null=True, max_length=256)
     default = models.BooleanField(default=True,
                                   blank=False,
@@ -544,6 +531,10 @@ class QCAnnotator(models.Model):
 
     def __str__(self):
         return f"{self.name}: {self.fully_qualified_class_name}"
+
+    def cast(self, value):
+        if value:
+            return self.Types(self.value_type).cast(value)
 
     def run(self, *args, **kwargs):
         obj = import_string(self.fully_qualified_class_name)
@@ -567,11 +558,19 @@ class QCAnnotation(models.Model):
 
     value = models.CharField(blank=True, null=True, max_length=128)
 
-    annotator = models.ForeignKey(QCAnnotator, on_delete=models.CASCADE, related_name="qc_annotation")
+    annotator = models.ForeignKey(QCAnnotator,
+                                  blank=False,
+                                  null=False,
+                                  on_delete=models.CASCADE,
+                                  related_name="qc_annotation")
     spectral_data = models.ForeignKey(SpectralData, on_delete=models.CASCADE, related_name="qc_annotation")
 
     def __str__(self):
         return f"{self.annotator.name}: {self.value}"
+
+    def get_value(self):
+        if self.annotator:
+            return self.annotator.cast(self.value)
 
     def run(self, save=True):
         # NOTE: This waits. See https://github.com/ssec-jhu/biospecdb/issues/77

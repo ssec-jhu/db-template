@@ -11,9 +11,13 @@ admin.site.register(SpectralData)
 admin.site.register(Symptom)
 admin.site.register(Visit)
 admin.site.register(UploadedFile)
-admin.site.register(QCAnnotator)
 
 
 @admin.register(QCAnnotation)
 class QCAnnotationAdmin(admin.ModelAdmin):
-    exclude = ('value',)
+    readonly_fields = ("value",)
+
+
+@admin.register(QCAnnotator)
+class QCAnnotatorAdmin(admin.ModelAdmin):
+    readonly_fields = ("value_type",)
