@@ -1,18 +1,35 @@
 from abc import ABC, abstractmethod
 
-from uploader.models import BioSample
-from uploader.models import Patient as Symptoms
-
 
 class QCValidationError(Exception):
     ...
 
 
 class QcFilter(ABC):
-
     @abstractmethod
-    def validate(self, symptoms: Symptoms, sample: BioSample) -> bool:
+    def run(self, spectral_data):
         """
+            param: spectral_data - uploader.models.SpectralData
+
             Raises QCValidationError.
         """
         ...
+
+
+class QcSum(QcFilter):
+    def run(self, spectral_data: "SpectralData"):  # noqa: F821
+        df = spectral_data.get_spectral_df()
+        res = df.sum(axis=0)["intensity"]
+        return res
+
+
+class QcTestDummyTrue(QcFilter):
+    """ For testing purposes only. """
+    def run(self, spectral_data):
+        return True
+
+
+class QcTestDummyFalse(QcFilter):
+    """ For testing purposes only. """
+    def run(self, spectral_data):
+        return False
