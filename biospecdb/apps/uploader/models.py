@@ -144,6 +144,10 @@ class Visit(models.Model):
         """ Model validation. """
         super().clean()
 
+        # Validate that previous visit isn't this visit.
+        if self.previous_visit is not None and (self.previous_visit.pk == self.pk):
+            raise ValidationError(_("Previous visit cannot not be this current visit"))
+
         # Validate visits belong to same patient.
         if self.previous_visit is not None and (self.previous_visit.patient_id != self.patient_id):
             raise ValidationError(_("Previous visits do not belong to this patient!"), code="invalid")
