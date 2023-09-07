@@ -70,7 +70,9 @@ class SymptomAdmin(admin.ModelAdmin):
     search_help_text = "Disease OR patient ID"
 
     def get_search_results(self, request, queryset, search_term):
-        """ search_fields filters with an AND when we need an OR """
+        """ search_fields filters with an AND when we need an OR
+            See https://docs.djangoproject.com/en/4.2/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields
+        """
         queryset, may_have_duplicates = super().get_search_results(
             request,
             queryset,
@@ -134,7 +136,9 @@ class BioSampleAdmin(admin.ModelAdmin):
     search_help_text = "Sample type OR patient ID"
 
     def get_search_results(self, request, queryset, search_term):
-        """ search_fields filters with an AND when we need an OR """
+        """ search_fields filters with an AND when we need an OR
+            See https://docs.djangoproject.com/en/4.2/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields
+        """
         queryset, may_have_duplicates = super().get_search_results(
             request,
             queryset,
