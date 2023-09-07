@@ -63,10 +63,17 @@ class TestVisit:
             visit.full_clean()
 
     def test_previous_visit_patient_age_validation(self, db, visits):
-        visit = Visit.objects.create(patient=Patient.objects.get(pk="437de0d7-6618-4445-bab2-03822310b0ef"),
-                                     previous_visit=Visit.objects.get(pk=1),
-                                     patient_age=20)
-        with pytest.raises(ValidationError):
+        previous_visit = Visit.objects.get(pk=1)
+        visit = Visit(patient=previous_visit.patient,
+                      previous_visit=previous_visit,
+                      patient_age=previous_visit.patient_age - 1)
+        with pytest.raises(ValidationError, match="Previous visit must NOT be older than this one"):
+            visit.full_clean()
+
+    def test_circular_previous_visit(self, db, visits):
+        visit = Visit.objects.get(pk=1)
+        visit.previous_visit = visit
+        with pytest.raises(ValidationError, match="Previous visit cannot not be this current visit"):
             visit.full_clean()
 
 
