@@ -24,6 +24,7 @@ dependencies = [
 dev = [
     "bandit>=1.7",
     "build",
+    "factory-boy",
     "pytest",
     "pytest-cov",
     "pytest-django",

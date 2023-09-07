@@ -47,8 +47,6 @@ class ZipSpectralDataMixin:
         if not settings.EXPLORER_DATA_EXPORTERS_INCLUDE_DATA_FILES:
             return output
 
-        media_root = Path(settings.MEDIA_ROOT)
-
         # Collect SpectralData files and zip along with query data from self._get_output().
         if settings.EXPLORER_DATA_EXPORTERS_ALLOW_DATA_FILE_ALIAS:
             # Spectral data files are modeled by the Spectraldata.data field, however, the sql query could have aliased
@@ -56,7 +54,7 @@ class ZipSpectralDataMixin:
             # entries for some marker indicating that they are spectral data files, where this "marker" is the upload
             # directory - SpectralData.data.field.upload_to.
 
-            upload_dir = str(media_root / Path(SpectralData.data.field.upload_to))
+            upload_dir = SpectralData.data.field.upload_to  # NOTE: We don't need to inc. the MEDIA_ROOT for this.
             data_files = []
             for row in res.data:
                 for item in row:
@@ -75,7 +73,7 @@ class ZipSpectralDataMixin:
 
                 # Add all data files to zipfile.
                 for filename in data_files:
-                    archive.write(media_root / Path(filename))
+                    archive.write(Path(filename))
             temp.seek(0)
             output = temp
             self.is_zip = True
