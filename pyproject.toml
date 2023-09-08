@@ -15,6 +15,7 @@ dependencies = [
     "kaleido",
     "openpyxl",
     "pandas",
+    "plotly",
     "uvicorn",
     "xlsxwriter"
 ]
