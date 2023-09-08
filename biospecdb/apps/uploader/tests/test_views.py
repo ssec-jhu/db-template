@@ -106,3 +106,7 @@ def test_view_update_on_disease_save(mock_data):
 
     # Assert that new disease exists without having updated actual view.
     execute_sql(f"select my_new_disease from {FullPatientView._meta.db_table}")
+
+
+def test_update_sql_views_command(mock_data, sql_views):
+    execute_sql(f"select * from {FullPatientView._meta.db_table}")

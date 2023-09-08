@@ -11,6 +11,12 @@ DATA_PATH = Path(__file__).parent / "data"
 
 
 @pytest.fixture(scope="function")
+def sql_views(django_db_blocker):
+    with django_db_blocker.unblock():
+        call_command('update_sql_views')
+
+
+@pytest.fixture(scope="function")
 def diseases(django_db_blocker):
     with django_db_blocker.unblock():
         call_command('loaddata', 'diseases.json')
