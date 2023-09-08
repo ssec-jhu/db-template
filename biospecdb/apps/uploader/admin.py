@@ -45,7 +45,6 @@ class QCAnnotationAdmin(admin.ModelAdmin):
 class QCAnnotatorAdmin(admin.ModelAdmin):
     search_fields = ["name"]
     search_help_text = "Name"
-    readonly_fields = ("value_type",)
     ordering = ("name",)
 
     list_display = ["name", "fully_qualified_class_name", "default", "value_type"]
