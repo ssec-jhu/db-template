@@ -12,4 +12,4 @@ class UploaderConfig(AppConfig):
 
         # Monkeypatch explorer charts.
         explorer.charts.get_pie_chart = get_pie_chart
-        # explorer.charts.get_line_chart = get_line_chart
+        explorer.charts.get_line_chart = get_line_chart
