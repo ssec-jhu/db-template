@@ -5,6 +5,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
+from django.conf import settings
 from biospecdb.util import spectral_data_from_csv
 from uploader.models import Disease, SpectralData
 
@@ -33,7 +34,10 @@ def get_pie_chart(result: "QueryResult") -> Optional[str]:  # noqa: F821
     try:
         df = count_bool_diseases(result)
     except Exception:
-        return
+        if settings.DEBUG:
+            raise
+        else:
+            return
 
     if df is None:
         return
@@ -63,4 +67,7 @@ def get_line_chart(result: "QueryResult") -> Optional[str]:  # noqa: F821
 
         return fig_to_html(fig)
     except Exception:
-        return
+        if settings.DEBUG:
+            raise
+        else:
+            return
