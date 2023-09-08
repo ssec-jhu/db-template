@@ -1,15 +1,11 @@
 from typing import Optional
 
-import explorer.charts
+# from explorer.charts import get_svg
 
 
-def get_pie_chart(result: "QueryResult") -> Optional[str]:
+def get_pie_chart(result: "QueryResult") -> Optional[str]:  # noqa: F821
     raise NotImplementedError
 
 
-def get_line_chart(result: "QueryResult") -> Optional[str]:
+def get_line_chart(result: "QueryResult") -> Optional[str]:  # noqa: F821
     raise NotImplementedError
-
-
-explorer.charts.get_pie_chart = get_pie_chart
-explorer.charts.get_line_chart = get_line_chart
