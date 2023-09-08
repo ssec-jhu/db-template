@@ -11,7 +11,7 @@ license = {file = "LICENSE"}
 requires-python = ">=3.11"
 dependencies = [
     "django",
-    "django-sql-explorer",
+    "django-sql-explorer[charts]",
     "openpyxl",
     "pandas",
     "uvicorn",
