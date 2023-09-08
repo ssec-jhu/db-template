@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 
 from django.conf import settings
 from biospecdb.util import spectral_data_from_csv
-from uploader.models import Disease, SpectralData
+from uploader.models import Disease, Patient, SpectralData
 
 
 def fig_to_html(fig) -> str:
@@ -33,17 +33,17 @@ def count_bool_diseases(result: "QueryResult"):  # noqa: F821
 def get_pie_chart(result: "QueryResult") -> Optional[str]:  # noqa: F821
     try:
         df = count_bool_diseases(result)
+
+        if df is None:
+            return
+
+        fig = px.pie(df, values="count", names="disease", title=f"SQL query: '{result.sql}'")
+        return fig_to_html(fig)
     except Exception:
         if settings.DEBUG:
             raise
         else:
             return
-
-    if df is None:
-        return
-
-    fig = px.pie(df, values="count", names="disease", title=f"SQL query: '{result.sql}'")
-    return fig_to_html(fig)
 
 
 def get_line_chart(result: "QueryResult") -> Optional[str]:  # noqa: F821
@@ -52,13 +52,12 @@ def get_line_chart(result: "QueryResult") -> Optional[str]:  # noqa: F821
 
     try:
         df = pd.DataFrame(result.data, columns=result.header_strings)
-        df = df[["patient_id", SpectralData.data.field.name]]
+        df = df[[Patient.patient_id.field.name, SpectralData.data.field.name]]
 
         fig = go.Figure()
         fig.update_layout(xaxis_title="Wavelength",
                           yaxis_title="Intensity",
-                          title=f"Spectral Data for SQL query: '{result.sql}'"
-)
+                          title=f"Spectral Data for SQL query: '{result.sql}'")
         for _, (patient_id, filename) in df.iterrows():
             spectral_data = spectral_data_from_csv(filename)
             fig.add_scatter(x=spectral_data["wavelength"],
