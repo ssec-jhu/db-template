@@ -39,6 +39,7 @@ class TestDataInputForm:
             form_has_changed = data_input_form.has_changed()
             assert form_has_changed is True  # This asserts that the form has changed.
 
+
     def test_mock_data_from_form_and_spectral_file_fixture(self, mock_data_from_form_and_spectral_file):
         n_patients = 1
         assert len(Patient.objects.all()) == n_patients
