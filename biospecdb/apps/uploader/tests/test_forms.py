@@ -1,7 +1,7 @@
 import django.core.files
 import pytest
 
-from uploader.models import UploadedFile, Patient, Visit, BioSample, SpectralData, Instrument
+from uploader.models import UploadedFile, Patient, Visit, BioSample, SpectralData, Instrument, Disease
 from uploader.forms import DataInputForm
 from conftest import DATA_PATH
 
@@ -31,7 +31,7 @@ class TestDataInputForm:
                 files={
                     "spectral_data": django.core.files.File(spectral_record, name=spectral_file_path.name)
                 }
-            )   
+            )
             data_input_form.is_valid()
             data_input_form.has_changed()
 
@@ -78,3 +78,46 @@ class TestDataInputForm:
         
         thawing_time_exists = BioSample.objects.filter(thawing_time=0).exists()
         assert thawing_time_exists
+        
+        
+    def test_dynamic_form_rendering(self, mock_data_from_form_and_spectral_file):
+        spectral_file_path = (DATA_PATH/"sample").with_suffix(UploadedFile.FileFormats.XLSX)
+        
+        # Add new disease
+        meningitis = Disease(
+            name = 'Meningitis',
+            description = 'An inflammation of the protective membranes covering the brain and spinal cord',
+            alias = 'meningitis',
+            value_class = 'BOOL',
+        )
+        meningitis.save()
+        
+        with spectral_file_path.open(mode="rb") as spectral_record:
+            data_input_form = DataInputForm(
+                data={
+                    "patient_id": 1,
+                    "gender": 'M',
+                    "days_symptomatic": 1,
+                    "patient_age": 1,
+                    "spectra_measurement": 'ATR_FTIR',
+                    "spectrometer": 'AGILENT_CORY_630',
+                    "atr_crystal": 'ZNSE',
+                    "acquisition_time": 1,
+                    "n_coadditions": 32,
+                    "resolution": 0,
+                    "sample_type": 'PHARYNGEAL_SWAB',
+                    "sample_processing": 'None',
+                    "freezing_temp": 0,
+                    "thawing_time": 0,
+                },
+                files={
+                    "spectral_data": django.core.files.File(spectral_record, name=spectral_file_path.name)
+                }
+            )
+            data_input_form.is_valid()
+            
+        meningitis_exists = Disease.objects.filter(name='Meningitis').exists()
+        assert meningitis_exists
+        
+        meningit_exists = Disease.objects.filter(name='Meningit').exists()
+        assert not meningit_exists
