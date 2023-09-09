@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from .forms import FileUploadForm, DataInputForm
 from openpyxl import load_workbook
+from .forms import FileUploadForm, DataInputForm, NaNValuesException
 
 def home(request):
     return render(request, 'home.html')
@@ -27,9 +27,16 @@ def display_xlsx(request):
 def data_input(request):
     if request.method == 'POST':
         form = DataInputForm(request.POST, request.FILES)
-        if form.is_valid():
+        try:
+            form.is_valid()
+        except NaNValuesException:
             patient_id = form.cleaned_data['patient_id']
-            return render(request, 'DataInputForm_Success.html', {'form': form, 'patient_id': patient_id})
+            return render(request, 'DataInputForm_Failure.html', {'form': form, 'patient_id': patient_id})
+            
+        patient_id = form.cleaned_data['patient_id']
+        return render(request, 'DataInputForm_Success.html', {'form': form, 'patient_id': patient_id})
+
     else:
         form = DataInputForm()
+        
     return render(request, 'DataInputForm.html', {'form': form})
