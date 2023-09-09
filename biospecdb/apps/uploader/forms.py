@@ -10,6 +10,11 @@ class FileUploadForm(forms.ModelForm):
         model = UploadedFile
         fields = ["meta_data_file", "spectral_data_file"]
 
+class NaNValuesException(Exception):
+    def __init__(self, message="NaN values found in the joined DataFrame"):
+        self.message = message
+        super().__init__(self.message)
+        
 class DataInputForm(forms.Form):
         
     patient_id = forms.IntegerField(required=True,
@@ -107,6 +112,10 @@ class DataInputForm(forms.Form):
  
         # This uses a join so returns the joined data so that it doesn't go to waste if needed, which it is here.
         joined_data = UploadedFile.join_with_validation(meta_data, spec_data)
-
-        # Ingest into DB.
-        save_data_to_db(None, None, joined_data=joined_data)
+        
+        if joined_data[spec_data.columns].isna().any().any():
+            # No match between meta_data and spec_data based on patient_id field
+            raise NaNValuesException
+        else:
+            # Ingest into DB.
+            save_data_to_db(None, None, joined_data=joined_data)
