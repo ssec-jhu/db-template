@@ -2,17 +2,20 @@ from copy import deepcopy
 from enum import auto
 import uuid
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator, MinValueValidator, MaxValueValidator
 from django.db import models
 from django.db.models.functions import Lower
+from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 import pandas as pd
 
 import biospecdb.util
+from biospecdb.qc.qcfilter import QcFilter
 from uploader.loaddata import save_data_to_db
 from uploader.sql import secure_name
-from uploader.base_models import ModelWithViewDependency, SqlView, TextChoices
+from uploader.base_models import ModelWithViewDependency, SqlView, TextChoices, Types
 
 
 # Changes here need to be migrated, committed, and activated.
@@ -141,6 +144,10 @@ class Visit(models.Model):
         """ Model validation. """
         super().clean()
 
+        # Validate that previous visit isn't this visit.
+        if self.previous_visit is not None and (self.previous_visit.pk == self.pk):
+            raise ValidationError(_("Previous visit cannot not be this current visit"))
+
         # Validate visits belong to same patient.
         if self.previous_visit is not None and (self.previous_visit.patient_id != self.patient_id):
             raise ValidationError(_("Previous visits do not belong to this patient!"), code="invalid")
@@ -167,6 +174,8 @@ class Visit(models.Model):
 class Disease(ModelWithViewDependency):
     """ Model an individual disease, symptom, or health condition. A patient's instance are stored as models.Symptom"""
 
+    Types = Types
+
     sql_view_dependencies = ("uploader.models.VisitSymptomsView",)
 
     class Meta:
@@ -174,24 +183,6 @@ class Disease(ModelWithViewDependency):
                                                name="unique_disease_name"),
                        models.UniqueConstraint(Lower("alias"),
                                                name="unique_alias_name")]
-
-    class Types(TextChoices):
-        BOOL = auto()
-        STR = auto()
-        INT = auto()
-        FLOAT = auto()
-
-        def cast(self, value):
-            if self.name == "BOOL":
-                return biospecdb.util.to_bool(value)
-            elif self.name == "STR":
-                return str(value)
-            elif self.name == "INT":
-                return int(value)
-            elif self.name == "FLOAT":
-                return float(value)
-            else:
-                raise NotImplementedError
 
     # NOTE: See above constraint for case-insensitive uniqueness.
     name = models.CharField(max_length=128)
@@ -274,6 +265,9 @@ class Instrument(models.Model):
     class SpectrometerCrystal(TextChoices):
         ZNSE = auto()
 
+    class Meta:
+        unique_together = [["spectrometer", "atr_crystal"]]
+
     spectrometer = models.CharField(default=Spectrometers.AGILENT_CORY_630,
                                     max_length=128,
                                     choices=Spectrometers.choices,
@@ -295,8 +289,7 @@ class BioSample(models.Model):
     visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="bio_sample")
 
     # Sample meta.
-    sample_type = models.CharField(default=SampleKind.PHARYNGEAL_SWAB,
-                                   max_length=128,
+    sample_type = models.CharField(max_length=128,
                                    choices=SampleKind.choices,
                                    verbose_name="Sample Type")
     sample_processing = models.CharField(default="None",
@@ -313,6 +306,10 @@ class BioSample(models.Model):
 
 class SpectralData(models.Model):
     """ Model spectral data measured by spectrometer instrument. """
+
+    class Meta:
+        verbose_name = "Spectral Data"
+        verbose_name_plural = verbose_name
 
     UPLOAD_DIR = "spectral_data/"  # MEDIA_ROOT/spectral_data
 
@@ -343,6 +340,58 @@ class SpectralData(models.Model):
     def __str__(self):
         return f"{self.bio_sample.visit}_pk{self.pk}"
 
+    def get_annotators(self):
+        return list(set([annotation.annotator for annotation in self.qc_annotation.all()]))
+
+    def get_unrun_annotators(self, existing_annotators=None):
+        # Get annotators from existing annotations.
+        if existing_annotators is None:
+            existing_annotators = self.get_annotators()
+
+        # Some default annotators may not have been run yet (newly added), so check.
+        all_default_annotators = QCAnnotator.objects.filter(default=True)
+
+        return list(set(all_default_annotators) - set(existing_annotators))
+
+    def get_spectral_df(self):
+        data_file, ext = biospecdb.util.get_file_info(self.data)
+        if ext != UploadedFile.FileFormats.CSV:
+            raise NotImplementedError()
+        return biospecdb.util.spectral_data_from_csv(data_file)
+
+    #@transaction.atomic  # Really? Not sure if this even can be if run in background...
+    # See https://github.com/ssec-jhu/biospecdb/issues/77
+    def annotate(self, annotator=None, force=False) -> list:
+        # TODO: This needs to return early and run in the background.
+        # See https://github.com/ssec-jhu/biospecdb/issues/77
+
+        existing_annotators = self.get_annotators()
+
+        # Run only the provided annotator.
+        if annotator:
+            if annotator in existing_annotators:
+                if not force:
+                    return
+                annotation = self.qc_annotation.get(annotator=annotator)
+            else:
+                annotation = QCAnnotation(annotator=annotator, spectral_data=self)
+            return [annotation.run()]
+
+        annotations = []
+        # Rerun existing annotations.
+        if force and existing_annotators:
+            for annotation in self.qc_annotation.all():
+                annotations.append(annotation.run())
+
+        new_annotators = self.get_unrun_annotators(existing_annotators=existing_annotators)
+
+        # Create new annotations.
+        for annotator in new_annotators:
+            annotation = QCAnnotation(annotator=annotator, spectral_data=self)
+            annotations.append(annotation.run())
+
+        return annotations if annotations else None  # Don't ret empty list.
+
     def clean(self):
         """ Model validation. """
         super().clean()
@@ -350,7 +399,10 @@ class SpectralData(models.Model):
         # Compute QC metrics.
         # TODO: Even with the QC model being its own thing rather than fields here, we may still want to run here
         # such that new data is complete such that it has associated QC metrics.
-        ...
+        if settings.AUTO_ANNOTATE:
+            # TODO: This should return early and runs async in the background.
+            # See https://github.com/ssec-jhu/biospecdb/issues/77
+            self.annotate()
 
 
 class SymptomsView(SqlView, models.Model):
@@ -450,6 +502,100 @@ class FullPatientView(SqlView, models.Model):
                   left outer join v_visit_symptoms vs on vs.visit_id=v.id
                 """  # nosec B608
         return sql, None
+
+
+def validate_qc_annotator_import(value):
+    try:
+        obj = import_string(value)
+    except ImportError:
+        raise ValidationError(_("'%(a)s' cannot be imported. Server re-deployment may be required."
+                                " Please reach out to the server admin."),
+                              params=dict(a=value),
+                              code="invalid")
+
+    if obj and not issubclass(obj, QcFilter):  # NOTE: issubclass is used since QcFilter is abstract.
+        raise ValidationError(_("fully_qualified_class_name must be of type %(a)s not"
+                                "'%(b)s'"),
+                              params=dict(a=type(obj), b=QcFilter.__qualname__),
+                              code="invalid")
+
+
+class QCAnnotator(models.Model):
+    Types = Types
+
+    name = models.CharField(max_length=128, unique=True, blank=False, null=False)
+    fully_qualified_class_name = models.CharField(max_length=128,
+                                                  blank=False,
+                                                  null=False,
+                                                  unique=True,
+                                                  help_text="This must be the fully qualified Python name for an"
+                                                            " implementation of QCFilter, e.g.,"
+                                                            "'myProject.qc.myQCFilter'.",
+                                                  validators=[validate_qc_annotator_import])
+    value_type = models.CharField(blank=False, null=False, max_length=128, default=Types.BOOL, choices=Types.choices)
+    description = models.CharField(blank=True, null=True, max_length=256)
+    default = models.BooleanField(default=True,
+                                  blank=False,
+                                  null=False,
+                                  help_text="If True it will apply to all spectral data samples.")
+
+    def __str__(self):
+        return f"{self.name}: {self.fully_qualified_class_name}"
+
+    def cast(self, value):
+        if value:
+            return self.Types(self.value_type).cast(value)
+
+    def run(self, *args, **kwargs):
+        obj = import_string(self.fully_qualified_class_name)
+        return obj.run(obj, *args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        if settings.RUN_DEFAULT_ANNOTATORS_WHEN_SAVED and self.default:
+            # Run annotator on all spectral data samples.
+            for data in SpectralData.objects.all():
+                # Since this annotator could have been altered (from django) rather than being new, annotations
+                # of this annotator may already exist, thus we need to force them to be re-run.
+                data.annotate(annotator=self, force=True)
+
+
+class QCAnnotation(models.Model):
+
+    class Meta:
+        unique_together = [["annotator", "spectral_data"]]
+
+    value = models.CharField(blank=True, null=True, max_length=128)
+
+    annotator = models.ForeignKey(QCAnnotator,
+                                  blank=False,
+                                  null=False,
+                                  on_delete=models.CASCADE,
+                                  related_name="qc_annotation")
+    spectral_data = models.ForeignKey(SpectralData, on_delete=models.CASCADE, related_name="qc_annotation")
+
+    def __str__(self):
+        return f"{self.annotator.name}: {self.value}"
+
+    def get_value(self):
+        if self.annotator:
+            return self.annotator.cast(self.value)
+
+    def run(self, save=True):
+        # NOTE: This waits. See https://github.com/ssec-jhu/biospecdb/issues/77
+        value = self.annotator.run(self.spectral_data)
+        self.value = value
+
+        if save:
+            self.save()
+
+        return self.value
+
+    def clean(self):
+        super().clean()
+        self.run()
+
 
 # This is Model B wo/ disease table https://miro.com/app/board/uXjVMAAlj9Y=/
 # class Symptoms(models.Model):
