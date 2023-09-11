@@ -77,10 +77,38 @@ The DB can be dumped to a file using the following:
 
 `` python manage.py dumpdata --indent 4 uploader --exclude uploader.uploadedfile --output test_data.json``
 
-
 ### Usage:
-To be completed by child repo.
 
+## Quality Control Annotations.
+
+Entries in the ``SpectralData`` table can be annotated by running ``QCAnnotators`` on them, thus producing a value
+stored as an ``ACAnnotation`` associated with the ``SpectralData`` entry. The ``SpectralData`` table contains the actual
+spectral data file containing the wavelength and intensity values. It may be desirable to annotate this data with
+certain quality control metrics that can later be used to filter the data. Such quality control functions are to be
+implemented as a subclass of ``Biospecdb.app.uploader.qc.qcfilter.QcFilter``.
+They can then be added to the database belonging to the ``QCAnnotator``
+table. Annotations of this annotators can then either be manually associated with a ``SpectralData`` entry manually via
+the admin form, or by "default" if the ``QCAnnotator.default = True``. They can also be run by using the
+``run_qc_annotator`` Django management command. The behavior for running these annotators and
+population of the ``QCAnnotation`` table is configurable and is described below.
+
+#### Settings:
+
+The following QC annotator settings are available in ``biospecdb.settings``:
+
+ * ``AUTO_ANNOTATE``: If ``True`` and if default annotators exist in the DB, they will be automatically run upon
+                      adding/updating ``SpectralData`` entries. _(Default: True)_
+ * ``RUN_DEFAULT_ANNOTATORS_WHEN_SAVED``: If ``True`` and ``SpectralData`` entries exist in the DB, newly added/updated
+                                          default annotators will be run on all ``SpectralData`` entries.
+                                          _(Default: False)_
+
+#### Management Command:
+
+Running ``python manage.py run_qc_annotors`` will run all existing default annotators and re-run existing annotations on
+all relevant ``SpectralData`` table entries. The option ``--no_reruns`` can be used to prevent re-running existing
+annotations and only run default annotators that have not yet been run.
+NOTE: If ``AUTO_ANNOTATE = RUN_DEFAULT_ANNOTATORS_WHEN_SAVED = False`` using the ``run_qc_annotors`` management command
+is the only mechanism for creating quality control annotations.
 
 # Testing
 _NOTE: The following steps require ``pip install -r requirements/dev.txt``._
