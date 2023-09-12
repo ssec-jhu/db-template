@@ -25,20 +25,22 @@
             {% csrf_token %}
 
             <div class="center-text">
-                <div class="form-field">
+                <div class="form-field" class="fieldWrapper">
                     <label for="{{ form.patient_id.id_for_label }}">Patient ID:</label>
                     {{ form.patient_id }}
+                    {{ form.patient_id.errors }}
                 </div>
-            </div>  
+            </div>
 
             <div class="flex-container">
 
                 <div class="half_width">
                     {% for field in form %}
                         {% if forloop.counter <= 15 and field.name != "patient_id" and field.name != "spectral_data" %}
-                            <div class="form-field">
+                            <div class="form-field" class="fieldWrapper">
                                 <label for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
                                 {{ field }}
+                                {{ field.errors }}
                             </div>
                         {% endif %}
                     {% endfor %}
@@ -48,11 +50,12 @@
                     {% for field in form %}
                         {% if forloop.counter > 15 %}
                             {% if forloop.counter|divisibleby:13 %}
-                                </div><div class="half_width">
+                                </div><div class="half_width" class="fieldWrapper">
                             {% endif %}
                             <div class="form-field">
                                 <label for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
                                 {{ field }}
+                                {{ field.errors }}
                             </div>
                         {% endif %}
                     {% endfor %}
@@ -61,12 +64,13 @@
             </div>
 
             <div class="center-text">
-                <div class="form-field">
+                <div class="form-field" class="fieldWrapper">
                     <label for="{{ form.spectral_data.id_for_label }}">Spectral Data File:</label>
                     {{ form.spectral_data }}
+                    {{ form.spectral_data.errors }}
                 </div>
                 <button type="submit">Submit</button>
-            </div>    
+            </div>
         </form>
     </div>
 </body>

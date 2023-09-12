@@ -32,13 +32,10 @@ def data_input(request):
     if request.method == 'POST':
         form = DataInputForm(request.POST, request.FILES)
 
-        if not form.is_valid():
-            patient_id = form.cleaned_data.get("patient_id", "None")
-            return render(request, 'DataInputForm_Failure.html', {'form': form, 'patient_id': patient_id})
-
-        form.save_to_db()  # Save data to database.
-        patient_id = form.cleaned_data["patient_id"]
-        return render(request, 'DataInputForm_Success.html', {'form': form, 'patient_id': patient_id})
+        if form.is_valid():
+            form.save_to_db()  # Save data to database.
+            patient_id = form.cleaned_data["patient_id"]
+            return render(request, 'DataInputForm_Success.html', {'form': form, 'patient_id': patient_id})
     else:
         form = DataInputForm()
         
