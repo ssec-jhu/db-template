@@ -229,7 +229,7 @@ class Symptom(models.Model):
                                    null=True)
 
     # Str format for actual type/class spec'd by Disease.value_class.
-    disease_value = models.CharField(blank=True, null=True, max_length=128)
+    disease_value = models.CharField(blank=True, null=True, default='', max_length=128)
 
     def clean(self):
         """ Model validation. """
