@@ -1,9 +1,11 @@
 from django.shortcuts import render
 from openpyxl import load_workbook
-from .forms import FileUploadForm, DataInputForm, NaNValuesException
+from .forms import FileUploadForm, DataInputForm
+
 
 def home(request):
     return render(request, 'home.html')
+
 
 def upload_file(request):
     if request.method == 'POST':
@@ -16,6 +18,7 @@ def upload_file(request):
         form = FileUploadForm()
     return render(request, 'MetadataFileUpload.html', {'form': form})
 
+
 def display_xlsx(request):
     workbook = load_workbook('./biospecdb/apps/uploader/uploads/METADATA_barauna2021ultrarapid.xlsx')
     worksheet = workbook.active
@@ -24,18 +27,18 @@ def display_xlsx(request):
         data.append(row)
     return render(request, 'MetadataDisplay.html', {'data': data})
 
+
 def data_input(request):
     if request.method == 'POST':
         form = DataInputForm(request.POST, request.FILES)
-        try:
-            form.is_valid()
-        except NaNValuesException:
-            patient_id = form.cleaned_data['patient_id']
-            return render(request, 'DataInputForm_Failure.html', {'form': form, 'patient_id': patient_id})
-            
-        patient_id = form.cleaned_data['patient_id']
-        return render(request, 'DataInputForm_Success.html', {'form': form, 'patient_id': patient_id})
 
+        if not form.is_valid():
+            patient_id = form.cleaned_data.get("patient_id", "None")
+            return render(request, 'DataInputForm_Failure.html', {'form': form, 'patient_id': patient_id})
+
+        form.save_to_db()  # Save data to database.
+        patient_id = form.cleaned_data["patient_id"]
+        return render(request, 'DataInputForm_Success.html', {'form': form, 'patient_id': patient_id})
     else:
         form = DataInputForm()
         

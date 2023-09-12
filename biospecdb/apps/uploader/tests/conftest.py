@@ -75,13 +75,13 @@ def mock_data_from_files(request, monkeypatch, db, diseases, django_db_blocker, 
                 
  
 @pytest.fixture(scope="function")               
-def mock_data_from_form_and_spectral_file(db, django_db_blocker):
+def mock_data_from_form_and_spectral_file(request, db, django_db_blocker):
     spectral_file_path = (DATA_PATH/"sample").with_suffix(UploadedFile.FileFormats.XLSX)
     with django_db_blocker.unblock():
         with spectral_file_path.open(mode="rb") as spectral_record:
             data_input_form = DataInputForm(
                 data={
-                    "patient_id": 1,
+                    "patient_id": "4efb03c5-27cd-4b40-82d9-c602e0ef7b80",
                     "gender": 'M',
                     "days_symptomatic": 1,
                     "patient_age": 1,
@@ -100,5 +100,9 @@ def mock_data_from_form_and_spectral_file(db, django_db_blocker):
                     "spectral_data": django.core.files.File(spectral_record, name=spectral_file_path.name)
                 }
             )
-            data_input_form.is_valid()
-            data_input_form.has_changed()
+
+            if not request.node.get_closest_marker("dont_validate"):
+                assert data_input_form.is_valid(), data_input_form.errors.as_data()
+
+            if not request.node.get_closest_marker("dont_save_to_db"):
+                data_input_form.save_to_db()
