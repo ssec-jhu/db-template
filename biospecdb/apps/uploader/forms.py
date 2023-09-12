@@ -1,5 +1,6 @@
 import pandas as pd
 from django import forms
+from django.db import models
 
 from uploader.models import UploadedFile, Patient, SpectralData, Instrument, BioSample, Symptom, Disease, Visit
 from biospecdb.util import read_spectral_data_table, get_file_info
@@ -16,13 +17,15 @@ def map_model_fields_to_form_field(field, inc_choices=False, **kwargs):
     # TODO: The following mapping may not be functionally complete.
     field_obj = field.field
     opts = dict(required=not field_obj.blank,
-                initial=field_obj.default,
                 label=field_obj.verbose_name,
                 validators=field_obj.validators,
                 help_text=field_obj.help_text)
 
     if inc_choices:
         opts["choices"] = field_obj.choices
+
+    initial = field_obj.default
+    opts["initial"] = None if initial is models.NOT_PROVIDED else initial
 
     if kwargs:
         opts.update(kwargs)
