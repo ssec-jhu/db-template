@@ -1,0 +1,36 @@
+<!-- DataInputForm_Success.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data Input has been submitted successfully!!!</title>
+    <style>
+        .center-text {
+            text-align: center;
+        }
+        .flex-container {
+            display: flex;
+        }
+        .half_width {
+            width: 50%; /* Set the width to 50% of the container */
+        }
+    </style>
+</head>
+<body>
+    <h1 class="center-text">Data Input with Patient ID {{ patient_id }} has been submitted successfully!!!</h1>
+    <div>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <h2 class="center-text">
+                <div class="flex-container">
+                    <div class="half_width">
+                        <a href="../../uploader/data_input/" class="btn btn-primary">Submit another patient data?</a>
+                    </div>
+                    <a href="../../home/" class="btn btn-secondary">Back to home page</a>
+                </div>
+            </h2>
+
+        </form>
+    </div>
+</body>
+</html>

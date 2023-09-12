@@ -117,7 +117,11 @@ class Patient(models.Model):
         MALE = ("M", _("Male"))  # NOTE: Here variation here act as aliases for bulk column ingestion.
         FEMALE = ("F", _("Female"))  # NOTE: Here variation here act as aliases for bulk column ingestion.
 
-    patient_id = models.UUIDField(unique=True, primary_key=True, default=uuid.uuid4, editable=False)
+    patient_id = models.UUIDField(unique=True,
+                                  primary_key=True,
+                                  default=uuid.uuid4,
+                                  editable=False,
+                                  verbose_name="Patient ID")
     gender = models.CharField(max_length=8, choices=Gender.choices, null=True, verbose_name="Gender (M/F)")
 
     def __str__(self):
@@ -225,7 +229,7 @@ class Symptom(models.Model):
                                    null=True)
 
     # Str format for actual type/class spec'd by Disease.value_class.
-    disease_value = models.CharField(blank=True, null=True, max_length=128)
+    disease_value = models.CharField(blank=True, null=True, default='', max_length=128)
 
     def clean(self):
         """ Model validation. """
@@ -335,7 +339,8 @@ class SpectralData(models.Model):
     # TODO: We could write a custom storage class to write these all to a parquet table instead of individual files.
     # See https://docs.djangoproject.com/en/4.2/howto/custom-file-storage/
     data = models.FileField(upload_to=UPLOAD_DIR,
-                            validators=[FileExtensionValidator(UploadedFile.FileFormats.choices())])
+                            validators=[FileExtensionValidator(UploadedFile.FileFormats.choices())],
+                            verbose_name="Spectral data file")
 
     def __str__(self):
         return f"{self.bio_sample.visit}_pk{self.pk}"

@@ -179,6 +179,9 @@ EXPLORER_DATA_EXPORTERS = [
     ('json', 'explorer.exporters.JSONExporter')
 ]
 
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'biospecdb/apps/uploader/templates/static')]
+
 EXPLORER_SCHEMA_INCLUDE_VIEWS = True
 
 
