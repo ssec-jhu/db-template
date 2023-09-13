@@ -1,8 +1,6 @@
 import pandas as pd
 from django import forms
-from django.core.exceptions import ValidationError
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 
 from uploader.models import UploadedFile, Patient, SpectralData, Instrument, BioSample, Symptom, Disease, Visit
 from biospecdb.util import read_spectral_data_table, get_file_info
@@ -105,14 +103,8 @@ class DataInputForm(forms.Form):
             return
 
         # Dry-run save to run complex model validation without actually saving to DB.
-        try:
-            massaged_data = self.massage_data()
-            self._cleaned_model_objects = save_data_to_db(None, None, joined_data=massaged_data, dry_run=True)
-        except ValidationError:
-            raise
-        except Exception as error:
-            raise
-            raise ValidationError(_("An unexpected error occurred: %(a)s"), params={'a': error}, code="unexpected")
+        massaged_data = self.massage_data()
+        self._cleaned_model_objects = save_data_to_db(None, None, joined_data=massaged_data, dry_run=True)
 
     def save(self):
         # WARNING!: This func is NOT responsible for validation and self.is_valid() must be called first!
