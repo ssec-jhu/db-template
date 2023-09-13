@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from django.core.exceptions import ValidationError
 import django.core.files
 from django.db.utils import IntegrityError
@@ -5,6 +7,8 @@ import pytest
 
 from uploader.models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, Visit, UploadedFile
 from uploader.loaddata import save_data_to_db
+
+import biospecdb.util
 from conftest import DATA_PATH
 
 
@@ -44,6 +48,11 @@ class TestPatient:
     def test_fixture_data(self, db, patients):
         assert len(Patient.objects.all()) == 3
         assert Patient.objects.get(pk="437de0d7-6618-4445-bab2-03822310b0ef")
+
+    def test_editable_patient_id(self, db):
+        patient_id = uuid4()
+        Patient.objects.create(patient_id=patient_id, gender=Patient.Gender.FEMALE)
+        assert Patient.objects.get(pk=patient_id)
 
 
 class TestVisit:
@@ -194,3 +203,14 @@ class TestUploadedFile:
         null_days = len(Symptom.objects.filter(days_symptomatic=None))
         assert null_days > 1
         assert null_days < len(Symptom.objects.all())
+
+    @pytest.mark.parametrize("file_ext", UploadedFile.FileFormats.list())
+    def test_patient_ids(self, mock_data_from_files, file_ext):
+        meta_data_path = (DATA_PATH / "meta_data").with_suffix(file_ext)
+        df = biospecdb.util.read_meta_data(meta_data_path)
+
+        all_patients = Patient.objects.all()
+
+        assert len(all_patients) == len(df)
+        for index in df.index:
+            assert all_patients.get(pk=index)
