@@ -6,11 +6,6 @@ from . import views
 app_name = 'uploader'
 
 urlpatterns = [
-    #path('home/', views.home, name='Home'),
-    #path('', views.upload_file, name='MetadataFileUpload'),
-    #path('', views.upload_file, name='SpectradataFileUpload'),
-    #path('', views.display_xlsx, name='MetadataDisplay'),
-    #path("", views.index, name="index"),
     path('data_input/', views.data_input, name='DataInputForm')
 ]
 
