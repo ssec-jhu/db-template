@@ -22,7 +22,10 @@ def csv_export(request, monkeypatch, mock_data_from_files):
     if allow_aliases:
         monkeypatch.setattr(settings, "EXPLORER_DATA_EXPORTERS_ALLOW_DATA_FILE_ALIAS", allow_aliases.args[0])
 
-    q = SimpleQueryFactory(sql="select * from uploader_spectraldata")
+    sql_marker = request.node.get_closest_marker("sql")
+    sql = sql_marker.args[0] if sql_marker and sql_marker.args[0] else "select * from uploader_spectraldata"
+
+    q = SimpleQueryFactory(sql=sql)
     exporter = CSVExporter(query=q)
     return exporter.get_output()
 
@@ -39,7 +42,10 @@ class TestExporters:
         assert len(csv_export.splitlines()) == 10 + 1  # +1 for column header.
 
     @pytest.mark.include_data_files(True)
-    def test_with_data_files_simple(self, csv_export):
+    @pytest.mark.parametrize(tuple(),
+                             [pytest.param(marks=pytest.mark.sql("select data, data from uploader_spectraldata")),
+                              pytest.param(marks=pytest.mark.sql(None))])
+    def test_no_duplicate_data_files(self, csv_export):
         assert zipfile.is_zipfile(csv_export)
         z = zipfile.ZipFile(csv_export)
         assert len(z.namelist()) == 10 + 1  # +1 for .csv data file.
@@ -71,3 +77,8 @@ class TestExporters:
             data = spectral_data_from_csv(filename)
             assert set(data.columns) == {"wavelength", "intensity"}
             assert len(data) == 1798
+
+    @pytest.mark.include_data_files(True)
+    @pytest.mark.sql("select * from uploader_patient")  # uploader_patient contains no spectral data.
+    def test_no_data(self, csv_export):
+        assert isinstance(csv_export, str)

@@ -47,6 +47,7 @@ class ZipSpectralDataMixin:
         if not settings.EXPLORER_DATA_EXPORTERS_INCLUDE_DATA_FILES:
             return output
 
+        data_files = []
         # Collect SpectralData files and zip along with query data from self._get_output().
         if settings.EXPLORER_DATA_EXPORTERS_ALLOW_DATA_FILE_ALIAS:
             # Spectral data files are modeled by the Spectraldata.data field, however, the sql query could have aliased
@@ -55,16 +56,21 @@ class ZipSpectralDataMixin:
             # directory - SpectralData.data.field.upload_to.
 
             upload_dir = SpectralData.data.field.upload_to  # NOTE: We don't need to inc. the MEDIA_ROOT for this.
-            data_files = []
             for row in res.data:
                 for item in row:
                     if isinstance(item, str) and item.startswith(upload_dir):
                         data_files.append(item)
         else:
-            df = pd.DataFrame(res.data, columns=res.header_strings)
-            data_files = df[SpectralData.data.field.name].tolist()
+            if (col_name := SpectralData.data.field.name) in res.header_strings:
+                df = pd.DataFrame(res.data, columns=res.header_strings)
+                df = df[col_name]
+                # There could be multiple "col_name" (aka "data") columns so flatten first.
+                data_files = df.to_numpy().flatten().tolist()
 
         if data_files:
+            # Dedupe
+            data_files = set(data_files)
+
             # Zip everything together.
             temp = tempfile.TemporaryFile()
             with zipfile.ZipFile(temp, mode="w") as archive:
