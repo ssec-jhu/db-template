@@ -42,6 +42,7 @@ class TestDataInputForm:
         assert len(BioSample.objects.all()) == n_patients
         assert len(SpectralData.objects.all()) == n_patients
 
+        assert Patient.objects.get(pk="4efb03c5-27cd-4b40-82d9-c602e0ef7b80")
         assert Patient.objects.filter(gender='M').exists()
         assert Visit.objects.filter(patient_age=1).exists()
         assert SpectralData.objects.filter(spectra_measurement='ATR_FTIR').exists()
