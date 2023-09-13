@@ -33,11 +33,9 @@ def data_input(request):
         form = DataInputForm(request.POST, request.FILES)
 
         if form.is_valid():
-            form.save(use_cached_objs=False)  # Save data to database.
+            form.save()  # Save data to database.
             patient_id = form.cleaned_data["patient_id"]
             return render(request, 'DataInputForm_Success.html', {'form': form, 'patient_id': patient_id})
-
-        print("doh")
     else:
         form = DataInputForm()
         

@@ -1,7 +1,7 @@
 import pandas as pd
 from django import forms
 from django.core.exceptions import ValidationError
-from django.db import models, transaction
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from uploader.models import UploadedFile, Patient, SpectralData, Instrument, BioSample, Symptom, Disease, Visit
@@ -106,10 +106,6 @@ class DataInputForm(forms.Form):
 
         # Dry-run save to run complex model validation without actually saving to DB.
         try:
-            # Cache objs to be saved to db later by self.save().
-            # reset cache if it exists.
-            if hasattr(self, "_cleaned_model_objects"):
-                del self._cleaned_model_objects
             massaged_data = self.massage_data()
             self._cleaned_model_objects = save_data_to_db(None, None, joined_data=massaged_data, dry_run=True)
         except ValidationError:
@@ -118,20 +114,8 @@ class DataInputForm(forms.Form):
             raise
             raise ValidationError(_("An unexpected error occurred: %(a)s"), params={'a': error}, code="unexpected")
 
-    def save(self, use_cached_objs=False):
+    def save(self):
         # WARNING!: This func is NOT responsible for validation and self.is_valid() must be called first!
-
-        # self.clean() calls save_to_db(..., dry_run=True) which creates all the required model objects. It also returns
-        # them and stashes them in self._cleaned_model_objects such that they don't have to be recreated twice.
-        if use_cached_objs and (cleaned_model_objects := getattr(self, "_cleaned_model_objects", None)):
-            with transaction.atomic():
-                for obj in cleaned_model_objects:
-                    if isinstance(obj, (list, tuple)):  # NOTE: Specifically not iterable.
-                        for sub_obj in obj:
-                            sub_obj.save()
-                    else:
-                        obj.save()
-                return
 
         # Ingest into DB.
         save_data_to_db(None, None, joined_data=self.massage_data())

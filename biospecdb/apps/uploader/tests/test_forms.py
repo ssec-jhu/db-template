@@ -33,7 +33,7 @@ class TestDataInputForm:
                 }
             )
 
-        assert data_input_form.is_valid(), data_input_form.errors.as_data()
+            assert data_input_form.is_valid(), data_input_form.errors.as_data()
 
     def test_mock_data_from_form_and_spectral_file_fixture(self, mock_data_from_form_and_spectral_file):
         n_patients = 1
@@ -90,7 +90,7 @@ class TestDataInputForm:
                     "spectral_data": django.core.files.File(spectral_record, name=spectral_file_path.name)
                 }
             )
-        assert data_input_form.is_valid(), data_input_form.errors.as_data()
+            assert data_input_form.is_valid(), data_input_form.errors.as_data()
             
         assert Disease.objects.filter(name='Meningitis').exists()
         assert not Disease.objects.filter(name='Meningit').exists()
