@@ -184,6 +184,7 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'biospecdb/apps/uploader/templates/st
 
 EXPLORER_SCHEMA_INCLUDE_VIEWS = True
 
+EXPLORER_CHARTS_ENABLED = True
 
 # Custom settings:
 
