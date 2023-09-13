@@ -9,7 +9,7 @@ import biospecdb.util
 
 
 @transaction.atomic
-def save_data_to_db(meta_data, spectral_data, joined_data=None):
+def save_data_to_db(meta_data, spectral_data, joined_data=None, dry_run=False) -> dict:
     """
     Ingest into the database large tables of symptom & disease data (aka "meta" data) along with associated spectral
     data.
@@ -45,14 +45,16 @@ def save_data_to_db(meta_data, spectral_data, joined_data=None):
             patient = Patient(gender=Patient.Gender(row.get(Patient.gender.field.verbose_name.lower())),
                               patient_id=index)
             patient.full_clean()
-            patient.save()
+            if not dry_run:
+                patient.save()
 
         # Visit
         visit = Visit(patient=patient,
                       patient_age=row.get(Visit.patient_age.field.verbose_name.lower()),
                       )  # TODO: Add logic to auto-find previous_visit. https://github.com/ssec-jhu/biospecdb/issues/37
         visit.full_clean()
-        visit.save()
+        if not dry_run:
+            visit.save()
 
         # BioSample
         biosample = BioSample(visit=visit,
@@ -63,7 +65,8 @@ def save_data_to_db(meta_data, spectral_data, joined_data=None):
                               thawing_time=row.get(BioSample.thawing_time.field.verbose_name.lower()))
         visit.bio_sample.add(biosample, bulk=False)
         biosample.full_clean()
-        biosample.save()
+        if not dry_run:
+            biosample.save()
 
         # SpectralData
         spectrometer = Instrument.Spectrometers(row.get(Instrument.spectrometer.field.verbose_name.lower()))
@@ -98,11 +101,13 @@ def save_data_to_db(meta_data, spectral_data, joined_data=None):
 
         instrument.spectral_data.add(spectraldata, bulk=False)
         spectraldata.full_clean()
-        spectraldata.save()
+        if not dry_run:
+            spectraldata.save()
 
         # Symptoms
         # NOTE: Bulk data from client doesn't contain data for `days_symptomatic` per symptom, but instead per patient.
         days_symptomatic = row.get(Symptom.days_symptomatic.field.verbose_name.lower(), None)
+        symptoms = []
         for disease in Disease.objects.all():
             symptom_value = row.get(disease.alias.lower(), None)
             if symptom_value is None:
@@ -118,4 +123,12 @@ def save_data_to_db(meta_data, spectral_data, joined_data=None):
 
             disease.symptom.add(symptom, bulk=False)
             symptom.full_clean()
-            symptom.save()
+            if not dry_run:
+                symptom.save()
+            symptoms.append(symptom)
+
+    return dict(patient=patient,
+                visit=visit,
+                biosample=biosample,
+                spectraldata=spectraldata,
+                symptoms=symptoms)
