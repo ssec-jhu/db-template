@@ -153,4 +153,8 @@ def get_file_info(file_wrapper):
         file = file_wrapper.file
     else:
         raise NotImplementedError(type(file_wrapper))
+
+    # The file may have already been read but is still open - so rewind. TODO: potential conflict with #38?
+    if hasattr(file, "closed") and not file.closed and hasattr(file, "seek"):
+        file.seek(0)
     return file, Path(file_wrapper.name).suffix
