@@ -26,18 +26,17 @@ def count_bool_diseases(result: "QueryResult"):  # noqa: F821
     bool_diseases = [d.name for d in Disease.objects.all() if d.value_class == "BOOL"]
     df = pd.DataFrame(result.data, columns=result.header_strings)
     df = df[bool_diseases].replace({"True": True, "False": False})
-    df = pd.DataFrame([(column, df[column].values.sum()) for column in df], columns=("disease", "count"))
-    return df
+    return df.sum()
 
 
 def get_pie_chart(result: "QueryResult") -> Optional[str]:  # noqa: F821
     try:
-        df = count_bool_diseases(result)
+        counts = count_bool_diseases(result)
 
-        if df is None:
+        if counts is None:
             return
 
-        fig = px.pie(df, values="count", names="disease", title=f"SQL query: '{result.sql}'")
+        fig = px.pie(counts, values=counts.values, names=counts.index, title=f"SQL query: '{result.sql}'")
         return fig_to_html(fig)
     except Exception:
         if settings.DEBUG:
