@@ -65,10 +65,11 @@ class DataInputForm(forms.Form):
                                              initial=Symptom.disease_value.field.default,
                                              label=disease.alias)
             elif field_type == "BOOL":
-                field_type = forms.BooleanField(required=not Symptom.disease_value.field.blank,
-                                                label=disease.alias,
-                                                initial=Symptom.disease_value.field.default,
-                                                widget=forms.NullBooleanSelect)  # TODO: Reconsider widget use.
+                # TODO: Reconsider use of NullBooleanField and NullBooleanSelect.
+                field_type = forms.NullBooleanField(required=not Symptom.disease_value.field.blank,
+                                                    label=disease.alias,
+                                                    initial=Symptom.disease_value.field.default,
+                                                    widget=forms.NullBooleanSelect)  # TODO: Reconsider widget use.
             self.fields[disease.name] = field_type
 
     def to_df(self):
