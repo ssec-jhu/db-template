@@ -110,4 +110,4 @@ def mock_data_from_form_and_spectral_file(request, db, django_db_blocker):
                 assert data_input_form.is_valid(), data_input_form.errors.as_data()
 
             if not request.node.get_closest_marker("dont_save_to_db"):
-                data_input_form.save_to_db()
+                data_input_form.save()

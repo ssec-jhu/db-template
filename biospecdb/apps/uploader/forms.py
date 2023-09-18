@@ -85,15 +85,29 @@ class DataInputForm(forms.Form):
         canonic_data = df.rename(columns=lambda x: x.lower())
         return canonic_data
 
-    def save_to_db(self):
+    def massage_data(self):
         # WARNING!: This func is not responsible for validation and self.is_valid() must be called first.
 
         # Read in all data
         meta_data = self.to_df()
         spec_data = read_spectral_data_table(*get_file_info(self.cleaned_data["spectral_data"]))
- 
+
         # This uses a join so returns the joined data so that it doesn't go to waste if needed, which it is here.
-        joined_data = UploadedFile.join_with_validation(meta_data, spec_data)
+        return UploadedFile.join_with_validation(meta_data, spec_data)
+
+    def clean(self):
+        super().clean()
+
+        # Fail early.
+        if self.errors:
+            return
+
+        # Dry-run save to run complex model validation without actually saving to DB.
+        massaged_data = self.massage_data()
+        self._cleaned_model_objects = save_data_to_db(None, None, joined_data=massaged_data, dry_run=True)
+
+    def save(self):
+        # WARNING!: This func is NOT responsible for validation and self.is_valid() must be called first!
 
         # Ingest into DB.
-        save_data_to_db(None, None, joined_data=joined_data)
+        save_data_to_db(None, None, joined_data=self.massage_data())
