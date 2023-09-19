@@ -392,9 +392,9 @@ class SpectralData(models.Model):
 
         return annotations if annotations else None  # Don't ret empty list.
 
-    def clean(self):
+    def save(self, *args, **kwargs):
         """ Model validation. """
-        super().clean()
+        super().save(*args, **kwargs)
 
         # Compute QC metrics.
         # TODO: Even with the QC model being its own thing rather than fields here, we may still want to run here
@@ -403,6 +403,9 @@ class SpectralData(models.Model):
             # TODO: This should return early and runs async in the background.
             # See https://github.com/ssec-jhu/biospecdb/issues/77
             self.annotate()
+
+    def asave(self, *args, **kwargs):
+        raise NotImplementedError
 
 
 class SymptomsView(SqlView, models.Model):
