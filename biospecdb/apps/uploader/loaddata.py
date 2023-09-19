@@ -73,8 +73,8 @@ def save_data_to_db(meta_data, spectral_data, joined_data=None, dry_run=False) -
                 biosample.save()
 
                 # SpectralData
-                spectrometer = Instrument.Spectrometers(row.get(Instrument.spectrometer.field.verbose_name.lower()))
-                atr_crystal = Instrument.SpectrometerCrystal(row.get(Instrument.atr_crystal.field.verbose_name.lower()))
+                spectrometer = row.get(Instrument.spectrometer.field.verbose_name.lower())
+                atr_crystal = row.get(Instrument.atr_crystal.field.verbose_name.lower())
                 # NOTE: get_or_create() returns a tuple of (object, created), where created is a bool.
                 instrument, _created = Instrument.objects.get_or_create(spectrometer=spectrometer,
                                                                         atr_crystal=atr_crystal)

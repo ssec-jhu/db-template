@@ -268,22 +268,12 @@ class Symptom(models.Model):
 class Instrument(models.Model):
     """ Model the instrument/device used to measure spectral data (not the collection of the bio sample). """
 
-    class Spectrometers(TextChoices):
-        AGILENT_CORY_630 = auto()
-
-    class SpectrometerCrystal(TextChoices):
-        ZNSE = auto()
-
     class Meta:
         unique_together = [["spectrometer", "atr_crystal"]]
 
-    spectrometer = models.CharField(default=Spectrometers.AGILENT_CORY_630,
-                                    max_length=128,
-                                    choices=Spectrometers.choices,
+    spectrometer = models.CharField(max_length=128,
                                     verbose_name="Spectrometer")
-    atr_crystal = models.CharField(default=SpectrometerCrystal.ZNSE,
-                                   max_length=128,
-                                   choices=SpectrometerCrystal.choices,
+    atr_crystal = models.CharField(max_length=128,
                                    verbose_name="ATR Crystal")
 
     def __str__(self):

@@ -41,8 +41,8 @@ class DataInputForm(forms.Form):
     patient_age = forms.IntegerField(**map_model_fields_to_form_field(Visit.patient_age))
     spectra_measurement = forms.ChoiceField(**map_model_fields_to_form_field(SpectralData.spectra_measurement,
                                                                              inc_choices=True))
-    spectrometer = forms.ChoiceField(**map_model_fields_to_form_field(Instrument.spectrometer, inc_choices=True))
-    atr_crystal = forms.ChoiceField(**map_model_fields_to_form_field(Instrument.atr_crystal, inc_choices=True))
+    spectrometer = forms.CharField(**map_model_fields_to_form_field(Instrument.spectrometer))
+    atr_crystal = forms.CharField(**map_model_fields_to_form_field(Instrument.atr_crystal))
     acquisition_time = forms.IntegerField(**map_model_fields_to_form_field(SpectralData.acquisition_time))
     n_coadditions = forms.IntegerField(**map_model_fields_to_form_field(SpectralData.n_coadditions))
     resolution = forms.IntegerField(**map_model_fields_to_form_field(SpectralData.resolution))
