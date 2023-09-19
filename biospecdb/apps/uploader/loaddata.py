@@ -73,11 +73,14 @@ def save_data_to_db(meta_data, spectral_data, joined_data=None, dry_run=False) -
                 biosample.save()
 
                 # SpectralData
-                spectrometer = Instrument.Spectrometers(row.get(Instrument.spectrometer.field.verbose_name.lower()))
-                atr_crystal = Instrument.SpectrometerCrystal(row.get(Instrument.atr_crystal.field.verbose_name.lower()))
+                spectrometer = row.get(Instrument.spectrometer.field.verbose_name.lower())
+                atr_crystal = row.get(Instrument.atr_crystal.field.verbose_name.lower())
                 # NOTE: get_or_create() returns a tuple of (object, created), where created is a bool.
-                instrument, _created = Instrument.objects.get_or_create(spectrometer=spectrometer,
-                                                                        atr_crystal=atr_crystal)
+                instrument, created = Instrument.objects.get_or_create(spectrometer__iexact=spectrometer,
+                                                                       atr_crystal__iexact=atr_crystal)
+                if created:
+                    raise ValidationError(f"New Instruments can only be added by admin: instrument details:"
+                                          f"spectrometer: '{spectrometer}' and atr_crystal: '{atr_crystal}'")
                 # NOTE: get_or_create() doesn't clean, so we clean after the fact. This is ok since this entire func is
                 # transactional.
                 # TODO: Remove this redundant clean upon resolving https://github.com/ssec-jhu/biospecdb/issues/28.
