@@ -109,6 +109,20 @@ class TestInstrument:
         assert instrument.spectrometer == "AGILENT_CORY_630"
         assert instrument.atr_crystal == "ZNSE"
 
+    def test_new(self, db, instruments):
+        Instrument.objects.create(spectrometer="new instrument", atr_crystal="new crystal")
+        assert len(Instrument.objects.all()) == 2
+        assert Instrument.objects.filter(spectrometer="new instrument").exists()
+        assert Instrument.objects.filter(atr_crystal="new crystal").exists()
+
+    def test_uniqueness(self, db, instruments):
+        # OK
+        Instrument.objects.create(spectrometer="AGILENT_CORY_630", atr_crystal="new crystal")
+
+        # Not OK
+        with pytest.raises(IntegrityError, match="UNIQUE constraint failed"):
+            Instrument.objects.create(spectrometer="AGILENT_CORY_630", atr_crystal="ZNSE")
+
 
 class TestSymptom:
     def test_days_symptomatic_validation(self, db, diseases, visits):
