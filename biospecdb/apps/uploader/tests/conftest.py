@@ -80,7 +80,7 @@ def mock_data_from_files(request, monkeypatch, db, diseases, django_db_blocker, 
                 
  
 @pytest.fixture(scope="function")               
-def mock_data_from_form_and_spectral_file(request, db, django_db_blocker):
+def mock_data_from_form_and_spectral_file(request, db, instruments, django_db_blocker):
     spectral_file_path = (DATA_PATH/"sample").with_suffix(UploadedFile.FileFormats.XLSX)
     with django_db_blocker.unblock():
         with spectral_file_path.open(mode="rb") as spectral_record:
@@ -91,8 +91,8 @@ def mock_data_from_form_and_spectral_file(request, db, django_db_blocker):
                     "days_symptomatic": 1,
                     "patient_age": 1,
                     "spectra_measurement": 'ATR_FTIR',
-                    "spectrometer": 'AGILENT_CORY_630',
-                    "atr_crystal": 'ZNSE',
+                    "spectrometer": 'Agilent Cory 630',
+                    "atr_crystal": 'ZnSe',
                     "acquisition_time": 1,
                     "n_coadditions": 32,
                     "resolution": 0,

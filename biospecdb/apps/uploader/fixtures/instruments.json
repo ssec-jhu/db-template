@@ -3,8 +3,8 @@
     "model": "uploader.Instrument",
     "pk": 1,
     "fields": {
-      "spectrometer": "AGILENT_CORY_630",
-      "atr_crystal": "ZNSE"
+      "spectrometer": "Agilent Cory 630",
+      "atr_crystal": "ZnSe"
     }
   }
 ]

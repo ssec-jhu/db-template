@@ -106,8 +106,8 @@ class TestDisease:
 class TestInstrument:
     def test_fixture_data(self, db, instruments):
         instrument = Instrument.objects.get(pk=1)
-        assert instrument.spectrometer == "AGILENT_CORY_630"
-        assert instrument.atr_crystal == "ZNSE"
+        assert instrument.spectrometer == "Agilent Cory 630"
+        assert instrument.atr_crystal == "ZnSe"
 
     def test_new(self, db, instruments):
         Instrument.objects.create(spectrometer="new instrument", atr_crystal="new crystal")
@@ -117,11 +117,11 @@ class TestInstrument:
 
     def test_uniqueness(self, db, instruments):
         # OK
-        Instrument.objects.create(spectrometer="AGILENT_CORY_630", atr_crystal="new crystal")
+        Instrument.objects.create(spectrometer="Agilent Cory 630", atr_crystal="new crystal")
 
         # Not OK
         with pytest.raises(IntegrityError, match="UNIQUE constraint failed"):
-            Instrument.objects.create(spectrometer="AGILENT_CORY_630", atr_crystal="ZNSE")
+            Instrument.objects.create(spectrometer="Agilent Cory 630", atr_crystal="ZnSe")
 
 
 class TestSymptom:

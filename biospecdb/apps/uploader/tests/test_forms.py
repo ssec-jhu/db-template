@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 import django.core.files
 import pytest
 
@@ -6,28 +7,33 @@ from uploader.forms import DataInputForm
 from conftest import DATA_PATH
 
 
+@pytest.fixture()
+def data_dict():
+    return {
+            "patient_id": "4efb03c5-27cd-4b40-82d9-c602e0ef7b80",
+            "gender": 'M',
+            "days_symptomatic": 1,
+            "patient_age": 1,
+            "spectra_measurement": 'ATR_FTIR',
+            "spectrometer": 'Agilent Cory 630',
+            "atr_crystal": 'ZnSe',
+            "acquisition_time": 1,
+            "n_coadditions": 32,
+            "resolution": 0,
+            "sample_type": 'PHARYNGEAL_SWAB',
+            "sample_processing": 'None',
+            "freezing_temp": 0,
+            "thawing_time": 0,
+            }
+
+
 class TestDataInputForm:
     @pytest.mark.parametrize("file_ext", UploadedFile.FileFormats.list())
-    def test_upload_without_error(self, db, file_ext):
+    def test_upload_without_error(self, db, instruments, file_ext, data_dict):
         spectral_file_path = (DATA_PATH/"sample").with_suffix(file_ext)
         with spectral_file_path.open(mode="rb") as spectral_record:
             data_input_form = DataInputForm(
-                data={
-                    "patient_id": "4efb03c5-27cd-4b40-82d9-c602e0ef7b80",
-                    "gender": 'M',
-                    "days_symptomatic": 1,
-                    "patient_age": 1,
-                    "spectra_measurement": 'ATR_FTIR',
-                    "spectrometer": 'AGILENT_CORY_630',
-                    "atr_crystal": 'ZNSE',
-                    "acquisition_time": 1,
-                    "n_coadditions": 32,
-                    "resolution": 0,
-                    "sample_type": 'PHARYNGEAL_SWAB',
-                    "sample_processing": 'None',
-                    "freezing_temp": 0,
-                    "thawing_time": 0,
-                },
+                data=data_dict,
                 files={
                     "spectral_data": django.core.files.File(spectral_record, name=spectral_file_path.name)
                 }
@@ -49,14 +55,14 @@ class TestDataInputForm:
         assert SpectralData.objects.filter(acquisition_time=1).exists()
         assert SpectralData.objects.filter(n_coadditions=32).exists()
         assert SpectralData.objects.filter(resolution=0).exists()
-        assert Instrument.objects.filter(spectrometer='AGILENT_CORY_630').exists()
-        assert Instrument.objects.filter(atr_crystal='ZNSE').exists()
+        assert Instrument.objects.filter(spectrometer='Agilent Cory 630').exists()
+        assert Instrument.objects.filter(atr_crystal='ZnSe').exists()
         assert BioSample.objects.filter(sample_type='PHARYNGEAL_SWAB').exists()
         assert BioSample.objects.filter(sample_processing='None').exists()
         assert BioSample.objects.filter(freezing_temp=0).exists()
         assert BioSample.objects.filter(thawing_time=0).exists()
 
-    def test_dynamic_form_rendering(self, mock_data_from_form_and_spectral_file):
+    def test_dynamic_form_rendering(self, mock_data_from_form_and_spectral_file, data_dict):
         spectral_file_path = (DATA_PATH/"sample").with_suffix(UploadedFile.FileFormats.XLSX)
         
         # Add new disease
@@ -70,22 +76,7 @@ class TestDataInputForm:
         
         with spectral_file_path.open(mode="rb") as spectral_record:
             data_input_form = DataInputForm(
-                data={
-                    "patient_id": "4efb03c5-27cd-4b40-82d9-c602e0ef7b80",
-                    "gender": 'M',
-                    "days_symptomatic": 1,
-                    "patient_age": 1,
-                    "spectra_measurement": 'ATR_FTIR',
-                    "spectrometer": 'AGILENT_CORY_630',
-                    "atr_crystal": 'ZNSE',
-                    "acquisition_time": 1,
-                    "n_coadditions": 32,
-                    "resolution": 0,
-                    "sample_type": 'PHARYNGEAL_SWAB',
-                    "sample_processing": 'None',
-                    "freezing_temp": 0,
-                    "thawing_time": 0,
-                },
+                data=data_dict,
                 files={
                     "spectral_data": django.core.files.File(spectral_record, name=spectral_file_path.name)
                 }
@@ -94,3 +85,21 @@ class TestDataInputForm:
             
         assert Disease.objects.filter(name='Meningitis').exists()
         assert not Disease.objects.filter(name='Meningit').exists()
+
+    @pytest.mark.parametrize("file_ext", UploadedFile.FileFormats.list())
+    def test_new_instrument(self, db, instruments, file_ext, data_dict):
+        spectral_file_path = (DATA_PATH / "sample").with_suffix(file_ext)
+        data_dict.update({"spectrometer": 'huh', "atr_crystal": 'huh'})
+        with spectral_file_path.open(mode="rb") as spectral_record:
+            data_input_form = DataInputForm(
+                data=data_dict,
+                files={
+                    "spectral_data": django.core.files.File(spectral_record, name=spectral_file_path.name)
+                }
+            )
+
+            assert not data_input_form.is_valid()
+            errors = data_input_form.errors.as_data()["__all__"]
+            assert len(errors) == 1
+            with pytest.raises(ValidationError, match="New Instruments can only be added by admin"):
+                raise errors[0]
