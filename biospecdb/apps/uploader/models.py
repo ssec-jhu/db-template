@@ -84,6 +84,12 @@ class UploadedFile(models.Model):
     @staticmethod
     def join_with_validation(meta_data, spec_data):
         """ Validate primary keys are unique and associative. """
+        if not meta_data.index.equals(spec_data.index):
+            raise ValidationError(_("Patient ID mismatch. IDs from %(a)s must exactly match all those from %(b)s"),
+                                  params=dict(a=UploadedFile.meta_data_file.field.name,
+                                              b=UploadedFile.spectral_data_file.field.name),
+                                  code="invalid")
+
         try:
             # The simplest way to do this is to utilize pandas.DataFrame.join().
             return meta_data.join(spec_data, how="left", validate="1:1")  # Might as well return the join.
