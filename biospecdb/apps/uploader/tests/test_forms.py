@@ -8,15 +8,14 @@ from conftest import DATA_PATH
 
 
 @pytest.fixture()
-def data_dict():
+def data_dict(db, instruments):
     return {
             "patient_id": "4efb03c5-27cd-4b40-82d9-c602e0ef7b80",
             "gender": 'M',
             "days_symptomatic": 1,
             "patient_age": 1,
             "spectra_measurement": 'ATR_FTIR',
-            "spectrometer": 'Agilent Cory 630',
-            "atr_crystal": 'ZnSe',
+            "instrument": Instrument.objects.filter(spectrometer="Agilent Cory 630", atr_crystal="ZnSe")[0].pk,
             "acquisition_time": 1,
             "n_coadditions": 32,
             "resolution": 0,
@@ -29,7 +28,7 @@ def data_dict():
 
 class TestDataInputForm:
     @pytest.mark.parametrize("file_ext", UploadedFile.FileFormats.list())
-    def test_upload_without_error(self, db, instruments, file_ext, data_dict):
+    def test_upload_without_error(self, db, file_ext, data_dict):
         spectral_file_path = (DATA_PATH/"sample").with_suffix(file_ext)
         with spectral_file_path.open(mode="rb") as spectral_record:
             data_input_form = DataInputForm(
@@ -89,7 +88,7 @@ class TestDataInputForm:
     @pytest.mark.parametrize("file_ext", UploadedFile.FileFormats.list())
     def test_new_instrument(self, db, instruments, file_ext, data_dict):
         spectral_file_path = (DATA_PATH / "sample").with_suffix(file_ext)
-        data_dict.update({"spectrometer": 'huh', "atr_crystal": 'huh'})
+        data_dict.update({"instrument": Instrument(spectrometer="dummy", atr_crystal="dummy")})
         with spectral_file_path.open(mode="rb") as spectral_record:
             data_input_form = DataInputForm(
                 data=data_dict,
@@ -99,7 +98,7 @@ class TestDataInputForm:
             )
 
             assert not data_input_form.is_valid()
-            errors = data_input_form.errors.as_data()["__all__"]
+            errors = data_input_form.errors.as_data()["instrument"]
             assert len(errors) == 1
-            with pytest.raises(ValidationError, match="New Instruments can only be added by admin"):
+            with pytest.raises(ValidationError, match="Select a valid choice"):
                 raise errors[0]
