@@ -3,6 +3,7 @@ import importlib
 from io import IOBase
 import os
 from pathlib import Path
+from uuid import UUID
 
 import numpy as np
 import pandas as pd
@@ -55,8 +56,10 @@ def read_raw_data(file, ext=None):
 
     kwargs = dict(true_values=["yes", "Yes"],  # In addition to case-insensitive variants of True.
                   false_values=["no", "No"],  # In addition to case-insensitive variants of False.
-                  na_values=[' ', "unknown", "Unknown", "na", "none"]
-                  )
+                  na_values=[' ', "unknown", "Unknown", "na", "none"],
+                  dtype={"Patient ID":  str, "patient id": str, "patient_id": str})
+    # NOTE: The patient ID as a str is crucial for converting to UUIDs as floats cannot be safely converted nor is it
+    # ok to read in as int as they could be actual UUID str.
     # NOTE: The following default na_values are also used:
     # ‘’, ‘  # N/A’, ‘#N/A N/A’, ‘#NA’, ‘-1.#IND’, ‘-1.#QNAN’, ‘-NaN’, ‘-nan’, ‘1.#IND’, ‘1.#QNAN’, ‘<NA>’, ‘N/A’, ‘NA’,
     # ‘NULL’, ‘NaN’, ‘None’, ‘n/a’, ‘nan’, ‘null’.
@@ -77,11 +80,20 @@ def read_meta_data(file, ext=None):
     data = read_raw_data(file, ext=ext)
 
     # Clean.
+    cleaned_data = data.rename(columns=lambda x: x.lower())
+
     # TODO: Raise on null patient_id instead of silently dropping possible data.
-    cleaned_data = data.rename(columns=lambda x: x.lower()) \
-        .dropna(subset=['patient id']) \
-        .set_index('patient id') \
-        .fillna('').replace('', None)
+    cleaned_data = cleaned_data.dropna(subset=['patient id'])
+
+    # Set index as "patient id" column.
+    cleaned_data = cleaned_data.set_index("patient id")
+
+    # Insist on index as UUIDs.
+    cleaned_data = cleaned_data.set_index(cleaned_data.index.map(lambda x: to_uuid(x)))
+
+    # Replace na & '' with None via na -> '' -> None
+    cleaned_data = cleaned_data.fillna('').replace('', None)
+
     return cleaned_data
 
 
@@ -95,7 +107,8 @@ def read_spectral_data_table(file, ext=None):
     wavelengths = spec_only.columns.tolist()
     specv = spec_only.values.tolist()
     freqs = [wavelengths for i in range(len(specv))]
-    return pd.DataFrame({"wavelength": freqs, "intensity": specv}, index=cleaned_data["patient id"])
+    return pd.DataFrame({"wavelength": freqs, "intensity": specv},
+                        index=[to_uuid(x) for x in cleaned_data["patient id"]])
 
 
 def spectral_data_to_csv(file, wavelengths, intensities):
@@ -158,3 +171,40 @@ def get_file_info(file_wrapper):
     if hasattr(file, "closed") and not file.closed and hasattr(file, "seek"):
         file.seek(0)
     return file, Path(file_wrapper.name).suffix
+
+
+def to_uuid(value):
+    if isinstance(value, UUID):
+        return value
+
+    if value is None:
+        return
+
+    def _to_uuid(value):
+        # This implementation was copied from django.db.models.UUIDField.to_python.
+        input_form = "int" if isinstance(value, int) else "hex"
+        return UUID(**{input_form: value})
+
+    try:
+        # NOTE: Since string representations of UUIDs containing only numerics are 100% valid, give these precedence by
+        # trying to convert directly to UUID instead of converting to int first - try the int route afterward.
+        return _to_uuid(value)
+    except (AttributeError, ValueError) as error_0:
+        if not isinstance(value, str):
+            raise
+
+        # Value could be, e.g., '2' or 2.0, so try converting to int.
+        try:
+            return _to_uuid(int(value))
+        except (AttributeError, ValueError) as error_1:
+            raise error_1 from error_0
+
+
+def is_valid_uuid(value):
+    # This implementation was copied from django.db.models.UUIDField.to_python.
+    if value is not None and not isinstance(value, UUID):
+        try:
+            to_uuid(value)
+        except (AttributeError, ValueError):
+            False
+    return True

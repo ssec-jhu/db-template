@@ -214,3 +214,17 @@ class TestUploadedFile:
         assert len(all_patients) == len(df)
         for index in df.index:
             assert all_patients.get(pk=index)
+
+    @pytest.mark.parametrize("file_ext", UploadedFile.FileFormats.list())
+    def test_index_match_validation(self, db, diseases, instruments, file_ext, tmp_path):
+        meta_data_path = (DATA_PATH / "meta_data").with_suffix(file_ext)
+
+        biospecdb.util.mock_bulk_spectral_data(path=tmp_path)
+        spectral_file_path = tmp_path / "spectral_data.csv"
+        with meta_data_path.open(mode="rb") as meta_data, spectral_file_path.open(mode="rb") as spectral_data:
+            data_upload = UploadedFile(meta_data_file=django.core.files.File(meta_data,
+                                                                             name=meta_data_path.name),
+                                       spectral_data_file=django.core.files.File(spectral_data,
+                                                                                 name=spectral_file_path.name))
+            with pytest.raises(ValidationError, match="Patient ID mismatch."):
+                data_upload.clean()
