@@ -120,6 +120,7 @@ class Patient(models.Model):
     MAX_AGE = 150  # NOTE: HIPAA requires a max age of 90 to be stored. However, this is GDPR data so... :shrug:
 
     class Gender(TextChoices):
+        UNSPECIFIED = ("X", _("Unspecified"))  # NOTE: Here variation here act as aliases for bulk column ingestion.
         MALE = ("M", _("Male"))  # NOTE: Here variation here act as aliases for bulk column ingestion.
         FEMALE = ("F", _("Female"))  # NOTE: Here variation here act as aliases for bulk column ingestion.
 
@@ -127,7 +128,7 @@ class Patient(models.Model):
                                   primary_key=True,
                                   default=uuid.uuid4,
                                   verbose_name="Patient ID")
-    gender = models.CharField(max_length=8, choices=Gender.choices, null=True, verbose_name="Gender (M/F)")
+    gender = models.CharField(max_length=8, choices=Gender.choices, null=True, verbose_name="Gender (X/M/F)")
 
     def __str__(self):
         return str(self.patient_id)

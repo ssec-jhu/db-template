@@ -16,10 +16,12 @@ class TestPatient:
     def test_creation(self, db):
         Patient(gender=Patient.Gender.MALE).full_clean()
         Patient(gender=Patient.Gender.FEMALE).full_clean()
+        Patient(gender=Patient.Gender.UNSPECIFIED).full_clean()
 
     def test_db_creation(self, db):
         Patient.objects.create(gender=Patient.Gender.MALE).full_clean()
         Patient.objects.create(gender=Patient.Gender.FEMALE).full_clean()
+        Patient.objects.create(gender=Patient.Gender.UNSPECIFIED).full_clean()
 
         assert len(Patient.objects.all()) == 2
 
