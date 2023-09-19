@@ -16,22 +16,26 @@ class TestPatient:
     def test_creation(self, db):
         Patient(gender=Patient.Gender.MALE).full_clean()
         Patient(gender=Patient.Gender.FEMALE).full_clean()
+        Patient(gender=Patient.Gender.UNSPECIFIED).full_clean()
 
     def test_db_creation(self, db):
         Patient.objects.create(gender=Patient.Gender.MALE).full_clean()
         Patient.objects.create(gender=Patient.Gender.FEMALE).full_clean()
+        Patient.objects.create(gender=Patient.Gender.UNSPECIFIED).full_clean()
 
-        assert len(Patient.objects.all()) == 2
+        assert len(Patient.objects.all()) == 3
 
         Patient.objects.create(gender=Patient.Gender.MALE).full_clean()
-        assert len(Patient.objects.all()) == 3
+        assert len(Patient.objects.all()) == 4
 
         males = Patient.objects.filter(gender=Patient.Gender.MALE)
         females = Patient.objects.filter(gender=Patient.Gender.FEMALE)
-
+        unspecified = Patient.objects.filter(gender=Patient.Gender.UNSPECIFIED)
+        
         assert len(males) == 2
         assert len(females) == 1
-
+        assert len(unspecified) == 1
+        
         assert males[0].patient_id != males[1].patient_id
 
     def test_short_name(self, db):

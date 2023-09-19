@@ -76,8 +76,8 @@ dash_app.layout = html.Div([
     Input(component_id="max age", component_property='value')
 )
 def update_meta_graph(gender, age):
-    gender = "F" if gender == "female" else "M"
-    data = meta_df[(meta_df["gender_(m/f)"] == gender) & (meta_df["age"] <= age)]
+    gender = "F" if gender == "female" else ("M" if gender == "male" else "X")
+    data = meta_df[(meta_df["gender_(x/m/f)"] == gender) & (meta_df["age"] <= age)]
     fig = px.histogram(data, x='cough', histfunc='sum')
     return fig
 

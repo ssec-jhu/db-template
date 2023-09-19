@@ -120,6 +120,7 @@ class Patient(models.Model):
     MAX_AGE = 150  # NOTE: HIPAA requires a max age of 90 to be stored. However, this is GDPR data so... :shrug:
 
     class Gender(TextChoices):
+        UNSPECIFIED = ("X", _("Unspecified"))  # NOTE: Here variation here act as aliases for bulk column ingestion.
         MALE = ("M", _("Male"))  # NOTE: Here variation here act as aliases for bulk column ingestion.
         FEMALE = ("F", _("Female"))  # NOTE: Here variation here act as aliases for bulk column ingestion.
 
