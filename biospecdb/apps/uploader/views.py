@@ -37,10 +37,47 @@ def data_input(request):
         form = DataInputForm(request.POST, request.FILES)
 
         if form.is_valid():
-            form.save()  # Save data to database.
-            patient_id = form.cleaned_data["patient_id"]
-            return render(request, 'DataInputForm_Success.html', {'form': form, 'patient_id': patient_id})
+            if form:
+                form.save()  # Save data to database.
+                patient_id = form.cleaned_data["patient_id"]
+                return render(request, 'DataInputForm_Success.html', {'form': form, 'patient_id': patient_id})
+            else:
+                form = load_form_from_db(request, form.patient_id)
+                patient_id = form.cleaned_data["patient_id"]
+                return render(request, 'DataInputForm.html', {'form': form})
+        
     else:
         form = DataInputForm()
         
     return render(request, 'DataInputForm.html', {'form': form})
+
+def load_form_from_db(request, patient_id):
+    """
+    Ingest into the database large tables of symptom & disease data (aka "meta" data) along with associated spectral
+    data.
+
+    Note: Data can be passed in pre-joined, i.e., save_data_to_db(None, None, joined_data). If so, data can't be
+          validated.
+    Note: This func is called by UploadedFile.clean() which, therefore, can't also be called here.
+    """
+        
+    from uploader.models import Patient, Visit
+    from uploader.forms import DataInputForm
+    from django.http import HttpResponse
+    from django.core.exceptions import ValidationError
+    
+    try:
+        patient = Patient.objects.get(patient_id = patient_id)
+    except (Patient.DoesNotExist, ValidationError):
+        return HttpResponse(patient_id = patient_id)     
+    form = DataInputForm()
+    form.patient_id = patient.patient_id
+    form.gender = patient.gender
+
+    try:
+        visit = Visit.objects.get(patient = patient)
+    except (Visit.DoesNotExist, ValidationError):
+        return HttpResponse(patient = patient)
+    form.patient_age - visit.patient_age
+    
+    return render(request, 'DataInputForm.html', {'form': form, 'patient_id': patient_id})
