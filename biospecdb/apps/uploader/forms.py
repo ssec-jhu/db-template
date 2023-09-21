@@ -41,8 +41,13 @@ class DataInputForm(forms.Form):
     patient_age = forms.IntegerField(**map_model_fields_to_form_field(Visit.patient_age))
     spectra_measurement = forms.ChoiceField(**map_model_fields_to_form_field(SpectralData.spectra_measurement,
                                                                              inc_choices=True))
-    spectrometer = forms.CharField(**map_model_fields_to_form_field(Instrument.spectrometer))
-    atr_crystal = forms.CharField(**map_model_fields_to_form_field(Instrument.atr_crystal))
+
+    instrument = forms.ModelChoiceField(required=(not Instrument.spectrometer.field.blank or
+                                                  not Instrument.atr_crystal.field.blank),
+                                        label="Instrument",
+                                        help_text="Instrument used to measure spectral data",
+                                        queryset=Instrument.objects.all())
+
     acquisition_time = forms.IntegerField(**map_model_fields_to_form_field(SpectralData.acquisition_time))
     n_coadditions = forms.IntegerField(**map_model_fields_to_form_field(SpectralData.n_coadditions))
     resolution = forms.IntegerField(**map_model_fields_to_form_field(SpectralData.resolution))
@@ -81,6 +86,12 @@ class DataInputForm(forms.Form):
                 data[label] = value
             else:
                 data[key] = value
+
+        # Special case instrument.
+        instrument = data.pop("Instrument")
+        data[Instrument.spectrometer.field.verbose_name] = instrument.spectrometer
+        data[Instrument.atr_crystal.field.verbose_name] = instrument.atr_crystal
+
         data.pop("Spectral data file")  # This is not a part of meta data, so should be removed.
         df = pd.DataFrame(data, index=[to_uuid(data[self.fields["patient_id"].label])])
         canonic_data = df.rename(columns=lambda x: x.lower())

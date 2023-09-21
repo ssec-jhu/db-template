@@ -80,27 +80,12 @@ def mock_data_from_files(request, monkeypatch, db, diseases, django_db_blocker, 
                 
  
 @pytest.fixture(scope="function")               
-def mock_data_from_form_and_spectral_file(request, db, instruments, django_db_blocker):
+def mock_data_from_form_and_spectral_file(request, db, data_dict, django_db_blocker):
     spectral_file_path = (DATA_PATH/"sample").with_suffix(UploadedFile.FileFormats.XLSX)
     with django_db_blocker.unblock():
         with spectral_file_path.open(mode="rb") as spectral_record:
             data_input_form = DataInputForm(
-                data={
-                    "patient_id": "4efb03c5-27cd-4b40-82d9-c602e0ef7b80",
-                    "gender": 'M',
-                    "days_symptomatic": 1,
-                    "patient_age": 1,
-                    "spectra_measurement": 'ATR_FTIR',
-                    "spectrometer": 'Agilent Cory 630',
-                    "atr_crystal": 'ZnSe',
-                    "acquisition_time": 1,
-                    "n_coadditions": 32,
-                    "resolution": 0,
-                    "sample_type": 'PHARYNGEAL_SWAB',
-                    "sample_processing": 'None',
-                    "freezing_temp": 0,
-                    "thawing_time": 0,
-                },
+                data=data_dict,
                 files={
                     "spectral_data": django.core.files.File(spectral_record, name=spectral_file_path.name)
                 }

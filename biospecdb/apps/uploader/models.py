@@ -285,7 +285,7 @@ class Instrument(DatedModel):
                                    verbose_name="ATR Crystal")
 
     def __str__(self):
-        return self.spectrometer
+        return f"{self.spectrometer}_{self.atr_crystal}"
 
 
 class BioSample(DatedModel):
