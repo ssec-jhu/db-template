@@ -2,8 +2,9 @@ import pandas as pd
 from django import forms
 from django.db import models
 
+from biospecdb.util import to_uuid
+from uploader.io import read_spectral_data_table, get_file_info
 from uploader.models import UploadedFile, Patient, SpectralData, Instrument, BioSample, Symptom, Disease, Visit
-from biospecdb.util import read_spectral_data_table, get_file_info, to_uuid
 from .loaddata import save_data_to_db
 
 

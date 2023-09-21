@@ -11,8 +11,8 @@ from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 import pandas as pd
 
-import biospecdb.util
 from biospecdb.qc.qcfilter import QcFilter
+from uploader.io import FileFormats, get_file_info, read_meta_data, read_spectral_data_table, spectral_data_from_csv
 from uploader.loaddata import save_data_to_db
 from uploader.sql import secure_name
 from uploader.base_models import DatedModel, ModelWithViewDependency, SqlView, TextChoices, Types
@@ -61,14 +61,14 @@ NEGATIVE = "negative"
 
 
 class UploadedFile(DatedModel):
-    FileFormats = biospecdb.util.FileFormats
+    FileFormats = FileFormats
     UPLOAD_DIR = "raw_data/"  # MEDIA_ROOT/raw_data
 
     meta_data_file = models.FileField(upload_to=UPLOAD_DIR,
-                                      validators=[FileExtensionValidator(biospecdb.util.FileFormats.choices())],
+                                      validators=[FileExtensionValidator(FileFormats.choices())],
                                       help_text="File containing rows of all patient, symptom, and other meta data.")
     spectral_data_file = models.FileField(upload_to=UPLOAD_DIR,
-                                          validators=[FileExtensionValidator(biospecdb.util.FileFormats.choices())],
+                                          validators=[FileExtensionValidator(FileFormats.choices())],
                                           help_text="File containing rows of spectral intensities for the corresponding"
                                                     " meta data file.")
 
@@ -98,8 +98,8 @@ class UploadedFile(DatedModel):
     def _validate_and_save_data_to_db(self, dry_run=False):
         # Read in all data.
         # Note: When accessing ``models.FileField`` Django returns ``models.FieldFile`` as a proxy.
-        meta_data = biospecdb.util.read_meta_data(*biospecdb.util.get_file_info(self.meta_data_file.file))
-        spec_data = biospecdb.util.read_spectral_data_table(*biospecdb.util.get_file_info(self.spectral_data_file.file))
+        meta_data = read_meta_data(*get_file_info(self.meta_data_file.file))
+        spec_data = read_spectral_data_table(*get_file_info(self.spectral_data_file.file))
         # Validate.
         UploadedFile.validate_lengths(meta_data, spec_data)
         # This uses a join so returns the joined data so that it doesn't go to waste if needed, which it is here.
@@ -362,10 +362,10 @@ class SpectralData(DatedModel):
         return list(set(all_default_annotators) - set(existing_annotators))
 
     def get_spectral_df(self):
-        data_file, ext = biospecdb.util.get_file_info(self.data)
+        data_file, ext = get_file_info(self.data)
         if ext != UploadedFile.FileFormats.CSV:
             raise NotImplementedError()
-        return biospecdb.util.spectral_data_from_csv(data_file)
+        return spectral_data_from_csv(data_file)
 
     #@transaction.atomic  # Really? Not sure if this even can be if run in background...
     # See https://github.com/ssec-jhu/biospecdb/issues/77

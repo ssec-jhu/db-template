@@ -5,8 +5,8 @@ import pytest
 from explorer.tests.factories import SimpleQueryFactory
 from django.conf import settings
 
-from biospecdb.util import read_raw_data, spectral_data_from_csv
 from uploader.exporters import CSVExporter
+from uploader.io import read_raw_data, spectral_data_from_csv
 from uploader.models import SpectralData
 
 
