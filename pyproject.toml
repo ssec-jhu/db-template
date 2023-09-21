@@ -58,6 +58,11 @@ write_to = "biospecdb/_version.py"
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "biospecdb.settings"
+markers = [
+    "allow_aliases: override setiings.EXPLORER_DATA_EXPORTERS_ALLOW_DATA_FILE_ALIAS (where applicable)",
+    "media_root: override settings.MEDIA_ROOT (where applicable)",
+    "include_data_files: override settings.EXPLORER_DATA_EXPORTERS_INCLUDE_DATA_FILES (where applicable)",
+    "sql: specifiy SQL query (where applicable)"]
 
 [tool.bandit]
 exclude_dirs = ["tests"]
