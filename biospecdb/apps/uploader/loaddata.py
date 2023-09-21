@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 from django.db import transaction
 
-import biospecdb.util
+from uploader.io import read_meta_data, read_spectral_data_table, spectral_data_to_csv
 
 
 class ExitTransaction(Exception):
@@ -25,9 +25,9 @@ def save_data_to_db(meta_data, spectral_data, joined_data=None, dry_run=False) -
 
     if joined_data is None:
         # Read in all data.
-        meta_data = meta_data if isinstance(meta_data, pd.DataFrame) else biospecdb.util.read_meta_data(meta_data)
+        meta_data = meta_data if isinstance(meta_data, pd.DataFrame) else read_meta_data(meta_data)
         spec_data = spectral_data if isinstance(spectral_data, pd.DataFrame) else \
-            biospecdb.util.read_spectral_data_table(spectral_data)
+            read_spectral_data_table(spectral_data)
 
         UploadedFile.validate_lengths(meta_data, spec_data)
         joined_data = UploadedFile.join_with_validation(meta_data, spec_data)
@@ -90,9 +90,7 @@ def save_data_to_db(meta_data, spectral_data, joined_data=None, dry_run=False) -
                 wavelengths = row["wavelength"]
                 intensities = row["intensity"]
 
-                csv_data = biospecdb.util.spectral_data_to_csv(file=None,
-                                                               wavelengths=wavelengths,
-                                                               intensities=intensities)
+                csv_data = spectral_data_to_csv(file=None, wavelengths=wavelengths, intensities=intensities)
                 data_filename = Path(str(Visit)).with_suffix(str(UploadedFile.FileFormats.CSV))
 
                 spectraldata = SpectralData(instrument=instrument,

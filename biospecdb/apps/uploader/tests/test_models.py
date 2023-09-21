@@ -5,6 +5,7 @@ import django.core.files
 from django.db.utils import IntegrityError
 import pytest
 
+from uploader.io import read_meta_data
 from uploader.models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, Visit, UploadedFile
 from uploader.loaddata import save_data_to_db
 
@@ -225,7 +226,7 @@ class TestUploadedFile:
     @pytest.mark.parametrize("file_ext", UploadedFile.FileFormats.list())
     def test_patient_ids(self, mock_data_from_files, file_ext):
         meta_data_path = (DATA_PATH / "meta_data").with_suffix(file_ext)
-        df = biospecdb.util.read_meta_data(meta_data_path)
+        df = read_meta_data(meta_data_path)
 
         all_patients = Patient.objects.all()
 

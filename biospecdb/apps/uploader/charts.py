@@ -6,7 +6,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 from django.conf import settings
-from biospecdb.util import spectral_data_from_csv
+from uploader.io import spectral_data_from_csv
 from uploader.models import Disease, Patient, SpectralData
 
 
