@@ -196,10 +196,10 @@ EXPLORER_DATA_EXPORTERS_ALLOW_DATA_FILE_ALIAS = False
 
 # Custom settings:
 
-# Automatically run annotators when new spectral data is added.
+# Automatically run "default" annotators when new spectral data is added.
 AUTO_ANNOTATE = True
 
-# Run newly added/updated annotator on all spectral data if annotator.defult is True.
+# Run newly added/updated annotator on all spectral data if annotator.default is True.
 # WARNING: This may be time-consuming if the annotators takes a while to run and there are a lot of
 # spectral data samples in the database.
 RUN_DEFAULT_ANNOTATORS_WHEN_SAVED = False
