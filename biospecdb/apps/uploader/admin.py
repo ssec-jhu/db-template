@@ -34,7 +34,7 @@ class QCAnnotationAdmin(admin.ModelAdmin):
     search_fields = ["annotator__name"]
     search_help_text = "Annotator Name"
     readonly_fields = ("value", "created_at", "updated_at")  # TODO: Might need specific user group for timestamps.
-    list_display = ["annotator_name", "value", "annotator_value_type"]
+    list_display = ["annotator_name", "value", "annotator_value_type", "updated_at"]
     ordering = ("-updated_at",)
 
     @admin.display
