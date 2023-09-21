@@ -53,15 +53,35 @@ For additional cmds see the [Conda cheat-sheet](https://docs.conda.io/projects/c
   * Run ``uvicorn biospecdb.asgi:application --host 0.0.0.0 --port 8000``. _NOTE: This is just an example and is obviously application dependent._
 
 
+### Custom Deployment Settings:
+
+  * ``EXPLORER_CHARTS_ENABLED``: Include the spectral data files, if present in query results, for download as zip file.
+  * ``EXPLORER_DATA_EXPORTERS_ALLOW_DATA_FILE_ALIAS``: Exhaustively scan query result values for relevant filepaths to
+    collect data files. Does nothing when ``EXPLORER_DATA_EXPORTERS_INCLUDE_DATA_FILES is False``.
+  * ``AUTO_ANNOTATE``: Automatically run "default" annotators when new spectral data is added. [Quality Control Annotations](#quality-control-annotations).
+  * ``RUN_DEFAULT_ANNOTATORS_WHEN_SAVED``: Run newly added/updated annotator on all spectral data if annotator.default 
+    is True. WARNING: This may be time-consuming if the annotators takes a while to run and there are a lot of spectral
+    data samples in the database. See [Quality Control Annotations](#quality-control-annotations).
+
+
 ### DB Management:
 We're currently using sqlite requiring the following setup instructions:
 
 * cd into repo
 * ``python manage.py migrate``
-* ``python manage.py sqlmigrate uploader <migration_version>``, e.g., ``python manage.py sqlmigrate uploader 001``
+* ``python manage.py sqlmigrate uploader <migration_version>``, e.g., ``python manage.py sqlmigrate uploader 0001``
 * ``python manage.py createsuperuser``
-* ``python manage.py loaddata diseases instruments``
+* ``python manage.py loaddata diseases instruments qcannotators``
+* ``python manage.py update_sql_views``
 * ``python manage.py runserver``
+
+For running the Quality Control Annotators (QCAnnotators) use the following:
+
+* ``python manage.py run_qc_annotators``
+
+...using the following option ``--no_reruns`` to NOT run annotators on existing annotations, but instead leave their
+existing computed values as they are. This will, however, still run all "default" annotators on all ``SepectralData``
+entries that have not yet been annotated.
 
 On subsequent deployments only ``python manage.py runserver`` is  needed, unless the db (db.sqlite) is nuked from
 disk.
@@ -78,6 +98,8 @@ The DB can be dumped to a file using the following:
 `` python manage.py dumpdata --indent 4 uploader --exclude uploader.uploadedfile --output test_data.json``
 
 ### Usage:
+
+    WIP.
 
 ## Quality Control Annotations.
 
