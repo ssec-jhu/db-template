@@ -95,11 +95,7 @@ class UploadedFile(DatedModel):
         except pd.errors.MergeError as error:
             raise ValidationError(_("meta and spectral data must have unique and identical patient IDs")) from error
 
-    def clean(self):
-        """ Model validation. """
-
-        super().clean()
-
+    def _validate_and_save_data_to_db(self, dry_run=False):
         # Read in all data.
         # Note: When accessing ``models.FileField`` Django returns ``models.FieldFile`` as a proxy.
         meta_data = biospecdb.util.read_meta_data(*biospecdb.util.get_file_info(self.meta_data_file.file))
@@ -110,7 +106,19 @@ class UploadedFile(DatedModel):
         joined_data = UploadedFile.join_with_validation(meta_data, spec_data)
 
         # Ingest into DB.
-        save_data_to_db(None, None, joined_data=joined_data)
+        save_data_to_db(None, None, joined_data=joined_data, dry_run=dry_run)
+
+    def clean(self):
+        """ Model validation. """
+        super().clean()
+        self._validate_and_save_data_to_db(dry_run=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self._validate_and_save_data_to_db(dry_run=False)
+
+    def asave(self, *args, **kwargs):
+        raise NotImplementedError
 
 
 class Patient(DatedModel):
