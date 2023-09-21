@@ -15,7 +15,7 @@ import biospecdb.util
 from biospecdb.qc.qcfilter import QcFilter
 from uploader.loaddata import save_data_to_db
 from uploader.sql import secure_name
-from uploader.base_models import ModelWithViewDependency, SqlView, TextChoices, Types
+from uploader.base_models import DatedModel, ModelWithViewDependency, SqlView, TextChoices, Types
 
 
 # Changes here need to be migrated, committed, and activated.
@@ -60,7 +60,7 @@ NEGATIVE = "negative"
 # Any other unique identifying numbers, characteristics, or codes.
 
 
-class UploadedFile(models.Model):
+class UploadedFile(DatedModel):
     FileFormats = biospecdb.util.FileFormats
     UPLOAD_DIR = "raw_data/"  # MEDIA_ROOT/raw_data
 
@@ -71,7 +71,6 @@ class UploadedFile(models.Model):
                                           validators=[FileExtensionValidator(biospecdb.util.FileFormats.choices())],
                                           help_text="File containing rows of spectral intensities for the corresponding"
                                                     " meta data file.")
-    uploaded_at = models.DateTimeField(auto_now_add=True)
 
     @staticmethod
     def validate_lengths(meta_data, spec_data):
@@ -114,7 +113,7 @@ class UploadedFile(models.Model):
         save_data_to_db(None, None, joined_data=joined_data)
 
 
-class Patient(models.Model):
+class Patient(DatedModel):
     """ Model an individual patient. """
     MIN_AGE = 0
     MAX_AGE = 150  # NOTE: HIPAA requires a max age of 90 to be stored. However, this is GDPR data so... :shrug:
@@ -137,7 +136,7 @@ class Patient(models.Model):
         return str(self.patient_id)[:8]
 
 
-class Visit(models.Model):
+class Visit(DatedModel):
     """ Model a patient's visitation to collect health data and biological samples.  """
 
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name="visit")
@@ -215,7 +214,7 @@ class Disease(ModelWithViewDependency):
             self.alias = self.name.replace('_', ' ')
 
 
-class Symptom(models.Model):
+class Symptom(DatedModel):
     """ A patient's instance of models.Disease. """
     MIN_SEVERITY = 0
     MAX_SEVERITY = 10
@@ -266,7 +265,7 @@ class Symptom(models.Model):
         return f"patient:{self.visit.patient.short_id()}_{self.disease.name}"
 
 
-class Instrument(models.Model):
+class Instrument(DatedModel):
     """ Model the instrument/device used to measure spectral data (not the collection of the bio sample). """
 
     class Meta:
@@ -281,7 +280,7 @@ class Instrument(models.Model):
         return self.spectrometer
 
 
-class BioSample(models.Model):
+class BioSample(DatedModel):
     """ Model biological sample and collection method. """
     class SampleKind(TextChoices):
         PHARYNGEAL_SWAB = auto()
@@ -304,7 +303,7 @@ class BioSample(models.Model):
         return f"{self.visit}_type:{self.sample_type}_pk{self.pk}"  # NOTE: str(self.visit) contains patient ID.
 
 
-class SpectralData(models.Model):
+class SpectralData(DatedModel):
     """ Model spectral data measured by spectrometer instrument. """
 
     class Meta:
@@ -524,7 +523,7 @@ def validate_qc_annotator_import(value):
                               code="invalid")
 
 
-class QCAnnotator(models.Model):
+class QCAnnotator(DatedModel):
     Types = Types
 
     name = models.CharField(max_length=128, unique=True, blank=False, null=False)
@@ -565,7 +564,7 @@ class QCAnnotator(models.Model):
                 data.annotate(annotator=self, force=True)
 
 
-class QCAnnotation(models.Model):
+class QCAnnotation(DatedModel):
 
     class Meta:
         unique_together = [["annotator", "spectral_data"]]

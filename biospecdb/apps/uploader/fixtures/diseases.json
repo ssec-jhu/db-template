@@ -6,7 +6,9 @@
       "name": "Ct_gene_N",
       "description": "Covid cycle threshold N gene detection",
       "alias": "CTs (Gene N)",
-      "value_class": "FLOAT"
+      "value_class": "FLOAT",
+      "created_at": "2013-09-06T00:00:00+00:00",
+      "updated_at": "2013-09-06T00:00:00+00:00"
     }
   },
   {
@@ -16,7 +18,9 @@
       "name": "Ct_gene_ORF1ab",
       "description": "Covid cycle threshold for ORF1ab detection",
       "alias": "CTs (Gene ORF)",
-      "value_class": "FLOAT"
+      "value_class": "FLOAT",
+      "created_at": "2013-09-06T00:00:00+00:00",
+      "updated_at": "2013-09-06T00:00:00+00:00"
     }
   },
   {
@@ -26,7 +30,9 @@
       "name": "Covid_RT_qPCR",
       "description": "Covid RT qPCR results",
       "alias": "RESULT RT-qPCR",
-      "value_class": "STR"
+      "value_class": "STR",
+      "created_at": "2013-09-06T00:00:00+00:00",
+      "updated_at": "2013-09-06T00:00:00+00:00"
     }
   },
   {
@@ -36,7 +42,9 @@
       "name": "covid_suspicious_contact",
       "description": "Suspicious contact of Covid",
       "alias": "Suspicious contact",
-      "value_class": "STR"
+      "value_class": "STR",
+      "created_at": "2013-09-06T00:00:00+00:00",
+      "updated_at": "2013-09-06T00:00:00+00:00"
     }
   },
   {
@@ -46,7 +54,9 @@
       "name": "fever",
       "description": "Patient experiences a fever?",
       "alias": "fever",
-      "value_class": "BOOL"
+      "value_class": "BOOL",
+      "created_at": "2013-09-06T00:00:00+00:00",
+      "updated_at": "2013-09-06T00:00:00+00:00"
     }
   },
   {
@@ -56,7 +66,9 @@
       "name": "dyspnoea",
       "description": "Difficult or labored breathing",
       "alias": "dyspnoea",
-      "value_class": "BOOL"
+      "value_class": "BOOL",
+      "created_at": "2013-09-06T00:00:00+00:00",
+      "updated_at": "2013-09-06T00:00:00+00:00"
     }
   },
   {
@@ -66,7 +78,9 @@
       "name": "oxygen_saturation_lt_95",
       "description": "Blood oxygen saturation less than 95%",
       "alias": "O2 Sat <95%",
-      "value_class": "BOOL"
+      "value_class": "BOOL",
+      "created_at": "2013-09-06T00:00:00+00:00",
+      "updated_at": "2013-09-06T00:00:00+00:00"
     }
   },
   {
@@ -76,7 +90,9 @@
       "name": "cough",
       "description": "Patient experiences cough-like symptoms.",
       "alias": "cough",
-      "value_class": "BOOL"
+      "value_class": "BOOL",
+      "created_at": "2013-09-06T00:00:00+00:00",
+      "updated_at": "2013-09-06T00:00:00+00:00"
     }
   },
   {
@@ -86,7 +102,9 @@
       "name": "coryza",
       "description": "Irritation and inflammation of the nasal mucous membrane.",
       "alias": "coryza",
-      "value_class": "BOOL"
+      "value_class": "BOOL",
+      "created_at": "2013-09-06T00:00:00+00:00",
+      "updated_at": "2013-09-06T00:00:00+00:00"
     }
   },
   {
@@ -96,7 +114,9 @@
       "name": "odinophagy",
       "description": "Pain when swallowing.",
       "alias": "odinophagy",
-      "value_class": "BOOL"
+      "value_class": "BOOL",
+      "created_at": "2013-09-06T00:00:00+00:00",
+      "updated_at": "2013-09-06T00:00:00+00:00"
     }
   },
   {
@@ -106,7 +126,9 @@
       "name": "diarrhea",
       "description": "Patient experiences diarrhea.",
       "alias": "diarrhea",
-      "value_class": "BOOL"
+      "value_class": "BOOL",
+      "created_at": "2013-09-06T00:00:00+00:00",
+      "updated_at": "2013-09-06T00:00:00+00:00"
     }
   },
   {
@@ -116,7 +138,9 @@
       "name": "nausea",
       "description": "Patient experiences nausea.",
       "alias": "nausea",
-      "value_class": "BOOL"
+      "value_class": "BOOL",
+      "created_at": "2013-09-06T00:00:00+00:00",
+      "updated_at": "2013-09-06T00:00:00+00:00"
     }
   },
   {
@@ -126,7 +150,9 @@
       "name": "headache",
       "description": "Patient experiences headaches.",
       "alias": "headache",
-      "value_class": "BOOL"
+      "value_class": "BOOL",
+      "created_at": "2013-09-06T00:00:00+00:00",
+      "updated_at": "2013-09-06T00:00:00+00:00"
     }
   },
   {
@@ -136,7 +162,9 @@
       "name": "weakness",
       "description": "Patient experiences weakness or fatigue.",
       "alias": "weakness",
-      "value_class": "BOOL"
+      "value_class": "BOOL",
+      "created_at": "2013-09-06T00:00:00+00:00",
+      "updated_at": "2013-09-06T00:00:00+00:00"
     }
   },
   {
@@ -146,7 +174,9 @@
       "name": "anosmia",
       "description": "Partial or complete loss of smell.",
       "alias": "anosmia",
-      "value_class": "BOOL"
+      "value_class": "BOOL",
+      "created_at": "2013-09-06T00:00:00+00:00",
+      "updated_at": "2013-09-06T00:00:00+00:00"
     }
   },
   {
@@ -156,7 +186,9 @@
       "name": "myalgia",
       "description": "Muscular aches and pains.",
       "alias": "myalgia",
-      "value_class": "BOOL"
+      "value_class": "BOOL",
+      "created_at": "2013-09-06T00:00:00+00:00",
+      "updated_at": "2013-09-06T00:00:00+00:00"
     }
   },
   {
@@ -166,7 +198,9 @@
       "name": "no_appetite",
       "description": "Lack of appetite",
       "alias": "Lack of appetite",
-      "value_class": "BOOL"
+      "value_class": "BOOL",
+      "created_at": "2013-09-06T00:00:00+00:00",
+      "updated_at": "2013-09-06T00:00:00+00:00"
     }
   },
   {
@@ -176,7 +210,9 @@
       "name": "vomiting",
       "description": "Patient experiences vomiting",
       "alias": "vomiting",
-      "value_class": "BOOL"
+      "value_class": "BOOL",
+      "created_at": "2013-09-06T00:00:00+00:00",
+      "updated_at": "2013-09-06T00:00:00+00:00"
     }
   },
   {
@@ -186,7 +222,9 @@
       "name": "chronic_pulmonary_inc_asthma",
       "description": "Chronic pulmonary conditions including asthma",
       "alias": "Chronic pulmonary disease including asthma",
-      "value_class": "BOOL"
+      "value_class": "BOOL",
+      "created_at": "2013-09-06T00:00:00+00:00",
+      "updated_at": "2013-09-06T00:00:00+00:00"
     }
   },
   {
@@ -196,7 +234,9 @@
       "name": "cardiovascular_disease_inc_hypertension",
       "description": "Cardiovascular disease including hypertension.",
       "alias": "Cardiovascular disease including hypertension",
-      "value_class": "BOOL"
+      "value_class": "BOOL",
+      "created_at": "2013-09-06T00:00:00+00:00",
+      "updated_at": "2013-09-06T00:00:00+00:00"
     }
   },
   {
@@ -206,7 +246,9 @@
       "name": "diabetes",
       "description": "Diabetes type 1 & type 2.",
       "alias": "diabetes",
-      "value_class": "BOOL"
+      "value_class": "BOOL",
+      "created_at": "2013-09-06T00:00:00+00:00",
+      "updated_at": "2013-09-06T00:00:00+00:00"
     }
   },
   {
@@ -216,7 +258,9 @@
       "name": "chronic_or_neuromuscular_neurological_disease",
       "description": "Chronic or neuromuscular neurological disease.",
       "alias": "Chronic or neuromuscular neurological disease",
-      "value_class": "BOOL"
+      "value_class": "BOOL",
+      "created_at": "2013-09-06T00:00:00+00:00",
+      "updated_at": "2013-09-06T00:00:00+00:00"
     }
   }
 ]

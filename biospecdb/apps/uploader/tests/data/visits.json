@@ -4,7 +4,9 @@
     "pk": 1,
     "fields": {
       "patient": "437de0d7-6618-4445-bab2-03822310b0ef",
-      "patient_age": 40
+      "patient_age": 40,
+      "created_at": "2013-09-06T00:00:00+00:00",
+      "updated_at": "2013-09-06T00:00:00+00:00"
     }
   },
   {
@@ -12,7 +14,9 @@
     "pk": 2,
     "fields": {
       "patient": "9875970d-75ac-4008-a15b-20fb67923541",
-      "patient_age": 30
+      "patient_age": 30,
+      "created_at": "2013-09-06T00:00:00+00:00",
+      "updated_at": "2013-09-06T00:00:00+00:00"
     }
   },
   {
@@ -21,7 +25,9 @@
     "fields": {
       "patient": "437de0d7-6618-4445-bab2-03822310b0ef",
       "previous_visit": 1,
-      "patient_age": 42
+      "patient_age": 42,
+      "created_at": "2013-09-06T00:00:00+00:00",
+      "updated_at": "2013-09-06T00:00:00+00:00"
     }
   }
 ]

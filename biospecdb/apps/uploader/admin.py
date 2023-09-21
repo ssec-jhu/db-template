@@ -8,15 +8,19 @@ from .models import BioSample, Disease, Instrument, Patient, SpectralData, Sympt
 
 @admin.register(Instrument)
 class InstrumentAdmin(admin.ModelAdmin):
+    readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     list_display = ["spectrometer", "atr_crystal"]
     ordering = ["spectrometer"]
 
 
 @admin.register(UploadedFile)
 class UploadedFileAdmin(admin.ModelAdmin):
-    search_fields = ["uploaded_at"]
+    search_fields = ["created_at"]
     search_help_text = "Creation timestamp"
-    list_display = ["pk", "uploaded_at", "meta_data_file", "spectral_data_file"]
+    list_display = ["pk", "created_at", "meta_data_file", "spectral_data_file"]
+    readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
+    date_hierarchy = "created_at"
+    ordering = ("-updated_at",)
 
 
 class QCAnnotationInline(admin.TabularInline):
@@ -29,8 +33,9 @@ class QCAnnotationInline(admin.TabularInline):
 class QCAnnotationAdmin(admin.ModelAdmin):
     search_fields = ["annotator__name"]
     search_help_text = "Annotator Name"
-    readonly_fields = ("value",)
+    readonly_fields = ("value", "created_at", "updated_at")  # TODO: Might need specific user group for timestamps.
     list_display = ["annotator_name", "value", "annotator_value_type"]
+    ordering = ("-updated_at",)
 
     @admin.display
     def annotator_name(self, obj):
@@ -45,6 +50,8 @@ class QCAnnotationAdmin(admin.ModelAdmin):
 class QCAnnotatorAdmin(admin.ModelAdmin):
     search_fields = ["name"]
     search_help_text = "Name"
+    # TODO: Might need specific user group for timestamps.)
+    readonly_fields = ("created_at", "updated_at")
     ordering = ("name",)
 
     list_display = ["name", "fully_qualified_class_name", "default", "value_type"]
@@ -54,6 +61,7 @@ class QCAnnotatorAdmin(admin.ModelAdmin):
 class DiseaseAdmin(admin.ModelAdmin):
     search_fields = ["name"]
     search_help_text = "Disease name"
+    readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     ordering = ["name"]
 
     list_display = ["name", "description", "symptom_count"]
@@ -67,6 +75,9 @@ class DiseaseAdmin(admin.ModelAdmin):
 class SymptomAdmin(admin.ModelAdmin):
     search_fields = ["disease__name"]
     search_help_text = "Disease OR patient ID"
+    readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
+    date_hierarchy = "updated_at"
+    ordering = ("-updated_at",)
 
     def get_search_results(self, request, queryset, search_term):
         """ search_fields filters with an AND when we need an OR
@@ -115,8 +126,11 @@ class SpectralDataAdmin(admin.ModelAdmin):
 
     search_fields = ["bio_sample__visit__patient__patient_id"]
     search_help_text = "Patient ID"
+    readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
+    date_hierarchy = "updated_at"
     list_display = ["patient_id", "instrument", "data"]
     inlines = [QCAnnotationInline]
+    ordering = ("-updated_at",)
 
     @admin.display
     def patient_id(self, obj):
@@ -133,6 +147,9 @@ class BioSampleInline(admin.TabularInline):
 class BioSampleAdmin(admin.ModelAdmin):
     search_fields = ["sample_type"]
     search_help_text = "Sample type OR patient ID"
+    readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
+    date_hierarchy = "updated_at"
+    ordering = ("-updated_at",)
 
     def get_search_results(self, request, queryset, search_term):
         """ search_fields filters with an AND when we need an OR
@@ -171,6 +188,9 @@ class VisitAdmin(admin.ModelAdmin):
     form = VisitAdminForm
     search_fields = ["patient__patient_id"]
     search_help_text = "Patient ID"
+    readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
+    date_hierarchy = "updated_at"
+    ordering = ("-updated_at",)
 
     # autocomplete_fields = ["previous_visit"]  # Conflicts with VisitAdminForm queryset.
     inlines = [BioSampleInline, SymptomInline]
@@ -202,6 +222,9 @@ class PatientAdmin(admin.ModelAdmin):
     inlines = [VisitInline]
     search_fields = ["patient_id"]
     search_help_text = "Patient ID"
+    readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
+    date_hierarchy = "updated_at"
+    ordering = ("-updated_at",)
 
     list_display = ["patient_id", "gender", "age", "visit_count"]
 
