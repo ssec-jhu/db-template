@@ -238,3 +238,22 @@ class PatientAdmin(admin.ModelAdmin):
     @admin.display
     def visit_count(self, obj):
         return len(obj.visit.all())
+
+
+class DataAdminSite(admin.AdminSite):
+    site_header = "Biosample Spectral Repository"
+    index_title = "Data Administration"
+    site_title = index_title
+
+
+data_admin = DataAdminSite(name="data_admin")
+data_admin.register(Patient, admin_class=PatientAdmin)
+data_admin.register(Visit, admin_class=VisitAdmin)
+data_admin.register(Symptom, admin_class=SymptomAdmin)
+data_admin.register(BioSample, admin_class=BioSampleAdmin)
+data_admin.register(SpectralData, admin_class=SpectralDataAdmin)
+data_admin.register(UploadedFile, admin_class=UploadedFileAdmin)
+data_admin.register(Instrument, admin_class=InstrumentAdmin)
+data_admin.register(QCAnnotation, admin_class=QCAnnotationAdmin)
+data_admin.register(QCAnnotator, admin_class=QCAnnotatorAdmin)
+data_admin.register(Disease, admin_class=DiseaseAdmin)

@@ -19,8 +19,10 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic.base import RedirectView
 
-from biospecdb.apps.uploader import views
+from uploader import views
+from uploader.admin import data_admin
 
+admin.site.site_header = "Biosample Spectral Repository administration"
 
 urlpatterns = [
     path('', RedirectView.as_view(pattern_name="home", permanent=True)),
@@ -29,13 +31,9 @@ urlpatterns = [
     path('home/', views.home, name='home'),
     path('display/', views.display_xlsx, name='MetadataDisplay'),
     path('explorer/', include('explorer.urls')),
+    path('data/', data_admin.urls),
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    
-#urlpatterns = [
-#    path("uploader/", include("biospecdb.apps.uploader.urls")),
-#    path('admin/', admin.site.urls),
-#]
