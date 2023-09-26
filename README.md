@@ -70,8 +70,9 @@ We're currently using sqlite requiring the following setup instructions:
 * cd into repo
 * ``python manage.py migrate``
 * ``python manage.py sqlmigrate uploader <migration_version>``, e.g., ``python manage.py sqlmigrate uploader 0001``
+* ``python manage.py sqlmigrate user <migration_version>``
 * ``python manage.py createsuperuser``
-* ``python manage.py loaddata diseases instruments qcannotators``
+* ``python manage.py loaddata centers diseases instruments qcannotators``
 * ``python manage.py update_sql_views``
 * ``python manage.py runserver``
 
@@ -87,11 +88,14 @@ On subsequent deployments only ``python manage.py runserver`` is  needed, unless
 disk.
 
 When the models are changed only the following migration commands are required:
-* ``python manage.py makemigrations uploader``
+* ``python manage.py makemigrations uploader`` (if ``uploader.model`` was altered)
+* ``python manage.py makemigrations user`` (if ``user.model`` was altered)
 * ``git add biospecdb/apps/uploader/migrations``
-* ``git commit -asm"Update uploader model(s)"``
+* ``git add biospecdb/apps/user/migrations``
+* ``git commit -asm"Update model migrations"``
 * ``python manage.py migrate``
 * ``python manage.py sqlmigrate uploader <migration_version>``
+* ``python manage.py sqlmigrate user <migration_version>``
 
 The DB can be dumped to a file using the following:
 
