@@ -5,6 +5,7 @@ from openpyxl import load_workbook
 from .forms import FileUploadForm, DataInputForm
 from uploader.models import Patient, Visit, SpectralData, BioSample
 
+
 def home(request):
     return render(request, 'home.html')
 
