@@ -1,7 +1,3 @@
-import operator
-from django.conf import settings
-
-
 class BaseRouter:
     route_app_labels = {}
     exclude_app_labels = {}
@@ -40,14 +36,9 @@ class BaseRouter:
             If no router has an opinion (i.e. all routers return None), only relations within the same database are
             allowed.
         """
-        op = operator.or_ if settings.ALLOW_RELATIONS_ACROSS_DBS else operator.and_
-        res = op(self._is_allowed(obj1._meta.app_label), self._is_allowed(obj2._meta.app_label))
-
-        # If links across DBs are allowed, return None instead of False sp router iteration continues.
-        if settings.ALLOW_RELATIONS_ACROSS_DBS:
-            return res if res else None
-
-        return res
+        # Insist on NO cross-database relationships.
+        res = self._is_allowed(obj1._meta.app_label) and self._is_allowed(obj2._meta.app_label)
+        return res if res else None
 
     def allow_migrate(self, db, app_label, model_name=None, **hints):
         """ Determine if the migration operation is allowed to run on the database with alias db. Return True if the
@@ -92,7 +83,11 @@ class AdminRouter(BaseRouter):
     db = "admin"
 
     def db_for_read(self, model, **hints):
-        return model._meta.app_label not in self.exclude_app_labels
+        return self.db
+
+        if model._meta.app_label not in self.exclude_app_labels:
+            return self.db
+        return False
 
     db_for_write = db_for_read
 
