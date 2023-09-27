@@ -416,6 +416,8 @@ class SpectralData(DatedModel):
 
 
 class SymptomsView(SqlView, models.Model):
+    db = "bsr"
+
     class Meta:
         managed = False
         db_table = "v_symptoms"
@@ -454,6 +456,7 @@ class VisitSymptomsView(SqlView, models.Model):
         db_table = "v_visit_symptoms"
 
     sql_view_dependencies = (SymptomsView,)
+    db = "bsr"
 
     visit_id = models.BigIntegerField(primary_key=True)
 
@@ -494,6 +497,7 @@ class FullPatientView(SqlView, models.Model):
         db_table = "full_patient"
 
     sql_view_dependencies = (VisitSymptomsView,)
+    db = "bsr"
 
     @classmethod
     def sql(cls):
