@@ -8,7 +8,7 @@
             text-align: center;
         }
         .form-field {
-            margin-bottom: 20px; /* Add a margin at the bottom */
+            margin-bottom: 25px; /* Add a margin at the bottom */
         }
         .flex-container {
             display: flex;
@@ -19,21 +19,25 @@
     </style>
 </head>
 <body>
-    <h1 class="center-text">Submit new patient data:</h1>
+    <h1 class="center-text">Submit new / Search existing patient data:</h1>
     <div>
-        <form method="post" enctype="multipart/form-data">
+        <form method="get" enctype="multipart/form-data">
             {% csrf_token %}
-
             <div class="center-text">
                 <div class="form-field" class="fieldWrapper">
                     <label for="{{ form.patient_id.id_for_label }}">Patient ID:</label>
                     {{ form.patient_id }}
                     {{ form.patient_id.errors }}
                 </div>
+                <div class="form-field">
+                    <button type="submit">Search for the existing patient</button>
+                </div>
             </div>
+        </form>
 
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
             <div class="flex-container">
-
                 <div class="half_width">
                     {% for field in form %}
                         {% if forloop.counter <= 15 and field.name != "patient_id" and field.name != "spectral_data" %}
@@ -60,7 +64,6 @@
                         {% endif %}
                     {% endfor %}
                 </div>
-
             </div>
 
             <div class="center-text">
@@ -69,7 +72,8 @@
                     {{ form.spectral_data }}
                     {{ form.spectral_data.errors }}
                 </div>
-                <button type="submit">Update</button>
+                <h2 class="center-text">Submit new / Update existing patient data:</h2>
+                <button type="submit">Submit / Update</button>
                 {% if form.errors %}
                     <div style=";color:red;">{{ form.errors }}.</div>
                 {% endif %}
