@@ -86,8 +86,7 @@ WSGI_APPLICATION = 'biospecdb.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    "default": {},
-    'admin': {
+    'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'admin.sqlite3',
     },
@@ -98,7 +97,7 @@ DATABASES = {
 }
 
 # The order in which routers are processed is significant. Routers will be queried in the order they are listed here.
-DATABASE_ROUTERS = ["biospecdb.routers.BSRRouter", "biospecdb.routers.AdminRouter"]
+DATABASE_ROUTERS = ["biospecdb.routers.BSRRouter"]
 
 
 # Password validation

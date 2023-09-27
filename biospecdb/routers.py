@@ -1,6 +1,5 @@
 class BaseRouter:
     route_app_labels = {}
-    exclude_app_labels = {}
     db = None
 
     # NOTE: For the funcs below returning None := ambivalence (Returns None if there is no suggestion.),
@@ -8,7 +7,7 @@ class BaseRouter:
     # However, the main routing code only iterates over all routers if they return None, e.g. a router returning
     # False will exit the routing iteration just as it does when returning True - router order matters!
     def _is_allowed(self, obj):
-        return (obj not in self.exclude_app_labels) and (obj in self.route_app_labels)
+        return obj in self.route_app_labels
 
     def db_for_read(self, model, **hints):
         """ Suggest the database that should be used for read operations for objects of type model.
@@ -65,31 +64,6 @@ class BaseRouter:
 
 class BSRRouter(BaseRouter):
     route_app_labels = {"uploader"}
-    exclude_app_labels = {}
     db = "bsr"
 
     # Override base methods here when needing to convert None -> False.
-
-
-class AdminRouter(BaseRouter):
-    """ Catch all router.
-        Technically, this could just go last in the router chain and just return True, however, for better correctness
-        we still check against ``exclude_app_labels``.
-        NOTE: Methods here don't return None so this router must still go last in the list settings.DATABASE_ROUTERS.
-        """
-
-    route_app_labels = {}
-    exclude_app_labes = {"uploader"}
-    db = "admin"
-
-    def db_for_read(self, model, **hints):
-        return self.db
-
-        if model._meta.app_label not in self.exclude_app_labels:
-            return self.db
-        return False
-
-    db_for_write = db_for_read
-
-    def allow_migrate(self, db, app_label, model_name=None, **hints):
-        return db not in self.exclude_app_labels
