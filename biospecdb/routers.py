@@ -64,6 +64,7 @@ class BaseRouter:
 
 class BSRRouter(BaseRouter):
     route_app_labels = {"uploader"}
+    exclude_app_labels = {}
     db = "bsr"
 
     # Override base methods here when needing to convert None -> False.
