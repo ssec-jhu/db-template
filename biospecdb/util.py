@@ -15,7 +15,7 @@ def find_package_location(package=__project__):
 
 
 def find_repo_location(package=__project__):
-    return Path(find_package_location(package) / os.pardir)
+    return find_package_location(package) / os.pardir
 
 
 class StrEnum(enum.StrEnum):

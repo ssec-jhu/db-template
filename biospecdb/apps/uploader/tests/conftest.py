@@ -5,6 +5,7 @@ import django.core.files
 from django.core.management import call_command
 import pytest
 
+from biospecdb.util import find_package_location
 from uploader.models import UploadedFile
 from uploader.forms import DataInputForm
 
@@ -20,31 +21,33 @@ def sql_views(django_db_blocker):
 @pytest.fixture(scope="function")
 def diseases(django_db_blocker):
     with django_db_blocker.unblock():
-        call_command('loaddata', 'diseases.json')
+        call_command('loaddata', "--database=bsr", 'diseases.json')
 
 
 @pytest.fixture(scope="function")
 def instruments(django_db_blocker):
     with django_db_blocker.unblock():
-        call_command('loaddata', 'instruments.json')
+        call_command('loaddata', "--database=bsr", 'instruments.json')
 
 
 @pytest.fixture(scope="function")
 def patients(django_db_blocker):
     with django_db_blocker.unblock():
-        call_command('loaddata', 'biospecdb/apps/uploader/tests/data/patients.json')
+        call_command('loaddata', "--database=bsr",
+                     str(find_package_location() / 'apps/uploader/tests/data/patients.json'))
 
 
 @pytest.fixture(scope="function")
 def visits(patients, django_db_blocker):
     with django_db_blocker.unblock():
-        call_command('loaddata', 'biospecdb/apps/uploader/tests/data/visits.json')
+        call_command('loaddata', "--database=bsr",
+                     str(find_package_location() / 'apps/uploader/tests/data/visits.json'))
 
 
 @pytest.fixture(scope="function")
 def qcannotators(db, django_db_blocker):
     with django_db_blocker.unblock():
-        call_command('loaddata', 'qcannotators.json')
+        call_command('loaddata', "--database=bsr", 'qcannotators.json')
 
 
 @pytest.fixture(scope="function")
@@ -52,7 +55,7 @@ def mock_data(db, django_db_blocker):
     # NOTE: Since this loads directly to the DB without any validation and thus call to loaddata(), no data files are
     # present. If you need actual spectral data, use ``mock_data_from_files`` below instead.
     with django_db_blocker.unblock():
-        call_command('loaddata', 'test_data.json')
+        call_command('loaddata', "--database=bsr", 'test_data.json')
 
 
 @pytest.fixture(scope="function")
