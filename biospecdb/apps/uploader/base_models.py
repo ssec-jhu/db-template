@@ -52,6 +52,7 @@ class Types(TextChoices):
 
 class SqlView:
     sql_view_dependencies = tuple()
+    db = "default"
 
     # TODO: Add functionality to auto create own view if doesn't already exist.
 
@@ -62,6 +63,8 @@ class SqlView:
 
     @classmethod
     def drop_view(cls, *args, **kwargs):
+        if "db" not in kwargs:
+            kwargs["db"] = cls.db
         return drop_view(cls._meta.db_table, *args, **kwargs)
 
     @classmethod
@@ -73,8 +76,11 @@ class SqlView:
                   can result in the views being rolled back to, being stale and outdated (depending on the cause of the
                   update).
         """
+        if "db" not in kwargs:
+            kwargs["db"] = cls.db
+
         for view_dependency in cls.sql_view_dependencies:
-            view_dependency.update_view()
+            view_dependency.update_view(*args, **kwargs)
 
         sql, params = cls.sql()
         return update_view(cls._meta.db_table, sql, *args, params=params, **kwargs)
