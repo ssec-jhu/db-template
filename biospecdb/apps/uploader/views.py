@@ -1,8 +1,9 @@
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render
+from django.http import HttpResponse
 from openpyxl import load_workbook
 from .forms import FileUploadForm, DataInputForm
-
+from uploader.models import Patient, Visit, SpectralData, BioSample
 
 def home(request):
     return render(request, 'home.html')
@@ -35,49 +36,52 @@ def display_xlsx(request):
 def data_input(request):
     if request.method == 'POST':
         form = DataInputForm(request.POST, request.FILES)
-
-        if form.is_valid():
-            if form:
-                form.save()  # Save data to database.
-                patient_id = form.cleaned_data["patient_id"]
-                return render(request, 'DataInputForm_Success.html', {'form': form, 'patient_id': patient_id})
-            else:
-                form = load_form_from_db(request, form.patient_id)
-                patient_id = form.cleaned_data["patient_id"]
-                return render(request, 'DataInputForm.html', {'form': form})
         
+        if form.is_valid():
+            form.save()  # Save data to database.
+            patient_id = form.cleaned_data["patient_id"]
+            return render(request, 'DataInputForm_Success.html', {'form': form, 'patient_id': patient_id})
     else:
         form = DataInputForm()
         
     return render(request, 'DataInputForm.html', {'form': form})
 
-def load_form_from_db(request, patient_id):
-    """
-    Ingest into the database large tables of symptom & disease data (aka "meta" data) along with associated spectral
-    data.
 
-    Note: Data can be passed in pre-joined, i.e., save_data_to_db(None, None, joined_data). If so, data can't be
-          validated.
-    Note: This func is called by UploadedFile.clean() which, therefore, can't also be called here.
-    """
-        
-    from uploader.models import Patient, Visit
-    from uploader.forms import DataInputForm
-    from django.http import HttpResponse
-    from django.core.exceptions import ValidationError
-    
-    try:
-        patient = Patient.objects.get(patient_id = patient_id)
-    except (Patient.DoesNotExist, ValidationError):
-        return HttpResponse(patient_id = patient_id)     
-    form = DataInputForm()
-    form.patient_id = patient.patient_id
-    form.gender = patient.gender
+def data_search(request):
+    if request.method == 'GET':
+        patient_id = request.GET.get('patient_id')
+        if patient_id:
+            try:
+                patient = Patient.objects.get(patient_id=patient_id)
+                visit = Visit.objects.get(patient_id=patient_id)
+                biosample = BioSample.objects.get(visit=visit)
+                spectraldata = SpectralData.objects.get(bio_sample=biosample)
 
-    try:
-        visit = Visit.objects.get(patient = patient)
-    except (Visit.DoesNotExist, ValidationError):
-        return HttpResponse(patient = patient)
-    form.patient_age - visit.patient_age
-    
-    return render(request, 'DataInputForm.html', {'form': form, 'patient_id': patient_id})
+                form = DataInputForm(
+                    initial={
+                        'patient_id': patient_id,
+                        'gender': patient.gender,
+                        'patient_age': visit.patient_age,
+                        'instrument': spectraldata.instrument,
+                        'spectra_measurement': spectraldata.spectra_measurement,
+                        'acquisition_time': spectraldata.acquisition_time,
+                        'n_coadditions': spectraldata.n_coadditions,
+                        'resolution': spectraldata.resolution,
+                        'sample_type': biosample.sample_type,
+                        'sample_processing': biosample.sample_processing,
+                        'freezing_temp': biosample.freezing_temp,
+                        'thawing_time': biosample.thawing_time 
+                    }
+                )
+                return render(request, 'DataInputForm.html', {'form': form})
+            except (Patient.DoesNotExist, Visit.DoesNotExist, BioSample.DoesNotExist, SpectralData.DoesNotExist):
+                #form = DataInputForm()
+                #request.method = 'PUT'
+                return render(request, 'DataSearchForm_Failure.html', {'patient_id': patient_id})
+        else:
+            form = DataInputForm()
+            return render(request, 'DataSearchForm.html', {'form': form})
+    elif request.method == 'PUT':
+        pass # Handle the PUT request here if needed
+
+    return HttpResponse(status=405)  # Return a Method Not Allowed response

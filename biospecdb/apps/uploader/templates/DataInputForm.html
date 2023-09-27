@@ -30,9 +30,6 @@
                     {{ form.patient_id }}
                     {{ form.patient_id.errors }}
                 </div>
-                <div class="form-field">
-                    <button type="submit">Search for existing patient</button>
-                </div>
             </div>
 
             <div class="flex-container">
@@ -43,7 +40,6 @@
                             <div class="form-field" class="fieldWrapper">
                                 <label for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
                                 {{ field }}
-                                {{ field.value }}
                                 {{ field.errors }}
                             </div>
                         {% endif %}
@@ -59,7 +55,6 @@
                             <div class="form-field">
                                 <label for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
                                 {{ field }}
-                                {{ field.value }}
                                 {{ field.errors }}
                             </div>
                         {% endif %}
@@ -72,7 +67,6 @@
                 <div class="form-field" class="fieldWrapper">
                     <label for="{{ form.spectral_data.id_for_label }}">Spectral Data File:</label>
                     {{ form.spectral_data }}
-                    {{ form.spectral_data.value }}
                     {{ form.spectral_data.errors }}
                 </div>
                 <button type="submit">Update</button>
