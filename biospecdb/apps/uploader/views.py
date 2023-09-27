@@ -36,7 +36,7 @@ def display_xlsx(request):
 def data_input(request):
     if request.method == 'POST':
         form = DataInputForm(request.POST, request.FILES)
-        
+
         if form.is_valid():
             form.save()  # Save data to database.
             patient_id = form.cleaned_data["patient_id"]
@@ -46,7 +46,7 @@ def data_input(request):
         
     return render(request, 'DataInputForm.html', {'form': form})
 
-
+@staff_member_required
 def data_search(request):
     if request.method == 'GET':
         patient_id = request.GET.get('patient_id')
