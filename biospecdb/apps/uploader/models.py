@@ -24,7 +24,6 @@ from uploader.base_models import DatedModel, ModelWithViewDependency, SqlView, T
 # git add biospecdb/apps/uploader/migrations
 # git commit -asm"Update uploader model(s)"
 # python manage.py migrate
-# python manage.py sqlmigrate uploader <migration_version>
 
 POSITIVE = "positive"
 NEGATIVE = "negative"

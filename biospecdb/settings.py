@@ -86,6 +86,7 @@ WSGI_APPLICATION = 'biospecdb.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
+    "default": {},
     'admin': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'admin.sqlite3',
@@ -217,5 +218,3 @@ RUN_DEFAULT_ANNOTATORS_WHEN_SAVED = False
 # Disable this class for now as #69 made it obsolete, however, there's a very good chance it will be needed
 # when implementing background tasks for https://github.com/ssec-jhu/biospecdb/pull/77.
 DISABLE_QC_MANAGER = True
-
-ALLOW_RELATIONS_ACROSS_DBS = False
