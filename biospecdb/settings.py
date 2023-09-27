@@ -86,7 +86,6 @@ WSGI_APPLICATION = 'biospecdb.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    "default": {},
     'admin': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'admin.sqlite3',

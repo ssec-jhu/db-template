@@ -9,6 +9,8 @@ class BaseRouter:
 
     # NOTE: For the funcs below returning None := ambivalence (Returns None if there is no suggestion.),
     # whilst False := don't route to db. See https://docs.djangoproject.com/en/4.2/topics/db/multi-db/#database-routers
+    # However, the main routing code only iterates over all routers if they return None, e.g. a router returning
+    # False will exit the routing iteration just as it does when returning True - router order matters!
     def _is_allowed(self, obj):
         return (obj not in self.exclude_app_labels) and (obj in self.route_app_labels)
 
@@ -21,7 +23,7 @@ class BaseRouter:
         """
         if self._is_allowed(model._meta.app_label):
             return self.db
-        return False
+        return None
 
     def db_for_write(self, model, **hints):
         """ Suggest the database that should be used for writes of objects of type Model.
@@ -39,9 +41,13 @@ class BaseRouter:
             allowed.
         """
         op = operator.or_ if settings.ALLOW_RELATIONS_ACROSS_DBS else operator.and_
-        a = bool(self._is_allowed(obj1._meta.app_label))
-        b = bool(self._is_allowed(obj2._meta.app_label))
-        return op(a, b)
+        res = op(self._is_allowed(obj1._meta.app_label), self._is_allowed(obj2._meta.app_label))
+
+        # If links across DBs are allowed, return None instead of False sp router iteration continues.
+        if settings.ALLOW_RELATIONS_ACROSS_DBS:
+            return res if res else None
+
+        return res
 
     def allow_migrate(self, db, app_label, model_name=None, **hints):
         """ Determine if the migration operation is allowed to run on the database with alias db. Return True if the
@@ -63,15 +69,32 @@ class BaseRouter:
         """
         if self._is_allowed(app_label):
             return db == self.db
-        return False
+        return None
 
 
 class BSRRouter(BaseRouter):
     route_app_labels = {"uploader"}
+    exclude_app_labels = {}
     db = "bsr"
+
+    # Override base methods here when needing to convert None -> False.
 
 
 class AdminRouter(BaseRouter):
+    """ Catch all router.
+        Technically, this could just go last in the router chain and just return True, however, for better correctness
+        we still check against ``exclude_app_labels``.
+        NOTE: Methods here don't return None so this router must still go last in the list settings.DATABASE_ROUTERS.
+        """
+
     route_app_labels = {}
     exclude_app_labes = {"uploader"}
     db = "admin"
+
+    def db_for_read(self, model, **hints):
+        return model._meta.app_label not in self.exclude_app_labels
+
+    db_for_write = db_for_read
+
+    def allow_migrate(self, db, app_label, model_name=None, **hints):
+        return db not in self.exclude_app_labels
