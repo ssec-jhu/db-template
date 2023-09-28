@@ -1,5 +1,0 @@
-[run]
-omit =
-    **/_*.py
-    setup.py
-    */tests/*
