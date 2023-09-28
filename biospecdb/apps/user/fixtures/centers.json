@@ -1,0 +1,18 @@
+[
+  {
+    "model": "user.Center",
+    "pk": 1,
+    "fields": {
+      "name": "SSEC",
+      "country": "USA"
+    }
+  },
+  {
+    "model": "user.Center",
+    "pk": 2,
+    "fields": {
+      "name": "Imperial College London",
+      "country": "UK"
+    }
+  }
+]
