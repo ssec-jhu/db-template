@@ -94,6 +94,7 @@ exclude = [
     "migrations",
     "node_modules",
     "venv",
+    "_version.py"
 ]
 
 ignore = [
