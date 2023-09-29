@@ -26,6 +26,7 @@ def data_dict(db, instruments):
             }
 
 
+@pytest.mark.django_db(databases=["default", "bsr"])
 class TestDataInputForm:
     @pytest.mark.parametrize("file_ext", UploadedFile.FileFormats.list())
     def test_upload_without_error(self, db, file_ext, data_dict):

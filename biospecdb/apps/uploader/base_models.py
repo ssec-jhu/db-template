@@ -68,7 +68,7 @@ class SqlView:
         return drop_view(cls._meta.db_table, *args, **kwargs)
 
     @classmethod
-    @transaction.atomic
+    @transaction.atomic(using="bsr")
     def update_view(cls, *args, **kwargs):
         """ Update view and view dependencies.
 
@@ -92,7 +92,7 @@ class ModelWithViewDependency(DatedModel):
 
     sql_view_dependencies = None
 
-    @transaction.atomic
+    @transaction.atomic(using="bsr")
     def save(self, *args, update_view=True, **kwargs):
         super().save(*args, **kwargs)
 

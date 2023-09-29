@@ -12,7 +12,7 @@ from uploader.models import SpectralData
 from factory import Sequence, SubFactory
 from factory.django import DjangoModelFactory
 
-from explorer.models import Query, QueryLog
+from explorer.models import Query
 
 
 class SimpleQueryFactory(DjangoModelFactory):
@@ -48,13 +48,13 @@ def csv_export(request, monkeypatch, mock_data_from_files):
     return output
 
 
+@pytest.mark.django_db(databases=["default", "bsr"])
 @pytest.mark.parametrize(tuple(),
                          [pytest.param(marks=pytest.mark.allow_aliases(False)),
                           pytest.param(marks=pytest.mark.allow_aliases(True)),
                           pytest.param(marks=pytest.mark.media_root("")),
                           pytest.param(marks=pytest.mark.media_root("my_media/"))])
 class TestExporters:
-    @pytest.mark.django_db(databases=["default", "bsr"])
     @pytest.mark.include_data_files(False)
     def test_without_data_files(self, csv_export):
         assert isinstance(csv_export, str)
