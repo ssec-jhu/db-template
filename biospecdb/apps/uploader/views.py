@@ -2,7 +2,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render
 from openpyxl import load_workbook
 from .forms import FileUploadForm, DataInputForm
-from uploader.models import Patient, Visit, SpectralData, BioSample, Symptom, Disease
+from uploader.models import Patient, Visit, SpectralData, BioSample, Symptom
 
 
 def home(request):
