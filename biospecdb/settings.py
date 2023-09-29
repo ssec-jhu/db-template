@@ -144,8 +144,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # SQL explorer settings.
 
-EXPLORER_CONNECTIONS = {'Default': 'default'}
-EXPLORER_DEFAULT_CONNECTION = 'default'
+EXPLORER_CONNECTIONS = {"data": "bsr"}
+EXPLORER_DEFAULT_CONNECTION = "bsr"
 
 EXPLORER_DEFAULT_ROWS = 1000
 
@@ -194,7 +194,7 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'biospecdb/apps/uploader/templates/st
 
 EXPLORER_SCHEMA_INCLUDE_VIEWS = True
 
-EXPLORER_CHARTS_ENABLED = True
+EXPLORER_CHARTS_ENABLED = False
 
 # NOTE: The following two settings don't actually belong to explorer.
 

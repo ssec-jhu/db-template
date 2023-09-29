@@ -60,6 +60,9 @@ def mock_data(db, django_db_blocker):
 
 @pytest.fixture(scope="function")
 def mock_data_from_files(request, monkeypatch, db, diseases, django_db_blocker, instruments):
+    from uploader.models import Patient
+    assert len(Patient.objects.all()) == 0
+
     # patch MEDIA_ROOT
     media_root = request.node.get_closest_marker("media_root")
     if media_root:
@@ -80,7 +83,9 @@ def mock_data_from_files(request, monkeypatch, db, diseases, django_db_blocker, 
                                                                                      name=spectral_file_path.name))
                 data_upload.clean()
                 data_upload.save()
-                
+    assert len(Patient.objects.all()) == 10
+
+
  
 @pytest.fixture(scope="function")               
 def mock_data_from_form_and_spectral_file(request, db, data_dict, django_db_blocker):
