@@ -6,8 +6,7 @@ from . import views
 app_name = 'uploader'
 
 urlpatterns = [
-    path('data_input/', views.data_input, name='DataInputForm'),
-    path('data_search/', views.data_search, name='DataInputForm')
+    path('data_input/', views.data_input, name='DataInputForm')
 ]
 
 if settings.DEBUG:

@@ -1,9 +1,8 @@
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render
-from django.http import HttpResponse
 from openpyxl import load_workbook
 from .forms import FileUploadForm, DataInputForm
-from uploader.models import Patient, Visit, SpectralData, BioSample
+from uploader.models import Patient, Visit, SpectralData, BioSample, Symptom, Disease
 
 
 def home(request):
@@ -47,75 +46,43 @@ def data_input(request):
         if patient_id:
             try:
                 patient = Patient.objects.get(patient_id=patient_id)
-                visit = Visit.objects.get(patient_id=patient_id)
-                biosample = BioSample.objects.get(visit=visit)
-                spectraldata = SpectralData.objects.get(bio_sample=biosample)
-                form = DataInputForm(
-                    initial={
-                        'patient_id': patient_id,
-                        'gender': patient.gender,
-                        'patient_age': visit.patient_age,
-                        'instrument': spectraldata.instrument,
-                        'spectra_measurement': spectraldata.spectra_measurement,
-                        'acquisition_time': spectraldata.acquisition_time,
-                        'n_coadditions': spectraldata.n_coadditions,
-                        'resolution': spectraldata.resolution,
-                        'sample_type': biosample.sample_type,
-                        'sample_processing': biosample.sample_processing,
-                        'freezing_temp': biosample.freezing_temp,
-                        'thawing_time': biosample.thawing_time 
-                    }
-                )
+                last_visit = Visit.objects.filter(patient_id=patient_id).order_by('created_at').last()
+                biosample = BioSample.objects.get(visit=last_visit)
+                symptom = Symptom.objects.filter(visit=last_visit).order_by('days_symptomatic').last()
+                spectraldata = SpectralData.objects.get(bio_sample=biosample)      
+                initial_data={
+                    'patient_id': patient_id,
+                    'gender': patient.gender,
+                    'days_symptomatic': symptom.days_symptomatic,
+                    'patient_age': last_visit.patient_age,
+                    'spectra_measurement': spectraldata.spectra_measurement,
+                    'instrument': spectraldata.instrument,
+                    'acquisition_time': spectraldata.acquisition_time,
+                    'n_coadditions': spectraldata.n_coadditions,
+                    'resolution': spectraldata.resolution,
+                    'sample_type': biosample.sample_type,
+                    'sample_processing': biosample.sample_processing,
+                    'freezing_temp': biosample.freezing_temp,
+                    'thawing_time': biosample.thawing_time,
+                    'spectral_data': spectraldata.data.name
+                }
+                for symptoms in Symptom.objects.filter(visit=last_visit):
+                    if symptoms.disease.value_class == "BOOL":
+                        if symptoms.disease_value == 'True':
+                            initial_data[symptoms.disease.name] = True
+                        else:
+                            initial_data[symptoms.disease.name] = False
+                    else:
+                        initial_data[symptoms.disease.name] = symptoms.disease_value
+                form = DataInputForm(initial=initial_data)
                 return render(request, 'DataInputForm.html', {'form': form})
+            
             except (Patient.DoesNotExist, Visit.DoesNotExist, BioSample.DoesNotExist, SpectralData.DoesNotExist):
-                #form = DataInputForm()
-                #request.method = 'PUT'
                 return render(request, 'DataSearchForm_Failure.html', {'patient_id': patient_id})
         else:
             form = DataInputForm()
-            #return render(request, 'DataInputForm.html', {'form': form})
         
     else:
         form = DataInputForm()
         
     return render(request, 'DataInputForm.html', {'form': form})
-
-@staff_member_required
-def data_search(request):
-    if request.method == 'GET':
-        patient_id = request.GET.get('patient_id')
-        if patient_id:
-            try:
-                patient = Patient.objects.get(patient_id=patient_id)
-                visit = Visit.objects.get(patient_id=patient_id)
-                biosample = BioSample.objects.get(visit=visit)
-                spectraldata = SpectralData.objects.get(bio_sample=biosample)
-
-                form = DataInputForm(
-                    initial={
-                        'patient_id': patient_id,
-                        'gender': patient.gender,
-                        'patient_age': visit.patient_age,
-                        'instrument': spectraldata.instrument,
-                        'spectra_measurement': spectraldata.spectra_measurement,
-                        'acquisition_time': spectraldata.acquisition_time,
-                        'n_coadditions': spectraldata.n_coadditions,
-                        'resolution': spectraldata.resolution,
-                        'sample_type': biosample.sample_type,
-                        'sample_processing': biosample.sample_processing,
-                        'freezing_temp': biosample.freezing_temp,
-                        'thawing_time': biosample.thawing_time 
-                    }
-                )
-                return render(request, 'DataInputForm.html', {'form': form})
-            except (Patient.DoesNotExist, Visit.DoesNotExist, BioSample.DoesNotExist, SpectralData.DoesNotExist):
-                #form = DataInputForm()
-                #request.method = 'PUT'
-                return render(request, 'DataSearchForm_Failure.html', {'patient_id': patient_id})
-        else:
-            form = DataInputForm()
-            return render(request, 'DataInputForm.html', {'form': form})
-    elif request.method == 'POST':
-        pass # Handle the PUT request here if needed
-
-    return HttpResponse(status=405)  # Return a Method Not Allowed response

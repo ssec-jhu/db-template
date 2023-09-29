@@ -40,7 +40,7 @@
             <div class="flex-container">
                 <div class="half_width">
                     {% for field in form %}
-                        {% if forloop.counter <= 15 and field.name != "patient_id" and field.name != "spectral_data" %}
+                        {% if forloop.counter <= 14 and field.name != "spectral_data" %}
                             <div class="form-field" class="fieldWrapper">
                                 <label for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
                                 {{ field }}
@@ -52,7 +52,7 @@
 
                 <div class="half_width">
                     {% for field in form %}
-                        {% if forloop.counter > 15 %}
+                        {% if forloop.counter > 14 %}
                             {% if forloop.counter|divisibleby:13 %}
                                 </div><div class="half_width" class="fieldWrapper">
                             {% endif %}
