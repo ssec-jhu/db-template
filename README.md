@@ -68,7 +68,7 @@ For additional cmds see the [Conda cheat-sheet](https://docs.conda.io/projects/c
 We're currently using sqlite requiring the following setup instructions:
 
 * cd into repo
-* ``python manage.py migrate --database=admin``
+* ``python manage.py migrate``
 * ``python manage.py migrate --database=bsr``
 * ``python manage.py createsuperuser``
 * ``python manage.py loaddata centers``
@@ -93,8 +93,8 @@ When the models are changed only the following migration commands are required:
 * ``git add biospecdb/apps/uploader/migrations``
 * ``git add biospecdb/apps/user/migrations``
 * ``git commit -asm"Update model migrations"``
+* ``python manage.py migrate``
 * ``python manage.py migrate --database=bsr`` (if ``uploader.model`` was altered)
-* ``python manage.py migrate --database=admin`` (if ``user.model`` was altered)
 
 
 The DB can be dumped to a file using the following:
