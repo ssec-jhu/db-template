@@ -43,7 +43,7 @@ def update_view(view, sql, db=None, params=None, check=True, limit=1):
     # This behaviour also facilitates trivial testing.
     drop_view(view, db=db)
 
-    with transaction.atomic():
+    with transaction.atomic(using="bsr"):
         execute_sql(sql, db=db, params=params)
 
         # The view isn't actually used upon creation so may contain latent errors. To check for errors, we query it so

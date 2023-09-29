@@ -33,7 +33,7 @@ def save_data_to_db(meta_data, spectral_data, joined_data=None, dry_run=False) -
         joined_data = UploadedFile.join_with_validation(meta_data, spec_data)
 
     try:
-        with transaction.atomic():
+        with transaction.atomic(using="bsr"):
             # Ingest into db.
             for index, row in joined_data.iterrows():
                 # NOTE: The pattern for column lookup is to use get(..., default=None) and defer the field validation,
