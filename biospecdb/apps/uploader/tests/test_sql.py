@@ -123,3 +123,11 @@ class TestSQL:
         drop_view(view, db=self.db)
         with pytest.raises(OperationalError, match="no such table:"):
             execute_sql(f"select * from {view}", db=self.db)
+
+    def test_correct_db(self, mock_data_from_files):
+        resp = execute_sql("select * from uploader_patient", db=self.db)
+        assert len(resp) == 10
+
+    def test_incorrect_db(self, mock_data_from_files):
+        with pytest.raises(OperationalError, match="no such table:"):
+            execute_sql("select * from uploader_patient", db="default")
