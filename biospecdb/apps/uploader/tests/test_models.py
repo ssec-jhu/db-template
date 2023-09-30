@@ -100,7 +100,7 @@ class TestDisease:
         assert disease.name == "Ct_gene_N"
         assert disease.value_class == Disease.Types.FLOAT
 
-    def test_name_uniqueness(self):
+    def test_name_uniqueness(self, db):
         Disease.objects.create(name="A", description="blah", alias="a")
         with pytest.raises(IntegrityError, match="unique_disease_name"):
             Disease.objects.create(name="a", description="blah", alias="b")
@@ -113,7 +113,7 @@ class TestDisease:
 
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestInstrument:
-    def test_fixture_data(self, instruments):
+    def test_fixture_data(self, db, instruments):
         instrument = Instrument.objects.get(pk=1)
         assert instrument.spectrometer == "Agilent Cory 630"
         assert instrument.atr_crystal == "ZnSe"
