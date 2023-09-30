@@ -88,9 +88,16 @@ WSGI_APPLICATION = 'biospecdb.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / 'admin.sqlite3',
+    },
+    "bsr": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "bsr.sqlite3",
     }
 }
+
+# The order in which routers are processed is significant. Routers will be queried in the order they are listed here.
+DATABASE_ROUTERS = ["biospecdb.routers.BSRRouter"]
 
 
 # Password validation
@@ -137,8 +144,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # SQL explorer settings.
 
-EXPLORER_CONNECTIONS = {'Default': 'default'}
-EXPLORER_DEFAULT_CONNECTION = 'default'
+EXPLORER_CONNECTIONS = {"data": "bsr"}
+EXPLORER_DEFAULT_CONNECTION = "bsr"
 
 EXPLORER_DEFAULT_ROWS = 1000
 

@@ -12,7 +12,6 @@ from django.utils.translation import gettext_lazy as _
 # git add biospecdb/apps/user/migrations
 # git commit -asm"Update user model(s)"
 # python manage.py migrate
-# python manage.py sqlmigrate user <migration_version>
 
 
 class Center(models.Model):

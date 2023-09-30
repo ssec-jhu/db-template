@@ -23,8 +23,7 @@ from uploader.base_models import DatedModel, ModelWithViewDependency, SqlView, T
 # python manage.py makemigrations uploader
 # git add biospecdb/apps/uploader/migrations
 # git commit -asm"Update uploader model(s)"
-# python manage.py migrate
-# python manage.py sqlmigrate uploader <migration_version>
+# python manage.py migrate --database=bsr
 
 POSITIVE = "positive"
 NEGATIVE = "negative"
@@ -367,7 +366,7 @@ class SpectralData(DatedModel):
             raise NotImplementedError()
         return spectral_data_from_csv(data_file)
 
-    #@transaction.atomic  # Really? Not sure if this even can be if run in background...
+    #@transaction.atomic(using="bsr")  # Really? Not sure if this even can be if run in background...
     # See https://github.com/ssec-jhu/biospecdb/issues/77
     def annotate(self, annotator=None, force=False) -> list:
         # TODO: This needs to return early and run in the background.
@@ -417,6 +416,8 @@ class SpectralData(DatedModel):
 
 
 class SymptomsView(SqlView, models.Model):
+    db = "bsr"
+
     class Meta:
         managed = False
         db_table = "v_symptoms"
@@ -455,6 +456,7 @@ class VisitSymptomsView(SqlView, models.Model):
         db_table = "v_visit_symptoms"
 
     sql_view_dependencies = (SymptomsView,)
+    db = "bsr"
 
     visit_id = models.BigIntegerField(primary_key=True)
 
@@ -495,6 +497,7 @@ class FullPatientView(SqlView, models.Model):
         db_table = "full_patient"
 
     sql_view_dependencies = (VisitSymptomsView,)
+    db = "bsr"
 
     @classmethod
     def sql(cls):

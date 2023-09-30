@@ -13,6 +13,7 @@ import biospecdb.util
 from conftest import DATA_PATH
 
 
+@pytest.mark.django_db(databases=["default", "bsr"])
 class TestPatient:
     def test_creation(self, db):
         Patient(gender=Patient.Gender.MALE).full_clean()
@@ -60,6 +61,7 @@ class TestPatient:
         assert Patient.objects.get(pk=patient_id)
 
 
+@pytest.mark.django_db(databases=["default", "bsr"])
 class TestVisit:
     def test_visit_number(self, db, visits):
         assert Visit.objects.get(pk=1).visit_number == 1
@@ -91,6 +93,7 @@ class TestVisit:
             visit.full_clean()
 
 
+@pytest.mark.django_db(databases=["default", "bsr"])
 class TestDisease:
     def test_fixture_data(self, db, diseases):
         disease = Disease.objects.get(pk=1)
@@ -108,6 +111,7 @@ class TestDisease:
             Disease.objects.create(name="b", description="blah", alias="A")
 
 
+@pytest.mark.django_db(databases=["default", "bsr"])
 class TestInstrument:
     def test_fixture_data(self, db, instruments):
         instrument = Instrument.objects.get(pk=1)
@@ -129,6 +133,7 @@ class TestInstrument:
             Instrument.objects.create(spectrometer="Agilent Cory 630", atr_crystal="ZnSe")
 
 
+@pytest.mark.django_db(databases=["default", "bsr"])
 class TestSymptom:
     def test_days_symptomatic_validation(self, db, diseases, visits):
         visit = Visit.objects.get(pk=1)
@@ -157,14 +162,17 @@ class TestSymptom:
         assert symptom.disease_value is value
 
 
+@pytest.mark.django_db(databases=["default", "bsr"])
 class TestBioSample:
     ...
 
 
+@pytest.mark.django_db(databases=["default", "bsr"])
 class TestSpectralData:
     ...
 
 
+@pytest.mark.django_db(databases=["default", "bsr"])
 class TestUploadedFile:
     @pytest.mark.parametrize("file_ext", UploadedFile.FileFormats.list())
     def test_upload_without_error(self, db, diseases, instruments, file_ext):

@@ -2,12 +2,29 @@ from pathlib import Path
 import zipfile
 
 import pytest
-from explorer.tests.factories import SimpleQueryFactory
+from explorer.tests.factories import UserFactory
 from django.conf import settings
 
 from uploader.exporters import CSVExporter
 from uploader.io import read_raw_data, spectral_data_from_csv
 from uploader.models import SpectralData
+
+from factory import Sequence, SubFactory
+from factory.django import DjangoModelFactory
+
+from explorer.models import Query
+
+
+class SimpleQueryFactory(DjangoModelFactory):
+
+    class Meta:
+        model = Query
+
+    title = Sequence(lambda n: f'My simple query {n}')
+    sql = "select * from uploader_spectraldata"
+    description = "Stuff"
+    connection = settings.EXPLORER_DEFAULT_CONNECTION
+    created_by_user = SubFactory(UserFactory)
 
 
 @pytest.fixture()
@@ -27,9 +44,11 @@ def csv_export(request, monkeypatch, mock_data_from_files):
 
     q = SimpleQueryFactory(sql=sql)
     exporter = CSVExporter(query=q)
-    return exporter.get_output()
+    output = exporter.get_output()
+    return output
 
 
+@pytest.mark.django_db(databases=["default", "bsr"])
 @pytest.mark.parametrize(tuple(),
                          [pytest.param(marks=pytest.mark.allow_aliases(False)),
                           pytest.param(marks=pytest.mark.allow_aliases(True)),
