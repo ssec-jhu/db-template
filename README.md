@@ -2,7 +2,7 @@
 
 [![CI Status](https://github.com/ssec-jhu/biospecdb/workflows/CI/badge.svg?branch=main)](https://github.com/ssec-jhu/biospecdb/actions)
 [![Documentation Status](https://readthedocs.org/projects/ssec-jhu-biospecdb/badge/?version=latest)](https://ssec-jhu-biospecdb.readthedocs.io/en/latest/?badge=latest)
-[![codecov](https://codecov.io/gh/ssec-jhu/biospecdb/branch/main/graph/badge.svg?token=0KPNKHRC2V)](https://codecov.io/gh/ssec-jhu/biospecdb)
+[![codecov](https://codecov.io/gh/ssec-jhu/biospecdb/graph/badge.svg?token=P9I3UXlmOc)](https://codecov.io/gh/ssec-jhu/biospecdb)
 [![Security Status](https://github.com/ssec-jhu/biospecdb/workflows/Security/badge.svg?branch=main)](https://github.com/ssec-jhu/biospecdb/actions)
 <!---[![DOI](https://zenodo.org/badge/<insert_ID_number>.svg)](https://zenodo.org/badge/latestdoi/<insert_ID_number>) --->
 
