@@ -4,6 +4,7 @@ import pytest
 
 from uploader.models import UploadedFile, Patient, Visit, BioSample, SpectralData, Instrument, Disease
 from uploader.forms import DataInputForm
+from uploader.views import data_input
 from conftest import DATA_PATH
 
 
@@ -103,3 +104,24 @@ class TestDataInputForm:
             assert len(errors) == 1
             with pytest.raises(ValidationError, match="Select a valid choice"):
                 raise errors[0]
+
+    def test_data_search(self, mock_data_from_form_and_spectral_file):
+        n_patients = 1
+        assert len(Patient.objects.all()) == n_patients
+        assert len(Visit.objects.all()) == n_patients
+        assert len(BioSample.objects.all()) == n_patients
+        assert len(SpectralData.objects.all()) == n_patients
+
+        assert Patient.objects.get(pk="4efb03c5-27cd-4b40-82d9-c602e0ef7b80")
+        assert Patient.objects.filter(gender='M').exists()
+        assert Visit.objects.filter(patient_age=1).exists()
+        assert SpectralData.objects.filter(spectra_measurement='ATR_FTIR').exists()
+        assert SpectralData.objects.filter(acquisition_time=1).exists()
+        assert SpectralData.objects.filter(n_coadditions=32).exists()
+        assert SpectralData.objects.filter(resolution=0).exists()
+        assert Instrument.objects.filter(spectrometer='Agilent Cory 630').exists()
+        assert Instrument.objects.filter(atr_crystal='ZnSe').exists()
+        assert BioSample.objects.filter(sample_type='PHARYNGEAL_SWAB').exists()
+        assert BioSample.objects.filter(sample_processing='None').exists()
+        assert BioSample.objects.filter(freezing_temp=0).exists()
+        assert BioSample.objects.filter(thawing_time=0).exists()
