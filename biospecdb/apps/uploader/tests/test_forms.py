@@ -4,7 +4,6 @@ import pytest
 
 from uploader.models import UploadedFile, Patient, Visit, BioSample, SpectralData, Instrument, Disease
 from uploader.forms import DataInputForm
-from uploader.views import data_input
 from conftest import DATA_PATH
 
 
