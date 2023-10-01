@@ -1,0 +1,10 @@
+[run]
+omit =
+    setup.py
+    */tests/*
+    */migrations/*
+    manage.py
+    _version.py
+    biospecdb/apps/dash/*
+    biospecdb/asgi.py
+    biospecdb/wsgi.py

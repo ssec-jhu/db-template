@@ -1,4 +1,8 @@
-from biospecdb.util import find_package_location, find_repo_location
+from uuid import uuid4
+
+import pytest
+
+from biospecdb.util import find_package_location, find_repo_location, is_valid_uuid, to_bool, to_uuid
 from biospecdb import __project__, __version__
 
 
@@ -29,3 +33,30 @@ def test_version():
 
 def test_project():
     assert __project__
+
+
+def test_to_bool_exceptions():
+    with pytest.raises(ValueError, match="int|float casts to bool must have explicit value"):
+        to_bool(3.14)
+
+    with pytest.raises(ValueError, match="Bool aliases are"):
+        to_bool([])
+
+
+def test_is_valid_uuid():
+    assert is_valid_uuid(None)
+    assert is_valid_uuid(uuid4())
+    assert is_valid_uuid(1)
+    assert is_valid_uuid("1")
+    assert not is_valid_uuid("this is not a uuid")
+    assert not is_valid_uuid([])
+
+
+def test_to_uuid():
+    assert to_uuid(None) is None
+
+    with pytest.raises(ValueError):
+        to_uuid("this is not a uuid")
+
+    id = uuid4()
+    assert to_uuid(id) is id
