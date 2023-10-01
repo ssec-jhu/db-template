@@ -3,13 +3,30 @@ from pathlib import Path
 from django.conf import settings
 import django.core.files
 from django.core.management import call_command
+from explorer.models import Query
+from explorer.tests.factories import UserFactory
+from factory import Sequence, SubFactory
+from factory.django import DjangoModelFactory
 import pytest
+
 
 from biospecdb.util import find_package_location
 from uploader.models import UploadedFile
 from uploader.forms import DataInputForm
 
 DATA_PATH = Path(__file__).parent / "data"
+
+
+class SimpleQueryFactory(DjangoModelFactory):
+
+    class Meta:
+        model = Query
+
+    title = Sequence(lambda n: f'My simple query {n}')
+    sql = "select * from uploader_spectraldata"
+    description = "Stuff"
+    connection = settings.EXPLORER_DEFAULT_CONNECTION
+    created_by_user = SubFactory(UserFactory)
 
 
 @pytest.fixture(scope="function")
