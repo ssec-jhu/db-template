@@ -96,5 +96,5 @@ def is_valid_uuid(value):
         try:
             to_uuid(value)
         except (AttributeError, ValueError):
-            False
+            return False
     return True
