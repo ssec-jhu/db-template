@@ -12,4 +12,10 @@ coverage:
 ignore:
   - "**/_*.py"
   - "setup.py"
-  - "*/tests/*"
+  - "**/test_*.py"
+  - "manage.py"
+  - "_version.py"
+  - "**/migrations"
+  - "biospecdb/apps/dash"
+  - "biospecdb/asgi.py"
+  - "biospecdb/wsgi.py"
