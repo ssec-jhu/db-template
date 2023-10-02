@@ -70,6 +70,7 @@ jobs:
         retention-days: 14
         if-no-files-found: error
     - name: Upload coverage to Codecov
+      if: ${{ github.actor != 'dependabot[bot]' }}
       uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
