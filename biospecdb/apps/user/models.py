@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 from django.contrib.auth.validators import UnicodeUsernameValidator
@@ -19,6 +21,7 @@ class Center(models.Model):
     class Meta:
         unique_together = [["name", "country"]]
 
+    id = models.UUIDField(unique=True, primary_key=True, default=uuid.uuid4)
     name = models.CharField(max_length=128)
     country = models.CharField(max_length=128, blank=True, null=True)
 
