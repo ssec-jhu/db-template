@@ -135,6 +135,7 @@ class Patient(DatedModel):
                                   default=uuid.uuid4,
                                   verbose_name="Patient ID")
     gender = models.CharField(max_length=8, choices=Gender.choices, null=True, verbose_name="Gender (M/F)")
+    center_id = models.UUIDField(null=True, blank=True)
 
     def __str__(self):
         return str(self.patient_id)
