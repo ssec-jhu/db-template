@@ -3,6 +3,7 @@ import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -15,6 +16,12 @@ from django.utils.translation import gettext_lazy as _
 # git commit -asm"Update user model(s)"
 # python manage.py migrate
 
+def validate_country(value):
+    if value.lower() in ("us", "usa", "america"):
+        raise ValidationError(_("This repository is not HIPAA compliant and cannot be used to collect health data from the"
+                                " USA"),
+                              code="invalid")
+
 
 class Center(models.Model):
 
@@ -23,7 +30,7 @@ class Center(models.Model):
 
     id = models.UUIDField(unique=True, primary_key=True, default=uuid.uuid4)
     name = models.CharField(max_length=128)
-    country = models.CharField(max_length=128, blank=True, null=True)
+    country = models.CharField(max_length=128, blank=True, null=True, validators=[validate_country])
 
     def __str__(self):
         return f"{self.name}, {self.country}"
