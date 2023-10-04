@@ -221,12 +221,12 @@ class VisitInline(admin.TabularInline):
 class PatientAdmin(admin.ModelAdmin):
     inlines = [VisitInline]
     search_fields = ["patient_id"]
-    search_help_text = "Patient ID"
+    search_help_text = "Patient ID OR CID (center ID)"
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     date_hierarchy = "updated_at"
     ordering = ("-updated_at",)
 
-    list_display = ["patient_id", "gender", "age", "visit_count"]
+    list_display = ["patient_id", "patient_cid", "gender", "age", "visit_count", "center"]
 
     @admin.display
     def age(self, obj):
@@ -238,6 +238,17 @@ class PatientAdmin(admin.ModelAdmin):
     @admin.display
     def visit_count(self, obj):
         return len(obj.visit.all())
+
+    def get_search_results(self, request, queryset, search_term):
+        """ search_fields filters with an AND when we need an OR
+            See https://docs.djangoproject.com/en/4.2/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields
+        """
+        queryset, may_have_duplicates = super().get_search_results(request, queryset, search_term)
+        try:
+            queryset |= self.model.objects.filter(patient_cid=search_term)
+        except ValidationError:
+            pass
+        return queryset, may_have_duplicates
 
 
 class DataAdminSite(admin.AdminSite):
