@@ -18,8 +18,8 @@ from django.utils.translation import gettext_lazy as _
 
 def validate_country(value):
     if value.lower() in ("us", "usa", "america"):
-        raise ValidationError(_("This repository is not HIPAA compliant and cannot be used to collect health data from the"
-                                " USA"),
+        raise ValidationError(_("This repository is not HIPAA compliant and cannot be used to collect health data from"
+                                " the USA"),
                               code="invalid")
 
 
