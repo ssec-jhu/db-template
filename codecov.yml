@@ -9,6 +9,9 @@ coverage:
         target: 80%
         threshold: 1%
 
+github_checks:
+    annotations: false
+
 ignore:
   - "**/_*.py"
   - "setup.py"
