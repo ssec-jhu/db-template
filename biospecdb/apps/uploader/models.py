@@ -144,6 +144,14 @@ class Patient(DatedModel):
     gender = models.CharField(max_length=8, choices=Gender.choices, null=True, verbose_name="Gender (M/F)")
     center_id = models.UUIDField(null=True, blank=True, validators=[validate_center])
 
+    @property
+    def center(self):
+        if self.center_id:
+            try:
+                return Center.objects.get(pk=self.center_id)
+            except Center.DoesNotExist:
+                return
+
     def __str__(self):
         return str(self.patient_id)
 

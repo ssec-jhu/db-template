@@ -77,6 +77,12 @@ class TestPatient:
         with pytest.raises(ValidationError, match="No center exists in DB with pk:"):
             patient.full_clean()
 
+    def test_center_property(self, centers):
+        center = Center.objects.get(name="SSEC")
+        patient = Patient(patient_id=uuid4(), gender=Patient.Gender.FEMALE, center_id=center.pk)
+        patient.full_clean()
+        assert center == patient.center
+
 
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestVisit:
