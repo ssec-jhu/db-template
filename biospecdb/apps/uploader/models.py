@@ -240,6 +240,9 @@ class Disease(ModelWithViewDependency):
     # This represents the type/class for Symptom.disease_value.
     value_class = models.CharField(max_length=128, default=Types.BOOL, choices=Types.choices)
 
+    # A disease without a center is generic and accessible by any and all centers.
+    center_id = models.UUIDField(null=True, blank=True, validators=[validate_center])
+
     def __str__(self):
         return self.name
 
