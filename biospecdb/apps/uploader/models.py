@@ -132,6 +132,9 @@ class Patient(DatedModel):
     MIN_AGE = 0
     MAX_AGE = 150  # NOTE: HIPAA requires a max age of 90 to be stored. However, this is GDPR data so... :shrug:
 
+    class Meta:
+        unique_together = [["patient_cid", "center_id"]]
+
     class Gender(TextChoices):
         UNSPECIFIED = ("X", _("Unspecified"))  # NOTE: Here variation here act as aliases for bulk column ingestion.
         MALE = ("M", _("Male"))  # NOTE: Here variation here act as aliases for bulk column ingestion.
@@ -142,6 +145,10 @@ class Patient(DatedModel):
                                   default=uuid.uuid4,
                                   verbose_name="Patient ID")
     gender = models.CharField(max_length=8, choices=Gender.choices, null=True, verbose_name="Gender (M/F)")
+    patient_cid = models.CharField(max_length=128,
+                                   null=True,
+                                   blank=True,
+                                   help_text="Patient ID prescribed by the associated center")
     center_id = models.UUIDField(null=True, blank=True, validators=[validate_center])
 
     @property
@@ -153,10 +160,16 @@ class Patient(DatedModel):
                 return
 
     def __str__(self):
-        return str(self.patient_id)
+        if self.patient_cid:
+            return str(f"PCID:{self.patient_cid}")
+        else:
+            return str(f"PID:{self.patient_id}")
 
     def short_id(self):
-        return str(self.patient_id)[:8]
+        if self.patient_cid:
+            return str(f"PCID:{str(self.patient_cid)[:8]}")
+        else:
+            return str(f"PID:{str(self.patient_id)[:8]}")
 
 
 class Visit(DatedModel):

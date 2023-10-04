@@ -83,6 +83,32 @@ class TestPatient:
         patient.full_clean()
         assert center == patient.center
 
+    def test_unique_cid_center_id(self, centers):
+        center = Center.objects.get(name="SSEC")
+        cid = uuid4()
+        Patient.objects.create(patient_id=uuid4(),
+                               gender=Patient.Gender.FEMALE,
+                               center_id=center.pk,
+                               patient_cid=cid)
+        # OK.
+        Patient.objects.create(patient_id=uuid4(),
+                               gender=Patient.Gender.FEMALE,
+                               center_id=center.pk,
+                               patient_cid=uuid4())
+
+        # OK.
+        Patient.objects.create(patient_id=uuid4(),
+                               gender=Patient.Gender.FEMALE,
+                               center_id=Center.objects.get(name="Imperial College London").pk,
+                               patient_cid=cid)
+
+        # Not OK.
+        with pytest.raises(IntegrityError, match="UNIQUE constraint failed:"):
+            Patient.objects.create(patient_id=uuid4(),
+                                   gender=Patient.Gender.FEMALE,
+                                   center_id=center.pk,
+                                   patient_cid=cid)
+
 
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestVisit:
