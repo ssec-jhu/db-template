@@ -8,6 +8,8 @@ import pytest
 from uploader.io import read_meta_data
 from uploader.models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, Visit, UploadedFile
 from uploader.loaddata import save_data_to_db
+from user.models import Center
+
 
 import biospecdb.util
 from conftest import DATA_PATH
@@ -59,6 +61,21 @@ class TestPatient:
         patient_id = uuid4()
         Patient.objects.create(patient_id=patient_id, gender=Patient.Gender.FEMALE)
         assert Patient.objects.get(pk=patient_id)
+
+    def test_center_validation(self, centers):
+        center = Center.objects.get(name="SSEC")
+        assert Center.objects.filter(pk=center.pk).exists()
+
+        # OK.
+        patient_id = uuid4()
+        patient = Patient(patient_id=patient_id, gender=Patient.Gender.FEMALE, center_id=center.pk)
+        patient.full_clean()
+
+        # Not OK.
+        patient_id = uuid4()
+        patient = Patient(patient_id=patient_id, gender=Patient.Gender.FEMALE, center_id=uuid4())
+        with pytest.raises(ValidationError, match="No center exists in DB with pk:"):
+            patient.full_clean()
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])

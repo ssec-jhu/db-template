@@ -4,6 +4,7 @@
     "pk": "437de0d7-6618-4445-bab2-03822310b0ef",
     "fields": {
       "gender": "MALE",
+      "center_id": "d61f1c2a-9c0a-4309-a031-ab5b8d2106b0",
       "created_at": "2013-09-06T00:00:00+00:00",
       "updated_at": "2013-09-06T00:00:00+00:00"
     }
@@ -13,6 +14,7 @@
     "pk": "9875970d-75ac-4008-a15b-20fb67923541",
     "fields": {
       "gender": "FEMALE",
+      "center_id": "d61f1c2a-9c0a-4309-a031-ab5b8d2106b0",
       "created_at": "2013-09-06T00:00:00+00:00",
       "updated_at": "2013-09-06T00:00:00+00:00"
     }
@@ -22,6 +24,7 @@
     "pk": "617ce60f-54eb-47eb-a890-277b9e3c03cc",
     "fields": {
       "gender": "FEMALE",
+      "center_id": "d61f1c2a-9c0a-4309-a031-ab5b8d2106b0",
       "created_at": "2013-09-06T00:00:00+00:00",
       "updated_at": "2013-09-06T00:00:00+00:00"
     }

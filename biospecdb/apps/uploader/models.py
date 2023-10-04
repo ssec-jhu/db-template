@@ -16,7 +16,7 @@ from uploader.io import FileFormats, get_file_info, read_meta_data, read_spectra
 from uploader.loaddata import save_data_to_db
 from uploader.sql import secure_name
 from uploader.base_models import DatedModel, ModelWithViewDependency, SqlView, TextChoices, Types
-
+from user.models import Center
 
 # Changes here need to be migrated, committed, and activated.
 # See https://docs.djangoproject.com/en/4.2/intro/tutorial02/#activating-models
@@ -120,6 +120,13 @@ class UploadedFile(DatedModel):
         raise NotImplementedError
 
 
+def validate_center(value):
+    if not Center.objects.filter(pk=value).exists():
+        raise ValidationError(_("No center exists in DB with pk: '%(pk)s'"),
+                              params={"pk": value},
+                              code="invalid_center")
+
+
 class Patient(DatedModel):
     """ Model an individual patient. """
     MIN_AGE = 0
@@ -135,7 +142,7 @@ class Patient(DatedModel):
                                   default=uuid.uuid4,
                                   verbose_name="Patient ID")
     gender = models.CharField(max_length=8, choices=Gender.choices, null=True, verbose_name="Gender (M/F)")
-    center_id = models.UUIDField(null=True, blank=True)
+    center_id = models.UUIDField(null=True, blank=True, validators=[validate_center])
 
     def __str__(self):
         return str(self.patient_id)

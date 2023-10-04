@@ -30,6 +30,12 @@ class SimpleQueryFactory(DjangoModelFactory):
 
 
 @pytest.fixture(scope="function")
+def centers(django_db_blocker):
+    with django_db_blocker.unblock():
+        call_command('loaddata', "centers")
+
+
+@pytest.fixture(scope="function")
 def sql_views(django_db_blocker):
     with django_db_blocker.unblock():
         call_command('update_sql_views')
