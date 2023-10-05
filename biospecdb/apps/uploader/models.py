@@ -16,7 +16,7 @@ from uploader.io import FileFormats, get_file_info, read_meta_data, read_spectra
 from uploader.loaddata import save_data_to_db
 from uploader.sql import secure_name
 from uploader.base_models import DatedModel, ModelWithViewDependency, SqlView, TextChoices, Types
-from user.models import Center
+from user.models import Center as UserCenter
 
 # Changes here need to be migrated, committed, and activated.
 # See https://docs.djangoproject.com/en/4.2/intro/tutorial02/#activating-models
@@ -57,6 +57,11 @@ NEGATIVE = "negative"
 # Biometric identifiers such as fingerprints or voice prints.
 # Full-face photos.
 # Any other unique identifying numbers, characteristics, or codes.
+
+
+class Center(UserCenter):
+    class Meta(UserCenter.Meta):
+        managed = False
 
 
 class UploadedFile(DatedModel):
@@ -120,20 +125,13 @@ class UploadedFile(DatedModel):
         raise NotImplementedError
 
 
-def validate_center(value):
-    if not Center.objects.filter(pk=value).exists():
-        raise ValidationError(_("No center exists in DB with pk: '%(pk)s'"),
-                              params={"pk": value},
-                              code="invalid_center")
-
-
 class Patient(DatedModel):
     """ Model an individual patient. """
     MIN_AGE = 0
     MAX_AGE = 150  # NOTE: HIPAA requires a max age of 90 to be stored. However, this is GDPR data so... :shrug:
 
     class Meta:
-        unique_together = [["patient_cid", "center_id"]]
+        unique_together = [["patient_cid", "center"]]
 
     class Gender(TextChoices):
         UNSPECIFIED = ("X", _("Unspecified"))  # NOTE: Here variation here act as aliases for bulk column ingestion.
@@ -149,15 +147,7 @@ class Patient(DatedModel):
                                    null=True,
                                    blank=True,
                                    help_text="Patient ID prescribed by the associated center")
-    center_id = models.UUIDField(null=True, blank=True, validators=[validate_center])
-
-    @property
-    def center(self):
-        if self.center_id:
-            try:
-                return Center.objects.get(pk=self.center_id)
-            except Center.DoesNotExist:
-                return
+    center = models.ForeignKey(UserCenter, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         if self.patient_cid:
@@ -241,7 +231,7 @@ class Disease(ModelWithViewDependency):
     value_class = models.CharField(max_length=128, default=Types.BOOL, choices=Types.choices)
 
     # A disease without a center is generic and accessible by any and all centers.
-    center_id = models.UUIDField(null=True, blank=True, validators=[validate_center])
+    center = models.ForeignKey(UserCenter, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name

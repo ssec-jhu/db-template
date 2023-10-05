@@ -1,5 +1,6 @@
 import uuid
 
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 from django.contrib.auth.validators import UnicodeUsernameValidator
@@ -34,6 +35,34 @@ class Center(models.Model):
 
     def __str__(self):
         return f"{self.name}, {self.country}"
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if using is None:
+            # Replicate action across all databases.
+            for db in settings.DATABASES:
+                super().save(force_insert=force_insert,
+                             force_update=force_update,
+                             using=db,
+                             update_fields=update_fields)
+        else:
+            super().save(force_insert=force_insert,
+                         force_update=force_update,
+                         using=using,
+                         update_fields=update_fields)
+
+    def asave(self, *args, **kwargs):
+        raise NotImplementedError
+
+    def delete(self, using=None, keep_parents=False):
+        if using is None:
+            # Replicate action across all databases.
+            for db in settings.DATABASES:
+                super().delete(using=db, keep_parents=keep_parents)
+        else:
+            super().delete(using=using, keep_parents=keep_parents)
+
+    def adelete(self, *args, **kwargs):
+        raise NotImplementedError
 
 
 # NOTE: The following code was copied from from django.contrib.auth.models.

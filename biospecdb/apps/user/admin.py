@@ -13,7 +13,7 @@ class CenterAdmin(admin.ModelAdmin):
 
     def patient_count(self, obj):
         from uploader.models import Patient
-        return len(Patient.objects.filter(center_id=obj.pk))
+        return len(Patient.objects.filter(center=obj.pk))
 
 
 @admin.register(User)

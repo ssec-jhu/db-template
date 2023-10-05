@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 import django.forms as forms
 
 from .models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, UploadedFile, Visit, QCAnnotator,\
-    QCAnnotation
+    QCAnnotation, Center
 
 
 @admin.register(Instrument)
@@ -249,6 +249,28 @@ class PatientAdmin(admin.ModelAdmin):
         except ValidationError:
             pass
         return queryset, may_have_duplicates
+
+
+@admin.register(Center)
+class CenterAdmin(admin.ModelAdmin):
+    fields = ("name", "country", "id")
+    list_display = ("name", "country")
+    readonly_fields = ("name", "country", "id")
+
+    def has_view_permission(self, request, obj=None):
+        return request.user.is_superuser
+
+    def has_module_permission(self, request):
+        return request.user.is_superuser
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 class DataAdminSite(admin.AdminSite):
