@@ -14,5 +14,21 @@
       "name": "Imperial College London",
       "country": "UK"
     }
+  },
+  {
+    "model": "uploader.Center",
+    "pk": "d61f1c2a-9c0a-4309-a031-ab5b8d2106b0",
+    "fields": {
+      "name": "SSEC",
+      "country": "USA"
+    }
+  },
+  {
+    "model": "uploader.Center",
+    "pk": "94762eea-8d53-4251-9f0b-807dd66f97a1",
+    "fields": {
+      "name": "Imperial College London",
+      "country": "UK"
+    }
   }
 ]

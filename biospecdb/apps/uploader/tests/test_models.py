@@ -8,7 +8,8 @@ import pytest
 from uploader.io import read_meta_data
 from uploader.models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, Visit, UploadedFile
 from uploader.loaddata import save_data_to_db
-from user.models import Center
+from user.models import Center as UserCenter
+from uploader.models import Center as UploaderCenter
 
 
 import biospecdb.util
@@ -63,50 +64,46 @@ class TestPatient:
         assert Patient.objects.get(pk=patient_id)
 
     def test_center_validation(self, centers):
-        center = Center.objects.get(name="SSEC")
-        assert Center.objects.filter(pk=center.pk).exists()
+        center = UploaderCenter.objects.get(name="SSEC")
+        assert UserCenter.objects.filter(pk=center.pk).exists()
+        assert UploaderCenter.objects.filter(pk=center.pk).exists()
 
         # OK.
         patient_id = uuid4()
-        patient = Patient(patient_id=patient_id, gender=Patient.Gender.FEMALE, center_id=center.pk)
+        patient = Patient(patient_id=patient_id, gender=Patient.Gender.FEMALE, center=center)
         patient.full_clean()
 
         # Not OK.
         patient_id = uuid4()
-        patient = Patient(patient_id=patient_id, gender=Patient.Gender.FEMALE, center_id=uuid4())
-        with pytest.raises(ValidationError, match="No center exists in DB with pk:"):
-            patient.full_clean()
-
-    def test_center_property(self, centers):
-        center = Center.objects.get(name="SSEC")
-        patient = Patient(patient_id=uuid4(), gender=Patient.Gender.FEMALE, center_id=center.pk)
-        patient.full_clean()
-        assert center == patient.center
+        with pytest.raises(ValueError, match="Cannot assign"):
+            patient = Patient(patient_id=patient_id,
+                              gender=Patient.Gender.FEMALE,
+                              center=UserCenter.objects.get(name="SSEC"))
 
     def test_unique_cid_center_id(self, centers):
-        center = Center.objects.get(name="SSEC")
+        center = UploaderCenter.objects.get(name="SSEC")
         cid = uuid4()
         Patient.objects.create(patient_id=uuid4(),
                                gender=Patient.Gender.FEMALE,
-                               center_id=center.pk,
+                               center=center,
                                patient_cid=cid)
         # OK.
         Patient.objects.create(patient_id=uuid4(),
                                gender=Patient.Gender.FEMALE,
-                               center_id=center.pk,
+                               center=center,
                                patient_cid=uuid4())
 
         # OK.
         Patient.objects.create(patient_id=uuid4(),
                                gender=Patient.Gender.FEMALE,
-                               center_id=Center.objects.get(name="Imperial College London").pk,
+                               center=UploaderCenter.objects.get(name="Imperial College London"),
                                patient_cid=cid)
 
         # Not OK.
         with pytest.raises(IntegrityError, match="UNIQUE constraint failed:"):
             Patient.objects.create(patient_id=uuid4(),
                                    gender=Patient.Gender.FEMALE,
-                                   center_id=center.pk,
+                                   center=center,
                                    patient_cid=cid)
 
 

@@ -1,6 +1,6 @@
+from functools import partial
 import uuid
 
-from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 from django.contrib.auth.validators import UnicodeUsernameValidator
@@ -24,42 +24,74 @@ def validate_country(value):
                               code="invalid")
 
 
-class Center(models.Model):
+class BaseCenter(models.Model):
 
     class Meta:
+        abstract = True
         unique_together = [["name", "country"]]
 
     id = models.UUIDField(unique=True, primary_key=True, default=uuid.uuid4)
-    name = models.CharField(max_length=128)
-    country = models.CharField(max_length=128, blank=True, null=True, validators=[validate_country])
+    name = models.CharField(max_length=128, blank=False, null=False)
+    country = models.CharField(max_length=128, blank=False, null=False, validators=[validate_country])
 
     def __str__(self):
         return f"{self.name}, {self.country}"
 
+
+class Center(BaseCenter):
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        if using is None:
-            # Replicate action across all databases.
-            for db in settings.DATABASES:
-                super().save(force_insert=force_insert,
-                             force_update=force_update,
-                             using=db,
-                             update_fields=update_fields)
+        """ When saving user.Center also replicate for uploader.Center. """
+
+        save = partial(super().save,
+                       force_insert=force_insert,
+                       force_update=force_update,
+                       update_fields=update_fields)
+
+        if using in (None, "bsr"):
+            if using is None:
+                save(using=using)
+
+            # Replicate action to BSR database.
+            from uploader.models import Center
+            try:
+                center = Center.objects.get(id=self.id)
+            except Center.DoesNotExist:
+                Center.objects.create(id=self.id,
+                                      name=self.name,
+                                      country=self.country)
+            else:
+                center.name = self.name
+                center.country = self.country
+                center.full_clean()
+                center.save(force_insert=force_insert,
+                            force_update=force_update,
+                            update_fields=update_fields)
         else:
-            super().save(force_insert=force_insert,
-                         force_update=force_update,
-                         using=using,
-                         update_fields=update_fields)
+            save(using=using)
 
     def asave(self, *args, **kwargs):
         raise NotImplementedError
 
     def delete(self, using=None, keep_parents=False):
-        if using is None:
-            # Replicate action across all databases.
-            for db in settings.DATABASES:
-                super().delete(using=db, keep_parents=keep_parents)
+        """ When deleting user.Center also replicate for uploader.Center. """
+
+        delete = partial(super().delete, keep_parents=keep_parents)
+
+        if using in (None, "bsr"):
+            # Replicate action to BSR database.
+            from uploader.models import Center
+            try:
+                center = Center.objects.get(id=self.id)
+            except Center.DoesNotExist:
+                pass
+            else:
+                center.delete(keep_parents=keep_parents)
+
+            # Delete the original.
+            if using is None:
+                delete(using=using)
         else:
-            super().delete(using=using, keep_parents=keep_parents)
+            delete(using=using)
 
     def adelete(self, *args, **kwargs):
         raise NotImplementedError

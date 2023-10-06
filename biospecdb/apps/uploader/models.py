@@ -16,7 +16,7 @@ from uploader.io import FileFormats, get_file_info, read_meta_data, read_spectra
 from uploader.loaddata import save_data_to_db
 from uploader.sql import secure_name
 from uploader.base_models import DatedModel, ModelWithViewDependency, SqlView, TextChoices, Types
-from user.models import Center as UserCenter
+from user.models import BaseCenter as UserBaseCenter
 
 # Changes here need to be migrated, committed, and activated.
 # See https://docs.djangoproject.com/en/4.2/intro/tutorial02/#activating-models
@@ -59,9 +59,8 @@ NEGATIVE = "negative"
 # Any other unique identifying numbers, characteristics, or codes.
 
 
-class Center(UserCenter):
-    class Meta(UserCenter.Meta):
-        managed = False
+class Center(UserBaseCenter):
+    ...
 
 
 class UploadedFile(DatedModel):
@@ -147,7 +146,7 @@ class Patient(DatedModel):
                                    null=True,
                                    blank=True,
                                    help_text="Patient ID prescribed by the associated center")
-    center = models.ForeignKey(UserCenter, null=True, blank=True, on_delete=models.CASCADE)
+    center = models.ForeignKey(Center, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         if self.patient_cid:
@@ -231,7 +230,7 @@ class Disease(ModelWithViewDependency):
     value_class = models.CharField(max_length=128, default=Types.BOOL, choices=Types.choices)
 
     # A disease without a center is generic and accessible by any and all centers.
-    center = models.ForeignKey(UserCenter, null=True, blank=True, on_delete=models.CASCADE)
+    center = models.ForeignKey(Center, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.name

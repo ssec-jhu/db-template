@@ -33,6 +33,7 @@ class SimpleQueryFactory(DjangoModelFactory):
 def centers(django_db_blocker):
     with django_db_blocker.unblock():
         call_command('loaddata', "centers")
+        call_command("loaddata",  "--database=bsr", "centers")
 
 
 @pytest.fixture(scope="function")
@@ -54,7 +55,7 @@ def instruments(django_db_blocker):
 
 
 @pytest.fixture(scope="function")
-def patients(django_db_blocker):
+def patients(django_db_blocker, centers):
     with django_db_blocker.unblock():
         call_command('loaddata', "--database=bsr",
                      str(find_package_location() / 'apps/uploader/tests/data/patients.json'))
@@ -74,7 +75,7 @@ def qcannotators(db, django_db_blocker):
 
 
 @pytest.fixture(scope="function")
-def mock_data(db, django_db_blocker):
+def mock_data(db, django_db_blocker, centers):
     # NOTE: Since this loads directly to the DB without any validation and thus call to loaddata(), no data files are
     # present. If you need actual spectral data, use ``mock_data_from_files`` below instead.
     with django_db_blocker.unblock():
