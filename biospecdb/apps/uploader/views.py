@@ -48,7 +48,8 @@ def data_input(request):
                 patient = Patient.objects.get(patient_id=patient_id)
                 last_visit = Visit.objects.filter(patient_id=patient_id).order_by('created_at').last()
                 biosample = BioSample.objects.get(visit=last_visit)
-                symptom = Symptom.objects.filter(visit=last_visit).order_by('days_symptomatic').last()
+                last_visit_symptoms = Symptom.objects.filter(visit=last_visit)
+                symptom = last_visit_symptoms.order_by('days_symptomatic').last()
                 spectraldata = SpectralData.objects.get(bio_sample=biosample)      
                 initial_data={
                     'patient_id': patient_id,
@@ -66,14 +67,14 @@ def data_input(request):
                     'thawing_time': biosample.thawing_time,
                     'spectral_data': spectraldata.data.name
                 }
-                for symptoms in Symptom.objects.filter(visit=last_visit):
-                    if symptoms.disease.value_class == "BOOL":
-                        if symptoms.disease_value == 'True':
-                            initial_data[symptoms.disease.name] = True
+                for symptom in last_visit_symptoms:
+                    if symptom.disease.value_class == "BOOL":
+                        if symptom.disease_value == 'True':
+                            initial_data[symptom.disease.name] = True
                         else:
-                            initial_data[symptoms.disease.name] = False
+                            initial_data[symptom.disease.name] = False
                     else:
-                        initial_data[symptoms.disease.name] = symptoms.disease_value
+                        initial_data[symptom.disease.name] = symptom.disease_value
                 form = DataInputForm(initial=initial_data)
                 return render(request, 'DataInputForm.html', {'form': form})
             
