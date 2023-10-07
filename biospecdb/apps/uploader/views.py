@@ -2,7 +2,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render
 from openpyxl import load_workbook
 from .forms import FileUploadForm, DataInputForm
-from uploader.models import Patient, Visit, SpectralData, BioSample, Symptom
+from uploader.models import Patient, Visit, SpectralData, BioSample, Symptom, Disease
 
 
 def home(request):
@@ -69,10 +69,12 @@ def data_input(request):
                 }
                 for symptom in last_visit_symptoms:
                     if symptom.disease.value_class == "BOOL":
-                        if symptom.disease_value == 'True':
-                            initial_data[symptom.disease.name] = True
-                        else:
-                            initial_data[symptom.disease.name] = False
+                        initial_data[symptom.disease.name] = \
+                            Disease.Types(symptom.disease.value_class).cast(symptom.disease_value)
+                        #if symptom.disease_value == 'True':
+                        #    initial_data[symptom.disease.name] = True
+                        #else:
+                        #    initial_data[symptom.disease.name] = False
                     else:
                         initial_data[symptom.disease.name] = symptom.disease_value
                 form = DataInputForm(initial=initial_data)
