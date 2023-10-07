@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.core.exceptions import ValidationError
 import django.forms as forms
 
 from .models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, UploadedFile, Visit, QCAnnotator,\
@@ -77,8 +76,10 @@ class QCAnnotationInline(admin.TabularInline):
 
 @admin.register(QCAnnotation)
 class QCAnnotationAdmin(RestrictedByCenterAdmin):
-    search_fields = ["annotator__name"]
-    search_help_text = "Annotator Name"
+    search_fields = ["annotator__name",
+                     "spectral_data__bio_sample__visit__patient__patient_id",
+                     "spectral_data__bio_sample__visit__patient__patient_cid"]
+    search_help_text = "Annotator Name, Patient ID or CID"
     readonly_fields = ("value", "created_at", "updated_at")  # TODO: Might need specific user group for timestamps.
     list_display = ["annotator_name", "value", "annotator_value_type", "updated_at"]
     ordering = ("-updated_at",)
@@ -99,7 +100,6 @@ class QCAnnotatorAdmin(RestrictedByCenterAdmin):
     # TODO: Might need specific user group for timestamps.)
     readonly_fields = ("created_at", "updated_at")
     ordering = ("name",)
-
     list_display = ["name", "fully_qualified_class_name", "default", "value_type"]
 
 
@@ -110,7 +110,6 @@ class DiseaseAdmin(RestrictedByCenterAdmin):
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     ordering = ["name"]
     list_filter = ("center", "value_class")
-
     list_display = ["name", "description", "symptom_count"]
 
     @admin.display
@@ -120,29 +119,12 @@ class DiseaseAdmin(RestrictedByCenterAdmin):
 
 @admin.register(Symptom)
 class SymptomAdmin(RestrictedByCenterAdmin):
-    search_fields = ["disease__name"]
-    search_help_text = "Disease OR patient ID"
+    search_fields = ["disease__name", "visit__patient__patient_id", "visit__patient__patient_cid"]
+    search_help_text = "Disease, Patient ID or CID"
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     date_hierarchy = "updated_at"
     ordering = ("-updated_at",)
     list_filter = ("disease__center", "visit__patient__gender", "disease")
-
-    def get_search_results(self, request, queryset, search_term):
-        """ search_fields filters with an AND when we need an OR
-            See https://docs.djangoproject.com/en/4.2/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields
-        """
-        queryset, may_have_duplicates = super().get_search_results(
-            request,
-            queryset,
-            search_term,
-        )
-        try:
-            queryset |= self.model.objects.filter(visit__patient_id=search_term)
-        except ValidationError:
-            pass
-
-        return queryset, may_have_duplicates
-
     list_display = ["patient_id", "disease_name", "days_symptomatic", "severity", "visit"]
     list_editable = ["days_symptomatic", "severity"]
 
@@ -172,8 +154,8 @@ class SpectralDataInline(admin.StackedInline):
 class SpectralDataAdmin(RestrictedByCenterAdmin):
     radio_fields = {"instrument": admin.HORIZONTAL}
 
-    search_fields = ["bio_sample__visit__patient__patient_id"]
-    search_help_text = "Patient ID"
+    search_fields = ["bio_sample__visit__patient__patient_id", "bio_sample__visit__patient__patient_cid"]
+    search_help_text = "Patient ID or CID"
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     date_hierarchy = "updated_at"
     list_display = ["patient_id", "instrument", "data"]
@@ -198,29 +180,12 @@ class BioSampleInline(admin.TabularInline):
 
 @admin.register(BioSample)
 class BioSampleAdmin(RestrictedByCenterAdmin):
-    search_fields = ["sample_type"]
-    search_help_text = "Sample type OR patient ID"
+    search_fields = ["visit__patient__patient_id", "visit__patient__patient_cid"]
+    search_help_text = "Patient ID or CID"
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     date_hierarchy = "updated_at"
     ordering = ("-updated_at",)
     list_filter = ("visit__patient__center", "sample_type", "sample_processing")
-
-    def get_search_results(self, request, queryset, search_term):
-        """ search_fields filters with an AND when we need an OR
-            See https://docs.djangoproject.com/en/4.2/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields
-        """
-        queryset, may_have_duplicates = super().get_search_results(
-            request,
-            queryset,
-            search_term,
-        )
-        try:
-            queryset |= self.model.objects.filter(visit__patient_id=search_term)
-        except ValidationError:
-            pass
-
-        return queryset, may_have_duplicates
-
     list_display = ["patient_id", "sample_type"]
 
     @admin.display
@@ -240,8 +205,8 @@ class VisitAdminForm(forms.ModelForm):
 @admin.register(Visit)
 class VisitAdmin(RestrictedByCenterAdmin):
     form = VisitAdminForm
-    search_fields = ["patient__patient_id"]
-    search_help_text = "Patient ID"
+    search_fields = ["patient__patient_id", "patient__patient_cid"]
+    search_help_text = "Patient ID or CID"
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     date_hierarchy = "updated_at"
     ordering = ("-updated_at",)
@@ -275,8 +240,8 @@ class VisitInline(admin.TabularInline):
 @admin.register(Patient)
 class PatientAdmin(RestrictedByCenterAdmin):
     inlines = [VisitInline]
-    search_fields = ["patient_id"]
-    search_help_text = "Patient ID OR CID (center ID)"
+    search_fields = ["patient_id", "patient_cid"]
+    search_help_text = "Patient ID or CID"
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     date_hierarchy = "updated_at"
     ordering = ("-updated_at",)
@@ -294,17 +259,6 @@ class PatientAdmin(RestrictedByCenterAdmin):
     @admin.display
     def visit_count(self, obj):
         return len(obj.visit.all())
-
-    def get_search_results(self, request, queryset, search_term):
-        """ search_fields filters with an AND when we need an OR
-            See https://docs.djangoproject.com/en/4.2/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields
-        """
-        queryset, may_have_duplicates = super().get_search_results(request, queryset, search_term)
-        try:
-            queryset |= self.model.objects.filter(patient_cid=search_term)
-        except ValidationError:
-            pass
-        return queryset, may_have_duplicates
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "center" and request.user.center:
