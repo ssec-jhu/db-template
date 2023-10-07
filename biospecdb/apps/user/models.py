@@ -37,6 +37,23 @@ class BaseCenter(models.Model):
     def __str__(self):
         return f"{self.name}, {self.country}"
 
+    def __eq__(self, other):
+        """ Copied from models.Model """
+        if not isinstance(other, models.Model):
+            return NotImplemented
+
+        # NOTE: Added ``not isinstance(other, BaseCenter)`` condition.
+        if (not isinstance(other, BaseCenter)) and \
+                (self._meta.concrete_model != other._meta.concrete_model):
+            return False
+
+        my_pk = self.pk
+        if my_pk is None:
+            return self is other
+        return my_pk == other.pk
+
+    __hash__ = models.Model.__hash__
+
 
 class Center(BaseCenter):
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
@@ -52,13 +69,11 @@ class Center(BaseCenter):
                 save(using=using)
 
             # Replicate action to BSR database.
-            from uploader.models import Center
+            from uploader.models import Center as UploaderCenter
             try:
-                center = Center.objects.get(id=self.id)
-            except Center.DoesNotExist:
-                Center.objects.create(id=self.id,
-                                      name=self.name,
-                                      country=self.country)
+                center = UploaderCenter.objects.get(id=self.id)
+            except UploaderCenter.DoesNotExist:
+                UploaderCenter.objects.create(id=self.id, name=self.name, country=self.country)
             else:
                 center.name = self.name
                 center.country = self.country
@@ -79,10 +94,10 @@ class Center(BaseCenter):
 
         if using in (None, "bsr"):
             # Replicate action to BSR database.
-            from uploader.models import Center
+            from uploader.models import Center as UploaderCenter
             try:
-                center = Center.objects.get(id=self.id)
-            except Center.DoesNotExist:
+                center = UploaderCenter.objects.get(id=self.id)
+            except UploaderCenter.DoesNotExist:
                 pass
             else:
                 center.delete(keep_parents=keep_parents)

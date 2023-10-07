@@ -76,3 +76,12 @@ class TestCenters:
 
         assert not UserCenter.objects.all()
         assert len(UploaderCenter.objects.all()) == 2
+
+    def test_equivalence(self):
+        user_center = UserCenter(name="test", country="nowhere")
+        user_center.full_clean()
+        user_center.save()
+
+        uploader_center = UploaderCenter.objects.get(pk=user_center.pk)
+        assert user_center == uploader_center
+        assert uploader_center == user_center

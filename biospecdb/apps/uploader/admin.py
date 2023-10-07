@@ -3,11 +3,57 @@ from django.core.exceptions import ValidationError
 import django.forms as forms
 
 from .models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, UploadedFile, Visit, QCAnnotator,\
-    QCAnnotation, Center
+    QCAnnotation, Center, get_center
+
+
+class RestrictedByCenterAdmin(admin.ModelAdmin):
+    def _is_center_owned_obj(self, request, obj=None):
+        user_center = request.user.center if request.user else None
+
+        if (not user_center) or (obj is None):
+            # Those without centers "own" all.
+            return True  # security risk!?
+
+        obj_center = get_center(obj)
+        if not obj_center:
+            # Objects without centers are "owned" by all.
+            return True
+
+        return obj_center == user_center
+
+    def has_view_permission(self, request, obj=None):
+        perms = super().has_view_permission(request, obj=obj)
+
+        if obj is None:
+            return perms
+
+        return perms and self._is_center_owned_obj(request, obj=obj)
+
+    def has_module_permission(self, request):
+        return super().has_module_permission(request)
+
+    def has_add_permission(self, request):
+        return super().has_add_permission(request)
+
+    def has_change_permission(self, request, obj=None):
+        perms = super().has_change_permission(request, obj=obj)
+
+        if obj is None:
+            return perms
+
+        return perms and self._is_center_owned_obj(request, obj=obj)
+
+    def has_delete_permission(self, request, obj=None):
+        perms = super().has_change_permission(request, obj=obj)
+
+        if obj is None:
+            return perms
+
+        return perms and self._is_center_owned_obj(request, obj=obj)
 
 
 @admin.register(Instrument)
-class InstrumentAdmin(admin.ModelAdmin):
+class InstrumentAdmin(RestrictedByCenterAdmin):
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     list_display = ["spectrometer", "atr_crystal"]
     ordering = ["spectrometer"]
@@ -30,7 +76,7 @@ class QCAnnotationInline(admin.TabularInline):
 
 
 @admin.register(QCAnnotation)
-class QCAnnotationAdmin(admin.ModelAdmin):
+class QCAnnotationAdmin(RestrictedByCenterAdmin):
     search_fields = ["annotator__name"]
     search_help_text = "Annotator Name"
     readonly_fields = ("value", "created_at", "updated_at")  # TODO: Might need specific user group for timestamps.
@@ -47,7 +93,7 @@ class QCAnnotationAdmin(admin.ModelAdmin):
 
 
 @admin.register(QCAnnotator)
-class QCAnnotatorAdmin(admin.ModelAdmin):
+class QCAnnotatorAdmin(RestrictedByCenterAdmin):
     search_fields = ["name"]
     search_help_text = "Name"
     # TODO: Might need specific user group for timestamps.)
@@ -58,7 +104,7 @@ class QCAnnotatorAdmin(admin.ModelAdmin):
 
 
 @admin.register(Disease)
-class DiseaseAdmin(admin.ModelAdmin):
+class DiseaseAdmin(RestrictedByCenterAdmin):
     search_fields = ["name"]
     search_help_text = "Disease name"
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
@@ -73,7 +119,7 @@ class DiseaseAdmin(admin.ModelAdmin):
 
 
 @admin.register(Symptom)
-class SymptomAdmin(admin.ModelAdmin):
+class SymptomAdmin(RestrictedByCenterAdmin):
     search_fields = ["disease__name"]
     search_help_text = "Disease OR patient ID"
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
@@ -123,7 +169,7 @@ class SpectralDataInline(admin.StackedInline):
 
 
 @admin.register(SpectralData)
-class SpectralDataAdmin(admin.ModelAdmin):
+class SpectralDataAdmin(RestrictedByCenterAdmin):
     radio_fields = {"instrument": admin.HORIZONTAL}
 
     search_fields = ["bio_sample__visit__patient__patient_id"]
@@ -151,7 +197,7 @@ class BioSampleInline(admin.TabularInline):
 
 
 @admin.register(BioSample)
-class BioSampleAdmin(admin.ModelAdmin):
+class BioSampleAdmin(RestrictedByCenterAdmin):
     search_fields = ["sample_type"]
     search_help_text = "Sample type OR patient ID"
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
@@ -192,7 +238,7 @@ class VisitAdminForm(forms.ModelForm):
 
 
 @admin.register(Visit)
-class VisitAdmin(admin.ModelAdmin):
+class VisitAdmin(RestrictedByCenterAdmin):
     form = VisitAdminForm
     search_fields = ["patient__patient_id"]
     search_help_text = "Patient ID"
@@ -227,7 +273,7 @@ class VisitInline(admin.TabularInline):
 
 
 @admin.register(Patient)
-class PatientAdmin(admin.ModelAdmin):
+class PatientAdmin(RestrictedByCenterAdmin):
     inlines = [VisitInline]
     search_fields = ["patient_id"]
     search_help_text = "Patient ID OR CID (center ID)"

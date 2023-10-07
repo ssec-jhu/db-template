@@ -64,6 +64,9 @@ class Center(UserBaseCenter):
 
 
 class UploadedFile(DatedModel):
+    class Meta:
+        get_latest_by = "updated_at"
+
     FileFormats = FileFormats
     UPLOAD_DIR = "raw_data/"  # MEDIA_ROOT/raw_data
 
@@ -131,6 +134,7 @@ class Patient(DatedModel):
 
     class Meta:
         unique_together = [["patient_cid", "center"]]
+        get_latest_by = "updated_at"
 
     class Gender(TextChoices):
         UNSPECIFIED = ("X", _("Unspecified"))  # NOTE: Here variation here act as aliases for bulk column ingestion.
@@ -163,6 +167,9 @@ class Patient(DatedModel):
 
 class Visit(DatedModel):
     """ Model a patient's visitation to collect health data and biological samples.  """
+
+    class Meta:
+        get_latest_by = "updated_at"
 
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name="visit")
 
@@ -201,6 +208,10 @@ class Visit(DatedModel):
     def visit_number(self):
         return 1 + self.count_prior_visits()
 
+    @property
+    def center(self):
+        return self.patient.center
+
     def __str__(self):
         return f"patient:{self.patient.short_id()}_visit:{self.visit_number}"
 
@@ -213,6 +224,7 @@ class Disease(ModelWithViewDependency):
     sql_view_dependencies = ("uploader.models.VisitSymptomsView",)
 
     class Meta:
+        get_latest_by = "updated_at"
         constraints = [models.UniqueConstraint(Lower("name"),
                                                name="unique_disease_name"),
                        models.UniqueConstraint(Lower("alias"),
@@ -244,6 +256,10 @@ class Disease(ModelWithViewDependency):
 
 class Symptom(DatedModel):
     """ A patient's instance of models.Disease. """
+
+    class Meta:
+        get_latest_by = "updated_at"
+
     MIN_SEVERITY = 0
     MAX_SEVERITY = 10
 
@@ -289,6 +305,10 @@ class Symptom(DatedModel):
                                           "age": self.visit.patient_age * 365},
                                   code="invalid")
 
+    @property
+    def center(self):
+        return self.visit.patient.center
+
     def __str__(self):
         return f"patient:{self.visit.patient.short_id()}_{self.disease.name}"
 
@@ -298,6 +318,7 @@ class Instrument(DatedModel):
 
     class Meta:
         unique_together = [["spectrometer", "atr_crystal"]]
+        get_latest_by = "updated_at"
 
     spectrometer = models.CharField(max_length=128,
                                     verbose_name="Spectrometer")
@@ -310,6 +331,10 @@ class Instrument(DatedModel):
 
 class BioSample(DatedModel):
     """ Model biological sample and collection method. """
+
+    class Meta:
+        get_latest_by = "updated_at"
+
     class SampleKind(TextChoices):
         PHARYNGEAL_SWAB = auto()
 
@@ -327,6 +352,10 @@ class BioSample(DatedModel):
     freezing_temp = models.FloatField(blank=True, null=True, verbose_name="Freezing Temperature")
     thawing_time = models.IntegerField(blank=True, null=True, verbose_name="Thawing time")
 
+    @property
+    def center(self):
+        return self.visit.patient.center
+
     def __str__(self):
         return f"{self.visit}_type:{self.sample_type}_pk{self.pk}"  # NOTE: str(self.visit) contains patient ID.
 
@@ -337,6 +366,7 @@ class SpectralData(DatedModel):
     class Meta:
         verbose_name = "Spectral Data"
         verbose_name_plural = verbose_name
+        get_latest_by = "updated_at"
 
     UPLOAD_DIR = "spectral_data/"  # MEDIA_ROOT/spectral_data
 
@@ -364,6 +394,10 @@ class SpectralData(DatedModel):
     data = models.FileField(upload_to=UPLOAD_DIR,
                             validators=[FileExtensionValidator(UploadedFile.FileFormats.choices())],
                             verbose_name="Spectral data file")
+
+    @property
+    def center(self):
+        return self.bio_sample.visit.patient.center
 
     def __str__(self):
         return f"{self.bio_sample.visit}_pk{self.pk}"
@@ -556,6 +590,9 @@ def validate_qc_annotator_import(value):
 
 
 class QCAnnotator(DatedModel):
+    class Meta:
+        get_latest_by = "updated_at"
+
     Types = Types
 
     name = models.CharField(max_length=128, unique=True, blank=False, null=False)
@@ -600,6 +637,7 @@ class QCAnnotation(DatedModel):
 
     class Meta:
         unique_together = [["annotator", "spectral_data"]]
+        get_latest_by = "updated_at"
 
     value = models.CharField(blank=True, null=True, max_length=128)
 
@@ -609,6 +647,10 @@ class QCAnnotation(DatedModel):
                                   on_delete=models.CASCADE,
                                   related_name="qc_annotation")
     spectral_data = models.ForeignKey(SpectralData, on_delete=models.CASCADE, related_name="qc_annotation")
+
+    @property
+    def center(self):
+        return self.spectral_data.bio_samaple.visit.patient.center
 
     def __str__(self):
         return f"{self.annotator.name}: {self.value}"
@@ -630,6 +672,22 @@ class QCAnnotation(DatedModel):
     def clean(self):
         super().clean()
         self.run()
+
+
+def get_center(obj):
+    if obj is None:
+        return
+
+    if isinstance(obj, Center):
+        return obj
+    elif isinstance(obj, UserBaseCenter):
+        try:
+            return Center.objects.get(pk=obj.pk)
+        except Center.DoesNotExist:
+            return
+
+    if hasattr(obj, "center"):
+        return obj.center
 
 
 # This is Model B wo/ disease table https://miro.com/app/board/uXjVMAAlj9Y=/

@@ -6,7 +6,8 @@ from django.db.utils import IntegrityError
 import pytest
 
 from uploader.io import read_meta_data
-from uploader.models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, Visit, UploadedFile
+from uploader.models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, Visit, UploadedFile,\
+    get_center, Center
 from uploader.loaddata import save_data_to_db
 from user.models import Center as UserCenter
 from uploader.models import Center as UploaderCenter
@@ -301,3 +302,32 @@ class TestUploadedFile:
                                                                                  name=spectral_file_path.name))
             with pytest.raises(ValidationError, match="Patient ID mismatch."):
                 data_upload.clean()
+
+
+@pytest.mark.django_db(databases=["default", "bsr"])
+def test_get_center(centers, mock_data_from_files):
+    center = Center.objects.get(name="SSEC")
+    assert get_center(center) is center
+
+    from user.models import Center as UserCenter
+    assert get_center(UserCenter.objects.get(pk=center.pk)) == center
+
+    patient = Patient.objects.all()[0]
+    patient.center = center
+    patient.full_clean()
+    patient.save()
+
+    assert get_center(patient) is center
+
+    for visit in patient.visit.all():
+        assert get_center(visit) is center
+
+    for bio_sample in visit.bio_sample.all():
+        assert get_center(bio_sample) is center
+
+    for spectral_data in bio_sample.spectral_data.all():
+        assert get_center(spectral_data) is center
+
+    for symptom in Symptom.objects.filter(visit__patient__center=center):
+        assert get_center(symptom) == center
+        # assert get_center(symptom.disease) is center  # TODO: Not yet related in disease.json fixture.
