@@ -63,6 +63,7 @@ class DiseaseAdmin(admin.ModelAdmin):
     search_help_text = "Disease name"
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     ordering = ["name"]
+    list_filter = ("center", "value_class")
 
     list_display = ["name", "description", "symptom_count"]
 
@@ -78,6 +79,7 @@ class SymptomAdmin(admin.ModelAdmin):
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     date_hierarchy = "updated_at"
     ordering = ("-updated_at",)
+    list_filter = ("disease__center", "visit__patient__gender", "disease")
 
     def get_search_results(self, request, queryset, search_term):
         """ search_fields filters with an AND when we need an OR
@@ -131,6 +133,11 @@ class SpectralDataAdmin(admin.ModelAdmin):
     list_display = ["patient_id", "instrument", "data"]
     inlines = [QCAnnotationInline]
     ordering = ("-updated_at",)
+    list_filter = ("bio_sample__visit__patient__center",
+                   "instrument",
+                   "spectra_measurement",
+                   "bio_sample__sample_type", "bio_sample__sample_processing",
+                   "bio_sample__visit__patient__gender")
 
     @admin.display
     def patient_id(self, obj):
@@ -150,6 +157,7 @@ class BioSampleAdmin(admin.ModelAdmin):
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     date_hierarchy = "updated_at"
     ordering = ("-updated_at",)
+    list_filter = ("visit__patient__center", "sample_type", "sample_processing")
 
     def get_search_results(self, request, queryset, search_term):
         """ search_fields filters with an AND when we need an OR
@@ -191,6 +199,7 @@ class VisitAdmin(admin.ModelAdmin):
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     date_hierarchy = "updated_at"
     ordering = ("-updated_at",)
+    list_filter = ("patient__center",)
 
     # autocomplete_fields = ["previous_visit"]  # Conflicts with VisitAdminForm queryset.
     inlines = [BioSampleInline, SymptomInline]
@@ -225,6 +234,7 @@ class PatientAdmin(admin.ModelAdmin):
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     date_hierarchy = "updated_at"
     ordering = ("-updated_at",)
+    list_filter = ("center", "gender")
 
     list_display = ["patient_id", "patient_cid", "gender", "age", "visit_count", "center"]
 
@@ -249,6 +259,11 @@ class PatientAdmin(admin.ModelAdmin):
         except ValidationError:
             pass
         return queryset, may_have_duplicates
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "center" and request.user.center:
+            kwargs["queryset"] = Center.objects.filter(pk=request.user.center.pk)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 @admin.register(Center)
