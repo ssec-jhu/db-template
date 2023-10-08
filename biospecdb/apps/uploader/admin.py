@@ -76,6 +76,12 @@ class UploadedFileAdmin(RestrictedByCenterAdmin):
     ordering = ("-updated_at",)
     list_filter = ("center",)
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(center=Center.objects.get(pk=request.user.center.pk))
+
 
 class QCAnnotationInline(admin.TabularInline):
     model = QCAnnotation
@@ -92,6 +98,7 @@ class QCAnnotationAdmin(RestrictedByCenterAdmin):
     readonly_fields = ("value", "created_at", "updated_at")  # TODO: Might need specific user group for timestamps.
     list_display = ["annotator_name", "value", "annotator_value_type", "updated_at"]
     ordering = ("-updated_at",)
+    list_filter = ("spectral_data__bio_sample__visit__patient__center", "annotator__name")
 
     @admin.display
     def annotator_name(self, obj):
@@ -100,6 +107,13 @@ class QCAnnotationAdmin(RestrictedByCenterAdmin):
     @admin.display
     def annotator_value_type(self, obj):
         return obj.annotator.value_type
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        center = Center.objects.get(pk=request.user.center.pk)
+        return qs.filter(spectral_data__bio_sample__visit__patient__center=center)
 
 
 @admin.register(QCAnnotator)
@@ -124,6 +138,12 @@ class DiseaseAdmin(RestrictedByCenterAdmin):
     @admin.display
     def symptom_count(self, obj):
         return len(obj.symptom.all())
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(Q(center=Center.objects.get(pk=request.user.center.pk)) | Q(center=None))
 
 
 @admin.register(Symptom)
@@ -150,6 +170,12 @@ class SymptomAdmin(RestrictedByCenterAdmin):
             center = Center.objects.get(pk=request.user.center.pk)
             kwargs["queryset"] = Disease.objects.filter(Q(center=center) | Q(center=None))
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(visit__patient__center=Center.objects.get(pk=request.user.center.pk))
 
 
 class SymptomInline(admin.TabularInline):
@@ -186,6 +212,12 @@ class SpectralDataAdmin(RestrictedByCenterAdmin):
     def patient_id(self, obj):
         return obj.bio_sample.visit.patient_id
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(bio_sample__visit__patient__center=Center.objects.get(pk=request.user.center.pk))
+
 
 class BioSampleInline(admin.TabularInline):
     model = BioSample
@@ -202,12 +234,17 @@ class BioSampleAdmin(RestrictedByCenterAdmin):
     ordering = ("-updated_at",)
     list_filter = ("visit__patient__center", "sample_type", "sample_processing")
     list_display = ["patient_id", "sample_type"]
+    inlines = [SpectralDataInline]
 
     @admin.display
     def patient_id(self, obj):
         return obj.visit.patient_id
 
-    inlines = [SpectralDataInline]
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(visit__patient__center=Center.objects.get(pk=request.user.center.pk))
 
 
 class VisitAdminForm(forms.ModelForm):
@@ -244,6 +281,12 @@ class VisitAdmin(RestrictedByCenterAdmin):
     def gender(self, obj):
         return obj.patient.gender
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(patient__center=Center.objects.get(pk=request.user.center.pk))
+
 
 class VisitInline(admin.TabularInline):
     form = VisitAdminForm
@@ -274,6 +317,12 @@ class PatientAdmin(RestrictedByCenterAdmin):
     @admin.display
     def visit_count(self, obj):
         return len(obj.visit.all())
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(center=Center.objects.get(pk=request.user.center.pk))
 
 
 @admin.register(Center)
