@@ -292,6 +292,11 @@ class Symptom(DatedModel):
         """ Model validation. """
         super().clean()
 
+        if self.disease.center and (self.disease.center != self.visit.patient.center):
+            raise ValidationError(_("Patient symptom disease category must belong to patient center: "
+                                    "'%(c1)s' != '%(c2)s'"),
+                                  params=dict(c1=self.disease.center, c2=self.visit.patient.center))
+
         # Check that value is castable by casting.
         # NOTE: ``disease_value`` is a ``CharField`` so this will get cast back to a str again, and it could be argued
         # that there's no point in storing the cast value... but :shrug:.

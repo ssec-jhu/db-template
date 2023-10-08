@@ -217,6 +217,27 @@ class TestSymptom:
         symptom.full_clean()
         assert symptom.disease_value is value
 
+    def test_center_validation(self, centers):
+        center = Center.objects.get(name="SSEC")
+        patient = Patient.objects.create(center=center)
+        visit = Visit.objects.create(patient_age=40, patient=patient)
+
+        # OK.
+        disease = Disease.objects.create(name="snuffles", alias="snuffles", center=center)
+        Symptom(visit=visit, disease=disease).full_clean()
+
+        # OK.
+        disease = Disease.objects.create(name="extra_snuffles", alias="extra snuffles", center=None)
+        Symptom(visit=visit, disease=disease).full_clean()
+
+        # Not OK.
+        center
+        disease = Disease.objects.create(name="even_more_snuffles",
+                                         alias="even more snuffles",
+                                         center=Center.objects.get(name="Imperial College London"))
+        with pytest.raises(ValidationError, match="Patient symptom disease category must belong to patient center:"):
+            Symptom(visit=visit, disease=disease).full_clean()
+
 
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestBioSample:
