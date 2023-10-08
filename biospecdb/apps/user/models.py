@@ -180,14 +180,6 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = _("users")
         abstract = True
 
-    # def __init__(self, *args, **kwargs):
-    #     if center := kwargs.get("center"):
-    #         if isinstance(center, Center):
-    #             try:
-    #                 Center.objects.get(pk=center.pk)
-    #             kwargs["center"] = Center.objects.get(pk=str(center.pk))
-    #     super().__init__(*args, **kwargs)
-
     def clean(self):
         super().clean()
         self.email = self.__class__.objects.normalize_email(self.email)
