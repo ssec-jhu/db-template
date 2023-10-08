@@ -112,6 +112,18 @@ class Center(BaseCenter):
         raise NotImplementedError
 
 
+class CustomUserManager(UserManager):
+    def create_superuser(self, username, email=None, password=None, **extra_fields):
+        if (center_id := extra_fields.get("center")) and not isinstance(center_id, Center):
+            # Note: This field has already been completely validated upstream by this point. It has also even been
+            # checked that a Center instance with this ID exists. However, it just fails to actually use it... so that's
+            # what we do here.
+            # This seems like a django bug, ``... and not isinstance(center_id, Center)`` should guard against this code
+            # breaking from an upstream future fix.
+            extra_fields["center"] = Center.objects.get(pk=center_id)
+        return super().create_superuser(username, email=email, password=password, **extra_fields)
+
+
 # NOTE: The following code was copied from from django.contrib.auth.models.
 class AbstractUser(AbstractBaseUser, PermissionsMixin):
     """
@@ -140,7 +152,7 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_("email address"), blank=True)
 
     # NOTE: Allow this to be null for the exception of some admin users that have no listed centers.
-    center = models.ForeignKey(Center, blank=True, null=True, on_delete=models.CASCADE, related_name="user")
+    center = models.ForeignKey(Center, blank=False, null=False, on_delete=models.CASCADE, related_name="user")
 
     is_staff = models.BooleanField(
         _("staff status"),
@@ -157,16 +169,24 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
     )
     date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
 
-    objects = UserManager()
+    objects = CustomUserManager()
 
     EMAIL_FIELD = "email"
     USERNAME_FIELD = "username"
-    REQUIRED_FIELDS = ["email"]
+    REQUIRED_FIELDS = ["email", "center"]
 
     class Meta:
         verbose_name = _("user")
         verbose_name_plural = _("users")
         abstract = True
+
+    # def __init__(self, *args, **kwargs):
+    #     if center := kwargs.get("center"):
+    #         if isinstance(center, Center):
+    #             try:
+    #                 Center.objects.get(pk=center.pk)
+    #             kwargs["center"] = Center.objects.get(pk=str(center.pk))
+    #     super().__init__(*args, **kwargs)
 
     def clean(self):
         super().clean()

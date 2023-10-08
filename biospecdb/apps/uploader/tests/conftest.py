@@ -1,10 +1,11 @@
 from pathlib import Path
+from uuid import uuid4
 
 from django.conf import settings
 import django.core.files
 from django.core.management import call_command
 from explorer.models import Query
-from explorer.tests.factories import UserFactory
+from explorer.tests.factories import UserFactory as ExplorerUserFactory
 from factory import Sequence, SubFactory
 from factory.django import DjangoModelFactory
 import pytest
@@ -13,8 +14,23 @@ import pytest
 from biospecdb.util import find_package_location
 from uploader.models import UploadedFile, Center
 from uploader.forms import DataInputForm
+from user.models import Center as UserCenter
 
 DATA_PATH = Path(__file__).parent / "data"
+
+
+class CenterFactory(DjangoModelFactory):
+
+    class Meta:
+        model = UserCenter
+
+    id = uuid4()
+    name = Sequence(lambda n: 'name %03d' % n)
+    country = Sequence(lambda n: 'country %03d' % n)
+
+
+class UserFactory(ExplorerUserFactory):
+    center = SubFactory(CenterFactory)
 
 
 class SimpleQueryFactory(DjangoModelFactory):
