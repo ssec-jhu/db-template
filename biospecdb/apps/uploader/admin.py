@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db.models import Q
 import django.forms as forms
 
 from .models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, UploadedFile, Visit, QCAnnotator,\
@@ -56,6 +57,7 @@ class RestrictedByCenterAdmin(admin.ModelAdmin):
             if not request.user.is_superuser:
                 kwargs["queryset"] = Center.objects.filter(pk=request.user.center.pk)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 @admin.register(Instrument)
 class InstrumentAdmin(RestrictedByCenterAdmin):
@@ -131,7 +133,7 @@ class SymptomAdmin(RestrictedByCenterAdmin):
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     date_hierarchy = "updated_at"
     ordering = ("-updated_at",)
-    list_filter = ("disease__center", "visit__patient__gender", "disease")
+    list_filter = ("visit__patient__center", "visit__patient__gender", "disease")
     list_display = ["patient_id", "disease_name", "days_symptomatic", "severity", "visit"]
     list_editable = ["days_symptomatic", "severity"]
 
@@ -142,6 +144,12 @@ class SymptomAdmin(RestrictedByCenterAdmin):
     @admin.display
     def disease_name(self, obj):
         return obj.disease.name
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "disease" and request.user.center:
+            center = Center.objects.get(pk=request.user.center.pk)
+            kwargs["queryset"] = Disease.objects.filter(Q(center=center) | Q(center=None))
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 class SymptomInline(admin.TabularInline):
