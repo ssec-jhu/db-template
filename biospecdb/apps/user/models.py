@@ -69,7 +69,7 @@ class Center(BaseCenter):
         if using in (None, "bsr"):
             # Save to both or not at all.
             # NOTE: This is brittle to DB alias changes and also assumes there's only these two.
-            assert len(settings.DATABASES) == 2  # Should help - though asserts can be optimized away.
+            assert len(settings.DATABASES) == 2  # Should help - though asserts are optimized away.
             with transaction.atomic(using="default"):
                 with transaction.atomic(using="bsr"):
                     if using is None:

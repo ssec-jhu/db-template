@@ -8,7 +8,7 @@ from uploader.exporters import CSVExporter
 from uploader.io import read_raw_data, spectral_data_from_csv
 from uploader.models import SpectralData
 
-from conftest import SimpleQueryFactory
+from uploader.tests.conftest import SimpleQueryFactory
 
 
 @pytest.fixture()

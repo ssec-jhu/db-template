@@ -14,7 +14,7 @@ from uploader.models import Center as UploaderCenter
 
 
 import biospecdb.util
-from conftest import DATA_PATH
+from uploader.tests.conftest import DATA_PATH
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])

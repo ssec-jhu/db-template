@@ -4,7 +4,7 @@ import pytest
 
 from uploader.models import UploadedFile, Patient, Visit, BioSample, SpectralData, Instrument, Disease
 from uploader.forms import DataInputForm
-from conftest import DATA_PATH
+from uploader.tests.conftest import DATA_PATH
 
 
 @pytest.fixture()
