@@ -1,7 +1,8 @@
 from functools import partial
 import uuid
 
-from django.db import models
+from django.db import models, transaction
+from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.exceptions import ValidationError
@@ -64,23 +65,33 @@ class Center(BaseCenter):
                        force_update=force_update,
                        update_fields=update_fields)
 
+        # Save to the default intended DB. Do this first so self.pk is generated.
         if using in (None, "bsr"):
-            if using is None:
-                save(using=using)
+            # Save to both or not at all.
+            # NOTE: This is brittle to DB alias changes and also assumes there's only these two.
+            assert len(settings.DATABASES) == 2  # Should help - though asserts can be optimized away.
+            with transaction.atomic(using="default"):
+                with transaction.atomic(using="bsr"):
+                    if using is None:
+                        save(using=using)
 
-            # Replicate action to BSR database.
-            from uploader.models import Center as UploaderCenter
-            try:
-                center = UploaderCenter.objects.get(id=self.id)
-            except UploaderCenter.DoesNotExist:
-                UploaderCenter.objects.create(id=self.id, name=self.name, country=self.country)
-            else:
-                center.name = self.name
-                center.country = self.country
-                center.full_clean()
-                center.save(force_insert=force_insert,
-                            force_update=force_update,
-                            update_fields=update_fields)
+                    # Replicate action to BSR database.
+                    from uploader.models import Center as UploaderCenter
+                    try:
+                        # Save is used to update fields, so we need to account for this.
+                        # Note: We can't use get_or_create() since the fields passed in might not match existing DB
+                        # entry if this use of save is an update.
+                        center = UploaderCenter.objects.get(id=self.id)
+                    except UploaderCenter.DoesNotExist:
+                        UploaderCenter.objects.create(id=self.id, name=self.name, country=self.country)
+                    else:
+                        # Update field values.
+                        center.name = self.name
+                        center.country = self.country
+                        center.full_clean()
+                        center.save(force_insert=force_insert,
+                                    force_update=force_update,
+                                    update_fields=update_fields)
         else:
             save(using=using)
 
@@ -96,6 +107,7 @@ class Center(BaseCenter):
             # Replicate action to BSR database.
             from uploader.models import Center as UploaderCenter
             try:
+                # This should definitely exist but sanity check via a try-except.
                 center = UploaderCenter.objects.get(id=self.id)
             except UploaderCenter.DoesNotExist:
                 pass
@@ -103,6 +115,10 @@ class Center(BaseCenter):
                 center.delete(keep_parents=keep_parents)
 
             # Delete the original.
+            # Note: This has to be done last such that self.pk still exists to conduct the above lookup.
+            # Additionally, deleting this last also means that we don't need to wrap this in a transaction on the
+            # default DB since the other way around could delete from "default" but then fail on "BSR" due to protected
+            # relations but leaving it deleted on the default DB.
             if using is None:
                 delete(using=using)
         else:

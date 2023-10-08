@@ -169,6 +169,8 @@ class Patient(DatedModel):
     def clean(self):
         super().clean()
 
+        # Since patient_cid is only unique with the center, it cannot be the same as patient_id (Patient.pk) since that
+        # is unique by itself and would thus prevent duplicate patient_cids across multiple centers.
         if is_valid_uuid(self.patient_cid) and (to_uuid(self.patient_cid) == self.patient_id):
             raise ValidationError(_("Patient ID and patient CID cannot be the same"))
 

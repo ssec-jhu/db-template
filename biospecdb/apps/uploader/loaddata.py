@@ -25,6 +25,8 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
         Center as UploaderCenter
     from user.models import Center as UserCenter
 
+    # Only user.models.User can relate to user.models,Center, all uploader models must use uploader.models.Center since
+    # these two apps live on separate databases.
     if center and isinstance(center, UserCenter):
         center = UploaderCenter.objects.get(pk=center.pk)
 
@@ -51,6 +53,7 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                     patient = Patient.objects.get(pk=index)
                 except (Patient.DoesNotExist, ValidationError):
                     try:
+                        # Allow patients to be referenced by both patient_id and patient_cid.
                         patient = Patient.objects.get(patient_cid=index)
                     except (Patient.DoesNotExist, ValidationError):
                         # NOTE: We do not use the ``index`` read from file as the pk even if it is a UUID. The above

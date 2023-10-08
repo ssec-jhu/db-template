@@ -7,6 +7,7 @@ from .models import BioSample, Disease, Instrument, Patient, SpectralData, Sympt
 
 
 class RestrictedByCenterAdmin(admin.ModelAdmin):
+    """ Restrict admin access to objects belong to user's center. """
     def _is_center_owned_obj(self, request, obj=None):
         user_center = request.user.center if request.user else None
 
@@ -52,6 +53,9 @@ class RestrictedByCenterAdmin(admin.ModelAdmin):
         return perms and self._is_center_owned_obj(request, obj=obj)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """ Limit center form fields to user's center, and set initial value as such.
+            Exceptions are made for superusers.
+        """
         if db_field.name == "center" and request.user.center:
             kwargs["initial"] = Center.objects.get(pk=request.user.center.pk)
             if not request.user.is_superuser:
@@ -77,6 +81,7 @@ class UploadedFileAdmin(RestrictedByCenterAdmin):
     list_filter = ("center",)
 
     def get_queryset(self, request):
+        """ List only objects belonging to user's center. """
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
@@ -109,6 +114,7 @@ class QCAnnotationAdmin(RestrictedByCenterAdmin):
         return obj.annotator.value_type
 
     def get_queryset(self, request):
+        """ List only objects belonging to user's center. """
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
@@ -140,6 +146,7 @@ class DiseaseAdmin(RestrictedByCenterAdmin):
         return len(obj.symptom.all())
 
     def get_queryset(self, request):
+        """ List only objects belonging to user's center. """
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
@@ -166,12 +173,16 @@ class SymptomAdmin(RestrictedByCenterAdmin):
         return obj.disease.name
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """ Limit center form fields to user's center, and set initial value as such.
+            Exceptions are made for superusers.
+        """
         if db_field.name == "disease" and request.user.center:
             center = Center.objects.get(pk=request.user.center.pk)
             kwargs["queryset"] = Disease.objects.filter(Q(center=center) | Q(center=None))
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def get_queryset(self, request):
+        """ List only objects belonging to user's center. """
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
@@ -213,6 +224,7 @@ class SpectralDataAdmin(RestrictedByCenterAdmin):
         return obj.bio_sample.visit.patient_id
 
     def get_queryset(self, request):
+        """ List only objects belonging to user's center. """
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
@@ -241,6 +253,7 @@ class BioSampleAdmin(RestrictedByCenterAdmin):
         return obj.visit.patient_id
 
     def get_queryset(self, request):
+        """ List only objects belonging to user's center. """
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
@@ -282,6 +295,7 @@ class VisitAdmin(RestrictedByCenterAdmin):
         return obj.patient.gender
 
     def get_queryset(self, request):
+        """ List only objects belonging to user's center. """
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
@@ -319,32 +333,33 @@ class PatientAdmin(RestrictedByCenterAdmin):
         return len(obj.visit.all())
 
     def get_queryset(self, request):
+        """ List only objects belonging to user's center. """
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
         return qs.filter(center=Center.objects.get(pk=request.user.center.pk))
 
 
-@admin.register(Center)
-class CenterAdmin(admin.ModelAdmin):
-    fields = ("name", "country", "id")
-    list_display = ("name", "country")
-    readonly_fields = ("name", "country", "id")
-
-    def has_view_permission(self, request, obj=None):
-        return request.user.is_superuser
-
-    def has_module_permission(self, request):
-        return request.user.is_superuser
-
-    def has_add_permission(self, request):
-        return False
-
-    def has_change_permission(self, request, obj=None):
-        return False
-
-    def has_delete_permission(self, request, obj=None):
-        return False
+# @admin.register(Center)
+# class CenterAdmin(admin.ModelAdmin):
+#     fields = ("name", "country", "id")
+#     list_display = ("name", "country")
+#     readonly_fields = ("name", "country", "id")
+#
+#     def has_view_permission(self, request, obj=None):
+#         return request.user.is_superuser
+#
+#     def has_module_permission(self, request):
+#         return request.user.is_superuser
+#
+#     def has_add_permission(self, request):
+#         return False
+#
+#     def has_change_permission(self, request, obj=None):
+#         return False
+#
+#     def has_delete_permission(self, request, obj=None):
+#         return False
 
 
 class DataAdminSite(admin.AdminSite):
