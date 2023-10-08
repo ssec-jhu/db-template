@@ -11,7 +11,7 @@ import pytest
 
 
 from biospecdb.util import find_package_location
-from uploader.models import UploadedFile
+from uploader.models import UploadedFile, Center
 from uploader.forms import DataInputForm
 
 DATA_PATH = Path(__file__).parent / "data"
@@ -83,7 +83,7 @@ def mock_data(db, django_db_blocker, centers):
 
 
 @pytest.fixture(scope="function")
-def mock_data_from_files(request, monkeypatch, db, diseases, django_db_blocker, instruments):
+def mock_data_from_files(request, monkeypatch, db, centers, diseases, django_db_blocker, instruments):
     # patch MEDIA_ROOT
     media_root = request.node.get_closest_marker("media_root")
     if media_root:
@@ -101,7 +101,8 @@ def mock_data_from_files(request, monkeypatch, db, diseases, django_db_blocker, 
                 data_upload = UploadedFile(meta_data_file=django.core.files.File(meta_data,
                                                                                  name=meta_data_path.name),
                                            spectral_data_file=django.core.files.File(spectral_data,
-                                                                                     name=spectral_file_path.name))
+                                                                                     name=spectral_file_path.name),
+                                           center=Center.objects.get(name="SSEC"))
                 data_upload.clean()
                 data_upload.save()
 

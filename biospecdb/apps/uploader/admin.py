@@ -50,6 +50,12 @@ class RestrictedByCenterAdmin(admin.ModelAdmin):
 
         return perms and self._is_center_owned_obj(request, obj=obj)
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "center" and request.user.center:
+            kwargs["initial"] = Center.objects.get(pk=request.user.center.pk)
+            if not request.user.is_superuser:
+                kwargs["queryset"] = Center.objects.filter(pk=request.user.center.pk)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 @admin.register(Instrument)
 class InstrumentAdmin(RestrictedByCenterAdmin):
@@ -59,13 +65,14 @@ class InstrumentAdmin(RestrictedByCenterAdmin):
 
 
 @admin.register(UploadedFile)
-class UploadedFileAdmin(admin.ModelAdmin):
+class UploadedFileAdmin(RestrictedByCenterAdmin):
     search_fields = ["created_at"]
     search_help_text = "Creation timestamp"
-    list_display = ["pk", "created_at", "meta_data_file", "spectral_data_file"]
+    list_display = ["pk", "created_at", "meta_data_file", "spectral_data_file", "center"]
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     date_hierarchy = "created_at"
     ordering = ("-updated_at",)
+    list_filter = ("center",)
 
 
 class QCAnnotationInline(admin.TabularInline):
@@ -259,11 +266,6 @@ class PatientAdmin(RestrictedByCenterAdmin):
     @admin.display
     def visit_count(self, obj):
         return len(obj.visit.all())
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "center" and request.user.center:
-            kwargs["queryset"] = Center.objects.filter(pk=request.user.center.pk)
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 @admin.register(Center)

@@ -107,6 +107,15 @@ class TestPatient:
                                    center=center,
                                    patient_cid=cid)
 
+    def test_pi_cid_validation(self, centers):
+        id = uuid4()
+        patient = Patient(patient_id=id,
+                          gender=Patient.Gender.UNSPECIFIED,
+                          patient_cid=id,
+                          center=Center.objects.get(name="SSEC"))
+        with pytest.raises(ValidationError, match="Patient ID and patient CID cannot be the same"):
+            patient.full_clean()
+
 
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestVisit:
@@ -240,6 +249,13 @@ class TestUploadedFile:
         assert len(Visit.objects.all()) == n_patients
         assert len(BioSample.objects.all()) == n_patients
         assert len(SpectralData.objects.all()) == n_patients
+
+    def test_center(self, mock_data_from_files):
+        n_patients = len(Patient.objects.all())
+        assert n_patients == 10
+        center = Center.objects.get(name="SSEC")
+        assert n_patients == len(Patient.objects.filter(center=center))
+        assert not Patient.objects.filter(center=None)
 
     def test_mock_data_fixture(self, mock_data):
         n_patients = 10

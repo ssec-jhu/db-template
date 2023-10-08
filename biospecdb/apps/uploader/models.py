@@ -11,6 +11,7 @@ from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 import pandas as pd
 
+from biospecdb.util import is_valid_uuid, to_uuid
 from biospecdb.qc.qcfilter import QcFilter
 from uploader.io import FileFormats, get_file_info, read_meta_data, read_spectral_data_table, spectral_data_from_csv
 from uploader.loaddata import save_data_to_db
@@ -77,6 +78,7 @@ class UploadedFile(DatedModel):
                                           validators=[FileExtensionValidator(FileFormats.choices())],
                                           help_text="File containing rows of spectral intensities for the corresponding"
                                                     " meta data file.")
+    center = models.ForeignKey(Center, null=True, blank=False, on_delete=models.SET_NULL)
 
     @staticmethod
     def validate_lengths(meta_data, spec_data):
@@ -112,7 +114,7 @@ class UploadedFile(DatedModel):
         joined_data = UploadedFile.join_with_validation(meta_data, spec_data)
 
         # Ingest into DB.
-        save_data_to_db(None, None, joined_data=joined_data, dry_run=dry_run)
+        save_data_to_db(None, None, center=self.center, joined_data=joined_data, dry_run=dry_run)
 
     def clean(self):
         """ Model validation. """
@@ -163,6 +165,12 @@ class Patient(DatedModel):
             return str(f"PCID:{str(self.patient_cid)[:8]}")
         else:
             return str(f"PID:{str(self.patient_id)[:8]}")
+
+    def clean(self):
+        super().clean()
+
+        if is_valid_uuid(self.patient_cid) and (to_uuid(self.patient_cid) == self.patient_id):
+            raise ValidationError(_("Patient ID and patient CID cannot be the same"))
 
 
 class Visit(DatedModel):
