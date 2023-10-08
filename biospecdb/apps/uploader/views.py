@@ -41,7 +41,8 @@ def data_input(request):
     delta_count = len(form.base_fields) - 1
     
     if request.method == 'POST':
-        form = DataInputForm(request.POST, request.FILES)
+        form = DataInputForm(request.POST, request.FILES, request=request)
+
         if form.is_valid():
             form.save()  # Save data to database.
             patient_id = form.cleaned_data["patient_id"]
@@ -125,6 +126,6 @@ def data_input(request):
                         'delta_count': delta_count})
                 
     else:
-        form = DataInputForm()
+        form = DataInputForm(request=request)
         
     return render(request, 'DataInputForm.html', {'form': form, 'message': message, 'delta_count': delta_count})

@@ -4,7 +4,7 @@
     "pk": "437de0d7-6618-4445-bab2-03822310b0ef",
     "fields": {
       "gender": "MALE",
-      "center_id": "d61f1c2a-9c0a-4309-a031-ab5b8d2106b0",
+      "center": "d61f1c2a-9c0a-4309-a031-ab5b8d2106b0",
       "created_at": "2013-09-06T00:00:00+00:00",
       "updated_at": "2013-09-06T00:00:00+00:00"
     }

@@ -152,7 +152,7 @@ class Patient(DatedModel):
                                    null=True,
                                    blank=True,
                                    help_text="Patient ID prescribed by the associated center")
-    center = models.ForeignKey(Center, null=True, blank=True, on_delete=models.SET_NULL)
+    center = models.ForeignKey(Center, null=True, blank=False, on_delete=models.SET_NULL)
 
     def __str__(self):
         if self.patient_cid:

@@ -19,24 +19,24 @@ from conftest import DATA_PATH
 
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestPatient:
-    def test_creation(self, db):
-        Patient(gender=Patient.Gender.MALE).full_clean()
-        Patient(gender=Patient.Gender.FEMALE).full_clean()
-        Patient(gender=Patient.Gender.UNSPECIFIED).full_clean()
+    def test_creation(self, center):
+        Patient(gender=Patient.Gender.MALE, center=center).full_clean()
+        Patient(gender=Patient.Gender.FEMALE, center=center).full_clean()
+        Patient(gender=Patient.Gender.UNSPECIFIED, center=center).full_clean()
 
-    def test_db_creation(self, db):
-        Patient.objects.create(gender=Patient.Gender.MALE).full_clean()
-        Patient.objects.create(gender=Patient.Gender.FEMALE).full_clean()
-        Patient.objects.create(gender=Patient.Gender.UNSPECIFIED).full_clean()
+    def test_db_creation(self, center):
+        Patient.objects.create(gender=Patient.Gender.MALE, center=center).full_clean()
+        Patient.objects.create(gender=Patient.Gender.FEMALE, center=center).full_clean()
+        Patient.objects.create(gender=Patient.Gender.UNSPECIFIED, center=center).full_clean()
 
         assert len(Patient.objects.all()) == 3
 
-        Patient.objects.create(gender=Patient.Gender.MALE).full_clean()
+        Patient.objects.create(gender=Patient.Gender.MALE, center=center).full_clean()
         assert len(Patient.objects.all()) == 4
 
-        males = Patient.objects.filter(gender=Patient.Gender.MALE)
-        females = Patient.objects.filter(gender=Patient.Gender.FEMALE)
-        unspecified = Patient.objects.filter(gender=Patient.Gender.UNSPECIFIED)
+        males = Patient.objects.filter(gender=Patient.Gender.MALE, center=center)
+        females = Patient.objects.filter(gender=Patient.Gender.FEMALE, center=center)
+        unspecified = Patient.objects.filter(gender=Patient.Gender.UNSPECIFIED, center=center)
         
         assert len(males) == 2
         assert len(females) == 1
@@ -44,13 +44,13 @@ class TestPatient:
         
         assert males[0].patient_id != males[1].patient_id
 
-    def test_short_name(self, db):
-        patient = Patient(gender=Patient.Gender.MALE)
+    def test_short_name(self, center):
+        patient = Patient(gender=Patient.Gender.MALE, center=center)
         patient.full_clean()
         assert patient.short_id() in str(patient)
 
-    def test_gender_validation(self, db):
-        Patient(gender=Patient.Gender.MALE).full_clean()
+    def test_gender_validation(self, center):
+        Patient(gender=Patient.Gender.MALE, center=center).full_clean()
 
         with pytest.raises(ValidationError):
             Patient(gender="blah").full_clean()
@@ -59,9 +59,9 @@ class TestPatient:
         assert len(Patient.objects.all()) == 3
         assert Patient.objects.get(pk="437de0d7-6618-4445-bab2-03822310b0ef")
 
-    def test_editable_patient_id(self, db):
+    def test_editable_patient_id(self, center):
         patient_id = uuid4()
-        Patient.objects.create(patient_id=patient_id, gender=Patient.Gender.FEMALE)
+        Patient.objects.create(patient_id=patient_id, gender=Patient.Gender.FEMALE, center=center)
         assert Patient.objects.get(pk=patient_id)
 
     def test_center_validation(self, centers):
@@ -252,14 +252,15 @@ class TestSpectralData:
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestUploadedFile:
     @pytest.mark.parametrize("file_ext", UploadedFile.FileFormats.list())
-    def test_upload_without_error(self, db, diseases, instruments, file_ext):
+    def test_upload_without_error(self, db, diseases, instruments, file_ext, center):
         meta_data_path = (DATA_PATH/"meta_data").with_suffix(file_ext)
         spectral_file_path = (DATA_PATH / "spectral_data").with_suffix(file_ext)
         with meta_data_path.open(mode="rb") as meta_data, spectral_file_path.open(mode="rb") as spectral_data:
             data_upload = UploadedFile(meta_data_file=django.core.files.File(meta_data,
                                                                              name=meta_data_path.name),
                                        spectral_data_file=django.core.files.File(spectral_data,
-                                                                                 name=spectral_file_path.name))
+                                                                                 name=spectral_file_path.name),
+                                       center=center)
             data_upload.clean()
             data_upload.save()
 
@@ -285,12 +286,13 @@ class TestUploadedFile:
         assert len(BioSample.objects.all()) == n_patients
         assert len(SpectralData.objects.all()) == n_patients
 
-    def test_number_symptoms(self, db, diseases, instruments):
+    def test_number_symptoms(self, db, diseases, instruments, center):
         """ The total number of symptoms := N_patients * N_diseases. """
         assert len(Patient.objects.all()) == 0  # Assert empty.
 
         save_data_to_db(DATA_PATH / "meta_data.csv",
-                        DATA_PATH / "spectral_data.csv")
+                        DATA_PATH / "spectral_data.csv",
+                        center=center)
 
         n_patients = len(Patient.objects.all())
         n_diseases = len(Disease.objects.all())

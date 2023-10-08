@@ -29,14 +29,15 @@ def data_dict(db, instruments):
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestDataInputForm:
     @pytest.mark.parametrize("file_ext", UploadedFile.FileFormats.list())
-    def test_upload_without_error(self, db, file_ext, data_dict):
+    def test_upload_without_error(self, db, file_ext, data_dict, django_request):
         spectral_file_path = (DATA_PATH/"sample").with_suffix(file_ext)
         with spectral_file_path.open(mode="rb") as spectral_record:
             data_input_form = DataInputForm(
                 data=data_dict,
                 files={
                     "spectral_data": django.core.files.File(spectral_record, name=spectral_file_path.name)
-                }
+                },
+                request=django_request
             )
 
             assert data_input_form.is_valid(), data_input_form.errors.as_data()
@@ -62,7 +63,7 @@ class TestDataInputForm:
         assert BioSample.objects.filter(freezing_temp=0).exists()
         assert BioSample.objects.filter(thawing_time=0).exists()
 
-    def test_dynamic_form_rendering(self, mock_data_from_form_and_spectral_file, data_dict):
+    def test_dynamic_form_rendering(self, mock_data_from_form_and_spectral_file, data_dict, django_request):
         spectral_file_path = (DATA_PATH/"sample").with_suffix(UploadedFile.FileFormats.XLSX)
         
         # Add new disease
@@ -79,7 +80,8 @@ class TestDataInputForm:
                 data=data_dict,
                 files={
                     "spectral_data": django.core.files.File(spectral_record, name=spectral_file_path.name)
-                }
+                },
+                request=django_request
             )
             assert data_input_form.is_valid(), data_input_form.errors.as_data()
             
@@ -87,7 +89,7 @@ class TestDataInputForm:
         assert not Disease.objects.filter(name='Meningit').exists()
 
     @pytest.mark.parametrize("file_ext", UploadedFile.FileFormats.list())
-    def test_new_instrument(self, db, instruments, file_ext, data_dict):
+    def test_new_instrument(self, db, instruments, file_ext, data_dict, django_request):
         spectral_file_path = (DATA_PATH / "sample").with_suffix(file_ext)
         data_dict.update({"instrument": Instrument(spectrometer="dummy", atr_crystal="dummy")})
         with spectral_file_path.open(mode="rb") as spectral_record:
@@ -95,7 +97,8 @@ class TestDataInputForm:
                 data=data_dict,
                 files={
                     "spectral_data": django.core.files.File(spectral_record, name=spectral_file_path.name)
-                }
+                },
+                request=django_request
             )
 
             assert not data_input_form.is_valid()

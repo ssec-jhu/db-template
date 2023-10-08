@@ -21,7 +21,12 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
           validated.
     Note: This func is called by UploadedFile.clean() which, therefore, can't also be called here.
     """
-    from uploader.models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, UploadedFile, Visit
+    from uploader.models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, UploadedFile, Visit,\
+        Center as UploaderCenter
+    from user.models import Center as UserCenter
+
+    if center and isinstance(center, UserCenter):
+        center = UploaderCenter.objects.get(pk=center.pk)
 
     if joined_data is None:
         # Read in all data.
