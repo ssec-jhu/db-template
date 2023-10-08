@@ -78,7 +78,7 @@ class UploadedFile(DatedModel):
                                           validators=[FileExtensionValidator(FileFormats.choices())],
                                           help_text="File containing rows of spectral intensities for the corresponding"
                                                     " meta data file.")
-    center = models.ForeignKey(Center, null=True, blank=False, on_delete=models.SET_NULL)
+    center = models.ForeignKey(Center, null=False, blank=False, on_delete=models.PROTECT)
 
     @staticmethod
     def validate_lengths(meta_data, spec_data):
@@ -250,7 +250,7 @@ class Disease(ModelWithViewDependency):
     value_class = models.CharField(max_length=128, default=Types.BOOL, choices=Types.choices)
 
     # A disease without a center is generic and accessible by any and all centers.
-    center = models.ForeignKey(Center, null=True, blank=True, on_delete=models.SET_NULL)
+    center = models.ForeignKey(Center, null=True, blank=True, on_delete=models.PROTECT)
 
     def __str__(self):
         return self.name
