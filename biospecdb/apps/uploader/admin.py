@@ -25,7 +25,7 @@ class RestrictedByCenterAdmin(admin.ModelAdmin):
     def has_view_permission(self, request, obj=None):
         perms = super().has_view_permission(request, obj=obj)
 
-        if obj is None:
+        if obj is None or request.user.is_superuser:
             return perms
 
         return perms and self._is_center_owned_obj(request, obj=obj)
@@ -39,15 +39,15 @@ class RestrictedByCenterAdmin(admin.ModelAdmin):
     def has_change_permission(self, request, obj=None):
         perms = super().has_change_permission(request, obj=obj)
 
-        if obj is None:
+        if obj is None or request.user.is_superuser:
             return perms
 
         return perms and self._is_center_owned_obj(request, obj=obj)
 
     def has_delete_permission(self, request, obj=None):
-        perms = super().has_change_permission(request, obj=obj)
+        perms = super().has_delete_permission(request, obj=obj)
 
-        if obj is None:
+        if obj is None or request.user.is_superuser:
             return perms
 
         return perms and self._is_center_owned_obj(request, obj=obj)
