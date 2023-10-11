@@ -19,6 +19,9 @@
     </style>
 </head>
 <body>
+    <form action="../../home/" method="get" class="center-text">
+        <button type="submit" class="btn btn-primary">Back to home page</button>
+    </form>    
     <h1 class="center-text">Submit new / Search existing patient data:</h1>
     <div>
         <form method="get" enctype="multipart/form-data">
@@ -35,25 +38,27 @@
             </div>
         </form>
 
+        <h2 class="center-text" style="color: red;">{{ message }}</h2>
+
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="flex-container">
                 <div class="half_width">
                     {% for field in form %}
-                        {% if forloop.counter <= 14 and field.name != "spectral_data" %}
-                            <div class="form-field" class="fieldWrapper">
-                                <label for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
-                                {{ field }}
-                                {{ field.errors }}
-                            </div>
+                        {% if forloop.counter <= form.base_fields|length and field.name != "spectral_data" %}
+                        <div class="form-field" class="fieldWrapper">
+                            <label for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
+                            {{ field }}
+                            {{ field.errors }}
+                        </div>
                         {% endif %}
                     {% endfor %}
                 </div>
 
                 <div class="half_width">
                     {% for field in form %}
-                        {% if forloop.counter > 14 %}
-                            {% if forloop.counter|divisibleby:13 %}
+                        {% if forloop.counter > form.base_fields|length %}
+                            {% if forloop.counter|divisibleby:delta_count %}
                                 </div><div class="half_width" class="fieldWrapper">
                             {% endif %}
                             <div class="form-field">
