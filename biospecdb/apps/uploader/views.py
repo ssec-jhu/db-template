@@ -52,35 +52,45 @@ def data_input(request):
         if patient_id:
             if not is_valid_uuid(patient_id):
                 message = "The provided Patient ID {} is not a valid number.".format(patient_id)
-                return render(request, 'DataInputForm.html', {'form': form, 'message': message, 'delta_count': delta_count})
+                return render(request, 'DataInputForm.html', {'form': form, 'message': message, \
+                    'delta_count': delta_count})
             else:
                 patient_id = to_uuid(patient_id)
                 try:
                     patient = Patient.objects.get(patient_id=patient_id)
                 except (Patient.DoesNotExist):
                     message = "Data Search failed - there is no data associated with Patient ID {}.".format(patient_id)
-                    return render(request, 'DataInputForm.html', {'form': form, 'message': message, 'delta_count': delta_count})
+                    return render(request, 'DataInputForm.html', {'form': form, 'message': message, \
+                        'delta_count': delta_count})
                 try:
                     last_visit = Visit.objects.filter(patient_id=patient_id).order_by('created_at').last()
                 except (Visit.DoesNotExist):
-                    message = "Data Search failed - there is no any visit of patient with Patient ID {}.".format(patient_id)
-                    return render(request, 'DataInputForm.html', {'form': form, 'message': message, 'delta_count': delta_count})
+                    message = "Data Search failed - there is no any visit of patient with Patient ID {}." \
+                        .format(patient_id)
+                    return render(request, 'DataInputForm.html', {'form': form, 'message': message, \
+                        'delta_count': delta_count})
                 try:
                     biosample = BioSample.objects.get(visit=last_visit)
                 except (BioSample.DoesNotExist):
-                    message = "Data Search failed - there is no biosample associated with the visit {}.".format(last_visit)
-                    return render(request, 'DataInputForm.html', {'form': form, 'message': message, 'delta_count': delta_count})
+                    message = "Data Search failed - there is no biosample associated with the visit {}." \
+                        .format(last_visit)
+                    return render(request, 'DataInputForm.html', {'form': form, 'message': message, \
+                        'delta_count': delta_count})
                 try:
                     last_visit_symptoms = Symptom.objects.filter(visit=last_visit)
                     symptom = last_visit_symptoms.order_by('days_symptomatic').last()
                 except (Symptom.DoesNotExist):
-                    message = "Data Search failed - there are no symptoms associated with the visit {}.".format(last_visit)
-                    return render(request, 'DataInputForm.html', {'form': form, 'message': message, 'delta_count': delta_count})
+                    message = "Data Search failed - there are no symptoms associated with the visit {}." \
+                        .format(last_visit)
+                    return render(request, 'DataInputForm.html', {'form': form, 'message': message, \
+                        'delta_count': delta_count})
                 try:
                     spectraldata = SpectralData.objects.get(bio_sample=biosample)
                 except (SpectralData.DoesNotExist):
-                    message = "Data Search failed - there are no spectral data associated with the biosample {}.".format(biosample)
-                    return render(request, 'DataInputForm.html', {'form': form, 'message': message, 'delta_count': delta_count})
+                    message = "Data Search failed - there is no spectral data associated with the biosample {}." \
+                        .format(biosample)
+                    return render(request, 'DataInputForm.html', {'form': form, 'message': message, \
+                        'delta_count': delta_count})
                 initial_data={
                     'patient_id': patient_id,
                     'gender': patient.gender,
@@ -104,8 +114,9 @@ def data_input(request):
                     else:
                         initial_data[symptom.disease.name] = symptom.disease_value
                 form = DataInputForm(initial=initial_data)
-                message = "Data Search succeeded - the data associated with Patient ID {} is shown below!!!".format(patient_id)
-                return render(request, 'DataInputForm.html', {'form': form, 'message': message, 'delta_count': delta_count})
+                message = "The data associated with Patient ID {} is shown below:".format(patient_id)
+                return render(request, 'DataInputForm.html', {'form': form, 'message': message, \
+                    'delta_count': delta_count})
                 
     else:
         form = DataInputForm()
