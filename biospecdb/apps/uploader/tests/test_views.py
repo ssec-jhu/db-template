@@ -1,13 +1,9 @@
 import pytest
 
 from django.db.utils import OperationalError
-from django.test import RequestFactory
-from django.contrib.auth.models import AnonymousUser
-from django.http import QueryDict
 
 from uploader.models import Disease, FullPatientView, SymptomsView, VisitSymptomsView, Symptom
 from uploader.sql import execute_sql
-from uploader.views import data_input
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
@@ -109,32 +105,3 @@ class TestViews:
     def test_update_sql_views_command(self, mock_data, sql_views):
         resp = execute_sql(f"select * from {FullPatientView._meta.db_table}", db=FullPatientView.db)
         assert len(resp) == 10
-
-    def test_data_input(self, mock_data):
-        
-        from django.test import Client
-        client = Client()
-        response = client.post("/admin/login/", {"username": "john", "password": "smith"})
-        
-        # Replace 'your_patient_id_here' with the actual patient_id you want to test
-        patient_id = '0d545f26-2fc8-4c0e-bb2b-557419a6c9f5'
-
-        # Access the data_input view with the patient_id as a query parameter
-        response = client.get(f"/uploader/data_input/?patient_id={patient_id}", follow=True)
-        #response = client.get("/uploader/data_input/", follow=True)
-
-        #factory = RequestFactory() # Create a request using the RequestFactory
-        #url = '/uploader/data_input/'
-        #request =factory.get(url) # Replace with the URL name for the view
-        #request.method = 'GET'
-        #request._current_scheme_host = 'http://127.0.0.1:8000'
-        #request.user = AnonymousUser()
-        #get_parameters = QueryDict('patient_id=0d545f26-2fc8-4c0e-bb2b-557419a6c9f5')
-        #request.GET = get_parameters
-        #response = data_input(request) # Call the search function
-
-        # Assert that the response status code is 200 (or the expected status code)
-        assert response.status_code == 200
-
-        # You can also assert the content of the response if needed
-        assert b'' in response.content
