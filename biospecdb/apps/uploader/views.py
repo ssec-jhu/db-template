@@ -62,11 +62,13 @@ def data_input(request):
                     try:
                         patient = Patient.objects.select_for_update().get(patient_id=patient_id)
                     except (Patient.DoesNotExist):
-                        message = "Data Search failed - there is no data associated with Patient ID {}.".format(patient_id)
+                        message = "Data Search failed - there is no data associated with Patient ID {}." \
+                            .format(patient_id)
                         return render(request, 'DataInputForm.html', {'form': form, 'message': message, \
                             'delta_count': delta_count})
                     try:
-                        last_visit = Visit.objects.select_for_update().filter(patient_id=patient_id).order_by('created_at').last()
+                        last_visit = Visit.objects.select_for_update().filter(patient_id=patient_id) \
+                            .order_by('created_at').last()
                     except (Visit.DoesNotExist):
                         message = "Data Search failed - there is no any visit of patient with Patient ID {}." \
                             .format(patient_id)
@@ -97,7 +99,8 @@ def data_input(request):
                         
                     except Exception as e: # Handle other exceptions as needed.
                         message = "An error occurred during data retrieval: {}".format(str(e))
-                        return render(request, 'DataInputForm.html', {'form': form, 'message': message, 'delta_count': delta_count})
+                        return render(request, 'DataInputForm.html', {'form': form, 'message': message, \
+                            'delta_count': delta_count})
                 
                     initial_data={
                         'patient_id': patient_id,
