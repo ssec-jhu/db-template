@@ -8,7 +8,7 @@ from .models import BioSample, Disease, Instrument, Patient, SpectralData, Sympt
 
 class RestrictedByCenterAdmin(admin.ModelAdmin):
     """ Restrict admin access to objects belong to user's center. """
-    def _is_center_owned_obj(self, request, obj=None):
+    def _has_perm(self, request, obj):
         user_center = request.user.center if request.user else None
 
         if (not user_center) or (obj is None):
@@ -23,12 +23,12 @@ class RestrictedByCenterAdmin(admin.ModelAdmin):
         return obj_center == user_center
 
     def has_view_permission(self, request, obj=None):
-        perms = super().has_view_permission(request, obj=obj)
+        has_base_perm = super().has_view_permission(request, obj=obj)
 
         if obj is None or request.user.is_superuser:
-            return perms
+            return has_base_perm
 
-        return perms and self._is_center_owned_obj(request, obj=obj)
+        return has_base_perm and self._has_perm(request, obj)
 
     def has_module_permission(self, request):
         return super().has_module_permission(request)
@@ -37,20 +37,20 @@ class RestrictedByCenterAdmin(admin.ModelAdmin):
         return super().has_add_permission(request)
 
     def has_change_permission(self, request, obj=None):
-        perms = super().has_change_permission(request, obj=obj)
+        has_base_perm = super().has_change_permission(request, obj=obj)
 
         if obj is None or request.user.is_superuser:
-            return perms
+            return has_base_perm
 
-        return perms and self._is_center_owned_obj(request, obj=obj)
+        return has_base_perm and self._has_perm(request, obj)
 
     def has_delete_permission(self, request, obj=None):
-        perms = super().has_delete_permission(request, obj=obj)
+        has_base_perm = super().has_delete_permission(request, obj)
 
         if obj is None or request.user.is_superuser:
-            return perms
+            return has_base_perm
 
-        return perms and self._is_center_owned_obj(request, obj=obj)
+        return has_base_perm and self._has_perm(request, obj)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         """ Limit center form fields to user's center, and set initial value as such.
@@ -339,7 +339,9 @@ class PatientAdmin(RestrictedByCenterAdmin):
             return qs
         return qs.filter(center=Center.objects.get(pk=request.user.center.pk))
 
-
+# NOTE: The following admin can be used to visually sanity check that changes by user.models.Center to the "default" DB
+# get reflected in the "bsr" DB. We never want uploader.models.Center to be editable by any admin page, so we restrict
+# access below even if this is never used. Admin functionality belong to the admin page for ``user.models.Center``.
 # @admin.register(Center)
 # class CenterAdmin(admin.ModelAdmin):
 #     fields = ("name", "country", "id")

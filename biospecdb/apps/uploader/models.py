@@ -690,9 +690,6 @@ class QCAnnotation(DatedModel):
 
 
 def get_center(obj):
-    if obj is None:
-        return
-
     if isinstance(obj, Center):
         return obj
     elif isinstance(obj, UserBaseCenter):
@@ -700,8 +697,7 @@ def get_center(obj):
             return Center.objects.get(pk=obj.pk)
         except Center.DoesNotExist:
             return
-
-    if hasattr(obj, "center"):
+    elif hasattr(obj, "center"):
         return obj.center
 
 

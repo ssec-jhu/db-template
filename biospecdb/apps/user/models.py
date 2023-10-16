@@ -58,7 +58,11 @@ class BaseCenter(models.Model):
 
 class Center(BaseCenter):
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        """ When saving user.Center also replicate for uploader.Center. """
+        """ When saving user.Center also replicate for uploader.Center.
+
+            Note: DB replication to the "bsr" database doesn't happen if explicitly stating the use of the "default"
+            DB, i.e., ``save(using="default")`` will not save to the "bsr" DB and vice versa for ``using="bsr"``.
+        """
 
         save = partial(super().save,
                        force_insert=force_insert,
