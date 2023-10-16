@@ -96,11 +96,6 @@ def data_input(request):
                             .format(biosample)
                         return render(request, 'DataInputForm.html', {'form': form, 'message': message, \
                             'delta_count': delta_count})
-                        
-                    except Exception as e: # Handle other exceptions as needed.
-                        message = "An error occurred during data retrieval: {}".format(str(e))
-                        return render(request, 'DataInputForm.html', {'form': form, 'message': message, \
-                            'delta_count': delta_count})
                 
                     initial_data={
                         'patient_id': patient_id,
