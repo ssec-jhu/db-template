@@ -218,7 +218,7 @@ class Visit(DatedModel):
         except (Visit.DoesNotExist):
             pass
         else:
-            if self != last_visit:
+            if last_visit != None:
                 self.previous_visit = last_visit
     
     def count_prior_visits(self):
