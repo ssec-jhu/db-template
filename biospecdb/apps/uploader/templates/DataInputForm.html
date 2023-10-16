@@ -8,7 +8,7 @@
             text-align: center;
         }
         .form-field {
-            margin-bottom: 20px; /* Add a margin at the bottom */
+            margin-bottom: 25px; /* Add a margin at the bottom */
         }
         .flex-container {
             display: flex;
@@ -19,37 +19,46 @@
     </style>
 </head>
 <body>
-    <h1 class="center-text">Submit new patient data:</h1>
+    <form action="../../home/" method="get" class="center-text">
+        <button type="submit" class="btn btn-primary">Back to home page</button>
+    </form>    
+    <h1 class="center-text">Submit new / Search existing patient data:</h1>
     <div>
-        <form method="post" enctype="multipart/form-data">
+        <form method="get" enctype="multipart/form-data">
             {% csrf_token %}
-
             <div class="center-text">
                 <div class="form-field" class="fieldWrapper">
                     <label for="{{ form.patient_id.id_for_label }}">Patient ID:</label>
                     {{ form.patient_id }}
                     {{ form.patient_id.errors }}
                 </div>
+                <div class="form-field">
+                    <button type="submit">Search for the existing patient</button>
+                </div>
             </div>
+        </form>
 
+        <h2 class="center-text" style="color: red;">{{ message }}</h2>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
             <div class="flex-container">
-
                 <div class="half_width">
                     {% for field in form %}
-                        {% if forloop.counter <= 15 and field.name != "patient_id" and field.name != "spectral_data" %}
-                            <div class="form-field" class="fieldWrapper">
-                                <label for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
-                                {{ field }}
-                                {{ field.errors }}
-                            </div>
+                        {% if forloop.counter <= form.base_fields|length and field.name != "spectral_data" %}
+                        <div class="form-field" class="fieldWrapper">
+                            <label for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
+                            {{ field }}
+                            {{ field.errors }}
+                        </div>
                         {% endif %}
                     {% endfor %}
                 </div>
 
                 <div class="half_width">
                     {% for field in form %}
-                        {% if forloop.counter > 15 %}
-                            {% if forloop.counter|divisibleby:13 %}
+                        {% if forloop.counter > form.base_fields|length %}
+                            {% if forloop.counter|divisibleby:delta_count %}
                                 </div><div class="half_width" class="fieldWrapper">
                             {% endif %}
                             <div class="form-field">
@@ -60,7 +69,6 @@
                         {% endif %}
                     {% endfor %}
                 </div>
-
             </div>
 
             <div class="center-text">
@@ -69,7 +77,8 @@
                     {{ form.spectral_data }}
                     {{ form.spectral_data.errors }}
                 </div>
-                <button type="submit">Submit</button>
+                <h2 class="center-text">Submit new / Update existing patient data:</h2>
+                <button type="submit">Submit / Update</button>
                 {% if form.errors %}
                     <div style=";color:red;">{{ form.errors }}.</div>
                 {% endif %}
