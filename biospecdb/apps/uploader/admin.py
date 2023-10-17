@@ -216,7 +216,8 @@ class SpectralDataAdmin(RestrictedByCenterAdmin):
     list_filter = ("bio_sample__visit__patient__center",
                    "instrument",
                    "spectra_measurement",
-                   "bio_sample__sample_type", "bio_sample__sample_processing",
+                   "bio_sample__sample_type",
+                   "bio_sample__sample_processing",
                    "bio_sample__visit__patient__gender")
 
     @admin.display
