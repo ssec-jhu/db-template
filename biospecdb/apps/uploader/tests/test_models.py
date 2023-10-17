@@ -6,33 +6,37 @@ from django.db.utils import IntegrityError
 import pytest
 
 from uploader.io import read_meta_data
-from uploader.models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, Visit, UploadedFile
+from uploader.models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, Visit, UploadedFile,\
+    get_center, Center
 from uploader.loaddata import save_data_to_db
+from user.models import Center as UserCenter
+from uploader.models import Center as UploaderCenter
+
 
 import biospecdb.util
-from conftest import DATA_PATH
+from uploader.tests.conftest import DATA_PATH
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestPatient:
-    def test_creation(self, db):
-        Patient(gender=Patient.Gender.MALE).full_clean()
-        Patient(gender=Patient.Gender.FEMALE).full_clean()
-        Patient(gender=Patient.Gender.UNSPECIFIED).full_clean()
+    def test_creation(self, center):
+        Patient(gender=Patient.Gender.MALE, center=center).full_clean()
+        Patient(gender=Patient.Gender.FEMALE, center=center).full_clean()
+        Patient(gender=Patient.Gender.UNSPECIFIED, center=center).full_clean()
 
-    def test_db_creation(self, db):
-        Patient.objects.create(gender=Patient.Gender.MALE).full_clean()
-        Patient.objects.create(gender=Patient.Gender.FEMALE).full_clean()
-        Patient.objects.create(gender=Patient.Gender.UNSPECIFIED).full_clean()
+    def test_db_creation(self, center):
+        Patient.objects.create(gender=Patient.Gender.MALE, center=center).full_clean()
+        Patient.objects.create(gender=Patient.Gender.FEMALE, center=center).full_clean()
+        Patient.objects.create(gender=Patient.Gender.UNSPECIFIED, center=center).full_clean()
 
         assert len(Patient.objects.all()) == 3
 
-        Patient.objects.create(gender=Patient.Gender.MALE).full_clean()
+        Patient.objects.create(gender=Patient.Gender.MALE, center=center).full_clean()
         assert len(Patient.objects.all()) == 4
 
-        males = Patient.objects.filter(gender=Patient.Gender.MALE)
-        females = Patient.objects.filter(gender=Patient.Gender.FEMALE)
-        unspecified = Patient.objects.filter(gender=Patient.Gender.UNSPECIFIED)
+        males = Patient.objects.filter(gender=Patient.Gender.MALE, center=center)
+        females = Patient.objects.filter(gender=Patient.Gender.FEMALE, center=center)
+        unspecified = Patient.objects.filter(gender=Patient.Gender.UNSPECIFIED, center=center)
         
         assert len(males) == 2
         assert len(females) == 1
@@ -40,13 +44,13 @@ class TestPatient:
         
         assert males[0].patient_id != males[1].patient_id
 
-    def test_short_name(self, db):
-        patient = Patient(gender=Patient.Gender.MALE)
+    def test_short_name(self, center):
+        patient = Patient(gender=Patient.Gender.MALE, center=center)
         patient.full_clean()
         assert patient.short_id() in str(patient)
 
-    def test_gender_validation(self, db):
-        Patient(gender=Patient.Gender.MALE).full_clean()
+    def test_gender_validation(self, center):
+        Patient(gender=Patient.Gender.MALE, center=center).full_clean()
 
         with pytest.raises(ValidationError):
             Patient(gender="blah").full_clean()
@@ -55,10 +59,62 @@ class TestPatient:
         assert len(Patient.objects.all()) == 3
         assert Patient.objects.get(pk="437de0d7-6618-4445-bab2-03822310b0ef")
 
-    def test_editable_patient_id(self, db):
+    def test_editable_patient_id(self, center):
         patient_id = uuid4()
-        Patient.objects.create(patient_id=patient_id, gender=Patient.Gender.FEMALE)
+        Patient.objects.create(patient_id=patient_id, gender=Patient.Gender.FEMALE, center=center)
         assert Patient.objects.get(pk=patient_id)
+
+    def test_center_validation(self, centers):
+        center = UploaderCenter.objects.get(name="SSEC")
+        assert UserCenter.objects.filter(pk=center.pk).exists()
+        assert UploaderCenter.objects.filter(pk=center.pk).exists()
+
+        # OK.
+        patient_id = uuid4()
+        patient = Patient(patient_id=patient_id, gender=Patient.Gender.FEMALE, center=center)
+        patient.full_clean()
+
+        # Not OK.
+        patient_id = uuid4()
+        with pytest.raises(ValueError, match="Cannot assign"):
+            patient = Patient(patient_id=patient_id,
+                              gender=Patient.Gender.FEMALE,
+                              center=UserCenter.objects.get(name="SSEC"))
+
+    def test_unique_cid_center_id(self, centers):
+        center = UploaderCenter.objects.get(name="SSEC")
+        cid = uuid4()
+        Patient.objects.create(patient_id=uuid4(),
+                               gender=Patient.Gender.FEMALE,
+                               center=center,
+                               patient_cid=cid)
+        # OK.
+        Patient.objects.create(patient_id=uuid4(),
+                               gender=Patient.Gender.FEMALE,
+                               center=center,
+                               patient_cid=uuid4())
+
+        # OK.
+        Patient.objects.create(patient_id=uuid4(),
+                               gender=Patient.Gender.FEMALE,
+                               center=UploaderCenter.objects.get(name="Imperial College London"),
+                               patient_cid=cid)
+
+        # Not OK.
+        with pytest.raises(IntegrityError, match="UNIQUE constraint failed:"):
+            Patient.objects.create(patient_id=uuid4(),
+                                   gender=Patient.Gender.FEMALE,
+                                   center=center,
+                                   patient_cid=cid)
+
+    def test_pi_cid_validation(self, centers):
+        id = uuid4()
+        patient = Patient(patient_id=id,
+                          gender=Patient.Gender.UNSPECIFIED,
+                          patient_cid=id,
+                          center=Center.objects.get(name="SSEC"))
+        with pytest.raises(ValidationError, match="Patient ID and patient CID cannot be the same"):
+            patient.full_clean()
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
@@ -161,6 +217,27 @@ class TestSymptom:
         symptom.full_clean()
         assert symptom.disease_value is value
 
+    def test_center_validation(self, centers):
+        center = Center.objects.get(name="SSEC")
+        patient = Patient.objects.create(center=center)
+        visit = Visit.objects.create(patient_age=40, patient=patient)
+
+        # OK.
+        disease = Disease.objects.create(name="snuffles", alias="snuffles", center=center)
+        Symptom(visit=visit, disease=disease).full_clean()
+
+        # OK.
+        disease = Disease.objects.create(name="extra_snuffles", alias="extra snuffles", center=None)
+        Symptom(visit=visit, disease=disease).full_clean()
+
+        # Not OK.
+        center
+        disease = Disease.objects.create(name="even_more_snuffles",
+                                         alias="even more snuffles",
+                                         center=Center.objects.get(name="Imperial College London"))
+        with pytest.raises(ValidationError, match="Patient symptom disease category must belong to patient center:"):
+            Symptom(visit=visit, disease=disease).full_clean()
+
 
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestBioSample:
@@ -175,14 +252,15 @@ class TestSpectralData:
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestUploadedFile:
     @pytest.mark.parametrize("file_ext", UploadedFile.FileFormats.list())
-    def test_upload_without_error(self, db, diseases, instruments, file_ext):
+    def test_upload_without_error(self, db, diseases, instruments, file_ext, center):
         meta_data_path = (DATA_PATH/"meta_data").with_suffix(file_ext)
         spectral_file_path = (DATA_PATH / "spectral_data").with_suffix(file_ext)
         with meta_data_path.open(mode="rb") as meta_data, spectral_file_path.open(mode="rb") as spectral_data:
             data_upload = UploadedFile(meta_data_file=django.core.files.File(meta_data,
                                                                              name=meta_data_path.name),
                                        spectral_data_file=django.core.files.File(spectral_data,
-                                                                                 name=spectral_file_path.name))
+                                                                                 name=spectral_file_path.name),
+                                       center=center)
             data_upload.clean()
             data_upload.save()
 
@@ -194,6 +272,13 @@ class TestUploadedFile:
         assert len(BioSample.objects.all()) == n_patients
         assert len(SpectralData.objects.all()) == n_patients
 
+    def test_center(self, mock_data_from_files):
+        n_patients = len(Patient.objects.all())
+        assert n_patients == 10
+        center = Center.objects.get(name="SSEC")
+        assert n_patients == len(Patient.objects.filter(center=center))
+        assert not Patient.objects.filter(center=None)
+
     def test_mock_data_fixture(self, mock_data):
         n_patients = 10
         assert len(Patient.objects.all()) == n_patients
@@ -201,12 +286,13 @@ class TestUploadedFile:
         assert len(BioSample.objects.all()) == n_patients
         assert len(SpectralData.objects.all()) == n_patients
 
-    def test_number_symptoms(self, db, diseases, instruments):
+    def test_number_symptoms(self, db, diseases, instruments, center):
         """ The total number of symptoms := N_patients * N_diseases. """
         assert len(Patient.objects.all()) == 0  # Assert empty.
 
         save_data_to_db(DATA_PATH / "meta_data.csv",
-                        DATA_PATH / "spectral_data.csv")
+                        DATA_PATH / "spectral_data.csv",
+                        center=center)
 
         n_patients = len(Patient.objects.all())
         n_diseases = len(Disease.objects.all())
@@ -255,3 +341,32 @@ class TestUploadedFile:
                                                                                  name=spectral_file_path.name))
             with pytest.raises(ValidationError, match="Patient ID mismatch."):
                 data_upload.clean()
+
+
+@pytest.mark.django_db(databases=["default", "bsr"])
+def test_get_center(centers, mock_data_from_files):
+    center = Center.objects.get(name="SSEC")
+    assert get_center(center) is center
+
+    from user.models import Center as UserCenter
+    assert get_center(UserCenter.objects.get(pk=center.pk)) == center
+
+    patient = Patient.objects.all()[0]
+    patient.center = center
+    patient.full_clean()
+    patient.save()
+
+    assert get_center(patient) is center
+
+    for visit in patient.visit.all():
+        assert get_center(visit) is center
+
+    for bio_sample in visit.bio_sample.all():
+        assert get_center(bio_sample) is center
+
+    for spectral_data in bio_sample.spectral_data.all():
+        assert get_center(spectral_data) is center
+
+    for symptom in Symptom.objects.filter(visit__patient__center=center):
+        assert get_center(symptom) == center
+        # assert get_center(symptom.disease) is center  # TODO: Not yet related in disease.json fixture.

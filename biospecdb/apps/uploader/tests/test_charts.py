@@ -1,7 +1,7 @@
 import pytest
 from django.conf import settings
 
-from conftest import SimpleQueryFactory
+from uploader.tests.conftest import SimpleQueryFactory
 from uploader.charts import count_bool_diseases, get_pie_chart, get_line_chart
 
 

@@ -59,6 +59,7 @@ class DataInputForm(forms.Form):
     spectral_data = forms.FileField(**map_model_fields_to_form_field(SpectralData.data))
     
     def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request")
         super().__init__(*args, **kwargs)
 
         for disease in Disease.objects.all():  # Dynamically add disease fields from the Disease table
@@ -117,10 +118,14 @@ class DataInputForm(forms.Form):
 
         # Dry-run save to run complex model validation without actually saving to DB.
         massaged_data = self.massage_data()
-        self._cleaned_model_objects = save_data_to_db(None, None, joined_data=massaged_data, dry_run=True)
+        self._cleaned_model_objects = save_data_to_db(None,
+                                                      None,
+                                                      center=self.request.user.center,
+                                                      joined_data=massaged_data,
+                                                      dry_run=True)
 
     def save(self):
         # WARNING!: This func is NOT responsible for validation and self.is_valid() must be called first!
 
         # Ingest into DB.
-        save_data_to_db(None, None, joined_data=self.massage_data())
+        save_data_to_db(None, None, center=self.request.user.center, joined_data=self.massage_data())

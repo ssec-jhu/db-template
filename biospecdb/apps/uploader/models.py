@@ -11,12 +11,13 @@ from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 import pandas as pd
 
+from biospecdb.util import is_valid_uuid, to_uuid
 from biospecdb.qc.qcfilter import QcFilter
 from uploader.io import FileFormats, get_file_info, read_meta_data, read_spectral_data_table, spectral_data_from_csv
 from uploader.loaddata import save_data_to_db
 from uploader.sql import secure_name
 from uploader.base_models import DatedModel, ModelWithViewDependency, SqlView, TextChoices, Types
-
+from user.models import BaseCenter as UserBaseCenter
 
 # Changes here need to be migrated, committed, and activated.
 # See https://docs.djangoproject.com/en/4.2/intro/tutorial02/#activating-models
@@ -59,7 +60,14 @@ NEGATIVE = "negative"
 # Any other unique identifying numbers, characteristics, or codes.
 
 
+class Center(UserBaseCenter):
+    ...
+
+
 class UploadedFile(DatedModel):
+    class Meta:
+        get_latest_by = "updated_at"
+
     FileFormats = FileFormats
     UPLOAD_DIR = "raw_data/"  # MEDIA_ROOT/raw_data
 
@@ -70,6 +78,7 @@ class UploadedFile(DatedModel):
                                           validators=[FileExtensionValidator(FileFormats.choices())],
                                           help_text="File containing rows of spectral intensities for the corresponding"
                                                     " meta data file.")
+    center = models.ForeignKey(Center, null=False, blank=False, on_delete=models.PROTECT)
 
     @staticmethod
     def validate_lengths(meta_data, spec_data):
@@ -105,7 +114,7 @@ class UploadedFile(DatedModel):
         joined_data = UploadedFile.join_with_validation(meta_data, spec_data)
 
         # Ingest into DB.
-        save_data_to_db(None, None, joined_data=joined_data, dry_run=dry_run)
+        save_data_to_db(None, None, center=self.center, joined_data=joined_data, dry_run=dry_run)
 
     def clean(self):
         """ Model validation. """
@@ -125,6 +134,10 @@ class Patient(DatedModel):
     MIN_AGE = 0
     MAX_AGE = 150  # NOTE: HIPAA requires a max age of 90 to be stored. However, this is GDPR data so... :shrug:
 
+    class Meta:
+        unique_together = [["patient_cid", "center"]]
+        get_latest_by = "updated_at"
+
     class Gender(TextChoices):
         UNSPECIFIED = ("X", _("Unspecified"))  # NOTE: Here variation here act as aliases for bulk column ingestion.
         MALE = ("M", _("Male"))  # NOTE: Here variation here act as aliases for bulk column ingestion.
@@ -135,16 +148,38 @@ class Patient(DatedModel):
                                   default=uuid.uuid4,
                                   verbose_name="Patient ID")
     gender = models.CharField(max_length=8, choices=Gender.choices, null=True, verbose_name="Gender (M/F)")
+    patient_cid = models.CharField(max_length=128,
+                                   null=True,
+                                   blank=True,
+                                   help_text="Patient ID prescribed by the associated center")
+    center = models.ForeignKey(Center, null=False, blank=False, on_delete=models.PROTECT)
 
     def __str__(self):
-        return str(self.patient_id)
+        if self.patient_cid:
+            return str(f"PCID:{self.patient_cid}")
+        else:
+            return str(f"PID:{self.patient_id}")
 
     def short_id(self):
-        return str(self.patient_id)[:8]
+        if self.patient_cid:
+            return str(f"PCID:{str(self.patient_cid)[:8]}")
+        else:
+            return str(f"PID:{str(self.patient_id)[:8]}")
+
+    def clean(self):
+        super().clean()
+
+        # Since patient_cid is only unique with the center, it cannot be the same as patient_id (Patient.pk) since that
+        # is unique by itself and would thus prevent duplicate patient_cids across multiple centers.
+        if is_valid_uuid(self.patient_cid) and (to_uuid(self.patient_cid) == self.patient_id):
+            raise ValidationError(_("Patient ID and patient CID cannot be the same"))
 
 
 class Visit(DatedModel):
     """ Model a patient's visitation to collect health data and biological samples.  """
+
+    class Meta:
+        get_latest_by = "updated_at"
 
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name="visit")
 
@@ -183,6 +218,10 @@ class Visit(DatedModel):
     def visit_number(self):
         return 1 + self.count_prior_visits()
 
+    @property
+    def center(self):
+        return self.patient.center
+
     def __str__(self):
         return f"patient:{self.patient.short_id()}_visit:{self.visit_number}"
 
@@ -195,6 +234,7 @@ class Disease(ModelWithViewDependency):
     sql_view_dependencies = ("uploader.models.VisitSymptomsView",)
 
     class Meta:
+        get_latest_by = "updated_at"
         constraints = [models.UniqueConstraint(Lower("name"),
                                                name="unique_disease_name"),
                        models.UniqueConstraint(Lower("alias"),
@@ -211,6 +251,9 @@ class Disease(ModelWithViewDependency):
     # This represents the type/class for Symptom.disease_value.
     value_class = models.CharField(max_length=128, default=Types.BOOL, choices=Types.choices)
 
+    # A disease without a center is generic and accessible by any and all centers.
+    center = models.ForeignKey(Center, null=True, blank=True, on_delete=models.PROTECT)
+
     def __str__(self):
         return self.name
 
@@ -223,6 +266,10 @@ class Disease(ModelWithViewDependency):
 
 class Symptom(DatedModel):
     """ A patient's instance of models.Disease. """
+
+    class Meta:
+        get_latest_by = "updated_at"
+
     MIN_SEVERITY = 0
     MAX_SEVERITY = 10
 
@@ -247,6 +294,11 @@ class Symptom(DatedModel):
         """ Model validation. """
         super().clean()
 
+        if self.disease.center and (self.disease.center != self.visit.patient.center):
+            raise ValidationError(_("Patient symptom disease category must belong to patient center: "
+                                    "'%(c1)s' != '%(c2)s'"),
+                                  params=dict(c1=self.disease.center, c2=self.visit.patient.center))
+
         # Check that value is castable by casting.
         # NOTE: ``disease_value`` is a ``CharField`` so this will get cast back to a str again, and it could be argued
         # that there's no point in storing the cast value... but :shrug:.
@@ -268,6 +320,10 @@ class Symptom(DatedModel):
                                           "age": self.visit.patient_age * 365},
                                   code="invalid")
 
+    @property
+    def center(self):
+        return self.visit.patient.center
+
     def __str__(self):
         return f"patient:{self.visit.patient.short_id()}_{self.disease.name}"
 
@@ -277,6 +333,7 @@ class Instrument(DatedModel):
 
     class Meta:
         unique_together = [["spectrometer", "atr_crystal"]]
+        get_latest_by = "updated_at"
 
     spectrometer = models.CharField(max_length=128,
                                     verbose_name="Spectrometer")
@@ -289,6 +346,10 @@ class Instrument(DatedModel):
 
 class BioSample(DatedModel):
     """ Model biological sample and collection method. """
+
+    class Meta:
+        get_latest_by = "updated_at"
+
     class SampleKind(TextChoices):
         PHARYNGEAL_SWAB = auto()
 
@@ -306,6 +367,10 @@ class BioSample(DatedModel):
     freezing_temp = models.FloatField(blank=True, null=True, verbose_name="Freezing Temperature")
     thawing_time = models.IntegerField(blank=True, null=True, verbose_name="Thawing time")
 
+    @property
+    def center(self):
+        return self.visit.patient.center
+
     def __str__(self):
         return f"{self.visit}_type:{self.sample_type}_pk{self.pk}"  # NOTE: str(self.visit) contains patient ID.
 
@@ -316,6 +381,7 @@ class SpectralData(DatedModel):
     class Meta:
         verbose_name = "Spectral Data"
         verbose_name_plural = verbose_name
+        get_latest_by = "updated_at"
 
     UPLOAD_DIR = "spectral_data/"  # MEDIA_ROOT/spectral_data
 
@@ -343,6 +409,10 @@ class SpectralData(DatedModel):
     data = models.FileField(upload_to=UPLOAD_DIR,
                             validators=[FileExtensionValidator(UploadedFile.FileFormats.choices())],
                             verbose_name="Spectral data file")
+
+    @property
+    def center(self):
+        return self.bio_sample.visit.patient.center
 
     def __str__(self):
         return f"{self.bio_sample.visit}_pk{self.pk}"
@@ -535,6 +605,9 @@ def validate_qc_annotator_import(value):
 
 
 class QCAnnotator(DatedModel):
+    class Meta:
+        get_latest_by = "updated_at"
+
     Types = Types
 
     name = models.CharField(max_length=128, unique=True, blank=False, null=False)
@@ -579,6 +652,7 @@ class QCAnnotation(DatedModel):
 
     class Meta:
         unique_together = [["annotator", "spectral_data"]]
+        get_latest_by = "updated_at"
 
     value = models.CharField(blank=True, null=True, max_length=128)
 
@@ -588,6 +662,10 @@ class QCAnnotation(DatedModel):
                                   on_delete=models.CASCADE,
                                   related_name="qc_annotation")
     spectral_data = models.ForeignKey(SpectralData, on_delete=models.CASCADE, related_name="qc_annotation")
+
+    @property
+    def center(self):
+        return self.spectral_data.bio_samaple.visit.patient.center
 
     def __str__(self):
         return f"{self.annotator.name}: {self.value}"
@@ -609,6 +687,18 @@ class QCAnnotation(DatedModel):
     def clean(self):
         super().clean()
         self.run()
+
+
+def get_center(obj):
+    if isinstance(obj, Center):
+        return obj
+    elif isinstance(obj, UserBaseCenter):
+        try:
+            return Center.objects.get(pk=obj.pk)
+        except Center.DoesNotExist:
+            return
+    elif hasattr(obj, "center"):
+        return obj.center
 
 
 # This is Model B wo/ disease table https://miro.com/app/board/uXjVMAAlj9Y=/

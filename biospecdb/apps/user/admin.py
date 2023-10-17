@@ -4,7 +4,16 @@ from django.utils.translation import gettext_lazy as _
 
 from user.models import Center, User
 
-admin.site.register(Center)
+
+@admin.register(Center)
+class CenterAdmin(admin.ModelAdmin):
+    fields = ("name", "country", "id")
+    list_display = ("name", "country", "patient_count")
+    readonly_fields = ("id",)
+
+    def patient_count(self, obj):
+        from uploader.models import Patient
+        return len(Patient.objects.filter(center=obj.pk))
 
 
 @admin.register(User)

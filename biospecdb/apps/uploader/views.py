@@ -37,11 +37,12 @@ def display_xlsx(request):
 @staff_member_required
 def data_input(request):
     message = ""
-    form = DataInputForm()
+    form = DataInputForm(request=request)
     delta_count = len(form.base_fields) - 1
     
     if request.method == 'POST':
-        form = DataInputForm(request.POST, request.FILES)
+        form = DataInputForm(request.POST, request.FILES, request=request)
+
         if form.is_valid():
             form.save()  # Save data to database.
             patient_id = form.cleaned_data["patient_id"]
@@ -49,7 +50,7 @@ def data_input(request):
             return render(request, 'DataInputForm.html', {'form': form, 'message': message, 'delta_count': delta_count})
         
     elif request.method == 'GET':
-        form = DataInputForm()
+        form = DataInputForm(request=request)
         patient_id = request.GET.get('patient_id')
         if patient_id:
             if not is_valid_uuid(patient_id):
@@ -119,12 +120,12 @@ def data_input(request):
                                 Disease.Types(symptom.disease.value_class).cast(symptom.disease_value)   
                         else:
                             initial_data[symptom.disease.name] = symptom.disease_value
-                    form = DataInputForm(initial=initial_data)
+                    form = DataInputForm(initial=initial_data, request=request)
                     message = "The data associated with Patient ID {} is shown below:".format(patient_id)
                     return render(request, 'DataInputForm.html', {'form': form, 'message': message, \
                         'delta_count': delta_count})
                 
     else:
-        form = DataInputForm()
+        form = DataInputForm(request=request)
         
     return render(request, 'DataInputForm.html', {'form': form, 'message': message, 'delta_count': delta_count})

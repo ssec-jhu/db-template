@@ -12,7 +12,7 @@ class ExitTransaction(Exception):
     ...
 
 
-def save_data_to_db(meta_data, spectral_data, joined_data=None, dry_run=False) -> dict:
+def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry_run=False) -> dict:
     """
     Ingest into the database large tables of symptom & disease data (aka "meta" data) along with associated spectral
     data.
@@ -21,7 +21,14 @@ def save_data_to_db(meta_data, spectral_data, joined_data=None, dry_run=False) -
           validated.
     Note: This func is called by UploadedFile.clean() which, therefore, can't also be called here.
     """
-    from uploader.models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, UploadedFile, Visit
+    from uploader.models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, UploadedFile, Visit,\
+        Center as UploaderCenter
+    from user.models import Center as UserCenter
+
+    # Only user.models.User can relate to user.models,Center, all uploader models must use uploader.models.Center since
+    # these two apps live on separate databases.
+    if center and isinstance(center, UserCenter):
+        center = UploaderCenter.objects.get(pk=center.pk)
 
     if joined_data is None:
         # Read in all data.
@@ -45,13 +52,18 @@ def save_data_to_db(meta_data, spectral_data, joined_data=None, dry_run=False) -
                     # it's an int), however, '1' isn't. Here ``index`` is a string - and needs to be for UUIDs.
                     patient = Patient.objects.get(pk=index)
                 except (Patient.DoesNotExist, ValidationError):
-                    # NOTE: We do not use the ``index`` read from file as the pk even if it is a UUID. The above
-                    # ``get()`` only allows for existing patients to be re-used when _already_ in the db with their pk
-                    # already auto-generated.
-                    patient = Patient(gender=Patient.Gender(row.get(Patient.gender.field.verbose_name.lower())),
-                                      patient_id=index)
-                    patient.full_clean()
-                    patient.save()
+                    try:
+                        # Allow patients to be referenced by both patient_id and patient_cid.
+                        patient = Patient.objects.get(patient_cid=index)
+                    except (Patient.DoesNotExist, ValidationError):
+                        # NOTE: We do not use the ``index`` read from file as the pk even if it is a UUID. The above
+                        # ``get()`` only allows for existing patients to be re-used when _already_ in the db with their
+                        # pk already auto-generated.
+                        patient = Patient(gender=Patient.Gender(row.get(Patient.gender.field.verbose_name.lower())),
+                                          patient_id=index,
+                                          center=center)
+                        patient.full_clean()
+                        patient.save()
 
                 # Visit
                 # TODO: Add logic to auto-find previous_visit. https://github.com/ssec-jhu/biospecdb/issues/37
