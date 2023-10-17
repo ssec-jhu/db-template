@@ -293,8 +293,8 @@ class TestSpectralData:
         filename = Path(SpectralData.objects.all()[0].data.name)
         assert filename.parent.exists()
         assert filename.parent.is_dir()
-        assert len(list(filename.parent.glob('*'))) == n_patients
         assert not list(filename.parent.glob(f"*{TEMP_FILENAME_PREFIX}*"))
+        assert len(list(filename.parent.glob('*'))) == n_patients
 
     @pytest.mark.skip("Unimplemented See #141")
     def test_all_files_deleted_upon_transaction_failure(self):
@@ -377,7 +377,7 @@ class TestUploadedFile:
         assert null_days > 1
         assert null_days < len(Symptom.objects.all())
 
-    @pytest.mark.parametrize("file_ext", UploadedFile.FileFormats.list())
+    @pytest.mark.parametrize("file_ext", (UploadedFile.FileFormats.CSV, UploadedFile.FileFormats.XLSX))
     def test_patient_ids(self, mock_data_from_files, file_ext):
         meta_data_path = (DATA_PATH / "meta_data").with_suffix(file_ext)
         df = read_meta_data(meta_data_path)
@@ -388,7 +388,7 @@ class TestUploadedFile:
         for index in df.index:
             assert all_patients.get(pk=index)
 
-    @pytest.mark.parametrize("file_ext", UploadedFile.FileFormats.list())
+    @pytest.mark.parametrize("file_ext", (UploadedFile.FileFormats.CSV, UploadedFile.FileFormats.XLSX))
     def test_index_match_validation(self, db, diseases, instruments, file_ext, tmp_path):
         meta_data_path = (DATA_PATH / "meta_data").with_suffix(file_ext)
 

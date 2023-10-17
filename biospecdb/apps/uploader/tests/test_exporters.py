@@ -5,7 +5,7 @@ import pytest
 from django.conf import settings
 
 from uploader.exporters import CSVExporter
-from uploader.io import read_raw_data, spectral_data_from_csv
+from uploader.io import read_raw_data, spectral_data_from_json, SpectralDataTuple
 from uploader.models import SpectralData
 
 from uploader.tests.conftest import SimpleQueryFactory
@@ -77,9 +77,12 @@ class TestExporters:
             assert set(data[SpectralData.data.field.name]) == set(spectral_data_files)
 
         for filename in spectral_data_files:
-            data = spectral_data_from_csv(filename)
-            assert set(data.columns) == {"wavelength", "intensity"}
-            assert len(data) == 1798
+            data = spectral_data_from_json(filename)
+            assert isinstance(data, SpectralDataTuple)
+
+            assert data._fields == ("patient_id", "wavelength", "intensity")
+            assert len(data.wavelength) == 1798
+            assert len(data.intensity) == 1798
 
     @pytest.mark.include_data_files(True)
     @pytest.mark.sql("select * from uploader_patient")  # uploader_patient contains no spectral data.

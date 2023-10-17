@@ -1,16 +1,30 @@
+from collections import namedtuple
 from io import IOBase
+import json
 from pathlib import Path
 
 import django.core.files
 import django.core.files.uploadedfile
+from django.core.serializers.json import DjangoJSONEncoder
 import pandas as pd
+from pandas._libs.parsers import STR_NA_VALUES
 
 from biospecdb.util import StrEnum, to_uuid
+
+SpectralDataTuple = namedtuple("SpectralDataTuple", ["patient_id", "wavelength", "intensity"])
+
+
+JSON_OPTS = {"indent": ' ', "force_ascii": True}
+
+
+class DataSchemaError(Exception):
+    ...
 
 
 class FileFormats(StrEnum):
     CSV = ".csv"
     XLSX = ".xlsx"
+    JSON = ".json"
 
     @classmethod
     def choices(cls):
@@ -50,6 +64,13 @@ def read_raw_data(file, ext=None):
         data = pd.read_csv(file, **kwargs)
     elif ext == FileFormats.XLSX:
         data = pd.read_excel(file, **kwargs)
+    elif ext == FileFormats.JSON:
+        data = pd.read_json(file, dtype=kwargs["dtype"])
+        data.replace(kwargs["true_values"], True, inplace=True)
+        data.replace(kwargs["false_values"], False, inplace=True)
+        na_values = kwargs["na_values"].copy()
+        na_values.extend(list(STR_NA_VALUES))
+        data.replace(na_values, None, inplace=True)
     else:
         raise NotImplementedError(f"File ext must be one of {FileFormats.list()} not '{ext}'.")
 
@@ -78,6 +99,13 @@ def read_meta_data(file, ext=None):
 
 
 def read_spectral_data_table(file, ext=None):
+    """ Read in multiple rows of data returning a pandas.DataFrame.
+
+        This assumes the following format:
+        | patient_id | min_lambda | ... | max_lambda |
+        | ---------- | ---------- | --- | ---------- |
+        |<some UUID> | intensity  | ... | intensity  |
+    """
     data = read_raw_data(file, ext=ext)
 
     # Clean.
@@ -87,16 +115,88 @@ def read_spectral_data_table(file, ext=None):
     wavelengths = spec_only.columns.tolist()
     specv = spec_only.values.tolist()
     freqs = [wavelengths for i in range(len(specv))]
-    return pd.DataFrame({"wavelength": freqs, "intensity": specv},
-                        index=[to_uuid(x) for x in cleaned_data["patient id"]])
+
+    df = pd.DataFrame({"patient_id": [to_uuid(x) for x in cleaned_data["patient id"]],
+                       "wavelength": freqs,
+                       "intensity": specv})
+    df.set_index("patient_id", inplace=True, drop=False)
+    return df
 
 
-def spectral_data_to_csv(file, wavelengths, intensities):
-    return pd.DataFrame(dict(intensity=intensities), index=wavelengths).rename_axis("wavelength").to_csv(file)
+def read_single_row_spectral_data_table(file, ext=None):
+    """ Read in single row spectral data.
+
+        This assumes the same format as ``read_spectral_data_table`` except that it contains data for only a single
+        patient, i.e., just a single row:
+        | patient_id | min_lambda | ... | max_lambda |
+        | ---------- | ---------- | --- | ---------- |
+        |<some UUID> | intensity  | ... | intensity  |
+    """
+
+    df = read_spectral_data_table(file, ext=ext)
+
+    if (length := len(df)) != 1:
+        raise ValueError(f"The file read should contain only a single row not '{length}'")
+
+    return df.itertuples(index=True, name="SpectralDataTuple").__next__()
 
 
-def spectral_data_from_csv(filename):
-    return pd.read_csv(filename)
+def spectral_data_to_json(file, data: SpectralDataTuple, patient_id=None, wavelengths=None, intensities=None):
+    """ Convert data to json equivalent to ``json.dumps(SpectralDataTuple._asdict())``.
+
+        Returns json str and/or writes to file.
+    """
+
+    if not data:
+        assert patient_id is not None
+        assert wavelengths is not None
+        assert intensities is not None
+        data = dict(patient_id=patient_id, wavelength=wavelengths, intensity=intensities)
+
+    if isinstance(data, SpectralDataTuple):
+        data = data._asdict()
+
+    kwargs = dict(indent=JSON_OPTS["indent"], ensure_ascii=JSON_OPTS["force_ascii"], cls=DjangoJSONEncoder)
+    if file is None:
+        return json.dumps(data, **kwargs)
+
+    if isinstance(file, (str, Path)):
+        with open(file, mode="w") as fp:
+            return json.dump(data, fp, **kwargs)
+    else:
+        # Note: We assume that this is pointing to the correct section of the file, i.e., the beginning.
+        return json.dump(data, file, **kwargs)
+
+
+def spectral_data_from_json(file):
+    """ Read spectral data file and return data SpectralDataTuple instance. """
+    # Determine whether file obj (fp) or filename.
+    filename = file if isinstance(file, (str, Path)) else file.name
+    filename = Path(filename)
+    ext = filename.suffix
+
+    if ext != FileFormats.JSON:
+        raise ValueError(f"Incorrect file format - expected '{FileFormats.JSON}' but got '{ext}'")
+
+    if isinstance(file, (str, Path)):
+        with open(filename, mode="r") as fp:
+            data = json.load(fp)
+    else:
+        # Note: We assume that this is pointing to the correct section of the file, i.e., the beginning.
+        data = json.load(file)
+
+    if (fields := set(SpectralDataTuple._fields)) != data.keys():
+        raise DataSchemaError(f"Schema error: expected only the fields '{fields}' but got '{data.keys()}'")
+
+    return SpectralDataTuple(**data)
+
+
+def read_spectral_data(file, ext=None):
+    """ General purpose reader to handle multiple file formats returning SpectralDataTuple instance. """
+    if ext == FileFormats.JSON:
+        return spectral_data_from_json(file)
+
+    return read_single_row_spectral_data_table(file, ext=ext)
 
 
 def get_file_info(file_wrapper):

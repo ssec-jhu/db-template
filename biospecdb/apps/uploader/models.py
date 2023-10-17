@@ -1,8 +1,11 @@
 from copy import deepcopy
+from enum import auto
+from pathlib import Path
 import uuid
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core.files.base import ContentFile
 from django.core.validators import FileExtensionValidator, MinValueValidator, MaxValueValidator
 from django.db import models
 from django.db.models.functions import Lower
@@ -12,7 +15,7 @@ import pandas as pd
 
 from biospecdb.util import is_valid_uuid, to_uuid
 from biospecdb.qc.qcfilter import QcFilter
-from uploader.io import FileFormats, get_file_info, read_meta_data, read_spectral_data_table, spectral_data_from_csv
+import uploader.io
 from uploader.loaddata import save_data_to_db
 from uploader.sql import secure_name
 from uploader.base_models import DatedModel, ModelWithViewDependency, SqlView, TextChoices, Types
@@ -68,14 +71,14 @@ class UploadedFile(DatedModel):
         verbose_name = "Bulk Data Upload"
         get_latest_by = "updated_at"
 
-    FileFormats = FileFormats
+    FileFormats = uploader.io.FileFormats
     UPLOAD_DIR = "raw_data/"  # MEDIA_ROOT/raw_data
 
     meta_data_file = models.FileField(upload_to=UPLOAD_DIR,
-                                      validators=[FileExtensionValidator(FileFormats.choices())],
+                                      validators=[FileExtensionValidator(uploader.io.FileFormats.choices())],
                                       help_text="File containing rows of all patient, symptom, and other meta data.")
     spectral_data_file = models.FileField(upload_to=UPLOAD_DIR,
-                                          validators=[FileExtensionValidator(FileFormats.choices())],
+                                          validators=[FileExtensionValidator(uploader.io.FileFormats.choices())],
                                           help_text="File containing rows of spectral intensities for the corresponding"
                                                     " meta data file.")
     center = models.ForeignKey(Center, null=False, blank=False, on_delete=models.PROTECT)
@@ -106,8 +109,8 @@ class UploadedFile(DatedModel):
     def _validate_and_save_data_to_db(self, dry_run=False):
         # Read in all data.
         # Note: When accessing ``models.FileField`` Django returns ``models.FieldFile`` as a proxy.
-        meta_data = read_meta_data(*get_file_info(self.meta_data_file.file))
-        spec_data = read_spectral_data_table(*get_file_info(self.spectral_data_file.file))
+        meta_data = uploader.io.read_meta_data(*uploader.io.get_file_info(self.meta_data_file.file))
+        spec_data = uploader.io.read_spectral_data_table(*uploader.io.get_file_info(self.spectral_data_file.file))
         # Validate.
         UploadedFile.validate_lengths(meta_data, spec_data)
         # This uses a join so returns the joined data so that it doesn't go to waste if needed, which it is here.
@@ -481,11 +484,36 @@ class SpectralData(DatedModel):
 
         return list(set(all_default_annotators) - set(existing_annotators))
 
-    def get_spectral_df(self):
-        data_file, ext = get_file_info(self.data)
-        if ext != UploadedFile.FileFormats.CSV:
-            raise NotImplementedError()
-        return spectral_data_from_csv(data_file)
+    def get_spectral_data(self):
+        data_file, ext = uploader.io.get_file_info(self.data)
+        return uploader.io.spectral_data_from_json(data_file)
+
+    def clean_data_file(self):
+        """ Read in data from uploaded file and store as json.
+
+            The schema is that equivalent to `json.dumps(uploader.io.SpectralDataTuple._asdict())``.
+        """
+        if self.data is None:
+            return
+
+        file, ext = uploader.io.get_file_info(self.data)
+
+        try:
+            data = uploader.io.read_spectral_data(file, ext)
+        except uploader.io.DataSchemaError as error:
+            raise ValidationError(_("%(msg)s"), params={"msg": error})
+
+        filename = Path(file.name).with_suffix(uploader.io.FileFormats.JSON)
+        json_str = uploader.io.spectral_data_to_json(file=None, data=data)
+
+        # Note: Django validates against path traversal and raises on rel & abs filenames so don't pass the whole thing.
+        return ContentFile(json_str, name=filename.name)
+
+    def clean(self):
+        # Normalize data file format and clobber the uploaded file with the cleaned one.
+        if (cleaned_file := self.clean_data_file()) is not None:
+            # Update file.
+            self.data = cleaned_file
 
     #@transaction.atomic(using="bsr")  # Really? Not sure if this even can be if run in background...
     # See https://github.com/ssec-jhu/biospecdb/issues/77
@@ -521,7 +549,6 @@ class SpectralData(DatedModel):
         return annotations if annotations else None  # Don't ret empty list.
 
     def save(self, *args, **kwargs):
-        """ Model validation. """
         super().save(*args, **kwargs)
 
         # Compute QC metrics.

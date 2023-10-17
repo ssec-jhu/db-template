@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+import numpy as np
+
 
 class QCValidationError(Exception):
     ...
@@ -18,8 +20,8 @@ class QcFilter(ABC):
 
 class QcSum(QcFilter):
     def run(self, spectral_data: "SpectralData"):  # noqa: F821
-        df = spectral_data.get_spectral_df()
-        res = df.sum(axis=0)["intensity"]
+        data = spectral_data.get_spectral_data()
+        res = np.sum(data.intensity)
         return res
 
 

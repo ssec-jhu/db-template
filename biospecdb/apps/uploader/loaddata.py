@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 from django.db import transaction
 
-from uploader.io import read_meta_data, read_spectral_data_table, spectral_data_to_csv
+import uploader.io
 
 
 class ExitTransaction(Exception):
@@ -36,9 +36,9 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
 
     if joined_data is None:
         # Read in all data.
-        meta_data = meta_data if isinstance(meta_data, pd.DataFrame) else read_meta_data(meta_data)
+        meta_data = meta_data if isinstance(meta_data, pd.DataFrame) else uploader.io.read_meta_data(meta_data)
         spec_data = spectral_data if isinstance(spectral_data, pd.DataFrame) else \
-            read_spectral_data_table(spectral_data)
+            uploader.io.read_spectral_data_table(spectral_data)
 
         UploadedFile.validate_lengths(meta_data, spec_data)
         joined_data = UploadedFile.join_with_validation(meta_data, spec_data)
@@ -105,16 +105,17 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                 instrument.full_clean()
 
                 # Create datafile
-                wavelengths = row["wavelength"]
-                intensities = row["intensity"]
-
-                csv_data = spectral_data_to_csv(file=None, wavelengths=wavelengths, intensities=intensities)
+                json_str = uploader.io.spectral_data_to_json(file=None,
+                                                             data=None,
+                                                             patient_id=index,
+                                                             wavelengths=row["wavelength"],
+                                                             intensities=row["intensity"])
 
                 # Note: This won't be unique since multiple files can exist per biosample. However, we'd have to create
                 # this post save such as to mangle in spectraldata.pk. Instead, django will automatically append a
                 # random 7 digit string before the ext upon file name collisions.
-                data_filename = Path(f"{TEMP_FILENAME_PREFIX if dry_run else ''}{patient.patient_id}_{biosample.pk}").\
-                    with_suffix(str(UploadedFile.FileFormats.CSV))
+                data_filename = Path(f"{TEMP_FILENAME_PREFIX if dry_run else ''}{patient.patient_id}_{biosample.pk}"). \
+                    with_suffix(uploader.io.FileFormats.JSON)
 
                 spectral_measurement_kind = SpectraMeasurementType.objects.get(name=row.get(
                     SpectralData.spectra_measurement.field.verbose_name.lower()).lower())
@@ -129,7 +130,7 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                                             resolution=row.get(SpectralData.resolution.field.verbose_name.lower()),
 
                                             # TODO: See https://github.com/ssec-jhu/biospecdb/issues/40
-                                            data=ContentFile(csv_data, name=data_filename))
+                                            data=ContentFile(json_str, name=data_filename))
                 spectraldata.full_clean()
                 spectraldata.save()
                 spectral_data_files.append(spectraldata.data)
