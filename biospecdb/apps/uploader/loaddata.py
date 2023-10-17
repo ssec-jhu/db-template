@@ -103,7 +103,12 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                 intensities = row["intensity"]
 
                 csv_data = spectral_data_to_csv(file=None, wavelengths=wavelengths, intensities=intensities)
-                data_filename = Path(str(visit)).with_suffix(str(UploadedFile.FileFormats.CSV))
+
+                # Note: This won't be unique since multiple files can exist per biosample. However, we'd have to create
+                # this post save such as to mangle in spectraldata.pk. Instead, django will automatically append a
+                # random 7 digit string before the ext upon file name collisions.
+                data_filename = Path(f"{patient.patient_id}_{biosample.pk}{'__TEMP__' if dry_run else ''}").with_suffix(
+                    str(UploadedFile.FileFormats.CSV))
 
                 spectraldata = SpectralData(instrument=instrument,
                                             bio_sample=biosample,
