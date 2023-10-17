@@ -103,7 +103,7 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                 intensities = row["intensity"]
 
                 csv_data = spectral_data_to_csv(file=None, wavelengths=wavelengths, intensities=intensities)
-                data_filename = Path(str(Visit)).with_suffix(str(UploadedFile.FileFormats.CSV))
+                data_filename = Path(str(visit)).with_suffix(str(UploadedFile.FileFormats.CSV))
 
                 spectraldata = SpectralData(instrument=instrument,
                                             bio_sample=biosample,
