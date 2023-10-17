@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import pandas as pd
@@ -12,7 +13,11 @@ class ExitTransaction(Exception):
     ...
 
 
+TEMP_FILENAME_PREFIX = "__TEMP__"
+
+
 def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry_run=False) -> dict:
+
     """
     Ingest into the database large tables of symptom & disease data (aka "meta" data) along with associated spectral
     data.
@@ -41,6 +46,8 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
 
     try:
         with transaction.atomic(using="bsr"):
+            spectral_data_files = []
+
             # Ingest into db.
             for index, row in joined_data.iterrows():
                 # NOTE: The pattern for column lookup is to use get(..., default=None) and defer the field validation,
@@ -107,8 +114,8 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                 # Note: This won't be unique since multiple files can exist per biosample. However, we'd have to create
                 # this post save such as to mangle in spectraldata.pk. Instead, django will automatically append a
                 # random 7 digit string before the ext upon file name collisions.
-                data_filename = Path(f"{patient.patient_id}_{biosample.pk}{'__TEMP__' if dry_run else ''}").with_suffix(
-                    str(UploadedFile.FileFormats.CSV))
+                data_filename = Path(f"{TEMP_FILENAME_PREFIX if dry_run else ''}{patient.patient_id}_{biosample.pk}").\
+                    with_suffix(str(UploadedFile.FileFormats.CSV))
 
                 spectraldata = SpectralData(instrument=instrument,
                                             bio_sample=biosample,
@@ -128,6 +135,7 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                 instrument.spectral_data.add(spectraldata, bulk=False)
                 spectraldata.full_clean()
                 spectraldata.save()
+                spectral_data_files.append(Path(spectraldata.data.name))
 
                 # Symptoms
                 # NOTE: Bulk data from client doesn't contain data for `days_symptomatic` per symptom, but instead per
@@ -154,3 +162,8 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                 raise ExitTransaction()
     except ExitTransaction:
         pass
+    finally:
+        # Delete unwanted temporary files.
+        for file in spectral_data_files:
+            if file.name.startswith(TEMP_FILENAME_PREFIX):
+                os.remove(file)
