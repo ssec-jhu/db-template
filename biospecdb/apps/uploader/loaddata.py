@@ -162,6 +162,11 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                 raise ExitTransaction()
     except ExitTransaction:
         pass
+    except Exception:
+        # Something went wrong and the above transaction was aborted so delete uncommitted and now orphaned files.
+        while spectral_data_files:
+            os.remove(spectral_data_files.pop())  # Pop to avoid repetition in finally branch.
+        raise
     finally:
         # Delete unwanted temporary files.
         for file in spectral_data_files:
