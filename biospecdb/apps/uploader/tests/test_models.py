@@ -260,8 +260,9 @@ class TestSpectralData:
         assert len(list(filename.parent.glob('*'))) == n_patients
         assert not list(filename.parent.glob(f"*{TEMP_FILENAME_PREFIX}*"))
 
+    @pytest.mark.skip("Unimplemented See #141")
     def test_all_files_deleted_upon_transaction_failure(self):
-        # I'm not sure how to mock this...
+        # I'm not sure how to mock this... See https://github.com/ssec-jhu/biospecdb/issues/141
         ...
 
 
