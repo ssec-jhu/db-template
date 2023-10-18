@@ -213,13 +213,9 @@ class Visit(DatedModel):
                                   code="invalid")
 
         # Auto find previous visit
-        try:
-            last_visit = Visit.objects.filter(patient_id=self.patient_id).order_by('created_at').last()
-        except (Visit.DoesNotExist):
-            pass
-        else:
-            if last_visit != None:
-                self.previous_visit = last_visit
+        last_visit = Visit.objects.filter(patient_id=self.patient_id).order_by('created_at').last()
+        if last_visit != None:
+            self.previous_visit = last_visit
     
     def count_prior_visits(self):
         return 0 if self.previous_visit is None else 1 + self.previous_visit.count_prior_visits()

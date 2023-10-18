@@ -67,14 +67,15 @@ def data_input(request):
                             .format(patient_id)
                         return render(request, 'DataInputForm.html', {'form': form, 'message': message, \
                             'delta_count': delta_count})
-                    try:
-                        last_visit = Visit.objects.select_for_update().filter(patient_id=patient_id) \
-                            .order_by('created_at').last()
-                    except (Visit.DoesNotExist):
+                    
+                    last_visit = Visit.objects.select_for_update().filter(patient_id=patient_id) \
+                        .order_by('created_at').last()
+                    if last_visit == None:
                         message = "Data Search failed - there is no any visit of patient with Patient ID {}." \
                             .format(patient_id)
                         return render(request, 'DataInputForm.html', {'form': form, 'message': message, \
                             'delta_count': delta_count})
+                        
                     try:
                         biosample = BioSample.objects.select_for_update().get(visit=last_visit)
                     except (BioSample.DoesNotExist):
@@ -82,14 +83,15 @@ def data_input(request):
                             .format(last_visit)
                         return render(request, 'DataInputForm.html', {'form': form, 'message': message, \
                             'delta_count': delta_count})
-                    try:
-                        last_visit_symptoms = Symptom.objects.select_for_update().filter(visit=last_visit)
-                        symptom = last_visit_symptoms.order_by('days_symptomatic').last()
-                    except (Symptom.DoesNotExist):
+                        
+                    last_visit_symptoms = Symptom.objects.select_for_update().filter(visit=last_visit)
+                    symptom = last_visit_symptoms.order_by('days_symptomatic').last()
+                    if symptom == None:
                         message = "Data Search failed - there are no symptoms associated with the visit {}." \
                             .format(last_visit)
                         return render(request, 'DataInputForm.html', {'form': form, 'message': message, \
                             'delta_count': delta_count})
+                        
                     try:
                         spectraldata = SpectralData.objects.select_for_update().get(bio_sample=biosample)
                     except (SpectralData.DoesNotExist):
