@@ -1,3 +1,4 @@
+from pathlib import Path
 from uuid import uuid4
 
 from django.core.exceptions import ValidationError
@@ -8,11 +9,9 @@ import pytest
 from uploader.io import read_meta_data
 from uploader.models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, Visit, UploadedFile,\
     get_center, Center
-from uploader.loaddata import save_data_to_db
+from uploader.loaddata import save_data_to_db, TEMP_FILENAME_PREFIX
 from user.models import Center as UserCenter
 from uploader.models import Center as UploaderCenter
-
-
 import biospecdb.util
 from uploader.tests.conftest import DATA_PATH
 
@@ -246,7 +245,25 @@ class TestBioSample:
 
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestSpectralData:
-    ...
+    def test_files_added(self, mock_data_from_files):
+        n_patients = 10
+        assert len(SpectralData.objects.all()) == n_patients
+        for obj in SpectralData.objects.all():
+            assert Path(obj.data.name).exists()
+
+    def test_temp_files_deleted(self, mock_data_from_files):
+        n_patients = 10
+        assert len(SpectralData.objects.all()) == n_patients
+        filename = Path(SpectralData.objects.all()[0].data.name)
+        assert filename.parent.exists()
+        assert filename.parent.is_dir()
+        assert len(list(filename.parent.glob('*'))) == n_patients
+        assert not list(filename.parent.glob(f"*{TEMP_FILENAME_PREFIX}*"))
+
+    @pytest.mark.skip("Unimplemented See #141")
+    def test_all_files_deleted_upon_transaction_failure(self):
+        # I'm not sure how to mock this... See https://github.com/ssec-jhu/biospecdb/issues/141
+        ...
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])

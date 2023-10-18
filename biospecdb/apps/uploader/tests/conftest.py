@@ -1,4 +1,5 @@
 from pathlib import Path
+import shutil
 from uuid import uuid4
 
 from django.conf import settings
@@ -13,7 +14,7 @@ import pytest
 
 
 from biospecdb.util import find_package_location
-from uploader.models import UploadedFile, Center
+from uploader.models import SpectralData, UploadedFile, Center
 from uploader.forms import DataInputForm
 from user.models import Center as UserCenter
 
@@ -32,6 +33,19 @@ class CenterFactory(DjangoModelFactory):
 
 class UserFactory(ExplorerUserFactory):
     center = SubFactory(CenterFactory)
+
+
+def rm_dir(path):
+    if path.exists() and path.is_dir():
+        shutil.rmtree(path)
+
+
+def rm_all_media_dirs():
+    # Tidy up any created files.
+    media_root = Path(settings.MEDIA_ROOT)
+    rm_dir(media_root / UploadedFile.meta_data_file.field.upload_to)
+    rm_dir(media_root / UploadedFile.spectral_data_file.field.upload_to)
+    rm_dir(media_root / SpectralData.data.field.upload_to)
 
 
 class SimpleQueryFactory(DjangoModelFactory):
@@ -137,6 +151,11 @@ def mock_data_from_files(request, monkeypatch, db, centers, diseases, django_db_
                 data_upload.clean()
                 data_upload.save()
 
+    yield
+
+    # Tidy up any created files.
+    rm_all_media_dirs()
+
 
 @pytest.fixture(scope="function")
 def mock_data_from_form_and_spectral_file(request, db, data_dict, django_db_blocker, django_request):
@@ -156,3 +175,8 @@ def mock_data_from_form_and_spectral_file(request, db, data_dict, django_db_bloc
 
             if not request.node.get_closest_marker("dont_save_to_db"):
                 data_input_form.save()
+
+    yield
+
+    # Tidy up any created files.
+    rm_all_media_dirs()
