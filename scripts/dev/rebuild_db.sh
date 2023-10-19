@@ -1,5 +1,7 @@
 rm biospecdb/apps/user/migrations/0*
 rm biospecdb/apps/uploader/migrations/0*
+rm biospecdb/spectra_data/*
+rm biospecdb/raw_data/*
 rm admin.sqlite3 bsr.sqlite3
 
 set -e
