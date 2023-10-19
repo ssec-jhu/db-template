@@ -66,6 +66,7 @@ class Center(UserBaseCenter):
 
 class UploadedFile(DatedModel):
     class Meta:
+        verbose_name = "Bulk Data Upload"
         get_latest_by = "updated_at"
 
     FileFormats = FileFormats
