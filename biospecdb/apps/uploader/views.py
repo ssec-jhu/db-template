@@ -70,7 +70,7 @@ def data_input(request):
                     
                     last_visit = Visit.objects.select_for_update().filter(patient_id=patient_id) \
                         .order_by('created_at').last()
-                    if last_visit == None:
+                    if last_visit is None:
                         message = "Data Search failed - there is no any visit of patient with Patient ID {}." \
                             .format(patient_id)
                         return render(request, 'DataInputForm.html', {'form': form, 'message': message, \
@@ -86,7 +86,7 @@ def data_input(request):
                         
                     last_visit_symptoms = Symptom.objects.select_for_update().filter(visit=last_visit)
                     symptom = last_visit_symptoms.order_by('days_symptomatic').last()
-                    if symptom == None:
+                    if symptom is None:
                         message = "Data Search failed - there are no symptoms associated with the visit {}." \
                             .format(last_visit)
                         return render(request, 'DataInputForm.html', {'form': form, 'message': message, \

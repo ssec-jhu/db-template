@@ -214,7 +214,7 @@ class Visit(DatedModel):
 
         # Auto find previous visit
         last_visit = Visit.objects.filter(patient_id=self.patient_id).order_by('created_at').last()
-        if last_visit != None:
+        if last_visit is not None:
             self.previous_visit = last_visit
     
     def count_prior_visits(self):
