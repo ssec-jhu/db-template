@@ -1,7 +1,7 @@
-Welcome to BioSpecDB's documentation!
+Welcome to biospecdb's documentation!
 ==========================================
 
-**biospecdb** is a Python library for...
+**biospecdb** is a Django application for collecting patient biosample data.
 
 Check out the :doc:`usage` section for further information, including
 how to :ref:`installation` the project.
