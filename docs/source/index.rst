@@ -1,4 +1,4 @@
-Welcome to BioSpecDB's documentation!
+Welcome to biospecdb's documentation!
 ==========================================
 
 **biospecdb** is a Python library for...
