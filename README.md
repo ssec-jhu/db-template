@@ -1,7 +1,7 @@
 # SSEC-JHU BioSpecDB
 
 [![CI](https://github.com/ssec-jhu/biospecdb/actions/workflows/ci.yml/badge.svg)](https://github.com/ssec-jhu/biospecdb/actions/workflows/ci.yml)
-[![Documentation Status](https://readthedocs.org/projects/ssec-jhu-biospecdb/badge/?version=latest)](https://ssec-jhu-biospecdb.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/biospecdb/badge/?version=latest)](https://biospecdb.readthedocs.io/en/latest/?badge=latest)
 [![codecov](https://codecov.io/gh/ssec-jhu/biospecdb/graph/badge.svg?token=P9I3UXlmOc)](https://codecov.io/gh/ssec-jhu/biospecdb)
 [![Security](https://github.com/ssec-jhu/biospecdb/actions/workflows/security.yml/badge.svg)](https://github.com/ssec-jhu/biospecdb/actions/workflows/security.yml)
 <!---[![DOI](https://zenodo.org/badge/<insert_ID_number>.svg)](https://zenodo.org/badge/latestdoi/<insert_ID_number>) --->
