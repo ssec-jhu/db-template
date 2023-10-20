@@ -1,5 +1,11 @@
 # Configuration file for the Sphinx documentation builder.
 
+import os
+import sys
+
+import django
+
+
 # -- Project information
 
 project = 'biospecdb'
@@ -53,3 +59,20 @@ if html_theme == 'sphinx_book_theme':
 
 # -- Options for EPUB output
 epub_show_urls = 'footnote'
+
+# -- Optiosn for autosummary
+
+autosummary_generate = True
+
+# -- Custom stuff for django.
+# Borrowed from https://daniel.feldroy.com/posts/2023-01-configuring-sphinx-auto-doc-with-django
+
+# Note: You may need to change the path to match
+# your project's structure
+sys.path.insert(0, os.path.abspath(".."))  # For discovery of Python modules
+
+# This tells Django where to find the settings file
+os.environ["DJANGO_SETTINGS_MODULE"] = "biospecdb.settings"
+# This activates Django and makes it possible for Sphinx to
+# autodoc your project
+django.setup()
