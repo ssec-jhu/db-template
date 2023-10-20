@@ -32,7 +32,7 @@ SECRET_KEY = 'django-insecure-9ppt7g3y2ds5+nig07x(#8^th-olh5u=kr_tiqs$2*h(u!y&^m
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -85,14 +85,15 @@ WSGI_APPLICATION = 'biospecdb.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+DB_DIR = "db"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'admin.sqlite3',
+        'NAME': BASE_DIR / DB_DIR / 'admin.sqlite3',
     },
     "bsr": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "bsr.sqlite3",
+        "NAME": BASE_DIR / DB_DIR / "bsr.sqlite3",
     }
 }
 
