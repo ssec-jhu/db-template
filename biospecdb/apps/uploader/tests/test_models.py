@@ -132,6 +132,12 @@ class TestVisit:
         visit.previous_visit = Visit.objects.get(pk=1)
         with pytest.raises(ValidationError):
             visit.full_clean()
+    
+    def test_auto_find_previous_visit(self, db, visits):
+        visit = Visit.objects.get(pk=4)
+        visit.full_clean()
+        previous_visit = Visit.objects.get(pk=2)
+        assert visit.previous_visit == previous_visit
 
     def test_previous_visit_patient_age_validation(self, db, visits):
         previous_visit = Visit.objects.get(pk=1)
