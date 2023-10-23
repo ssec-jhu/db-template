@@ -132,12 +132,42 @@ class TestVisit:
         visit.previous_visit = Visit.objects.get(pk=1)
         with pytest.raises(ValidationError):
             visit.full_clean()
-    
-    def test_auto_find_previous_visit(self, db, visits):
+
+    @pytest.mark.auto_find_previous_visit(False)
+    def test_disabled_auto_find_previous_visit(self, visits):
         visit = Visit.objects.get(pk=4)
+        assert not visit.previous_visit
+        visit.full_clean()
+        assert not visit.previous_visit
+
+    @pytest.mark.auto_find_previous_visit(True)
+    def test_auto_find_previous_visit(self, visits):
+        visit = Visit.objects.get(pk=4)
+        assert not visit.previous_visit
         visit.full_clean()
         previous_visit = Visit.objects.get(pk=2)
         assert visit.previous_visit == previous_visit
+
+        new_visit = Visit.objects.get(pk=5)
+        new_visit.full_clean()
+        assert new_visit.previous_visit == visit
+
+    @pytest.mark.auto_find_previous_visit(True)
+    def test_ambiguous_previous_visit(self, visits):
+        assert Visit.objects.get(pk=5).created_at == Visit.objects.get(pk=6).created_at
+        assert Visit.objects.get(pk=7).created_at > Visit.objects.get(pk=5).created_at
+        with pytest.raises(ValidationError, match="Auto previous visit ambiguity:"):
+            Visit.objects.get(pk=7).full_clean()
+
+    @pytest.mark.auto_find_previous_visit(True)
+    def test_previous_visit_update(self, visits):
+        visit = Visit.objects.get(pk=4)
+        visit.full_clean()
+        assert visit.previous_visit == Visit.objects.get(pk=2)
+
+        visit.patient_age += 1
+        visit.full_clean()
+        assert visit.previous_visit == Visit.objects.get(pk=2)
 
     def test_previous_visit_patient_age_validation(self, db, visits):
         previous_visit = Visit.objects.get(pk=1)
