@@ -1,12 +1,15 @@
+from inspect import signature
+
 from django.contrib import admin
 from django.db.models import Q
+from django.db.utils import OperationalError
 import django.forms as forms
 
 from .models import BioSample, Observable, Instrument, Patient, SpectralData, Observation, UploadedFile, Visit,\
     QCAnnotator, QCAnnotation, Center, get_center, BioSampleType, SpectraMeasurementType
 
 
-class RestrictedByCenterAdmin(admin.ModelAdmin):
+class RestrictedByCenterMixin:
     """ Restrict admin access to objects belong to user's center. """
     def _has_perm(self, request, obj):
         user_center = request.user.center if request.user else None
@@ -33,8 +36,13 @@ class RestrictedByCenterAdmin(admin.ModelAdmin):
     def has_module_permission(self, request):
         return super().has_module_permission(request)
 
-    def has_add_permission(self, request):
-        return super().has_add_permission(request)
+    def has_add_permission(self, request, obj=None):
+        # Note: The signature isn't symmetric for ``admin.ModelAdmin`` and ``admin.InlineModelAdmin`` so we introspect
+        # their func signatures. Their signatures are:
+        # * ``admin.ModelAdmin.has_add_permission(self, request)``
+        # * ``admin.InlineModelAdmin.has_add_permission(self, request, obj=None)``
+        kwargs = {"obj": obj} if "obj" in signature(super().has_add_permission).parameters else {}
+        return super().has_add_permission(request, **kwargs)
 
     def has_change_permission(self, request, obj=None):
         has_base_perm = super().has_change_permission(request, obj=obj)
@@ -60,6 +68,10 @@ class RestrictedByCenterAdmin(admin.ModelAdmin):
             kwargs["initial"] = Center.objects.get(pk=request.user.center.pk)
             if not request.user.is_superuser:
                 kwargs["queryset"] = Center.objects.filter(pk=request.user.center.pk)
+        elif db_field.name == "observable" and request.user.center:
+            center = Center.objects.get(pk=request.user.center.pk)
+            kwargs["queryset"] = Observable.objects.filter(Q(center=center) | Q(center=None))
+
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
@@ -68,14 +80,14 @@ admin.site.register(SpectraMeasurementType)
 
 
 @admin.register(Instrument)
-class InstrumentAdmin(RestrictedByCenterAdmin):
+class InstrumentAdmin(RestrictedByCenterMixin, admin.ModelAdmin):
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     list_display = ["spectrometer", "atr_crystal"]
     ordering = ["spectrometer"]
 
 
 @admin.register(UploadedFile)
-class UploadedFileAdmin(RestrictedByCenterAdmin):
+class UploadedFileAdmin(RestrictedByCenterMixin, admin.ModelAdmin):
     search_fields = ["created_at"]
     search_help_text = "Creation timestamp"
     list_display = ["pk", "created_at", "meta_data_file", "spectral_data_file", "center"]
@@ -92,14 +104,15 @@ class UploadedFileAdmin(RestrictedByCenterAdmin):
         return qs.filter(center=Center.objects.get(pk=request.user.center.pk))
 
 
-class QCAnnotationInline(admin.TabularInline):
+class QCAnnotationInline(RestrictedByCenterMixin, admin.TabularInline):
     model = QCAnnotation
-    extra = 1
+    extra = 0
+    min_num = 1
     show_change_link = True
 
 
 @admin.register(QCAnnotation)
-class QCAnnotationAdmin(RestrictedByCenterAdmin):
+class QCAnnotationAdmin(RestrictedByCenterMixin, admin.ModelAdmin):
     search_fields = ["annotator__name",
                      "spectral_data__bio_sample__visit__patient__patient_id",
                      "spectral_data__bio_sample__visit__patient__patient_cid"]
@@ -127,7 +140,7 @@ class QCAnnotationAdmin(RestrictedByCenterAdmin):
 
 
 @admin.register(QCAnnotator)
-class QCAnnotatorAdmin(RestrictedByCenterAdmin):
+class QCAnnotatorAdmin(RestrictedByCenterMixin, admin.ModelAdmin):
     search_fields = ["name"]
     search_help_text = "Name"
     # TODO: Might need specific user group for timestamps.)
@@ -137,11 +150,11 @@ class QCAnnotatorAdmin(RestrictedByCenterAdmin):
 
 
 @admin.register(Observable)
-class ObservableAdmin(RestrictedByCenterAdmin):
-    search_fields = ["name"]
-    search_help_text = "Observable name"
+class ObservableAdmin(RestrictedByCenterMixin, admin.ModelAdmin):
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     ordering = ["name"]
+    search_fields = ["name"]
+    search_help_text = "Observable name"
     list_filter = ("center", "category", "value_class")
     list_display = ["category", "name", "description", "observation_count"]
 
@@ -157,16 +170,9 @@ class ObservableAdmin(RestrictedByCenterAdmin):
         return qs.filter(Q(center=Center.objects.get(pk=request.user.center.pk)) | Q(center=None))
 
 
-@admin.register(Observation)
-class ObservationAdmin(RestrictedByCenterAdmin):
-    search_fields = ["observable__name", "visit__patient__patient_id", "visit__patient__patient_cid"]
-    search_help_text = "Observable, Patient ID or CID"
+class ObservationMixin:
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
-    date_hierarchy = "updated_at"
     ordering = ("-updated_at",)
-    list_filter = ("visit__patient__center", "observable__category", "visit__patient__gender", "observable")
-    list_display = ["patient_id", "observable_name", "days_observed", "severity", "visit"]
-    list_editable = ["days_observed", "severity"]
 
     @admin.display
     def patient_id(self, obj):
@@ -176,15 +182,6 @@ class ObservationAdmin(RestrictedByCenterAdmin):
     def observable_name(self, obj):
         return obj.observable.name
 
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        """ Limit center form fields to user's center, and set initial value as such.
-            Exceptions are made for superusers.
-        """
-        if db_field.name == "observable" and request.user.center:
-            center = Center.objects.get(pk=request.user.center.pk)
-            kwargs["queryset"] = Observable.objects.filter(Q(center=center) | Q(center=None))
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
     def get_queryset(self, request):
         """ List only objects belonging to user's center. """
         qs = super().get_queryset(request)
@@ -193,36 +190,57 @@ class ObservationAdmin(RestrictedByCenterAdmin):
         return qs.filter(visit__patient__center=Center.objects.get(pk=request.user.center.pk))
 
 
-class ObservationInline(admin.TabularInline):
+class ObservationInlineForm(forms.ModelForm):
+    observables = iter([])
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        try:
+            self.fields["observable"].initial = next(self.observables)
+        except StopIteration:
+            pass
+
+
+class ObservationInline(ObservationMixin, RestrictedByCenterMixin, admin.TabularInline):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        try:
+            kwargs = {"observables": iter(Observable.objects.all())}
+        except OperationalError:
+            kwargs = {}
+
+        self.form = type("NewObservationForm", (ObservationInlineForm,), kwargs)
+
+    extra = 0
     model = Observation
-    extra = 10
     show_change_link = True
 
+    def get_min_num(self, request, obj=None, **kwargs):
+        if obj and obj.pk:
+            min_num = len(obj.observation.all())
+        else:
+            # Note: Calling ``len(self.formfield_for_foreignkey(db_field, request)`` would be better, however, it's not
+            # clear how to correctly pass ``db_field``. The following was copied from
+            # ``RestrictedByCenterMixin.formfield_for_foreignkey``.
+            center = Center.objects.get(pk=request.user.center.pk)
+            min_num = len(Observable.objects.filter(Q(center=center) | Q(center=None)))
 
-class SpectralDataInline(admin.StackedInline):
-    model = SpectralData
-    extra = 1
-    radio_fields = {"instrument": admin.HORIZONTAL}
-    show_change_link = True
+        return min_num
 
 
-@admin.register(SpectralData)
-class SpectralDataAdmin(RestrictedByCenterAdmin):
-    radio_fields = {"instrument": admin.HORIZONTAL}
-
-    search_fields = ["bio_sample__visit__patient__patient_id", "bio_sample__visit__patient__patient_cid"]
-    search_help_text = "Patient ID or CID"
-    readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
+@admin.register(Observation)
+class ObservationAdmin(ObservationMixin, RestrictedByCenterMixin, admin.ModelAdmin):
+    search_fields = ["observable__name", "visit__patient__patient_id", "visit__patient__patient_cid"]
+    search_help_text = "Observable, Patient ID or CID"
     date_hierarchy = "updated_at"
-    list_display = ["patient_id", "instrument", "data"]
-    inlines = [QCAnnotationInline]
+    list_filter = ("visit__patient__center", "observable__category", "visit__patient__gender", "observable")
+    list_display = ["patient_id", "observable_name", "days_observed", "severity", "visit"]
+    list_editable = ["days_observed", "severity"]
+
+
+class SpectralDataMixin:
+    radio_fields = {"instrument": admin.HORIZONTAL}
     ordering = ("-updated_at",)
-    list_filter = ("bio_sample__visit__patient__center",
-                   "instrument",
-                   "spectra_measurement",
-                   "bio_sample__sample_type",
-                   "bio_sample__sample_processing",
-                   "bio_sample__visit__patient__gender")
 
     @admin.display
     def patient_id(self, obj):
@@ -236,22 +254,32 @@ class SpectralDataAdmin(RestrictedByCenterAdmin):
         return qs.filter(bio_sample__visit__patient__center=Center.objects.get(pk=request.user.center.pk))
 
 
-class BioSampleInline(admin.TabularInline):
-    model = BioSample
-    extra = 1
-    show_change_link = True
-
-
-@admin.register(BioSample)
-class BioSampleAdmin(RestrictedByCenterAdmin):
-    search_fields = ["visit__patient__patient_id", "visit__patient__patient_cid"]
+@admin.register(SpectralData)
+class SpectralDataAdmin(SpectralDataMixin, RestrictedByCenterMixin, admin.ModelAdmin):
+    search_fields = ["bio_sample__visit__patient__patient_id", "bio_sample__visit__patient__patient_cid"]
     search_help_text = "Patient ID or CID"
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     date_hierarchy = "updated_at"
+    list_display = ["patient_id", "instrument", "data"]
+    list_filter = ("bio_sample__visit__patient__center",
+                   "instrument",
+                   "spectra_measurement",
+                   "bio_sample__sample_type",
+                   "bio_sample__sample_processing",
+                   "bio_sample__visit__patient__gender")
+    inlines = [QCAnnotationInline]
+
+
+class SpectralDataInline(SpectralDataMixin, RestrictedByCenterMixin, admin.StackedInline):
+    model = SpectralData
+    extra = 0
+    min_num = 1
+    show_change_link = True
+
+
+class BioSampleMixin:
+    readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     ordering = ("-updated_at",)
-    list_filter = ("visit__patient__center", "sample_type", "sample_processing")
-    list_display = ["patient_id", "sample_type"]
-    inlines = [SpectralDataInline]
 
     @admin.display
     def patient_id(self, obj):
@@ -265,6 +293,23 @@ class BioSampleAdmin(RestrictedByCenterAdmin):
         return qs.filter(visit__patient__center=Center.objects.get(pk=request.user.center.pk))
 
 
+@admin.register(BioSample)
+class BioSampleAdmin(BioSampleMixin, RestrictedByCenterMixin, admin.ModelAdmin):
+    search_fields = ["visit__patient__patient_id", "visit__patient__patient_cid"]
+    search_help_text = "Patient ID or CID"
+    date_hierarchy = "updated_at"
+    list_filter = ("visit__patient__center", "sample_type", "sample_processing")
+    list_display = ["patient_id", "sample_type"]
+    inlines = [SpectralDataInline]
+
+
+class BioSampleInline(BioSampleMixin, RestrictedByCenterMixin, admin.StackedInline):
+    model = BioSample
+    extra = 0
+    min_num = 1
+    show_change_link = True
+
+
 class VisitAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -272,20 +317,10 @@ class VisitAdminForm(forms.ModelForm):
             self.fields["previous_visit"].queryset = Visit.objects.filter(patient=self.instance.patient_id)
 
 
-@admin.register(Visit)
-class VisitAdmin(RestrictedByCenterAdmin):
+class VisitAdminMixin:
     form = VisitAdminForm
-    search_fields = ["patient__patient_id", "patient__patient_cid"]
-    search_help_text = "Patient ID or CID"
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
-    date_hierarchy = "updated_at"
     ordering = ("-updated_at",)
-    list_filter = ("patient__center",)
-
-    # autocomplete_fields = ["previous_visit"]  # Conflicts with VisitAdminForm queryset.
-    inlines = [BioSampleInline, ObservationInline]
-
-    list_display = ["patient_id", "visit_count", "gender", "previous_visit"]
 
     @admin.display
     def patient_id(self, obj):
@@ -307,24 +342,34 @@ class VisitAdmin(RestrictedByCenterAdmin):
         return qs.filter(patient__center=Center.objects.get(pk=request.user.center.pk))
 
 
-class VisitInline(admin.TabularInline):
-    form = VisitAdminForm
+class VisitInline(VisitAdminMixin, RestrictedByCenterMixin, admin.TabularInline):
     model = Visit
-    extra = 1
+    extra = 0
+    min_num = 1
     show_change_link = True
 
 
+@admin.register(Visit)
+class VisitAdmin(VisitAdminMixin, RestrictedByCenterMixin, admin.ModelAdmin):
+    search_fields = ["patient__patient_id", "patient__patient_cid"]
+    search_help_text = "Patient ID or CID"
+    date_hierarchy = "updated_at"
+    list_filter = ("patient__center",)
+    # autocomplete_fields = ["previous_visit"]  # Conflicts with VisitAdminForm queryset.
+    list_display = ["patient_id", "visit_count", "gender", "previous_visit"]
+    inlines = [BioSampleInline, ObservationInline]
+
+
 @admin.register(Patient)
-class PatientAdmin(RestrictedByCenterAdmin):
-    inlines = [VisitInline]
+class PatientAdmin(RestrictedByCenterMixin, admin.ModelAdmin):
     search_fields = ["patient_id", "patient_cid"]
     search_help_text = "Patient ID or CID"
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     date_hierarchy = "updated_at"
     ordering = ("-updated_at",)
     list_filter = ("center", "gender")
-
     list_display = ["patient_id", "patient_cid", "gender", "age", "visit_count", "center"]
+    inlines = [VisitInline]
 
     @admin.display
     def age(self, obj):
