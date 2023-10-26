@@ -167,3 +167,7 @@ cython_debug/
 
 # File system
 .DS_Store
+
+# Project stuff
+raw_data/
+spectral_data/
