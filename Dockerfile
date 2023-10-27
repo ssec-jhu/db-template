@@ -1,11 +1,14 @@
 FROM python:3.11-slim
 
+ENV PYTHONUNBUFFERED=1
+
 WORKDIR /app
 
-COPY requirements/prd.txt requirements.txt
+COPY requirements/prd.txt /app/requirements.txt
 
 RUN pip3 install -r requirements.txt
 
-COPY . .
+COPY manage.py /app/
+COPY biospecdb/ /app/biospecdb/
 
-CMD ["uvicorn", "biospecdb.asgi:application", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

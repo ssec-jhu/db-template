@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  db-setup:
+    image: bsr
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bsr-db-initializer
+    restart: "no"
+    volumes:
+      - db-data:/app/db
+    environment:
+      DJANGO_SETTINGS_MODULE: biospecdb.settings
+    secrets:
+      - superuser_password
+    command: >
+      bash -c "[ ! -f /app/db/setup_complete.txt ]
+      && python manage.py makemigrations user
+      && python manage.py makemigrations uploader
+      && python manage.py migrate
+      && python manage.py migrate --database=bsr
+      && python manage.py loaddata centers
+      && python manage.py loaddata --database=bsr centers diseases instruments qcannotators
+      && python manage.py update_sql_views
+      && DJANGO_SUPERUSER_PASSWORD=$(cat /run/secrets/superuser_password) python manage.py createsuperuser --noinput --username=admin --email=admin@jhu.edu --center=d61f1c2a-9c0a-4309-a031-ab5b8d2106b0
+      && touch /app/db/setup_complete.txt || echo done!"
+
+  web:
+    depends_on:
+      db-setup:
+        condition: service_completed_successfully
+    image: bsr
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - db-data:/app/db
+    environment:
+      DJANGO_SETTINGS_MODULE: biospecdb.settings
+    command: python manage.py runserver 0.0.0.0:8000
+
+secrets:
+  superuser_password:
+    environment: DJANGO_SUPERUSER_PASSWORD
+
+volumes:
+  db-data:

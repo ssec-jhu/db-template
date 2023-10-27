@@ -7,8 +7,9 @@ from .forms import FileUploadForm, DataInputForm
 from uploader.models import Patient, Visit, SpectralData, BioSample, Symptom, Disease
 from biospecdb.util import is_valid_uuid, to_uuid
 
+
 def home(request):
-    return render(request, 'home.html')
+    return render(request, 'Home.html')
 
 
 @staff_member_required

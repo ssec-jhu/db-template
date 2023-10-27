@@ -27,9 +27,8 @@ For additional cmds see the [Conda cheat-sheet](https://docs.conda.io/projects/c
 ### Build:
 
   #### with Docker:
-  * Download & install Docker - see [Docker install docs](https://docs.docker.com/get-docker/).
-  * ``cd`` into repo dir.
-  * Build image: ``docker build -t <image_name> .``
+  * Follow the [run instructions below](#using-docker) using docker-compose.
+
 
   #### with Python ecosystem:
   * ``cd`` into repo dir.
@@ -43,9 +42,10 @@ For additional cmds see the [Conda cheat-sheet](https://docs.conda.io/projects/c
 
 ### Run:
 
-  #### with Docker:
-  * Follow the above [Build with Docker instructions](#with-docker).
-  * Run container from image: ``docker run -d -p 8000:8000 <image_name>``. _NOTE: ``-p 8000:8000`` is specific to the example application using port 8000._
+  #### using Docker:
+  * Download & install Docker - see [Docker install docs](https://docs.docker.com/get-docker/).
+  * ``cd`` into repo dir.
+  * Build and run with ``DJANGO_SUPERUSER_PASSWORD=admin docker compose up``
   * Alternatively, images can be pulled from ``ghcr.io/ssec-jhu/`` e.g., ``docker pull ghcr.io/ssec-jhu/base-template:pr-1``.
 
   #### with Python ecosystem:
@@ -66,6 +66,10 @@ For additional cmds see the [Conda cheat-sheet](https://docs.conda.io/projects/c
 
 ### DB Management:
 We're currently using sqlite requiring the following setup instructions:
+
+For a quickstart run the provided script [rebuild_db.sh](scripts/dev/rebuild_db.sh), otherwise follow the instructions
+below. The default superuser credentials are username: admin, password: admin. Set the env var
+``DJANGO_SUPERUSER_PASSWORD`` to override the default given in [rebuild_db.sh](scripts/dev/rebuild_db.sh).
 
 * cd into repo
 * ``python manage.py migrate``

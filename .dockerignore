@@ -1,0 +1,15 @@
+.DS_STORE
+.eggs
+.env
+.git
+.github
+.idea
+.pytest_cache
+.zenodo.json
+CITATION.cff
+githooks
+notebooks
+coverage.*
+__pycache__
+*.sqlite3
+db
