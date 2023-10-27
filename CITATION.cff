@@ -17,7 +17,5 @@ authors:
   given-names: "Arik"
   orcid: "https://orcid.org/0000-0001-9239-012X"
 title: "BioSpecDB"
-version: 0.0.1
-doi: <insert zenodo DOI>
-date-released: 2023-01-01
+doi: "10048242"
 url: "https://github.com/ssec-jhu/biospecdb"
