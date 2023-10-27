@@ -10,3 +10,5 @@ RUN pip3 install -r requirements.txt
 
 COPY manage.py /app/
 COPY biospecdb/ /app/biospecdb/
+
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

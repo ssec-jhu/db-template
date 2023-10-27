@@ -7,9 +7,10 @@ rm biospecdb/spectra_data/*
 rm biospecdb/raw_data/*
 
 # Delete databases.
-rm *.sqlite3
+mkdir -p db
 rm db/*.sqlite3
-mkdir db
+# Delete older DB files during interim development, see https://github.com/ssec-jhu/biospecdb/issues/152.
+rm *.sqlite3
 
 set -e
 
