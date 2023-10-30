@@ -134,7 +134,7 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                 instrument.spectral_data.add(spectraldata, bulk=False)
                 spectraldata.full_clean()
                 spectraldata.save()
-                spectral_data_files.append(Path(spectraldata.data.name))
+                spectral_data_files.append(spectraldata.data)
 
                 # Symptoms
                 # NOTE: Bulk data from client doesn't contain data for `days_symptomatic` per symptom, but instead per
@@ -164,11 +164,15 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
     except Exception:
         # Something went wrong and the above transaction was aborted so delete uncommitted and now orphaned files.
         while spectral_data_files:
-            # Note: Pop to avoid repetition in finally branch.
-            SpectralData.data.field.storage.delete(spectral_data_files.pop())
+            file = spectral_data_files.pop()
+            if not file.closed:
+                file.close()
+            SpectralData.data.field.storage.delete(file.name)  # Pop to avoid repetition in finally branch.
         raise
     finally:
         # Delete unwanted temporary files.
         for file in spectral_data_files:
-            if file.name.startswith(TEMP_FILENAME_PREFIX):
-                SpectralData.data.field.storage.delete(file)
+            if (filename := Path(file.name)).name.startswith(TEMP_FILENAME_PREFIX):
+                if not file.closed:
+                    file.close()
+                SpectralData.data.field.storage.delete(filename)
