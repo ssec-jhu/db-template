@@ -3,8 +3,8 @@ rm biospecdb/apps/user/migrations/0*
 rm biospecdb/apps/uploader/migrations/0*
 
 # Delete uploaded data files.
-rm biospecdb/spectra_data/*
-rm biospecdb/raw_data/*
+rm spectra_data/*
+rm raw_data/*
 
 # Delete databases.
 mkdir -p db
