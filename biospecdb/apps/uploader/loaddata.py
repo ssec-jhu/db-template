@@ -86,9 +86,9 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                                       sample_processing=row.get(BioSample.sample_processing.field.verbose_name.lower()),
                                       freezing_temp=row.get(BioSample.freezing_temp.field.verbose_name.lower()),
                                       thawing_time=row.get(BioSample.thawing_time.field.verbose_name.lower()))
-                visit.bio_sample.add(biosample, bulk=False)
                 biosample.full_clean()
                 biosample.save()
+                visit.bio_sample.add(biosample, bulk=False)
 
                 # SpectralData
                 spectrometer = row.get(Instrument.spectrometer.field.verbose_name.lower())
@@ -129,12 +129,12 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
 
                                             # TODO: See https://github.com/ssec-jhu/biospecdb/issues/40
                                             data=ContentFile(csv_data, name=data_filename))
-                biosample.spectral_data.add(spectraldata, bulk=False)
-
-                instrument.spectral_data.add(spectraldata, bulk=False)
                 spectraldata.full_clean()
                 spectraldata.save()
                 spectral_data_files.append(spectraldata.data)
+
+                biosample.spectral_data.add(spectraldata, bulk=False)
+                instrument.spectral_data.add(spectraldata, bulk=False)
 
                 # Symptoms
                 # NOTE: Bulk data from client doesn't contain data for `days_symptomatic` per symptom, but instead per
@@ -153,9 +153,9 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                                       disease_value=symptom_value,
                                       days_symptomatic=days_symptomatic)
 
-                    disease.symptom.add(symptom, bulk=False)
                     symptom.full_clean()
                     symptom.save()
+                    disease.symptom.add(symptom, bulk=False)
 
             if dry_run:
                 raise ExitTransaction()
