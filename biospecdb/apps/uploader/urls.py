@@ -1,12 +1,12 @@
-from django.urls import path
+# from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from . import views
+# from . import views
 
 app_name = 'uploader'
 
 urlpatterns = [
-    path('data_input/', views.data_input, name='DataInputForm')
+    # path('data_input/', views.data_input, name='DataInputForm')
 ]
 
 if settings.DEBUG:

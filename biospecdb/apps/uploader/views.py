@@ -37,6 +37,8 @@ def display_xlsx(request):
 
 @staff_member_required
 def data_input(request):
+    raise NotImplementedError
+
     message = ""
     form = DataInputForm(request=request)
     delta_count = len(form.base_fields) - 1
