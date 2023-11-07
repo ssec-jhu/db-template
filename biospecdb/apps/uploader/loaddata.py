@@ -12,9 +12,6 @@ class ExitTransaction(Exception):
     ...
 
 
-TEMP_FILENAME_PREFIX = "__TEMP__"
-
-
 def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry_run=False) -> dict:
 
     """
@@ -108,14 +105,8 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                 json_str = uploader.io.spectral_data_to_json(file=None,
                                                              data=None,
                                                              patient_id=index,
-                                                             wavelengths=row["wavelength"],
-                                                             intensities=row["intensity"])
-
-                # Note: This won't be unique since multiple files can exist per biosample. However, we'd have to create
-                # this post save such as to mangle in spectraldata.pk. Instead, django will automatically append a
-                # random 7 digit string before the ext upon file name collisions.
-                data_filename = Path(f"{TEMP_FILENAME_PREFIX if dry_run else ''}{patient.patient_id}_{biosample.pk}"). \
-                    with_suffix(uploader.io.FileFormats.JSON)
+                                                             wavelength=row["wavelength"],
+                                                             intensity=row["intensity"])
 
                 spectral_measurement_kind = SpectraMeasurementType.objects.get(name=row.get(
                     SpectralData.spectra_measurement.field.verbose_name.lower()).lower())
@@ -127,10 +118,9 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                                                 SpectralData.acquisition_time.field.verbose_name.lower()),
                                             n_coadditions=row.get(
                                                 SpectralData.n_coadditions.field.verbose_name.lower()),
-                                            resolution=row.get(SpectralData.resolution.field.verbose_name.lower()),
-
-                                            # TODO: See https://github.com/ssec-jhu/biospecdb/issues/40
-                                            data=ContentFile(json_str, name=data_filename))
+                                            resolution=row.get(SpectralData.resolution.field.verbose_name.lower()))
+                filename = f"{uploader.io.TEMP_FILENAME_PREFIX if dry_run else ''}{spectraldata.generate_filename()}"
+                spectraldata.data = ContentFile(json_str, name=filename)
                 spectraldata.full_clean()
                 spectraldata.save()
                 spectral_data_files.append(spectraldata.data)
@@ -174,7 +164,7 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
     finally:
         # Delete unwanted temporary files.
         for file in spectral_data_files:
-            if (filename := Path(file.name)).name.startswith(TEMP_FILENAME_PREFIX):
+            if (filename := Path(file.name)).name.startswith(uploader.io.TEMP_FILENAME_PREFIX):
                 if not file.closed:
                     file.close()
                 SpectralData.data.field.storage.delete(filename)

@@ -187,8 +187,8 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('meta_data_file', models.FileField(help_text='File containing rows of all patient, symptom, and other meta data.', upload_to='raw_data/', validators=[django.core.validators.FileExtensionValidator(['csv', 'xlsx'])])),
-                ('spectral_data_file', models.FileField(help_text='File containing rows of spectral intensities for the corresponding meta data file.', upload_to='raw_data/', validators=[django.core.validators.FileExtensionValidator(['csv', 'xlsx'])])),
+                ('meta_data_file', models.FileField(help_text='File containing rows of all patient, symptom, and other meta data.', upload_to='raw_data/', validators=[django.core.validators.FileExtensionValidator(['csv', 'xlsx', 'json'])])),
+                ('spectral_data_file', models.FileField(help_text='File containing rows of spectral intensities for the corresponding meta data file.', upload_to='raw_data/', validators=[django.core.validators.FileExtensionValidator(['csv', 'xlsx', 'json'])])),
                 ('center', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='uploader.center')),
             ],
             options={
@@ -215,13 +215,13 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SpectralData',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
+                ('id', models.UUIDField(default=uuid.uuid4, primary_key=True, serialize=False, unique=True)),
                 ('acquisition_time', models.IntegerField(blank=True, null=True, verbose_name='Acquisition time [s]')),
                 ('n_coadditions', models.IntegerField(default=32, verbose_name='Number of coadditions')),
                 ('resolution', models.IntegerField(blank=True, null=True, verbose_name='Resolution [cm-1]')),
-                ('data', models.FileField(upload_to='spectral_data/', validators=[django.core.validators.FileExtensionValidator(['csv', 'xlsx'])], verbose_name='Spectral data file')),
+                ('data', models.FileField(upload_to='spectral_data/', validators=[django.core.validators.FileExtensionValidator(['csv', 'xlsx', 'json'])], verbose_name='Spectral data file')),
                 ('bio_sample', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='spectral_data', to='uploader.biosample')),
                 ('instrument', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='spectral_data', to='uploader.instrument')),
                 ('spectra_measurement', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='spectral_data', to='uploader.spectrameasurementtype', verbose_name='Spectra Measurement')),

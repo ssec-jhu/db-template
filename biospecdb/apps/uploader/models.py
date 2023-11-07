@@ -109,8 +109,8 @@ class UploadedFile(DatedModel):
     def _validate_and_save_data_to_db(self, dry_run=False):
         # Read in all data.
         # Note: When accessing ``models.FileField`` Django returns ``models.FieldFile`` as a proxy.
-        meta_data = uploader.io.read_meta_data(*uploader.io.get_file_info(self.meta_data_file.file))
-        spec_data = uploader.io.read_spectral_data_table(*uploader.io.get_file_info(self.spectral_data_file.file))
+        meta_data = uploader.io.read_meta_data(self.meta_data_file.file)
+        spec_data = uploader.io.read_spectral_data_table(self.spectral_data_file.file)
         # Validate.
         UploadedFile.validate_lengths(meta_data, spec_data)
         # This uses a join so returns the joined data so that it doesn't go to waste if needed, which it is here.
@@ -442,6 +442,7 @@ class SpectralData(DatedModel):
 
     UPLOAD_DIR = "spectral_data/"  # MEDIA_ROOT/spectral_data
 
+    id = models.UUIDField(unique=True, primary_key=True, default=uuid.uuid4)
     instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE, related_name="spectral_data")
     bio_sample = models.ForeignKey(BioSample, on_delete=models.CASCADE, related_name="spectral_data")
 
@@ -462,6 +463,7 @@ class SpectralData(DatedModel):
     # See https://docs.djangoproject.com/en/4.2/howto/custom-file-storage/
     data = models.FileField(upload_to=UPLOAD_DIR,
                             validators=[FileExtensionValidator(UploadedFile.FileFormats.choices())],
+                            max_length=256,
                             verbose_name="Spectral data file")
 
     @property
@@ -469,7 +471,7 @@ class SpectralData(DatedModel):
         return self.bio_sample.visit.patient.center
 
     def __str__(self):
-        return f"{self.bio_sample.visit}_pk{self.pk}"
+        return str(self.generate_filename())
 
     def get_annotators(self):
         return list(set([annotation.annotator for annotation in self.qc_annotation.all()]))
@@ -485,29 +487,34 @@ class SpectralData(DatedModel):
         return list(set(all_default_annotators) - set(existing_annotators))
 
     def get_spectral_data(self):
-        data_file, ext = uploader.io.get_file_info(self.data)
-        return uploader.io.spectral_data_from_json(data_file)
+        """ Return spectral data as instance of uploader.io.SpectralData. """
+        return uploader.io.spectral_data_from_json(self.data)
+
+    def generate_filename(self):
+        return Path(f"{self.bio_sample.visit.patient.patient_id}_{self.bio_sample.pk}_{self.id}")\
+            .with_suffix(uploader.io.FileFormats.JSON)
 
     def clean_data_file(self):
         """ Read in data from uploaded file and store as json.
 
-            The schema is that equivalent to `json.dumps(uploader.io.SpectralDataTuple._asdict())``.
+            The schema is equivalent to `json.dumps(dataclasses.asdict(uploader.io.SpectralData))``.
         """
         if self.data is None:
             return
 
-        file, ext = uploader.io.get_file_info(self.data)
-
         try:
-            data = uploader.io.read_spectral_data(file, ext)
+            data = uploader.io.read_spectral_data(self.data)
         except uploader.io.DataSchemaError as error:
             raise ValidationError(_("%(msg)s"), params={"msg": error})
 
-        filename = Path(file.name).with_suffix(uploader.io.FileFormats.JSON)
+        # Filenames need to be cleaned, however, don't clean TEMP filenames otherwise they won't be deleted.
+        if Path(self.data.name).name.startswith(uploader.io.TEMP_FILENAME_PREFIX):
+            filename = self.data.name
+        else:
+            filename = self.generate_filename()
         json_str = uploader.io.spectral_data_to_json(file=None, data=data)
 
-        # Note: Django validates against path traversal and raises on rel & abs filenames so don't pass the whole thing.
-        return ContentFile(json_str, name=filename.name)
+        return ContentFile(json_str, name=filename)
 
     def clean(self):
         # Normalize data file format and clobber the uploaded file with the cleaned one.

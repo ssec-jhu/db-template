@@ -1,3 +1,4 @@
+import dataclasses
 from pathlib import Path
 import zipfile
 
@@ -5,7 +6,7 @@ import pytest
 from django.conf import settings
 
 from uploader.exporters import CSVExporter
-from uploader.io import read_raw_data, spectral_data_from_json, SpectralDataTuple
+import uploader.io
 from uploader.models import SpectralData
 
 from uploader.tests.conftest import SimpleQueryFactory
@@ -72,15 +73,15 @@ class TestExporters:
 
         query_data_file = query_data_file[0]
         with z.open(query_data_file) as f:
-            data = read_raw_data(f, Path(query_data_file).suffix)
+            data = uploader.io.read_raw_data(f, ext=Path(query_data_file).suffix)
             assert len(data) == 10
             assert set(data[SpectralData.data.field.name]) == set(spectral_data_files)
 
         for filename in spectral_data_files:
-            data = spectral_data_from_json(filename)
-            assert isinstance(data, SpectralDataTuple)
+            data = uploader.io.spectral_data_from_json(filename)
+            assert isinstance(data, uploader.io.SpectralData)
 
-            assert data._fields == ("patient_id", "wavelength", "intensity")
+            assert {x.name for x in dataclasses.fields(data)} == {"patient_id", "wavelength", "intensity"}
             assert len(data.wavelength) == 1798
             assert len(data.intensity) == 1798
 

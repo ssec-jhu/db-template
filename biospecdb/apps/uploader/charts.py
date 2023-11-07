@@ -6,7 +6,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 from django.conf import settings
-from uploader.io import spectral_data_from_json
+import uploader.io
 from uploader.models import Disease, Patient, SpectralData
 
 
@@ -58,7 +58,7 @@ def get_line_chart(result: "QueryResult") -> Optional[str]:  # noqa: F821
                           yaxis_title="Intensity",
                           title=f"Spectral Data for SQL query: '{result.sql}'")
         for row in df.itertuples():
-            spectral_data = spectral_data_from_json(row.data)
+            spectral_data = uploader.io.read_spectral_data(row.data)
             assert spectral_data.patient_id != row.patient_id  # Internal sanity check.
             fig.add_scatter(x=spectral_data.wavelength,
                             y=spectral_data.intensity,
