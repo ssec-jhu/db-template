@@ -199,6 +199,7 @@ def spectral_data_from_json(file):
     else:
         raise ValueError("A path-like or file-like object must be specified.")
 
+    # Check that the json is as expected. This is needed for validation when a user provides json data.
     if (fields := {x.name for x in dataclasses.fields(SpectralData)}) != data.keys():
         raise DataSchemaError(f"Schema error: expected only the fields '{fields}' but got '{data.keys()}'")
 
