@@ -1,5 +1,4 @@
 from copy import deepcopy
-from enum import auto
 import uuid
 
 from django.conf import settings
@@ -423,6 +422,13 @@ class BioSample(DatedModel):
         return f"{self.visit}_type:{self.sample_type}_pk{self.pk}"  # NOTE: str(self.visit) contains patient ID.
 
 
+class SpectraMeasurementType(DatedModel):
+    name = models.CharField(max_length=128, verbose_name="Spectra Measurement")
+
+    def __str__(self):
+        return self.name
+
+
 class SpectralData(DatedModel):
     """ Model spectral data measured by spectrometer instrument. """
 
@@ -433,17 +439,14 @@ class SpectralData(DatedModel):
 
     UPLOAD_DIR = "spectral_data/"  # MEDIA_ROOT/spectral_data
 
-    class SpectralMeasurementKind(TextChoices):
-        ATR_FTIR = auto()
-
     instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE, related_name="spectral_data")
     bio_sample = models.ForeignKey(BioSample, on_delete=models.CASCADE, related_name="spectral_data")
 
     # Spectrometer meta.
-    spectra_measurement = models.CharField(default=SpectralMeasurementKind.ATR_FTIR,
-                                           max_length=128,
-                                           choices=SpectralMeasurementKind.choices,
-                                           verbose_name="Spectra Measurement")
+    spectra_measurement = models.ForeignKey(SpectraMeasurementType,
+                                            on_delete=models.CASCADE,
+                                            verbose_name="Spectra Measurement",
+                                            related_name="spectral_data")
     acquisition_time = models.IntegerField(blank=True, null=True, verbose_name="Acquisition time [s]")
 
     # TODO: What is this? Could this belong to Instrument?
@@ -624,13 +627,14 @@ class FullPatientView(SqlView, models.Model):
                 select p.patient_id, p.gender, v.patient_age
                 ,      bst.name, bs.sample_processing, bs.freezing_temp, bs.thawing_time
                 ,      i.spectrometer, i.atr_crystal
-                ,      sd.spectra_measurement, sd.acquisition_time, sd.n_coadditions, sd.resolution, sd.data
+                ,      sdt.name, sd.acquisition_time, sd.n_coadditions, sd.resolution, sd.data
                 ,      vs.*
                   from uploader_patient p
                   join uploader_visit v on p.patient_id=v.patient_id
                   join uploader_biosample bs on bs.visit_id=v.id
                   join uploader_biosampletype bst on bst.id=bs.sample_type_id
                   join uploader_spectraldata sd on sd.bio_sample_id=bs.id
+                  join uploader_spectrameasurementtype sdt on sdt.id=sd.spectra_measurement_id
                   join uploader_instrument i on i.id=sd.instrument_id
                   left outer join v_visit_symptoms vs on vs.visit_id=v.id
                 """  # nosec B608

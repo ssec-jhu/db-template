@@ -5,7 +5,7 @@ from django.db import models
 from biospecdb.util import to_uuid
 from uploader.io import read_spectral_data_table, get_file_info
 from uploader.models import UploadedFile, Patient, SpectralData, Instrument, BioSample, Symptom, Disease, Visit, \
-    BioSampleType
+    BioSampleType, SpectraMeasurementType
 from .loaddata import save_data_to_db
 
 
@@ -41,8 +41,11 @@ class DataInputForm(forms.Form):
     gender = forms.ChoiceField(**map_model_fields_to_form_field(Patient.gender, inc_choices=True))
     days_symptomatic = forms.IntegerField(**map_model_fields_to_form_field(Symptom.days_symptomatic))
     patient_age = forms.IntegerField(**map_model_fields_to_form_field(Visit.patient_age))
-    spectra_measurement = forms.ChoiceField(**map_model_fields_to_form_field(SpectralData.spectra_measurement,
-                                                                             inc_choices=True))
+
+    spectra_measurement = forms.ModelChoiceField(required=not SpectralData.spectra_measurement.field.blank,
+                                                 label=SpectralData.spectra_measurement.field.verbose_name,
+                                                 help_text=SpectralData.spectra_measurement.field.help_text,
+                                                 queryset=SpectraMeasurementType.objects.all())
 
     instrument = forms.ModelChoiceField(required=(not Instrument.spectrometer.field.blank or
                                                   not Instrument.atr_crystal.field.blank),

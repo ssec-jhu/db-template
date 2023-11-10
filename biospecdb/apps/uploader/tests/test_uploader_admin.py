@@ -13,6 +13,8 @@ import uploader.models
 
 User = get_user_model()
 
+SKIP_MODELS = [uploader.models.BioSampleType, uploader.models.SpectraMeasurementType]
+
 
 uploader_models = []
 for name, obj in getmembers(uploader.models):
@@ -72,10 +74,10 @@ class TestAdminPage:
     def test_admin_pages(self, request, user, url_root, model, action):
         user = request.getfixturevalue(user)
 
-        if url_root == "/data/uploader/" and model is uploader.models.BioSampleType:
+        if url_root == "/data/uploader/" and model in SKIP_MODELS:
             pytest.skip("Model not registered with data admin site.")
 
-        if model is uploader.models.BioSampleType and not user.is_superuser:
+        if model in SKIP_MODELS and not user.is_superuser:
             pytest.skip("Model edits restricted to superuser")
 
         c = Client()
@@ -89,7 +91,7 @@ class TestAdminPage:
     @pytest.mark.parametrize("url_root", ("/data/uploader/", "/admin/uploader/"))
     @pytest.mark.parametrize("model", uploader_models)
     def test_admin_view_perms_pages(self, with_perm, staffuser, url_root, model, mock_data):
-        if url_root == "/data/uploader/" and model is uploader.models.BioSampleType:
+        if url_root == "/data/uploader/" and model in SKIP_MODELS:
             pytest.skip("Model not registered with data admin site.")
 
         c = Client()
@@ -104,7 +106,7 @@ class TestAdminPage:
     @pytest.mark.parametrize("url_root", ("/data/uploader/", "/admin/uploader/"))
     @pytest.mark.parametrize("model", uploader_models)
     def test_admin_add_perms_pages(self, with_perm, staffuser, url_root, model):
-        if url_root == "/data/uploader/" and model is uploader.models.BioSampleType:
+        if url_root == "/data/uploader/" and model in SKIP_MODELS:
             pytest.skip("Model not registered with data admin site.")
 
         c = Client()
@@ -118,7 +120,7 @@ class TestAdminPage:
     @pytest.mark.parametrize("with_perm", (True, False))
     @pytest.mark.parametrize("model", uploader_models)
     def test_admin_change_perms_pages(self, with_perm, staffuser, model, mock_data, qcannotators):
-        if model is uploader.models.BioSampleType:
+        if model in SKIP_MODELS:
             pytest.skip("Model edits restricted to superuser")
 
         if model in (uploader.models.QCAnnotation, uploader.models.UploadedFile):
@@ -138,7 +140,7 @@ class TestAdminPage:
     @pytest.mark.parametrize("with_perm", (True, False))
     @pytest.mark.parametrize("model", uploader_models)
     def test_admin_delete_perms_pages(self, with_perm, staffuser, model, mock_data, qcannotators):
-        if model is uploader.models.BioSampleType:
+        if model in SKIP_MODELS:
             pytest.skip("Model edits restricted to superuser")
 
         if model in (uploader.models.QCAnnotation, uploader.models.UploadedFile):

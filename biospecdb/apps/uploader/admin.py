@@ -3,7 +3,7 @@ from django.db.models import Q
 import django.forms as forms
 
 from .models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, UploadedFile, Visit, QCAnnotator,\
-    QCAnnotation, Center, get_center, BioSampleType
+    QCAnnotation, Center, get_center, BioSampleType, SpectraMeasurementType
 
 
 class RestrictedByCenterAdmin(admin.ModelAdmin):
@@ -64,6 +64,7 @@ class RestrictedByCenterAdmin(admin.ModelAdmin):
 
 
 admin.site.register(BioSampleType)
+admin.site.register(SpectraMeasurementType)
 
 
 @admin.register(Instrument)
