@@ -24,7 +24,7 @@ python manage.py migrate --database=bsr
 
 # Load initial data fixtures.
 python manage.py loaddata centers
-python manage.py loaddata --database=bsr centers diseases instruments qcannotators
+python manage.py loaddata --database=bsr centers diseases instruments qcannotators biosampletypes
 python manage.py update_sql_views
 
 # Creat superuser.

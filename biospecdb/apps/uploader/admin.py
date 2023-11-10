@@ -3,7 +3,7 @@ from django.db.models import Q
 import django.forms as forms
 
 from .models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, UploadedFile, Visit, QCAnnotator,\
-    QCAnnotation, Center, get_center
+    QCAnnotation, Center, get_center, BioSampleType
 
 
 class RestrictedByCenterAdmin(admin.ModelAdmin):
@@ -61,6 +61,9 @@ class RestrictedByCenterAdmin(admin.ModelAdmin):
             if not request.user.is_superuser:
                 kwargs["queryset"] = Center.objects.filter(pk=request.user.center.pk)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+admin.site.register(BioSampleType)
 
 
 @admin.register(Instrument)

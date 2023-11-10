@@ -26,7 +26,7 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
     Note: This func is called by UploadedFile.clean() which, therefore, can't also be called here.
     """
     from uploader.models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, UploadedFile, Visit,\
-        Center as UploaderCenter
+        Center as UploaderCenter, BioSampleType
     from user.models import Center as UserCenter
 
     # Only user.models.User can relate to user.models,Center, all uploader models must use uploader.models.Center since
@@ -81,8 +81,8 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
 
                 # BioSample
                 biosample = BioSample(visit=visit,
-                                      sample_type=BioSample.SampleKind(
-                                          row.get(BioSample.sample_type.field.verbose_name.lower())),
+                                      sample_type=BioSampleType.objects.get(name=row.get(
+                                          BioSample.sample_type.field.verbose_name.lower()).lower()),
                                       sample_processing=row.get(BioSample.sample_processing.field.verbose_name.lower()),
                                       freezing_temp=row.get(BioSample.freezing_temp.field.verbose_name.lower()),
                                       thawing_time=row.get(BioSample.thawing_time.field.verbose_name.lower()))

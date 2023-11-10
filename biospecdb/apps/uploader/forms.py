@@ -4,7 +4,8 @@ from django.db import models
 
 from biospecdb.util import to_uuid
 from uploader.io import read_spectral_data_table, get_file_info
-from uploader.models import UploadedFile, Patient, SpectralData, Instrument, BioSample, Symptom, Disease, Visit
+from uploader.models import UploadedFile, Patient, SpectralData, Instrument, BioSample, Symptom, Disease, Visit, \
+    BioSampleType
 from .loaddata import save_data_to_db
 
 
@@ -52,7 +53,12 @@ class DataInputForm(forms.Form):
     acquisition_time = forms.IntegerField(**map_model_fields_to_form_field(SpectralData.acquisition_time))
     n_coadditions = forms.IntegerField(**map_model_fields_to_form_field(SpectralData.n_coadditions))
     resolution = forms.IntegerField(**map_model_fields_to_form_field(SpectralData.resolution))
-    sample_type = forms.ChoiceField(**map_model_fields_to_form_field(BioSample.sample_type, inc_choices=True))
+
+    sample_type = forms.ModelChoiceField(required=not BioSample.sample_type.field.blank,
+                                         label=BioSample.sample_type.field.verbose_name,
+                                         help_text=BioSample.sample_type.field.help_text,
+                                         queryset=BioSampleType.objects.all())
+
     sample_processing = forms.CharField(**map_model_fields_to_form_field(BioSample.sample_processing))
     freezing_temp = forms.FloatField(**map_model_fields_to_form_field(BioSample.freezing_temp))
     thawing_time = forms.IntegerField(**map_model_fields_to_form_field(BioSample.thawing_time))
