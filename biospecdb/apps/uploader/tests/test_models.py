@@ -8,8 +8,8 @@ from django.db.utils import IntegrityError
 import pytest
 
 import uploader.io
-from uploader.models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, Visit, UploadedFile,\
-    get_center, Center
+from uploader.models import BioSample, BioSampleType, Disease, Instrument, Patient, SpectralData, Symptom, Visit, \
+    UploadedFile, get_center, Center
 from uploader.loaddata import save_data_to_db
 from user.models import Center as UserCenter
 from uploader.models import Center as UploaderCenter
@@ -310,14 +310,14 @@ class TestSpectralData:
         ...
 
     @pytest.mark.parametrize("ext", uploader.io.FileFormats.list())
-    def test_clean(self, centers, instruments, ext):
+    def test_clean(self, centers, instruments, ext, bio_sample_types):
         data_file = (DATA_PATH/"sample").with_suffix(ext)
         data = uploader.io.read_spectral_data(data_file)
 
         patient = Patient.objects.create(patient_id=data.patient_id,
                                          center=Center.objects.get(name="SSEC"))
         visit = patient.visit.create(patient_age=40)
-        bio_sample = visit.bio_sample.create(sample_type=BioSample.SampleKind.PHARYNGEAL_SWAB)
+        bio_sample = visit.bio_sample.create(sample_type=BioSampleType.objects.get(name="pharyngeal swab"))
 
         spectral_data = SpectralData(instrument=Instrument.objects.get(pk=1),
                                      bio_sample=bio_sample,
