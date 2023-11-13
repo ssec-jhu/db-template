@@ -305,7 +305,7 @@ class TestSpectralData:
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestUploadedFile:
     @pytest.mark.parametrize("file_ext", UploadedFile.FileFormats.list())
-    def test_upload_without_error(self, db, diseases, instruments, file_ext, center):
+    def test_upload_without_error(self, db, diseases, instruments, file_ext, center, bio_sample_types):
         meta_data_path = (DATA_PATH/"meta_data").with_suffix(file_ext)
         spectral_file_path = (DATA_PATH / "spectral_data").with_suffix(file_ext)
         with meta_data_path.open(mode="rb") as meta_data, spectral_file_path.open(mode="rb") as spectral_data:
@@ -339,7 +339,7 @@ class TestUploadedFile:
         assert len(BioSample.objects.all()) == n_patients
         assert len(SpectralData.objects.all()) == n_patients
 
-    def test_number_symptoms(self, db, diseases, instruments, center):
+    def test_number_symptoms(self, db, diseases, instruments, center, bio_sample_types):
         """ The total number of symptoms := N_patients * N_diseases. """
         assert len(Patient.objects.all()) == 0  # Assert empty.
 

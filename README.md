@@ -75,7 +75,7 @@ below. The default superuser credentials are username: admin, password: admin. S
 * ``python manage.py migrate --database=bsr``
 * ``python manage.py createsuperuser``
 * ``python manage.py loaddata centers``
-* ``python manage.py loaddata --database=bsr centers diseases instruments qcannotators``
+* ``python manage.py loaddata --database=bsr centers diseases instruments qcannotators biosampletypes``
 * ``python manage.py update_sql_views``
 * ``python manage.py runserver``
 

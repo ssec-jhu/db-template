@@ -387,21 +387,26 @@ class Instrument(DatedModel):
         return f"{self.spectrometer}_{self.atr_crystal}"
 
 
+class BioSampleType(DatedModel):
+    name = models.CharField(max_length=128, verbose_name="Sample Type")
+
+    def __str__(self):
+        return self.name
+
+
 class BioSample(DatedModel):
     """ Model biological sample and collection method. """
 
     class Meta:
         get_latest_by = "updated_at"
 
-    class SampleKind(TextChoices):
-        PHARYNGEAL_SWAB = auto()
-
     visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="bio_sample")
 
     # Sample meta.
-    sample_type = models.CharField(max_length=128,
-                                   choices=SampleKind.choices,
-                                   verbose_name="Sample Type")
+    sample_type = models.ForeignKey(BioSampleType,
+                                    on_delete=models.CASCADE,
+                                    related_name="bio_sample",
+                                    verbose_name="Sample Type")
     sample_processing = models.CharField(default="None",
                                          blank=True,
                                          null=True,
@@ -617,13 +622,14 @@ class FullPatientView(SqlView, models.Model):
         sql = f"""
                 create view {cls._meta.db_table} as 
                 select p.patient_id, p.gender, v.patient_age
-                ,      bs.sample_type, bs.sample_processing, bs.freezing_temp, bs.thawing_time
+                ,      bst.name, bs.sample_processing, bs.freezing_temp, bs.thawing_time
                 ,      i.spectrometer, i.atr_crystal
                 ,      sd.spectra_measurement, sd.acquisition_time, sd.n_coadditions, sd.resolution, sd.data
                 ,      vs.*
                   from uploader_patient p
                   join uploader_visit v on p.patient_id=v.patient_id
                   join uploader_biosample bs on bs.visit_id=v.id
+                  join uploader_biosampletype bst on bst.id=bs.sample_type_id
                   join uploader_spectraldata sd on sd.bio_sample_id=bs.id
                   join uploader_instrument i on i.id=sd.instrument_id
                   left outer join v_visit_symptoms vs on vs.visit_id=v.id

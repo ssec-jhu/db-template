@@ -70,8 +70,15 @@ class TestAdminPage:
     @pytest.mark.parametrize("action", ('/', "/add/"))
     @pytest.mark.parametrize("model", uploader_models)
     def test_admin_pages(self, request, user, url_root, model, action):
-        c = Client()
         user = request.getfixturevalue(user)
+
+        if url_root == "/data/uploader/" and model is uploader.models.BioSampleType:
+            pytest.skip("Model not registered with data admin site.")
+
+        if model is uploader.models.BioSampleType and not user.is_superuser:
+            pytest.skip("Model edits restricted to superuser")
+
+        c = Client()
         if not user.is_superuser:
             add_model_perms(user)  # Grant blanket perms to everything.
         c.force_login(user)
@@ -82,6 +89,9 @@ class TestAdminPage:
     @pytest.mark.parametrize("url_root", ("/data/uploader/", "/admin/uploader/"))
     @pytest.mark.parametrize("model", uploader_models)
     def test_admin_view_perms_pages(self, with_perm, staffuser, url_root, model, mock_data):
+        if url_root == "/data/uploader/" and model is uploader.models.BioSampleType:
+            pytest.skip("Model not registered with data admin site.")
+
         c = Client()
         model_name = model.__name__.lower()
         if with_perm:
@@ -94,6 +104,9 @@ class TestAdminPage:
     @pytest.mark.parametrize("url_root", ("/data/uploader/", "/admin/uploader/"))
     @pytest.mark.parametrize("model", uploader_models)
     def test_admin_add_perms_pages(self, with_perm, staffuser, url_root, model):
+        if url_root == "/data/uploader/" and model is uploader.models.BioSampleType:
+            pytest.skip("Model not registered with data admin site.")
+
         c = Client()
         model_name = model.__name__.lower()
         if with_perm:
@@ -105,6 +118,9 @@ class TestAdminPage:
     @pytest.mark.parametrize("with_perm", (True, False))
     @pytest.mark.parametrize("model", uploader_models)
     def test_admin_change_perms_pages(self, with_perm, staffuser, model, mock_data, qcannotators):
+        if model is uploader.models.BioSampleType:
+            pytest.skip("Model edits restricted to superuser")
+
         if model in (uploader.models.QCAnnotation, uploader.models.UploadedFile):
             pytest.skip("This data doesn't exist in mock_data fixture.")
         c = Client()
@@ -122,6 +138,9 @@ class TestAdminPage:
     @pytest.mark.parametrize("with_perm", (True, False))
     @pytest.mark.parametrize("model", uploader_models)
     def test_admin_delete_perms_pages(self, with_perm, staffuser, model, mock_data, qcannotators):
+        if model is uploader.models.BioSampleType:
+            pytest.skip("Model edits restricted to superuser")
+
         if model in (uploader.models.QCAnnotation, uploader.models.UploadedFile):
             pytest.skip("This data doesn't exist in mock_data fixture.")
         c = Client()

@@ -97,6 +97,12 @@ def sql_views(django_db_blocker):
 
 
 @pytest.fixture(scope="function")
+def bio_sample_types(django_db_blocker):
+    with django_db_blocker.unblock():
+        call_command('loaddata', "--database=bsr", 'biosampletypes.json')
+
+
+@pytest.fixture(scope="function")
 def diseases(django_db_blocker):
     with django_db_blocker.unblock():
         call_command('loaddata', "--database=bsr", 'diseases.json')
@@ -137,7 +143,7 @@ def mock_data(db, django_db_blocker, centers):
 
 
 @pytest.fixture(scope="function")
-def mock_data_from_files(request, monkeypatch, db, centers, diseases, django_db_blocker, instruments):
+def mock_data_from_files(request, monkeypatch, db, centers, diseases, django_db_blocker, instruments, bio_sample_types):
     # patch MEDIA_ROOT
     media_root = request.node.get_closest_marker("media_root")
     if media_root:

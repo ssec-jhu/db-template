@@ -3136,13 +3136,22 @@
     }
 },
 {
+    "model": "uploader.biosampletype",
+    "pk": 1,
+    "fields": {
+        "name": "pharyngeal swab",
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00"
+    }
+},
+{
     "model": "uploader.biosample",
     "pk": 1117,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
-        "sample_type": "PHARYNGEAL_SWAB",
+        "sample_type": 1,
         "sample_processing": "None",
         "freezing_temp": null,
         "thawing_time": null
@@ -3155,7 +3164,7 @@
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
-        "sample_type": "PHARYNGEAL_SWAB",
+        "sample_type": 1,
         "sample_processing": "None",
         "freezing_temp": null,
         "thawing_time": null
@@ -3168,7 +3177,7 @@
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
-        "sample_type": "PHARYNGEAL_SWAB",
+        "sample_type": 1,
         "sample_processing": "None",
         "freezing_temp": null,
         "thawing_time": null
@@ -3181,7 +3190,7 @@
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
-        "sample_type": "PHARYNGEAL_SWAB",
+        "sample_type": 1,
         "sample_processing": "None",
         "freezing_temp": null,
         "thawing_time": null
@@ -3194,7 +3203,7 @@
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
-        "sample_type": "PHARYNGEAL_SWAB",
+        "sample_type": 1,
         "sample_processing": "None",
         "freezing_temp": null,
         "thawing_time": null
@@ -3207,7 +3216,7 @@
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
-        "sample_type": "PHARYNGEAL_SWAB",
+        "sample_type": 1,
         "sample_processing": "None",
         "freezing_temp": null,
         "thawing_time": null
@@ -3220,7 +3229,7 @@
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
-        "sample_type": "PHARYNGEAL_SWAB",
+        "sample_type": 1,
         "sample_processing": "None",
         "freezing_temp": null,
         "thawing_time": null
@@ -3233,7 +3242,7 @@
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
-        "sample_type": "PHARYNGEAL_SWAB",
+        "sample_type": 1,
         "sample_processing": "None",
         "freezing_temp": null,
         "thawing_time": null
@@ -3246,7 +3255,7 @@
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
-        "sample_type": "PHARYNGEAL_SWAB",
+        "sample_type": 1,
         "sample_processing": "None",
         "freezing_temp": null,
         "thawing_time": null
@@ -3259,7 +3268,7 @@
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
-        "sample_type": "PHARYNGEAL_SWAB",
+        "sample_type": 1,
         "sample_processing": "None",
         "freezing_temp": null,
         "thawing_time": null
