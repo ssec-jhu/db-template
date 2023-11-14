@@ -12,6 +12,8 @@ from pandas._libs.parsers import STR_NA_VALUES
 
 from biospecdb.util import StrEnum, to_uuid
 
+PATIENT_ID_STR = "patient_id"
+
 
 @dataclasses.dataclass
 class SpectralData:
@@ -41,6 +43,28 @@ class FileFormats(StrEnum):
         return [x.value.replace('.', '') for x in cls]  # Remove '.' for django validator.
 
 
+def clean_df(df, inplace=False):
+    # Note: Some (if not all) pandas funcs return None when `inplace=True` instead of a ref to the passed df, making for
+    # awkward assignment due to the conditional return.
+
+    cleaned_df = df
+
+    _cleaned_df = cleaned_df.rename(columns=lambda x: x.lower() if isinstance(x, str) else x, inplace=inplace)
+    cleaned_df = cleaned_df if inplace else _cleaned_df
+
+    _cleaned_df = cleaned_df.rename(columns={"patient id": PATIENT_ID_STR}, inplace=inplace, errors="ignore")
+    cleaned_df = cleaned_df if inplace else _cleaned_df
+
+    # Note: This func is used to read in the data table returned from an SQL query from the explorer app and therefore,
+    # may not contain a PATIENT_ID_STR column - ``dropna`` has no ``errors`` arg.
+    if PATIENT_ID_STR in cleaned_df.columns:
+        # TODO: Raise on null patient id instead of silently dropping possible data.
+        _cleaned_df = cleaned_df.dropna(subset=[PATIENT_ID_STR], inplace=inplace)
+        cleaned_df = cleaned_df if inplace else _cleaned_df
+
+    return cleaned_df
+
+
 def read_raw_data(file, ext=None):
     """ Read data from file-like or path-like object. """
     fp, filename = get_file_info(file)
@@ -63,7 +87,7 @@ def read_raw_data(file, ext=None):
     kwargs = dict(true_values=["yes", "Yes"],  # In addition to case-insensitive variants of True.
                   false_values=["no", "No"],  # In addition to case-insensitive variants of False.
                   na_values=[' ', "unknown", "Unknown", "na", "none"],
-                  dtype={"Patient ID":  str, "patient id": str, "patient_id": str})
+                  dtype={"Patient ID":  str, "patient id": str, PATIENT_ID_STR: str})
     # NOTE: The patient ID as a str is crucial for converting to UUIDs as floats cannot be safely converted nor is it
     # ok to read in as int as they could be actual UUID str.
     # NOTE: The following default na_values are also used:
@@ -84,20 +108,17 @@ def read_raw_data(file, ext=None):
     else:
         raise NotImplementedError(f"File ext must be one of {FileFormats.list()} not '{ext}'.")
 
+    # Clean.
+    data = clean_df(data, inplace=True)
+
     return data
 
 
 def read_meta_data(file):
     df = read_raw_data(file)
 
-    # Clean.
-    cleaned_data = df.rename(columns=lambda x: x.lower())
-
-    # TODO: Raise on null patient_id instead of silently dropping possible data.
-    cleaned_data = cleaned_data.dropna(subset=['patient id'])
-
-    # Set index as "patient id" column.
-    cleaned_data = cleaned_data.set_index("patient id")
+    # Set index as "patient_id" column.
+    cleaned_data = df.set_index(PATIENT_ID_STR)
 
     # Insist on index as UUIDs.
     cleaned_data = cleaned_data.set_index(cleaned_data.index.map(lambda x: to_uuid(x)))
@@ -121,17 +142,15 @@ def read_spectral_data_table(file):
     df = read_raw_data(file)
 
     # Clean.
-    # TODO: Raise on null patient id instead of silently dropping possible data.
-    cleaned_data = df.rename(columns={"PATIENT ID": "patient id"})
-    spec_only = cleaned_data.drop(columns=["patient id"], inplace=False)
+    spec_only = df.drop(columns=[PATIENT_ID_STR], inplace=False, errors="raise")
     wavelengths = spec_only.columns.tolist()
     specv = spec_only.values.tolist()
     freqs = [wavelengths for i in range(len(specv))]
 
-    df = pd.DataFrame({"patient_id": [to_uuid(x) for x in cleaned_data["patient id"]],
+    df = pd.DataFrame({PATIENT_ID_STR: [to_uuid(x) for x in df[PATIENT_ID_STR]],
                        "wavelength": freqs,
                        "intensity": specv})
-    df.set_index("patient_id", inplace=True, drop=False)
+    df.set_index(PATIENT_ID_STR, inplace=True, drop=False)
     return df
 
 
@@ -214,7 +233,7 @@ def read_spectral_data(file):
     _fp, filename = get_file_info(file)
     ext = filename.suffix
 
-    data = spectral_data_from_json(file) if ext == FileFormats.JSON else read_single_row_spectral_data_table(file)  # noqa:E501
+    data = spectral_data_from_json(file) if ext == FileFormats.JSON else read_single_row_spectral_data_table(file)
     return data
 
 
