@@ -8,6 +8,7 @@ import plotly.graph_objects as go
 from django.conf import settings
 import uploader.io
 from uploader.models import Disease, Patient, SpectralData
+from biospecdb.util import to_uuid
 
 
 def fig_to_html(fig) -> str:
@@ -59,7 +60,7 @@ def get_line_chart(result: "QueryResult") -> Optional[str]:  # noqa: F821
                           title=f"Spectral Data for SQL query: '{result.sql}'")
         for row in df.itertuples():
             spectral_data = uploader.io.read_spectral_data(row.data)
-            assert spectral_data.patient_id != row.patient_id  # Internal sanity check.
+            assert to_uuid(spectral_data.patient_id) == to_uuid(row.patient_id)
             fig.add_scatter(x=spectral_data.wavelength,
                             y=spectral_data.intensity,
                             name=row.patient_id)

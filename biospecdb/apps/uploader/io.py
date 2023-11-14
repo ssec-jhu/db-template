@@ -80,9 +80,7 @@ def read_raw_data(file, ext=None):
         data = pd.read_json(file, dtype=kwargs["dtype"])
         data.replace(kwargs["true_values"], True, inplace=True)
         data.replace(kwargs["false_values"], False, inplace=True)
-        na_values = kwargs["na_values"].copy()
-        na_values.extend(list(STR_NA_VALUES))
-        data.replace(na_values, None, inplace=True)
+        data.replace(STR_NA_VALUES.union(kwargs['na_values']), pd.NA, inplace=True)
     else:
         raise NotImplementedError(f"File ext must be one of {FileFormats.list()} not '{ext}'.")
 
@@ -113,7 +111,9 @@ def read_meta_data(file):
 def read_spectral_data_table(file):
     """ Read in multiple rows of data returning a pandas.DataFrame.
 
-        This assumes the following format:
+        The data to be read in, needs to be of the following table layout:
+        Note: Commas need to be present for CSV data.
+        Note: The following docstring uses markdown table syntax.
         | patient_id | min_lambda | ... | max_lambda |
         | ---------- | ---------- | --- | ---------- |
         |<some UUID> | intensity  | ... | intensity  |
@@ -138,7 +138,10 @@ def read_spectral_data_table(file):
 def read_single_row_spectral_data_table(file):
     """ Read in single row spectral data.
 
-        This assumes the same format as ``read_spectral_data_table`` except that it contains data for only a single
+        The data to be read in, needs to be of the following table layout:
+        Note: Commas need to be present for CSV data.
+        Note: The following docstring uses markdown table syntax.
+        Note: This is as for ``read_spectral_data_table`` except that it contains data for only a single
         patient, i.e., just a single row:
         | patient_id | min_lambda | ... | max_lambda |
         | ---------- | ---------- | --- | ---------- |
@@ -150,8 +153,8 @@ def read_single_row_spectral_data_table(file):
     if (length := len(df)) != 1:
         raise ValueError(f"The file read should contain only a single row not '{length}'")
 
-    data = df.itertuples(index=False, name="SpectralData").__next__()
-    return SpectralData(**data._asdict())
+    data = df.iloc[0]
+    return SpectralData(data.patient_id, data.wavelength, data.intensity)
 
 
 def spectral_data_to_json(file, data: SpectralData, patient_id=None, wavelength=None, intensity=None):

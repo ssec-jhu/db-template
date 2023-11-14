@@ -82,6 +82,7 @@ class TestExporters:
             assert isinstance(data, uploader.io.SpectralData)
 
             assert {x.name for x in dataclasses.fields(data)} == {"patient_id", "wavelength", "intensity"}
+            assert data.patient_id == SpectralData.objects.get(data=filename).bio_sample.visit.patient.patient_id
             assert len(data.wavelength) == 1798
             assert len(data.intensity) == 1798
 

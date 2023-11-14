@@ -294,7 +294,7 @@ class TestSpectralData:
         filename = Path(SpectralData.objects.all()[0].data.name)
         assert filename.parent.exists()
         assert filename.parent.is_dir()
-        assert not list(filename.parent.glob(f"*{uploader.io.TEMP_FILENAME_PREFIX}*"))
+        assert not list(filename.parent.glob(f"{uploader.io.TEMP_FILENAME_PREFIX}*"))
 
     def test_no_duplicate_data_files(self, mock_data_from_files):
         n_patients = 10
