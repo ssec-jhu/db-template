@@ -24,8 +24,11 @@ class SpectralData:
     def __post_init__(self):
         self.patient_id = to_uuid(self.patient_id)
 
+    def to_json(self, filename, **kwargs):
+        return spectral_data_to_json(filename, data=self, **kwargs)
 
-JSON_OPTS = {"indent": ' ', "force_ascii": True}
+
+JSON_OPTS = {"indent": None, "force_ascii": True}  # jsonlines.
 TEMP_FILENAME_PREFIX = "__TEMP__"
 
 
@@ -36,7 +39,7 @@ class DataSchemaError(Exception):
 class FileFormats(StrEnum):
     CSV = ".csv"
     XLSX = ".xlsx"
-    JSON = ".json"
+    JSONL = ".jsonl"
 
     @classmethod
     def choices(cls):
@@ -100,8 +103,8 @@ def read_raw_data(file, ext=None):
         data = pd.read_csv(file, **kwargs)
     elif ext == FileFormats.XLSX:
         data = pd.read_excel(file, **kwargs)
-    elif ext == FileFormats.JSON:
-        data = pd.read_json(file, dtype=kwargs["dtype"])
+    elif ext == FileFormats.JSONL:
+        data = pd.read_json(file, orient="records", lines=True, dtype=kwargs["dtype"])
         data.replace(kwargs["true_values"], True, inplace=True)
         data.replace(kwargs["false_values"], False, inplace=True)
         data.replace(STR_NA_VALUES.union(kwargs['na_values']), pd.NA, inplace=True)
@@ -132,12 +135,17 @@ def read_meta_data(file):
 def read_spectral_data_table(file):
     """ Read in multiple rows of data returning a pandas.DataFrame.
 
-        The data to be read in, needs to be of the following table layout:
+        The data to be read in, needs to be of the following table layout for .csv & .xlsx:
         Note: Commas need to be present for CSV data.
         Note: The following docstring uses markdown table syntax.
         | patient_id | min_lambda | ... | max_lambda |
         | ---------- | ---------- | --- | ---------- |
         |<some UUID> | intensity  | ... | intensity  |
+
+        {"patient_id": value, wavelength_value: intensity_value, wavelength_value: intensity_value, ...}
+
+        For json data of the following form use ``spectral_data_from_json()`` instead:
+        {"patient_id": value, "wavelength": [values], "intensity": [values]}
     """
     df = read_raw_data(file)
 
@@ -150,6 +158,7 @@ def read_spectral_data_table(file):
     df = pd.DataFrame({PATIENT_ID_STR: [to_uuid(x) for x in df[PATIENT_ID_STR]],
                        "wavelength": freqs,
                        "intensity": specv})
+
     df.set_index(PATIENT_ID_STR, inplace=True, drop=False)
     return df
 
@@ -157,7 +166,7 @@ def read_spectral_data_table(file):
 def read_single_row_spectral_data_table(file):
     """ Read in single row spectral data.
 
-        The data to be read in, needs to be of the following table layout:
+        The data to be read in, needs to be of the following table layout for .csv & .xlsx:
         Note: Commas need to be present for CSV data.
         Note: The following docstring uses markdown table syntax.
         Note: This is as for ``read_spectral_data_table`` except that it contains data for only a single
@@ -165,6 +174,9 @@ def read_single_row_spectral_data_table(file):
         | patient_id | min_lambda | ... | max_lambda |
         | ---------- | ---------- | --- | ---------- |
         |<some UUID> | intensity  | ... | intensity  |
+
+        For .jsonl each line/row must be:
+        {"patient_id": value, "wavelength": [values], "intensity": [values]}
     """
 
     df = read_spectral_data_table(file)
@@ -176,7 +188,7 @@ def read_single_row_spectral_data_table(file):
     return SpectralData(data.patient_id, data.wavelength, data.intensity)
 
 
-def spectral_data_to_json(file, data: SpectralData, patient_id=None, wavelength=None, intensity=None):
+def spectral_data_to_json(file, data: SpectralData, patient_id=None, wavelength=None, intensity=None, **kwargs):
     """ Convert data to json equivalent to ``json.dumps(dataclasses.asdict(SpectralData))``.
 
         Returns json str and/or writes to file.
@@ -191,16 +203,18 @@ def spectral_data_to_json(file, data: SpectralData, patient_id=None, wavelength=
     if isinstance(data, SpectralData):
         data = dataclasses.asdict(data)
 
-    kwargs = dict(indent=JSON_OPTS["indent"], ensure_ascii=JSON_OPTS["force_ascii"], cls=DjangoJSONEncoder)
+    opts = dict(indent=JSON_OPTS["indent"], ensure_ascii=JSON_OPTS["force_ascii"], cls=DjangoJSONEncoder)
+    opts.update(kwargs)
+
     if file is None:
-        return json.dumps(data, **kwargs)
+        return json.dumps(data, **opts)
 
     if isinstance(file, (str, Path)):
         with open(file, mode="w") as fp:
-            return json.dump(data, fp, **kwargs)
+            return json.dump(data, fp, **opts)
     else:
         # Note: We assume that this is pointing to the correct section of the file, i.e., the beginning.
-        return json.dump(data, file, **kwargs)
+        return json.dump(data, file, **opts)
 
 
 def spectral_data_from_json(file):
@@ -209,8 +223,8 @@ def spectral_data_from_json(file):
     fp, filename = get_file_info(file)
     ext = filename.suffix
 
-    if ext != FileFormats.JSON:
-        raise ValueError(f"Incorrect file format - expected '{FileFormats.JSON}' but got '{ext}'")
+    if ext != FileFormats.JSONL:
+        raise ValueError(f"Incorrect file format - expected '{FileFormats.JSONL}' but got '{ext}'")
 
     if fp:
         # Note: We assume that this is pointing to the correct section of the file, i.e., the beginning.
@@ -233,7 +247,7 @@ def read_spectral_data(file):
     _fp, filename = get_file_info(file)
     ext = filename.suffix
 
-    data = spectral_data_from_json(file) if ext == FileFormats.JSON else read_single_row_spectral_data_table(file)
+    data = spectral_data_from_json(file) if ext == FileFormats.JSONL else read_single_row_spectral_data_table(file)
     return data
 
 

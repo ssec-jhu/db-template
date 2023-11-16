@@ -325,7 +325,7 @@ class TestSpectralData:
         spectral_data.full_clean()
         spectral_data.save()
 
-        assert Path(spectral_data.data.name).suffix == uploader.io.FileFormats.JSON
+        assert Path(spectral_data.data.name).suffix == uploader.io.FileFormats.JSONL
         cleaned_data = spectral_data.get_spectral_data()
         assert cleaned_data == data
 

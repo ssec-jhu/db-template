@@ -492,7 +492,7 @@ class SpectralData(DatedModel):
 
     def generate_filename(self):
         return Path(f"{self.bio_sample.visit.patient.patient_id}_{self.bio_sample.pk}_{self.id}")\
-            .with_suffix(uploader.io.FileFormats.JSON)
+            .with_suffix(uploader.io.FileFormats.JSONL)
 
     def clean_data_file(self):
         """ Read in data from uploaded file and store as json.

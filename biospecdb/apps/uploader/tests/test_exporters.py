@@ -78,7 +78,7 @@ class TestExporters:
             assert set(data[SpectralData.data.field.name]) == set(spectral_data_files)
 
         for filename in spectral_data_files:
-            data = uploader.io.spectral_data_from_json(filename)
+            data = uploader.io.read_spectral_data(filename)
             assert isinstance(data, uploader.io.SpectralData)
 
             assert {x.name for x in dataclasses.fields(data)} == {"patient_id", "wavelength", "intensity"}
