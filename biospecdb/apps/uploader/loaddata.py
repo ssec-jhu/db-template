@@ -26,7 +26,7 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
     Note: This func is called by UploadedFile.clean() which, therefore, can't also be called here.
     """
     from uploader.models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, UploadedFile, Visit,\
-        Center as UploaderCenter, BioSampleType
+        Center as UploaderCenter, BioSampleType, SpectraMeasurementType
     from user.models import Center as UserCenter
 
     # Only user.models.User can relate to user.models,Center, all uploader models must use uploader.models.Center since
@@ -116,11 +116,12 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                 data_filename = Path(f"{TEMP_FILENAME_PREFIX if dry_run else ''}{patient.patient_id}_{biosample.pk}").\
                     with_suffix(str(UploadedFile.FileFormats.CSV))
 
+                spectral_measurement_kind = SpectraMeasurementType.objects.get(name=row.get(
+                    SpectralData.spectra_measurement.field.verbose_name.lower()).lower())
+
                 spectraldata = SpectralData(instrument=instrument,
                                             bio_sample=biosample,
-                                            spectra_measurement=SpectralData.SpectralMeasurementKind(
-                                                row.get(SpectralData.spectra_measurement.field.verbose_name.lower())
-                                            ),
+                                            spectra_measurement=spectral_measurement_kind,
                                             acquisition_time=row.get(
                                                 SpectralData.acquisition_time.field.verbose_name.lower()),
                                             n_coadditions=row.get(
