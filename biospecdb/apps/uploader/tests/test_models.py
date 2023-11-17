@@ -9,7 +9,7 @@ import pytest
 
 import uploader.io
 from uploader.models import BioSample, BioSampleType, Disease, Instrument, Patient, SpectralData, Symptom, Visit, \
-    UploadedFile, get_center, Center
+    UploadedFile, get_center, Center, SpectraMeasurementType
 from uploader.loaddata import save_data_to_db
 from user.models import Center as UserCenter
 from uploader.models import Center as UploaderCenter
@@ -310,7 +310,7 @@ class TestSpectralData:
         ...
 
     @pytest.mark.parametrize("ext", uploader.io.FileFormats.list())
-    def test_clean(self, centers, instruments, ext, bio_sample_types):
+    def test_clean(self, centers, instruments, ext, bio_sample_types, spectra_measurement_types):
         data_file = (DATA_PATH/"sample").with_suffix(ext)
         data = uploader.io.read_spectral_data(data_file)
 
@@ -321,7 +321,8 @@ class TestSpectralData:
 
         spectral_data = SpectralData(instrument=Instrument.objects.get(pk=1),
                                      bio_sample=bio_sample,
-                                     data=ContentFile(data_file.read_bytes(), name=data_file))
+                                     data=ContentFile(data_file.read_bytes(), name=data_file),
+                                     spectra_measurement=SpectraMeasurementType.objects.get(name="atr-ftir"))
         spectral_data.full_clean()
         spectral_data.save()
 
