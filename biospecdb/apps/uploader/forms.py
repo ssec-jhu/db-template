@@ -3,9 +3,9 @@ from django import forms
 from django.db import models
 
 from biospecdb.util import to_uuid
-from uploader.io import read_spectral_data_table, get_file_info
 from uploader.models import UploadedFile, Patient, SpectralData, Instrument, BioSample, Symptom, Disease, Visit, \
     BioSampleType, SpectraMeasurementType
+from uploader.io import read_spectral_data_table
 from .loaddata import save_data_to_db
 
 
@@ -113,7 +113,7 @@ class DataInputForm(forms.Form):
 
         # Read in all data
         meta_data = self.to_df()
-        spec_data = read_spectral_data_table(*get_file_info(self.cleaned_data["spectral_data"]))
+        spec_data = read_spectral_data_table(self.cleaned_data["spectral_data"])
 
         # This uses a join so returns the joined data so that it doesn't go to waste if needed, which it is here.
         return UploadedFile.join_with_validation(meta_data, spec_data)

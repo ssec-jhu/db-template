@@ -5,14 +5,11 @@ from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 from django.db import transaction
 
-from uploader.io import read_meta_data, read_spectral_data_table, spectral_data_to_csv
+import uploader.io
 
 
 class ExitTransaction(Exception):
     ...
-
-
-TEMP_FILENAME_PREFIX = "__TEMP__"
 
 
 def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry_run=False) -> dict:
@@ -36,9 +33,9 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
 
     if joined_data is None:
         # Read in all data.
-        meta_data = meta_data if isinstance(meta_data, pd.DataFrame) else read_meta_data(meta_data)
+        meta_data = meta_data if isinstance(meta_data, pd.DataFrame) else uploader.io.read_meta_data(meta_data)
         spec_data = spectral_data if isinstance(spectral_data, pd.DataFrame) else \
-            read_spectral_data_table(spectral_data)
+            uploader.io.read_spectral_data_table(spectral_data)
 
         UploadedFile.validate_lengths(meta_data, spec_data)
         joined_data = UploadedFile.join_with_validation(meta_data, spec_data)
@@ -105,16 +102,11 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                 instrument.full_clean()
 
                 # Create datafile
-                wavelengths = row["wavelength"]
-                intensities = row["intensity"]
-
-                csv_data = spectral_data_to_csv(file=None, wavelengths=wavelengths, intensities=intensities)
-
-                # Note: This won't be unique since multiple files can exist per biosample. However, we'd have to create
-                # this post save such as to mangle in spectraldata.pk. Instead, django will automatically append a
-                # random 7 digit string before the ext upon file name collisions.
-                data_filename = Path(f"{TEMP_FILENAME_PREFIX if dry_run else ''}{patient.patient_id}_{biosample.pk}").\
-                    with_suffix(str(UploadedFile.FileFormats.CSV))
+                json_str = uploader.io.spectral_data_to_json(file=None,
+                                                             data=None,
+                                                             patient_id=index,
+                                                             wavelength=row["wavelength"],
+                                                             intensity=row["intensity"])
 
                 spectral_measurement_kind = SpectraMeasurementType.objects.get(name=row.get(
                     SpectralData.spectra_measurement.field.verbose_name.lower()).lower())
@@ -126,10 +118,9 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                                                 SpectralData.acquisition_time.field.verbose_name.lower()),
                                             n_coadditions=row.get(
                                                 SpectralData.n_coadditions.field.verbose_name.lower()),
-                                            resolution=row.get(SpectralData.resolution.field.verbose_name.lower()),
-
-                                            # TODO: See https://github.com/ssec-jhu/biospecdb/issues/40
-                                            data=ContentFile(csv_data, name=data_filename))
+                                            resolution=row.get(SpectralData.resolution.field.verbose_name.lower()))
+                filename = f"{uploader.io.TEMP_FILENAME_PREFIX if dry_run else ''}{spectraldata.generate_filename()}"
+                spectraldata.data = ContentFile(json_str, name=filename)
                 spectraldata.full_clean()
                 spectraldata.save()
                 spectral_data_files.append(spectraldata.data)
@@ -173,7 +164,7 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
     finally:
         # Delete unwanted temporary files.
         for file in spectral_data_files:
-            if (filename := Path(file.name)).name.startswith(TEMP_FILENAME_PREFIX):
+            if (filename := Path(file.name)).name.startswith(uploader.io.TEMP_FILENAME_PREFIX):
                 if not file.closed:
                     file.close()
                 SpectralData.data.field.storage.delete(filename)

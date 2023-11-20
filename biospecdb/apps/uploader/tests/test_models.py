@@ -3,13 +3,14 @@ from uuid import uuid4
 
 from django.core.exceptions import ValidationError
 import django.core.files
+from django.core.files.base import ContentFile
 from django.db.utils import IntegrityError
 import pytest
 
-from uploader.io import read_meta_data
-from uploader.models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, Visit, UploadedFile,\
-    get_center, Center
-from uploader.loaddata import save_data_to_db, TEMP_FILENAME_PREFIX
+import uploader.io
+from uploader.models import BioSample, BioSampleType, Disease, Instrument, Patient, SpectralData, Symptom, Visit, \
+    UploadedFile, get_center, Center, SpectraMeasurementType
+from uploader.loaddata import save_data_to_db
 from user.models import Center as UserCenter
 from uploader.models import Center as UploaderCenter
 import biospecdb.util
@@ -293,13 +294,41 @@ class TestSpectralData:
         filename = Path(SpectralData.objects.all()[0].data.name)
         assert filename.parent.exists()
         assert filename.parent.is_dir()
+        assert not list(filename.parent.glob(f"{uploader.io.TEMP_FILENAME_PREFIX}*"))
+
+    def test_no_duplicate_data_files(self, mock_data_from_files):
+        n_patients = 10
+        assert len(SpectralData.objects.all()) == n_patients
+        filename = Path(SpectralData.objects.all()[0].data.name)
+        assert filename.parent.exists()
+        assert filename.parent.is_dir()
         assert len(list(filename.parent.glob('*'))) == n_patients
-        assert not list(filename.parent.glob(f"*{TEMP_FILENAME_PREFIX}*"))
 
     @pytest.mark.skip("Unimplemented See #141")
     def test_all_files_deleted_upon_transaction_failure(self):
         # I'm not sure how to mock this... See https://github.com/ssec-jhu/biospecdb/issues/141
         ...
+
+    @pytest.mark.parametrize("ext", uploader.io.FileFormats.list())
+    def test_clean(self, centers, instruments, ext, bio_sample_types, spectra_measurement_types):
+        data_file = (DATA_PATH/"sample").with_suffix(ext)
+        data = uploader.io.read_spectral_data(data_file)
+
+        patient = Patient.objects.create(patient_id=data.patient_id,
+                                         center=Center.objects.get(name="SSEC"))
+        visit = patient.visit.create(patient_age=40)
+        bio_sample = visit.bio_sample.create(sample_type=BioSampleType.objects.get(name="pharyngeal swab"))
+
+        spectral_data = SpectralData(instrument=Instrument.objects.get(pk=1),
+                                     bio_sample=bio_sample,
+                                     data=ContentFile(data_file.read_bytes(), name=data_file),
+                                     spectra_measurement=SpectraMeasurementType.objects.get(name="atr-ftir"))
+        spectral_data.full_clean()
+        spectral_data.save()
+
+        assert Path(spectral_data.data.name).suffix == uploader.io.FileFormats.JSONL
+        cleaned_data = spectral_data.get_spectral_data()
+        assert cleaned_data == data
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
@@ -380,7 +409,7 @@ class TestUploadedFile:
     @pytest.mark.parametrize("file_ext", UploadedFile.FileFormats.list())
     def test_patient_ids(self, mock_data_from_files, file_ext):
         meta_data_path = (DATA_PATH / "meta_data").with_suffix(file_ext)
-        df = read_meta_data(meta_data_path)
+        df = uploader.io.read_meta_data(meta_data_path)
 
         all_patients = Patient.objects.all()
 
