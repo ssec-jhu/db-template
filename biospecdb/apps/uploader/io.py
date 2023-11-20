@@ -142,9 +142,10 @@ def read_spectral_data_table(file):
         | ---------- | ---------- | --- | ---------- |
         |<some UUID> | intensity  | ... | intensity  |
 
+        For .jsonl each line/row must be of the following:
         {"patient_id": value, wavelength_value: intensity_value, wavelength_value: intensity_value, ...}
 
-        For json data of the following form use ``spectral_data_from_json()`` instead:
+        For json data of the following form use ``read_spectral_data()``.
         {"patient_id": value, "wavelength": [values], "intensity": [values]}
     """
     df = _read_raw_data(file)
@@ -176,6 +177,9 @@ def read_single_row_spectral_data_table(file):
         |<some UUID> | intensity  | ... | intensity  |
 
         For .jsonl each line/row must be:
+        {"patient_id": value, wavelength_value: intensity_values, wavelength_value: intensity_values, ...}
+
+        For json data of the following form use ``read_spectral_data()``.
         {"patient_id": value, "wavelength": [values], "intensity": [values]}
     """
 
@@ -189,8 +193,7 @@ def read_single_row_spectral_data_table(file):
 
 
 def spectral_data_to_json(file, data: SpectralData, patient_id=None, wavelength=None, intensity=None, **kwargs):
-    """ Convert data to json equivalent to ``json.dumps(dataclasses.asdict(SpectralData))``.
-
+    """ Convert data to json equivalent to {"patient_id": value, "wavelength": [values], "intensity": [values]}
         Returns json str and/or writes to file.
     """
 
@@ -218,7 +221,9 @@ def spectral_data_to_json(file, data: SpectralData, patient_id=None, wavelength=
 
 
 def spectral_data_from_json(file):
-    """ Read spectral data file and return data SpectralData instance. """
+    """ Read spectral data of the form {"patient_id": value, "wavelength": [values], "intensity": [values]}
+        and return data SpectralData instance.
+    """
     # Determine whether file obj (fp) or filename.
     fp, filename = _get_file_info(file)
     ext = filename.suffix
@@ -243,7 +248,20 @@ def spectral_data_from_json(file):
 
 
 def read_spectral_data(file):
-    """ General purpose reader to handle multiple file formats returning SpectralData instance. """
+    """ General purpose reader to handle multiple file formats returning SpectralData instance.
+
+        The data to be read in, needs to be of the following table layout for .csv & .xlsx:
+        Note: Commas need to be present for CSV data.
+        Note: The following docstring uses markdown table syntax.
+        Note: This is as for ``read_spectral_data_table`` except that it contains data for only a single
+        patient, i.e., just a single row:
+        | patient_id | min_lambda | ... | max_lambda |
+        | ---------- | ---------- | --- | ---------- |
+        |<some UUID> | intensity  | ... | intensity  |
+
+        For .jsonl data must be of the following form:
+        {"patient_id": value, "wavelength": [values], "intensity": [values]}
+    """
     _fp, filename = _get_file_info(file)
     ext = filename.suffix
 
