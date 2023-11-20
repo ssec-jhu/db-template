@@ -46,7 +46,7 @@ class FileFormats(StrEnum):
         return [x.value.replace('.', '') for x in cls]  # Remove '.' for django validator.
 
 
-def clean_df(df, inplace=False):
+def _clean_df(df, inplace=False):
     # Note: Some (if not all) pandas funcs return None when `inplace=True` instead of a ref to the passed df, making for
     # awkward assignment due to the conditional return.
 
@@ -68,9 +68,9 @@ def clean_df(df, inplace=False):
     return cleaned_df
 
 
-def read_raw_data(file, ext=None):
+def _read_raw_data(file, ext=None):
     """ Read data from file-like or path-like object. """
-    fp, filename = get_file_info(file)
+    fp, filename = _get_file_info(file)
 
     # We need an ext to determine which reader to use. If one isn't explicitly passed, obtain from filename.
     if not ext:
@@ -112,13 +112,13 @@ def read_raw_data(file, ext=None):
         raise NotImplementedError(f"File ext must be one of {FileFormats.list()} not '{ext}'.")
 
     # Clean.
-    data = clean_df(data, inplace=True)
+    data = _clean_df(data, inplace=True)
 
     return data
 
 
 def read_meta_data(file):
-    df = read_raw_data(file)
+    df = _read_raw_data(file)
 
     # Set index as "patient_id" column.
     cleaned_data = df.set_index(PATIENT_ID_STR)
@@ -147,7 +147,7 @@ def read_spectral_data_table(file):
         For json data of the following form use ``spectral_data_from_json()`` instead:
         {"patient_id": value, "wavelength": [values], "intensity": [values]}
     """
-    df = read_raw_data(file)
+    df = _read_raw_data(file)
 
     # Clean.
     spec_only = df.drop(columns=[PATIENT_ID_STR], inplace=False, errors="raise")
@@ -220,7 +220,7 @@ def spectral_data_to_json(file, data: SpectralData, patient_id=None, wavelength=
 def spectral_data_from_json(file):
     """ Read spectral data file and return data SpectralData instance. """
     # Determine whether file obj (fp) or filename.
-    fp, filename = get_file_info(file)
+    fp, filename = _get_file_info(file)
     ext = filename.suffix
 
     if ext != FileFormats.JSONL:
@@ -244,14 +244,14 @@ def spectral_data_from_json(file):
 
 def read_spectral_data(file):
     """ General purpose reader to handle multiple file formats returning SpectralData instance. """
-    _fp, filename = get_file_info(file)
+    _fp, filename = _get_file_info(file)
     ext = filename.suffix
 
     data = spectral_data_from_json(file) if ext == FileFormats.JSONL else read_single_row_spectral_data_table(file)
     return data
 
 
-def get_file_info(file):
+def _get_file_info(file):
     """ The actual file buffer is nested at different levels depending on container class.
 
         Returns: (fp, Path(filename))

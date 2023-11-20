@@ -84,15 +84,15 @@ class TestSpectralDataToJson:
 class TestReadRawData:
     @pytest.mark.parametrize("ext", uploader.io.FileFormats.list())
     def test_read(self, ext):
-        data = uploader.io.read_raw_data((DATA_PATH/"spectral_data").with_suffix(ext))
+        data = uploader.io._read_raw_data((DATA_PATH / "spectral_data").with_suffix(ext))
         assert len(data) == 10
 
     def test_ext_exception(self):
         with pytest.raises(ValueError, match="When passing an IO stream, ext must be specified"):
-            uploader.io.read_raw_data(None, None)
+            uploader.io._read_raw_data(None, None)
 
         with pytest.raises(ValueError, match="A path-like or file-like object must be specified"):
-            uploader.io.read_raw_data(None, ext=".whatever")
+            uploader.io._read_raw_data(None, ext=".whatever")
 
         with pytest.raises(NotImplementedError, match="File ext must be one of"):
-            uploader.io.read_raw_data("somefile", ext=".whatever")
+            uploader.io._read_raw_data("somefile", ext=".whatever")

@@ -73,7 +73,7 @@ class TestExporters:
 
         query_data_file = query_data_file[0]
         with z.open(query_data_file) as f:
-            data = uploader.io.read_raw_data(f, ext=Path(query_data_file).suffix)
+            data = uploader.io._read_raw_data(f, ext=Path(query_data_file).suffix)
             assert len(data) == 10
             assert set(data[SpectralData.data.field.name]) == set(spectral_data_files)
 
