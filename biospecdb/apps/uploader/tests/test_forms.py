@@ -4,7 +4,7 @@ import pytest
 
 pytest.skip(allow_module_level=True)
 
-from uploader.models import UploadedFile, Patient, Visit, BioSample, SpectralData, Instrument, Disease  # noqa: E402
+from uploader.models import UploadedFile, Patient, Visit, BioSample, SpectralData, Instrument, Observable  # noqa: E402
 from uploader.forms import DataInputForm  # noqa: E402
 from uploader.tests.conftest import DATA_PATH  # noqa: E402
 
@@ -14,7 +14,7 @@ def data_dict(db, instruments):
     return {
             "patient_id": "4efb03c5-27cd-4b40-82d9-c602e0ef7b80",
             "gender": 'M',
-            "days_symptomatic": 1,
+            "days_observed": 1,
             "patient_age": 1,
             "spectra_measurement": 'ATR_FTIR',
             "instrument": Instrument.objects.filter(spectrometer="Agilent Cory 630", atr_crystal="ZnSe")[0].pk,
@@ -68,8 +68,8 @@ class TestDataInputForm:
     def test_dynamic_form_rendering(self, mock_data_from_form_and_spectral_file, data_dict, django_request):
         spectral_file_path = (DATA_PATH/"sample").with_suffix(UploadedFile.FileFormats.XLSX)
         
-        # Add new disease
-        meningitis = Disease(
+        # Add new observable
+        meningitis = Observable(
             name='Meningitis',
             description='An inflammation of the protective membranes covering the brain and spinal cord',
             alias='meningitis',
@@ -87,8 +87,8 @@ class TestDataInputForm:
             )
             assert data_input_form.is_valid(), data_input_form.errors.as_data()
             
-        assert Disease.objects.filter(name='Meningitis').exists()
-        assert not Disease.objects.filter(name='Meningit').exists()
+        assert Observable.objects.filter(name='Meningitis').exists()
+        assert not Observable.objects.filter(name='Meningit').exists()
 
     @pytest.mark.parametrize("file_ext", UploadedFile.FileFormats.list())
     def test_new_instrument(self, db, instruments, file_ext, data_dict, django_request):

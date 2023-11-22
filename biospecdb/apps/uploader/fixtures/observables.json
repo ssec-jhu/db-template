@@ -1,6 +1,6 @@
 [
   {
-    "model": "uploader.Disease",
+    "model": "uploader.Observable",
     "pk": 1,
     "fields": {
       "name": "Ct_gene_N",
@@ -12,7 +12,7 @@
     }
   },
   {
-    "model": "uploader.Disease",
+    "model": "uploader.Observable",
     "pk": 2,
     "fields": {
       "name": "Ct_gene_ORF1ab",
@@ -24,7 +24,7 @@
     }
   },
   {
-    "model": "uploader.Disease",
+    "model": "uploader.Observable",
     "pk": 3,
     "fields": {
       "name": "Covid_RT_qPCR",
@@ -36,7 +36,7 @@
     }
   },
   {
-    "model": "uploader.Disease",
+    "model": "uploader.Observable",
     "pk": 4,
     "fields": {
       "name": "covid_suspicious_contact",
@@ -48,7 +48,7 @@
     }
   },
   {
-    "model": "uploader.Disease",
+    "model": "uploader.Observable",
     "pk": 5,
     "fields": {
       "name": "fever",
@@ -60,7 +60,7 @@
     }
   },
   {
-    "model": "uploader.Disease",
+    "model": "uploader.Observable",
     "pk": 6,
     "fields": {
       "name": "dyspnoea",
@@ -72,7 +72,7 @@
     }
   },
   {
-    "model": "uploader.Disease",
+    "model": "uploader.Observable",
     "pk": 7,
     "fields": {
       "name": "oxygen_saturation_lt_95",
@@ -84,7 +84,7 @@
     }
   },
   {
-    "model": "uploader.Disease",
+    "model": "uploader.Observable",
     "pk": 8,
     "fields": {
       "name": "cough",
@@ -96,7 +96,7 @@
     }
   },
   {
-    "model": "uploader.Disease",
+    "model": "uploader.Observable",
     "pk": 9,
     "fields": {
       "name": "coryza",
@@ -108,7 +108,7 @@
     }
   },
   {
-    "model": "uploader.Disease",
+    "model": "uploader.Observable",
     "pk": 10,
     "fields": {
       "name": "odinophagy",
@@ -120,7 +120,7 @@
     }
   },
   {
-    "model": "uploader.Disease",
+    "model": "uploader.Observable",
     "pk": 11,
     "fields": {
       "name": "diarrhea",
@@ -132,7 +132,7 @@
     }
   },
   {
-    "model": "uploader.Disease",
+    "model": "uploader.Observable",
     "pk": 12,
     "fields": {
       "name": "nausea",
@@ -144,7 +144,7 @@
     }
   },
   {
-    "model": "uploader.Disease",
+    "model": "uploader.Observable",
     "pk": 13,
     "fields": {
       "name": "headache",
@@ -156,7 +156,7 @@
     }
   },
   {
-    "model": "uploader.Disease",
+    "model": "uploader.Observable",
     "pk": 14,
     "fields": {
       "name": "weakness",
@@ -168,7 +168,7 @@
     }
   },
   {
-    "model": "uploader.Disease",
+    "model": "uploader.Observable",
     "pk": 15,
     "fields": {
       "name": "anosmia",
@@ -180,7 +180,7 @@
     }
   },
   {
-    "model": "uploader.Disease",
+    "model": "uploader.Observable",
     "pk": 16,
     "fields": {
       "name": "myalgia",
@@ -192,7 +192,7 @@
     }
   },
   {
-    "model": "uploader.Disease",
+    "model": "uploader.Observable",
     "pk": 17,
     "fields": {
       "name": "no_appetite",
@@ -204,7 +204,7 @@
     }
   },
   {
-    "model": "uploader.Disease",
+    "model": "uploader.Observable",
     "pk": 18,
     "fields": {
       "name": "vomiting",
@@ -216,7 +216,7 @@
     }
   },
   {
-    "model": "uploader.Disease",
+    "model": "uploader.Observable",
     "pk": 19,
     "fields": {
       "name": "chronic_pulmonary_inc_asthma",
@@ -228,7 +228,7 @@
     }
   },
   {
-    "model": "uploader.Disease",
+    "model": "uploader.Observable",
     "pk": 20,
     "fields": {
       "name": "cardiovascular_disease_inc_hypertension",
@@ -240,7 +240,7 @@
     }
   },
   {
-    "model": "uploader.Disease",
+    "model": "uploader.Observable",
     "pk": 21,
     "fields": {
       "name": "diabetes",
@@ -252,7 +252,7 @@
     }
   },
   {
-    "model": "uploader.Disease",
+    "model": "uploader.Observable",
     "pk": 22,
     "fields": {
       "name": "chronic_or_neuromuscular_neurological_disease",

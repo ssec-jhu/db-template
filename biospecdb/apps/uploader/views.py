@@ -4,7 +4,7 @@ from django.db import transaction
 from openpyxl import load_workbook
 
 from .forms import FileUploadForm, DataInputForm
-from uploader.models import Patient, Visit, SpectralData, BioSample, Symptom, Disease
+from uploader.models import Patient, Visit, SpectralData, BioSample, Observation, Observable
 from biospecdb.util import is_valid_uuid, to_uuid
 
 
@@ -87,10 +87,10 @@ def data_input(request):
                         return render(request, 'DataInputForm.html', {'form': form, 'message': message, \
                             'delta_count': delta_count})
                         
-                    last_visit_symptoms = Symptom.objects.select_for_update().filter(visit=last_visit)
-                    symptom = last_visit_symptoms.order_by('days_symptomatic').last()
-                    if symptom is None:
-                        message = "Data Search failed - there are no symptoms associated with the visit {}." \
+                    last_visit_observations = Observation.objects.select_for_update().filter(visit=last_visit)
+                    observation = last_visit_observations.order_by('days_observed').last()
+                    if observation is None:
+                        message = "Data Search failed - there are no observations associated with the visit {}." \
                             .format(last_visit)
                         return render(request, 'DataInputForm.html', {'form': form, 'message': message, \
                             'delta_count': delta_count})
@@ -106,7 +106,7 @@ def data_input(request):
                     initial_data={
                         'patient_id': patient_id,
                         'gender': patient.gender,
-                        'days_symptomatic': symptom.days_symptomatic,
+                        'days_observed': observation.days_observed,
                         'patient_age': last_visit.patient_age,
                         'spectra_measurement': spectraldata.spectra_measurement,
                         'instrument': spectraldata.instrument,
@@ -119,12 +119,12 @@ def data_input(request):
                         'thawing_time': biosample.thawing_time,
                         'spectral_data': spectraldata.data
                     }
-                    for symptom in last_visit_symptoms:
-                        if symptom.disease.value_class == "BOOL":
-                            initial_data[symptom.disease.name] = \
-                                Disease.Types(symptom.disease.value_class).cast(symptom.disease_value)   
+                    for observation in last_visit_observations:
+                        if observation.observable.value_class == "BOOL":
+                            initial_data[observation.observable.name] = \
+                                Observable.Types(observation.observable.value_class).cast(observation.observable_value)   
                         else:
-                            initial_data[symptom.disease.name] = symptom.disease_value
+                            initial_data[observation.observable.name] = observation.observable_value
                     form = DataInputForm(initial=initial_data, request=request)
                     message = "The data associated with Patient ID {} is shown below:".format(patient_id)
                     return render(request, 'DataInputForm.html', {'form': form, 'message': message, \

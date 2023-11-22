@@ -3,8 +3,8 @@ from django import forms
 from django.db import models
 
 from biospecdb.util import to_uuid
-from uploader.models import UploadedFile, Patient, SpectralData, Instrument, BioSample, Symptom, Disease, Visit, \
-    BioSampleType, SpectraMeasurementType
+from uploader.models import UploadedFile, Patient, SpectralData, Instrument, BioSample, Observation, Observable,\
+    Visit, BioSampleType, SpectraMeasurementType
 from uploader.io import read_spectral_data_table
 from .loaddata import save_data_to_db
 
@@ -39,7 +39,7 @@ class DataInputForm(forms.Form):
         
     patient_id = forms.UUIDField(**map_model_fields_to_form_field(Patient.patient_id))
     gender = forms.ChoiceField(**map_model_fields_to_form_field(Patient.gender, inc_choices=True))
-    days_symptomatic = forms.IntegerField(**map_model_fields_to_form_field(Symptom.days_symptomatic))
+    days_observed = forms.IntegerField(**map_model_fields_to_form_field(Observation.days_observed))
     patient_age = forms.IntegerField(**map_model_fields_to_form_field(Visit.patient_age))
 
     spectra_measurement = forms.ModelChoiceField(required=not SpectralData.spectra_measurement.field.blank,
@@ -71,22 +71,22 @@ class DataInputForm(forms.Form):
         self.request = kwargs.pop("request")
         super().__init__(*args, **kwargs)
 
-        for disease in Disease.objects.all():  # Dynamically add disease fields from the Disease table
-            if (field_type := disease.value_class) == "FLOAT":
-                field_type = forms.FloatField(required=not Symptom.disease_value.field.blank,
-                                              initial=Symptom.disease_value.field.default,
-                                              label=disease.alias)
+        for observable in Observable.objects.all():  # Dynamically add observable fields from the Observable table
+            if (field_type := observable.value_class) == "FLOAT":
+                field_type = forms.FloatField(required=not Observation.observable_value.field.blank,
+                                              initial=Observation.observable_value.field.default,
+                                              label=observable.alias)
             elif field_type == "STR":
-                field_type = forms.CharField(required=not Symptom.disease_value.field.blank,
-                                             initial=Symptom.disease_value.field.default,
-                                             label=disease.alias)
+                field_type = forms.CharField(required=not Observation.observable_value.field.blank,
+                                             initial=Observation.observable_value.field.default,
+                                             label=observable.alias)
             elif field_type == "BOOL":
                 # TODO: Reconsider use of NullBooleanField and NullBooleanSelect.
-                field_type = forms.NullBooleanField(required=not Symptom.disease_value.field.blank,
-                                                    label=disease.alias,
-                                                    initial=Symptom.disease_value.field.default,
+                field_type = forms.NullBooleanField(required=not Observation.observable_value.field.blank,
+                                                    label=observable.alias,
+                                                    initial=Observation.observable_value.field.default,
                                                     widget=forms.NullBooleanSelect)  # TODO: Reconsider widget use.
-            self.fields[disease.name] = field_type
+            self.fields[observable.name] = field_type
 
     def to_df(self):
         # Create a dictionary from the cleaned form data

@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 
 from django.conf import settings
 import uploader.io
-from uploader.models import Disease, Patient, SpectralData
+from uploader.models import Observable, Patient, SpectralData
 from biospecdb.util import to_uuid
 
 
@@ -20,19 +20,19 @@ def fig_to_html(fig) -> str:
     return graph
 
 
-def count_bool_diseases(result: "QueryResult"):  # noqa: F821
+def count_bool_observables(result: "QueryResult"):  # noqa: F821
     if len(result.data) < 1:
         return
 
-    bool_diseases = [d.name for d in Disease.objects.all() if d.value_class == "BOOL"]
+    bool_observables = [d.name for d in Observable.objects.all() if d.value_class == "BOOL"]
     df = pd.DataFrame(result.data, columns=result.header_strings)
-    df = df[bool_diseases].replace({"True": True, "False": False})
+    df = df[bool_observables].replace({"True": True, "False": False})
     return df.sum()
 
 
 def get_pie_chart(result: "QueryResult") -> Optional[str]:  # noqa: F821
     try:
-        counts = count_bool_diseases(result)
+        counts = count_bool_observables(result)
 
         if counts is None:
             return

@@ -15,15 +15,15 @@ class ExitTransaction(Exception):
 def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry_run=False) -> dict:
 
     """
-    Ingest into the database large tables of symptom & disease data (aka "meta" data) along with associated spectral
-    data.
+    Ingest into the database large tables of observation & observable data (aka "meta" data) along with associated
+    spectral data.
 
     Note: Data can be passed in pre-joined, i.e., save_data_to_db(None, None, joined_data). If so, data can't be
           validated.
     Note: This func is called by UploadedFile.clean() which, therefore, can't also be called here.
     """
-    from uploader.models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, UploadedFile, Visit,\
-        Center as UploaderCenter, BioSampleType, SpectraMeasurementType
+    from uploader.models import BioSample, Observable, Instrument, Patient, SpectralData, Observation, UploadedFile,\
+        Visit, Center as UploaderCenter, BioSampleType, SpectraMeasurementType
     from user.models import Center as UserCenter
 
     # Only user.models.User can relate to user.models,Center, all uploader models must use uploader.models.Center since
@@ -128,26 +128,26 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                 biosample.spectral_data.add(spectraldata, bulk=False)
                 instrument.spectral_data.add(spectraldata, bulk=False)
 
-                # Symptoms
-                # NOTE: Bulk data from client doesn't contain data for `days_symptomatic` per symptom, but instead per
+                # Observations
+                # NOTE: Bulk data from client doesn't contain data for `days_observed` per observation, but instead per
                 # patient.
-                days_symptomatic = row.get(Symptom.days_symptomatic.field.verbose_name.lower(), None)
-                for disease in Disease.objects.all():
-                    symptom_value = row.get(disease.alias.lower(), None)
-                    if symptom_value is None:
+                days_observed = row.get(Observation.days_observed.field.verbose_name.lower(), None)
+                for observable in Observable.objects.all():
+                    observation_value = row.get(observable.alias.lower(), None)
+                    if observation_value is None:
                         continue
 
-                    # TODO: Should the following logic belong to Symptom.__init__()?
+                    # TODO: Should the following logic belong to Observation.__init__()?
                     #  See https://github.com/ssec-jhu/biospecdb/issues/42
-                    symptom_value = Disease.Types(disease.value_class).cast(symptom_value)
-                    symptom = Symptom(disease=disease,
+                    observation_value = Observable.Types(observable.value_class).cast(observation_value)
+                    observation = Observation(observable=observable,
                                       visit=visit,
-                                      disease_value=symptom_value,
-                                      days_symptomatic=days_symptomatic)
+                                      observable_value=observation_value,
+                                      days_observed=days_observed)
 
-                    symptom.full_clean()
-                    symptom.save()
-                    disease.symptom.add(symptom, bulk=False)
+                    observation.full_clean()
+                    observation.save()
+                    observable.observation.add(observation, bulk=False)
 
             if dry_run:
                 raise ExitTransaction()

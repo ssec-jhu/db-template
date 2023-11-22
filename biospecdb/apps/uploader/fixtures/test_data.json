@@ -210,7 +210,7 @@
     }
 },
 {
-    "model": "uploader.disease",
+    "model": "uploader.observable",
     "pk": 1,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -222,7 +222,7 @@
     }
 },
 {
-    "model": "uploader.disease",
+    "model": "uploader.observable",
     "pk": 2,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -234,7 +234,7 @@
     }
 },
 {
-    "model": "uploader.disease",
+    "model": "uploader.observable",
     "pk": 3,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -246,7 +246,7 @@
     }
 },
 {
-    "model": "uploader.disease",
+    "model": "uploader.observable",
     "pk": 4,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -258,7 +258,7 @@
     }
 },
 {
-    "model": "uploader.disease",
+    "model": "uploader.observable",
     "pk": 5,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -270,7 +270,7 @@
     }
 },
 {
-    "model": "uploader.disease",
+    "model": "uploader.observable",
     "pk": 6,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -282,7 +282,7 @@
     }
 },
 {
-    "model": "uploader.disease",
+    "model": "uploader.observable",
     "pk": 7,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -294,7 +294,7 @@
     }
 },
 {
-    "model": "uploader.disease",
+    "model": "uploader.observable",
     "pk": 8,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -306,7 +306,7 @@
     }
 },
 {
-    "model": "uploader.disease",
+    "model": "uploader.observable",
     "pk": 9,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -318,7 +318,7 @@
     }
 },
 {
-    "model": "uploader.disease",
+    "model": "uploader.observable",
     "pk": 10,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -330,7 +330,7 @@
     }
 },
 {
-    "model": "uploader.disease",
+    "model": "uploader.observable",
     "pk": 11,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -342,7 +342,7 @@
     }
 },
 {
-    "model": "uploader.disease",
+    "model": "uploader.observable",
     "pk": 12,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -354,7 +354,7 @@
     }
 },
 {
-    "model": "uploader.disease",
+    "model": "uploader.observable",
     "pk": 13,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -366,7 +366,7 @@
     }
 },
 {
-    "model": "uploader.disease",
+    "model": "uploader.observable",
     "pk": 14,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -378,7 +378,7 @@
     }
 },
 {
-    "model": "uploader.disease",
+    "model": "uploader.observable",
     "pk": 15,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -390,7 +390,7 @@
     }
 },
 {
-    "model": "uploader.disease",
+    "model": "uploader.observable",
     "pk": 16,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -402,7 +402,7 @@
     }
 },
 {
-    "model": "uploader.disease",
+    "model": "uploader.observable",
     "pk": 17,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -414,7 +414,7 @@
     }
 },
 {
-    "model": "uploader.disease",
+    "model": "uploader.observable",
     "pk": 18,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -426,7 +426,7 @@
     }
 },
 {
-    "model": "uploader.disease",
+    "model": "uploader.observable",
     "pk": 19,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -438,7 +438,7 @@
     }
 },
 {
-    "model": "uploader.disease",
+    "model": "uploader.observable",
     "pk": 20,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -450,7 +450,7 @@
     }
 },
 {
-    "model": "uploader.disease",
+    "model": "uploader.observable",
     "pk": 21,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -462,7 +462,7 @@
     }
 },
 {
-    "model": "uploader.disease",
+    "model": "uploader.observable",
     "pk": 22,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -474,2655 +474,2655 @@
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23174,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
-        "disease": 3,
-        "days_symptomatic": 7,
+        "observable": 3,
+        "days_observed": 7,
         "severity": null,
-        "disease_value": "Negative"
+        "observable_value": "Negative"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23175,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
-        "disease": 4,
-        "days_symptomatic": 7,
+        "observable": 4,
+        "days_observed": 7,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23176,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
-        "disease": 5,
-        "days_symptomatic": 7,
+        "observable": 5,
+        "days_observed": 7,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23177,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
-        "disease": 6,
-        "days_symptomatic": 7,
+        "observable": 6,
+        "days_observed": 7,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23178,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
-        "disease": 7,
-        "days_symptomatic": 7,
+        "observable": 7,
+        "days_observed": 7,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23179,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
-        "disease": 8,
-        "days_symptomatic": 7,
+        "observable": 8,
+        "days_observed": 7,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23180,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
-        "disease": 9,
-        "days_symptomatic": 7,
+        "observable": 9,
+        "days_observed": 7,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23181,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
-        "disease": 10,
-        "days_symptomatic": 7,
+        "observable": 10,
+        "days_observed": 7,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23182,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
-        "disease": 11,
-        "days_symptomatic": 7,
+        "observable": 11,
+        "days_observed": 7,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23183,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
-        "disease": 12,
-        "days_symptomatic": 7,
+        "observable": 12,
+        "days_observed": 7,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23184,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
-        "disease": 13,
-        "days_symptomatic": 7,
+        "observable": 13,
+        "days_observed": 7,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23185,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
-        "disease": 14,
-        "days_symptomatic": 7,
+        "observable": 14,
+        "days_observed": 7,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23186,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
-        "disease": 15,
-        "days_symptomatic": 7,
+        "observable": 15,
+        "days_observed": 7,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23187,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
-        "disease": 16,
-        "days_symptomatic": 7,
+        "observable": 16,
+        "days_observed": 7,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23188,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
-        "disease": 17,
-        "days_symptomatic": 7,
+        "observable": 17,
+        "days_observed": 7,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23189,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
-        "disease": 18,
-        "days_symptomatic": 7,
+        "observable": 18,
+        "days_observed": 7,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23190,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
-        "disease": 19,
-        "days_symptomatic": 7,
+        "observable": 19,
+        "days_observed": 7,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23191,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
-        "disease": 20,
-        "days_symptomatic": 7,
+        "observable": 20,
+        "days_observed": 7,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23192,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
-        "disease": 21,
-        "days_symptomatic": 7,
+        "observable": 21,
+        "days_observed": 7,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23193,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1118,
-        "disease": 22,
-        "days_symptomatic": 7,
+        "observable": 22,
+        "days_observed": 7,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23194,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
-        "disease": 3,
-        "days_symptomatic": 1,
+        "observable": 3,
+        "days_observed": 1,
         "severity": null,
-        "disease_value": "Negative"
+        "observable_value": "Negative"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23195,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
-        "disease": 4,
-        "days_symptomatic": 1,
+        "observable": 4,
+        "days_observed": 1,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23196,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
-        "disease": 5,
-        "days_symptomatic": 1,
+        "observable": 5,
+        "days_observed": 1,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23197,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
-        "disease": 6,
-        "days_symptomatic": 1,
+        "observable": 6,
+        "days_observed": 1,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23198,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
-        "disease": 7,
-        "days_symptomatic": 1,
+        "observable": 7,
+        "days_observed": 1,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23199,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
-        "disease": 8,
-        "days_symptomatic": 1,
+        "observable": 8,
+        "days_observed": 1,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23200,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
-        "disease": 9,
-        "days_symptomatic": 1,
+        "observable": 9,
+        "days_observed": 1,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23201,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
-        "disease": 10,
-        "days_symptomatic": 1,
+        "observable": 10,
+        "days_observed": 1,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23202,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
-        "disease": 11,
-        "days_symptomatic": 1,
+        "observable": 11,
+        "days_observed": 1,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23203,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
-        "disease": 12,
-        "days_symptomatic": 1,
+        "observable": 12,
+        "days_observed": 1,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23204,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
-        "disease": 13,
-        "days_symptomatic": 1,
+        "observable": 13,
+        "days_observed": 1,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23205,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
-        "disease": 14,
-        "days_symptomatic": 1,
+        "observable": 14,
+        "days_observed": 1,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23206,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
-        "disease": 15,
-        "days_symptomatic": 1,
+        "observable": 15,
+        "days_observed": 1,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23207,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
-        "disease": 16,
-        "days_symptomatic": 1,
+        "observable": 16,
+        "days_observed": 1,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23208,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
-        "disease": 17,
-        "days_symptomatic": 1,
+        "observable": 17,
+        "days_observed": 1,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23209,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
-        "disease": 18,
-        "days_symptomatic": 1,
+        "observable": 18,
+        "days_observed": 1,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23210,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
-        "disease": 19,
-        "days_symptomatic": 1,
+        "observable": 19,
+        "days_observed": 1,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23211,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
-        "disease": 20,
-        "days_symptomatic": 1,
+        "observable": 20,
+        "days_observed": 1,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23212,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
-        "disease": 21,
-        "days_symptomatic": 1,
+        "observable": 21,
+        "days_observed": 1,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23213,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1119,
-        "disease": 22,
-        "days_symptomatic": 1,
+        "observable": 22,
+        "days_observed": 1,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23214,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
-        "disease": 3,
-        "days_symptomatic": 2,
+        "observable": 3,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "Negative"
+        "observable_value": "Negative"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23215,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
-        "disease": 4,
-        "days_symptomatic": 2,
+        "observable": 4,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23216,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
-        "disease": 5,
-        "days_symptomatic": 2,
+        "observable": 5,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23217,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
-        "disease": 6,
-        "days_symptomatic": 2,
+        "observable": 6,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23218,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
-        "disease": 7,
-        "days_symptomatic": 2,
+        "observable": 7,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23219,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
-        "disease": 8,
-        "days_symptomatic": 2,
+        "observable": 8,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23220,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
-        "disease": 9,
-        "days_symptomatic": 2,
+        "observable": 9,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23221,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
-        "disease": 10,
-        "days_symptomatic": 2,
+        "observable": 10,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23222,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
-        "disease": 11,
-        "days_symptomatic": 2,
+        "observable": 11,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23223,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
-        "disease": 12,
-        "days_symptomatic": 2,
+        "observable": 12,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23224,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
-        "disease": 13,
-        "days_symptomatic": 2,
+        "observable": 13,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23225,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
-        "disease": 14,
-        "days_symptomatic": 2,
+        "observable": 14,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23226,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
-        "disease": 15,
-        "days_symptomatic": 2,
+        "observable": 15,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23227,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
-        "disease": 16,
-        "days_symptomatic": 2,
+        "observable": 16,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23228,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
-        "disease": 17,
-        "days_symptomatic": 2,
+        "observable": 17,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23229,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
-        "disease": 18,
-        "days_symptomatic": 2,
+        "observable": 18,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23230,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
-        "disease": 19,
-        "days_symptomatic": 2,
+        "observable": 19,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23231,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
-        "disease": 20,
-        "days_symptomatic": 2,
+        "observable": 20,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23232,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
-        "disease": 21,
-        "days_symptomatic": 2,
+        "observable": 21,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23233,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1120,
-        "disease": 22,
-        "days_symptomatic": 2,
+        "observable": 22,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23234,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
-        "disease": 3,
-        "days_symptomatic": 2,
+        "observable": 3,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "Negative"
+        "observable_value": "Negative"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23235,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
-        "disease": 4,
-        "days_symptomatic": 2,
+        "observable": 4,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23236,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
-        "disease": 5,
-        "days_symptomatic": 2,
+        "observable": 5,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23237,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
-        "disease": 6,
-        "days_symptomatic": 2,
+        "observable": 6,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23238,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
-        "disease": 7,
-        "days_symptomatic": 2,
+        "observable": 7,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23239,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
-        "disease": 8,
-        "days_symptomatic": 2,
+        "observable": 8,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23240,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
-        "disease": 9,
-        "days_symptomatic": 2,
+        "observable": 9,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23241,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
-        "disease": 10,
-        "days_symptomatic": 2,
+        "observable": 10,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23242,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
-        "disease": 11,
-        "days_symptomatic": 2,
+        "observable": 11,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23243,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
-        "disease": 12,
-        "days_symptomatic": 2,
+        "observable": 12,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23244,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
-        "disease": 13,
-        "days_symptomatic": 2,
+        "observable": 13,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23245,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
-        "disease": 14,
-        "days_symptomatic": 2,
+        "observable": 14,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23246,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
-        "disease": 15,
-        "days_symptomatic": 2,
+        "observable": 15,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23247,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
-        "disease": 16,
-        "days_symptomatic": 2,
+        "observable": 16,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23248,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
-        "disease": 17,
-        "days_symptomatic": 2,
+        "observable": 17,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23249,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
-        "disease": 18,
-        "days_symptomatic": 2,
+        "observable": 18,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23250,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
-        "disease": 19,
-        "days_symptomatic": 2,
+        "observable": 19,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23251,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
-        "disease": 20,
-        "days_symptomatic": 2,
+        "observable": 20,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23252,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
-        "disease": 21,
-        "days_symptomatic": 2,
+        "observable": 21,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23253,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1121,
-        "disease": 22,
-        "days_symptomatic": 2,
+        "observable": 22,
+        "days_observed": 2,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23254,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
-        "disease": 3,
-        "days_symptomatic": 3,
+        "observable": 3,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "Negative"
+        "observable_value": "Negative"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23255,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
-        "disease": 4,
-        "days_symptomatic": 3,
+        "observable": 4,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23256,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
-        "disease": 5,
-        "days_symptomatic": 3,
+        "observable": 5,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23257,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
-        "disease": 6,
-        "days_symptomatic": 3,
+        "observable": 6,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23258,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
-        "disease": 7,
-        "days_symptomatic": 3,
+        "observable": 7,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23259,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
-        "disease": 8,
-        "days_symptomatic": 3,
+        "observable": 8,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23260,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
-        "disease": 9,
-        "days_symptomatic": 3,
+        "observable": 9,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23261,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
-        "disease": 10,
-        "days_symptomatic": 3,
+        "observable": 10,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23262,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
-        "disease": 11,
-        "days_symptomatic": 3,
+        "observable": 11,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23263,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
-        "disease": 12,
-        "days_symptomatic": 3,
+        "observable": 12,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23264,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
-        "disease": 13,
-        "days_symptomatic": 3,
+        "observable": 13,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23265,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
-        "disease": 14,
-        "days_symptomatic": 3,
+        "observable": 14,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23266,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
-        "disease": 15,
-        "days_symptomatic": 3,
+        "observable": 15,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23267,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
-        "disease": 16,
-        "days_symptomatic": 3,
+        "observable": 16,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23268,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
-        "disease": 17,
-        "days_symptomatic": 3,
+        "observable": 17,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23269,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
-        "disease": 18,
-        "days_symptomatic": 3,
+        "observable": 18,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23270,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
-        "disease": 19,
-        "days_symptomatic": 3,
+        "observable": 19,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23271,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
-        "disease": 20,
-        "days_symptomatic": 3,
+        "observable": 20,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23272,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
-        "disease": 21,
-        "days_symptomatic": 3,
+        "observable": 21,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23273,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1122,
-        "disease": 22,
-        "days_symptomatic": 3,
+        "observable": 22,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23274,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
-        "disease": 1,
-        "days_symptomatic": null,
+        "observable": 1,
+        "days_observed": null,
         "severity": null,
-        "disease_value": "24.8"
+        "observable_value": "24.8"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23275,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
-        "disease": 2,
-        "days_symptomatic": null,
+        "observable": 2,
+        "days_observed": null,
         "severity": null,
-        "disease_value": "24.8"
+        "observable_value": "24.8"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23276,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
-        "disease": 3,
-        "days_symptomatic": null,
+        "observable": 3,
+        "days_observed": null,
         "severity": null,
-        "disease_value": "Positive"
+        "observable_value": "Positive"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23277,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
-        "disease": 4,
-        "days_symptomatic": null,
+        "observable": 4,
+        "days_observed": null,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23278,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
-        "disease": 5,
-        "days_symptomatic": null,
+        "observable": 5,
+        "days_observed": null,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23279,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
-        "disease": 6,
-        "days_symptomatic": null,
+        "observable": 6,
+        "days_observed": null,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23280,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
-        "disease": 7,
-        "days_symptomatic": null,
+        "observable": 7,
+        "days_observed": null,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23281,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
-        "disease": 8,
-        "days_symptomatic": null,
+        "observable": 8,
+        "days_observed": null,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23282,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
-        "disease": 9,
-        "days_symptomatic": null,
+        "observable": 9,
+        "days_observed": null,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23283,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
-        "disease": 10,
-        "days_symptomatic": null,
+        "observable": 10,
+        "days_observed": null,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23284,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
-        "disease": 11,
-        "days_symptomatic": null,
+        "observable": 11,
+        "days_observed": null,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23285,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
-        "disease": 12,
-        "days_symptomatic": null,
+        "observable": 12,
+        "days_observed": null,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23286,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
-        "disease": 13,
-        "days_symptomatic": null,
+        "observable": 13,
+        "days_observed": null,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23287,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
-        "disease": 14,
-        "days_symptomatic": null,
+        "observable": 14,
+        "days_observed": null,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23288,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
-        "disease": 15,
-        "days_symptomatic": null,
+        "observable": 15,
+        "days_observed": null,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23289,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
-        "disease": 16,
-        "days_symptomatic": null,
+        "observable": 16,
+        "days_observed": null,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23290,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
-        "disease": 17,
-        "days_symptomatic": null,
+        "observable": 17,
+        "days_observed": null,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23291,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
-        "disease": 18,
-        "days_symptomatic": null,
+        "observable": 18,
+        "days_observed": null,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23292,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
-        "disease": 19,
-        "days_symptomatic": null,
+        "observable": 19,
+        "days_observed": null,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23293,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
-        "disease": 20,
-        "days_symptomatic": null,
+        "observable": 20,
+        "days_observed": null,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23294,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
-        "disease": 21,
-        "days_symptomatic": null,
+        "observable": 21,
+        "days_observed": null,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23295,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1123,
-        "disease": 22,
-        "days_symptomatic": null,
+        "observable": 22,
+        "days_observed": null,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23296,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
-        "disease": 1,
-        "days_symptomatic": 3,
+        "observable": 1,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "18.18"
+        "observable_value": "18.18"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23297,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
-        "disease": 2,
-        "days_symptomatic": 3,
+        "observable": 2,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "18.18"
+        "observable_value": "18.18"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23298,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
-        "disease": 3,
-        "days_symptomatic": 3,
+        "observable": 3,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "Positive"
+        "observable_value": "Positive"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23299,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
-        "disease": 4,
-        "days_symptomatic": 3,
+        "observable": 4,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23300,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
-        "disease": 5,
-        "days_symptomatic": 3,
+        "observable": 5,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23301,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
-        "disease": 6,
-        "days_symptomatic": 3,
+        "observable": 6,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23302,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
-        "disease": 7,
-        "days_symptomatic": 3,
+        "observable": 7,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23303,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
-        "disease": 8,
-        "days_symptomatic": 3,
+        "observable": 8,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23304,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
-        "disease": 9,
-        "days_symptomatic": 3,
+        "observable": 9,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23305,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
-        "disease": 10,
-        "days_symptomatic": 3,
+        "observable": 10,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23306,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
-        "disease": 11,
-        "days_symptomatic": 3,
+        "observable": 11,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23307,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
-        "disease": 12,
-        "days_symptomatic": 3,
+        "observable": 12,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23308,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
-        "disease": 13,
-        "days_symptomatic": 3,
+        "observable": 13,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23309,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
-        "disease": 14,
-        "days_symptomatic": 3,
+        "observable": 14,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23310,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
-        "disease": 15,
-        "days_symptomatic": 3,
+        "observable": 15,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23311,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
-        "disease": 16,
-        "days_symptomatic": 3,
+        "observable": 16,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23312,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
-        "disease": 17,
-        "days_symptomatic": 3,
+        "observable": 17,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23313,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
-        "disease": 18,
-        "days_symptomatic": 3,
+        "observable": 18,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23314,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
-        "disease": 19,
-        "days_symptomatic": 3,
+        "observable": 19,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23315,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
-        "disease": 20,
-        "days_symptomatic": 3,
+        "observable": 20,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23316,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
-        "disease": 21,
-        "days_symptomatic": 3,
+        "observable": 21,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23317,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1124,
-        "disease": 22,
-        "days_symptomatic": 3,
+        "observable": 22,
+        "days_observed": 3,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23318,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
-        "disease": 3,
-        "days_symptomatic": 5,
+        "observable": 3,
+        "days_observed": 5,
         "severity": null,
-        "disease_value": "Negative"
+        "observable_value": "Negative"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23319,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
-        "disease": 4,
-        "days_symptomatic": 5,
+        "observable": 4,
+        "days_observed": 5,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23320,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
-        "disease": 5,
-        "days_symptomatic": 5,
+        "observable": 5,
+        "days_observed": 5,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23321,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
-        "disease": 6,
-        "days_symptomatic": 5,
+        "observable": 6,
+        "days_observed": 5,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23322,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
-        "disease": 7,
-        "days_symptomatic": 5,
+        "observable": 7,
+        "days_observed": 5,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23323,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
-        "disease": 8,
-        "days_symptomatic": 5,
+        "observable": 8,
+        "days_observed": 5,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23324,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
-        "disease": 9,
-        "days_symptomatic": 5,
+        "observable": 9,
+        "days_observed": 5,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23325,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
-        "disease": 10,
-        "days_symptomatic": 5,
+        "observable": 10,
+        "days_observed": 5,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23326,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
-        "disease": 11,
-        "days_symptomatic": 5,
+        "observable": 11,
+        "days_observed": 5,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23327,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
-        "disease": 12,
-        "days_symptomatic": 5,
+        "observable": 12,
+        "days_observed": 5,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23328,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
-        "disease": 13,
-        "days_symptomatic": 5,
+        "observable": 13,
+        "days_observed": 5,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23329,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
-        "disease": 14,
-        "days_symptomatic": 5,
+        "observable": 14,
+        "days_observed": 5,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23330,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
-        "disease": 15,
-        "days_symptomatic": 5,
+        "observable": 15,
+        "days_observed": 5,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23331,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
-        "disease": 16,
-        "days_symptomatic": 5,
+        "observable": 16,
+        "days_observed": 5,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23332,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
-        "disease": 17,
-        "days_symptomatic": 5,
+        "observable": 17,
+        "days_observed": 5,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23333,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
-        "disease": 18,
-        "days_symptomatic": 5,
+        "observable": 18,
+        "days_observed": 5,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23334,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
-        "disease": 19,
-        "days_symptomatic": 5,
+        "observable": 19,
+        "days_observed": 5,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23335,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
-        "disease": 20,
-        "days_symptomatic": 5,
+        "observable": 20,
+        "days_observed": 5,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23336,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
-        "disease": 21,
-        "days_symptomatic": 5,
+        "observable": 21,
+        "days_observed": 5,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23337,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1125,
-        "disease": 22,
-        "days_symptomatic": 5,
+        "observable": 22,
+        "days_observed": 5,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23338,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
-        "disease": 3,
-        "days_symptomatic": 11,
+        "observable": 3,
+        "days_observed": 11,
         "severity": null,
-        "disease_value": "Negative"
+        "observable_value": "Negative"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23339,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
-        "disease": 4,
-        "days_symptomatic": 11,
+        "observable": 4,
+        "days_observed": 11,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23340,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
-        "disease": 5,
-        "days_symptomatic": 11,
+        "observable": 5,
+        "days_observed": 11,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23341,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
-        "disease": 6,
-        "days_symptomatic": 11,
+        "observable": 6,
+        "days_observed": 11,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23342,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
-        "disease": 7,
-        "days_symptomatic": 11,
+        "observable": 7,
+        "days_observed": 11,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23343,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
-        "disease": 8,
-        "days_symptomatic": 11,
+        "observable": 8,
+        "days_observed": 11,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23344,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
-        "disease": 9,
-        "days_symptomatic": 11,
+        "observable": 9,
+        "days_observed": 11,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23345,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
-        "disease": 10,
-        "days_symptomatic": 11,
+        "observable": 10,
+        "days_observed": 11,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23346,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
-        "disease": 11,
-        "days_symptomatic": 11,
+        "observable": 11,
+        "days_observed": 11,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23347,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
-        "disease": 12,
-        "days_symptomatic": 11,
+        "observable": 12,
+        "days_observed": 11,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23348,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
-        "disease": 13,
-        "days_symptomatic": 11,
+        "observable": 13,
+        "days_observed": 11,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23349,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
-        "disease": 14,
-        "days_symptomatic": 11,
+        "observable": 14,
+        "days_observed": 11,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23350,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
-        "disease": 15,
-        "days_symptomatic": 11,
+        "observable": 15,
+        "days_observed": 11,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23351,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
-        "disease": 16,
-        "days_symptomatic": 11,
+        "observable": 16,
+        "days_observed": 11,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23352,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
-        "disease": 17,
-        "days_symptomatic": 11,
+        "observable": 17,
+        "days_observed": 11,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23353,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
-        "disease": 18,
-        "days_symptomatic": 11,
+        "observable": 18,
+        "days_observed": 11,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23354,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
-        "disease": 19,
-        "days_symptomatic": 11,
+        "observable": 19,
+        "days_observed": 11,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23355,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
-        "disease": 20,
-        "days_symptomatic": 11,
+        "observable": 20,
+        "days_observed": 11,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23356,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
-        "disease": 21,
-        "days_symptomatic": 11,
+        "observable": 21,
+        "days_observed": 11,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23357,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1126,
-        "disease": 22,
-        "days_symptomatic": 11,
+        "observable": 22,
+        "days_observed": 11,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23358,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
-        "disease": 3,
-        "days_symptomatic": 12,
+        "observable": 3,
+        "days_observed": 12,
         "severity": null,
-        "disease_value": "Negative"
+        "observable_value": "Negative"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23359,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
-        "disease": 4,
-        "days_symptomatic": 12,
+        "observable": 4,
+        "days_observed": 12,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23360,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
-        "disease": 5,
-        "days_symptomatic": 12,
+        "observable": 5,
+        "days_observed": 12,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23361,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
-        "disease": 6,
-        "days_symptomatic": 12,
+        "observable": 6,
+        "days_observed": 12,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23362,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
-        "disease": 7,
-        "days_symptomatic": 12,
+        "observable": 7,
+        "days_observed": 12,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23363,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
-        "disease": 8,
-        "days_symptomatic": 12,
+        "observable": 8,
+        "days_observed": 12,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23364,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
-        "disease": 9,
-        "days_symptomatic": 12,
+        "observable": 9,
+        "days_observed": 12,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23365,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
-        "disease": 10,
-        "days_symptomatic": 12,
+        "observable": 10,
+        "days_observed": 12,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23366,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
-        "disease": 11,
-        "days_symptomatic": 12,
+        "observable": 11,
+        "days_observed": 12,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23367,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
-        "disease": 12,
-        "days_symptomatic": 12,
+        "observable": 12,
+        "days_observed": 12,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23368,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
-        "disease": 13,
-        "days_symptomatic": 12,
+        "observable": 13,
+        "days_observed": 12,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23369,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
-        "disease": 14,
-        "days_symptomatic": 12,
+        "observable": 14,
+        "days_observed": 12,
         "severity": null,
-        "disease_value": "True"
+        "observable_value": "True"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23370,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
-        "disease": 15,
-        "days_symptomatic": 12,
+        "observable": 15,
+        "days_observed": 12,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23371,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
-        "disease": 16,
-        "days_symptomatic": 12,
+        "observable": 16,
+        "days_observed": 12,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23372,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
-        "disease": 17,
-        "days_symptomatic": 12,
+        "observable": 17,
+        "days_observed": 12,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23373,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
-        "disease": 18,
-        "days_symptomatic": 12,
+        "observable": 18,
+        "days_observed": 12,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23374,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
-        "disease": 19,
-        "days_symptomatic": 12,
+        "observable": 19,
+        "days_observed": 12,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23375,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
-        "disease": 20,
-        "days_symptomatic": 12,
+        "observable": 20,
+        "days_observed": 12,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23376,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
-        "disease": 21,
-        "days_symptomatic": 12,
+        "observable": 21,
+        "days_observed": 12,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
-    "model": "uploader.symptom",
+    "model": "uploader.observation",
     "pk": 23377,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "visit": 1127,
-        "disease": 22,
-        "days_symptomatic": 12,
+        "observable": 22,
+        "days_observed": 12,
         "severity": null,
-        "disease_value": "False"
+        "observable_value": "False"
     }
 },
 {
