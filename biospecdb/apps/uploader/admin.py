@@ -164,7 +164,7 @@ class ObservationAdmin(RestrictedByCenterAdmin):
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     date_hierarchy = "updated_at"
     ordering = ("-updated_at",)
-    list_filter = ("visit__patient__center", "visit__patient__gender", "observable")
+    list_filter = ("visit__patient__center", "observable__category", "visit__patient__gender", "observable")
     list_display = ["patient_id", "observable_name", "days_observed", "severity", "visit"]
     list_editable = ["days_observed", "severity"]
 
