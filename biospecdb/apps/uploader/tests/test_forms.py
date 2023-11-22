@@ -70,6 +70,7 @@ class TestDataInputForm:
         
         # Add new observable
         meningitis = Observable(
+            category=Observable.Category.COMORBIDITY,
             name='Meningitis',
             description='An inflammation of the protective membranes covering the brain and spinal cord',
             alias='meningitis',

@@ -215,6 +215,7 @@
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
+        "category": "TEST",
         "name": "Ct_gene_N",
         "description": "Covid cycle threshold N gene detection",
         "alias": "CTs (Gene N)",
@@ -227,6 +228,7 @@
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
+        "category": "TEST",
         "name": "Ct_gene_ORF1ab",
         "description": "Covid cycle threshold for ORF1ab detection",
         "alias": "CTs (Gene ORF)",
@@ -239,6 +241,7 @@
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
+        "category": "TEST",
         "name": "Covid_RT_qPCR",
         "description": "Covid RT qPCR results",
         "alias": "RESULT RT-qPCR",
@@ -251,6 +254,7 @@
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
+        "category": "SYMPTOM",
         "name": "covid_suspicious_contact",
         "description": "Suspicious contact of Covid",
         "alias": "Suspicious contact",
@@ -263,6 +267,7 @@
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
+        "category": "SYMPTOM",
         "name": "fever",
         "description": "Patient experiences a fever?",
         "alias": "fever",
@@ -275,6 +280,7 @@
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
+        "category": "SYMPTOM",
         "name": "dyspnoea",
         "description": "Difficult or labored breathing",
         "alias": "dyspnoea",
@@ -287,6 +293,7 @@
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
+        "category": "VITALS",
         "name": "oxygen_saturation_lt_95",
         "description": "Blood oxygen saturation less than 95%",
         "alias": "O2 Sat <95%",
@@ -299,6 +306,7 @@
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
+        "category": "SYMPTOM",
         "name": "cough",
         "description": "Patient experiences cough-like symptoms.",
         "alias": "cough",
@@ -311,6 +319,7 @@
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
+        "category": "SYMPTOM",
         "name": "coryza",
         "description": "Irritation and inflammation of the nasal mucous membrane.",
         "alias": "coryza",
@@ -323,6 +332,7 @@
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
+        "category": "SYMPTOM",
         "name": "odinophagy",
         "description": "Pain when swallowing.",
         "alias": "odinophagy",
@@ -335,6 +345,7 @@
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
+        "category": "SYMPTOM",
         "name": "diarrhea",
         "description": "Patient experiences diarrhea.",
         "alias": "diarrhea",
@@ -347,6 +358,7 @@
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
+        "category": "SYMPTOM",
         "name": "nausea",
         "description": "Patient experiences nausea.",
         "alias": "nausea",
@@ -359,6 +371,7 @@
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
+        "category": "SYMPTOM",
         "name": "headache",
         "description": "Patient experiences headaches.",
         "alias": "headache",
@@ -371,6 +384,7 @@
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
+        "category": "SYMPTOM",
         "name": "weakness",
         "description": "Patient experiences weakness or fatigue.",
         "alias": "weakness",
@@ -383,6 +397,7 @@
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
+        "category": "SYMPTOM",
         "name": "anosmia",
         "description": "Partial or complete loss of smell.",
         "alias": "anosmia",
@@ -395,6 +410,7 @@
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
+        "category": "SYMPTOM",
         "name": "myalgia",
         "description": "Muscular aches and pains.",
         "alias": "myalgia",
@@ -407,6 +423,7 @@
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
+        "category": "SYMPTOM",
         "name": "no_appetite",
         "description": "Lack of appetite",
         "alias": "Lack of appetite",
@@ -419,6 +436,7 @@
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
+        "category": "SYMPTOM",
         "name": "vomiting",
         "description": "Patient experiences vomiting",
         "alias": "vomiting",
@@ -431,6 +449,7 @@
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
+        "category": "COMORBIDITY",
         "name": "chronic_pulmonary_inc_asthma",
         "description": "Chronic pulmonary conditions including asthma",
         "alias": "Chronic pulmonary disease including asthma",
@@ -443,6 +462,7 @@
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
+        "category": "COMORBIDITY",
         "name": "cardiovascular_disease_inc_hypertension",
         "description": "Cardiovascular disease including hypertension.",
         "alias": "Cardiovascular disease including hypertension",
@@ -455,6 +475,7 @@
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
+        "category": "COMORBIDITY",
         "name": "diabetes",
         "description": "Diabetes type 1 & type 2.",
         "alias": "diabetes",
@@ -467,6 +488,7 @@
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
+        "category": "COMORBIDITY",
         "name": "chronic_or_neuromuscular_neurological_disease",
         "description": "Chronic or neuromuscular neurological disease.",
         "alias": "Chronic or neuromuscular neurological disease",

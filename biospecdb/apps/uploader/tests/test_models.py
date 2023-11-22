@@ -193,14 +193,14 @@ class TestObservable:
         assert observable.value_class == Observable.Types.FLOAT
 
     def test_name_uniqueness(self, db):
-        Observable.objects.create(name="A", description="blah", alias="a")
+        Observable.objects.create(name="A", description="blah", alias="a", category=Observable.Category.COMORBIDITY)
         with pytest.raises(IntegrityError, match="unique_observable_name"):
-            Observable.objects.create(name="a", description="blah", alias="b")
+            Observable.objects.create(name="a", description="blah", alias="b", category=Observable.Category.COMORBIDITY)
 
     def test_alias_uniqueness(self, db):
-        Observable.objects.create(name="A", description="blah", alias="a")
+        Observable.objects.create(name="A", description="blah", alias="a", category=Observable.Category.COMORBIDITY)
         with pytest.raises(IntegrityError, match="unique_alias_name"):
-            Observable.objects.create(name="b", description="blah", alias="A")
+            Observable.objects.create(name="b", description="blah", alias="A", category=Observable.Category.COMORBIDITY)
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
@@ -259,18 +259,25 @@ class TestObservation:
         visit = Visit.objects.create(patient_age=40, patient=patient)
 
         # OK.
-        observable = Observable.objects.create(name="snuffles", alias="snuffles", center=center)
+        observable = Observable.objects.create(name="snuffles",
+                                               alias="snuffles",
+                                               center=center,
+                                               category=Observable.Category.SYMPTOM)
         Observation(visit=visit, observable=observable).full_clean()
 
         # OK.
-        observable = Observable.objects.create(name="extra_snuffles", alias="extra snuffles", center=None)
+        observable = Observable.objects.create(name="extra_snuffles",
+                                               alias="extra snuffles",
+                                               center=None,
+                                               category=Observable.Category.SYMPTOM)
         Observation(visit=visit, observable=observable).full_clean()
 
         # Not OK.
         center
         observable = Observable.objects.create(name="even_more_snuffles",
-                                         alias="even more snuffles",
-                                         center=Center.objects.get(name="Imperial College London"))
+                                               alias="even more snuffles",
+                                               center=Center.objects.get(name="Imperial College London"),
+                                               category=Observable.Category.SYMPTOM)
         with pytest.raises(ValidationError, match="Patient observation observable category must belong to patient "
                                                   "center:"):
             Observation(visit=visit, observable=observable).full_clean()
