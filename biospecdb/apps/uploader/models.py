@@ -75,7 +75,8 @@ class UploadedFile(DatedModel):
 
     meta_data_file = models.FileField(upload_to=UPLOAD_DIR,
                                       validators=[FileExtensionValidator(uploader.io.FileFormats.choices())],
-                                      help_text="File containing rows of all patient, symptom, and other meta data.")
+                                      help_text="File containing rows of all patient, observation, and other meta"
+                                                " data.")
     spectral_data_file = models.FileField(upload_to=UPLOAD_DIR,
                                           validators=[FileExtensionValidator(uploader.io.FileFormats.choices())],
                                           help_text="File containing rows of spectral intensities for the corresponding"
@@ -270,17 +271,19 @@ class Visit(DatedModel):
         return f"patient:{self.patient.short_id()}_visit:{self.visit_number}"
 
 
-class Disease(ModelWithViewDependency):
-    """ Model an individual disease, symptom, or health condition. A patient's instance are stored as models.Symptom"""
+class Observable(ModelWithViewDependency):
+    """ Model an individual observable, observation, or health condition.
+        A patient's instance are stored as models.Observation
+    """
 
     Types = Types
 
-    sql_view_dependencies = ("uploader.models.VisitSymptomsView",)
+    sql_view_dependencies = ("uploader.models.VisitObservationsView",)
 
     class Meta:
         get_latest_by = "updated_at"
         constraints = [models.UniqueConstraint(Lower("name"),
-                                               name="unique_disease_name"),
+                                               name="unique_observable_name"),
                        models.UniqueConstraint(Lower("alias"),
                                                name="unique_alias_name")]
 
@@ -292,10 +295,10 @@ class Disease(ModelWithViewDependency):
     alias = models.CharField(max_length=128,
                              help_text="Alias column name for bulk data ingestion from .csv, etc.")
 
-    # This represents the type/class for Symptom.disease_value.
+    # This represents the type/class for Observation.observable_value.
     value_class = models.CharField(max_length=128, default=Types.BOOL, choices=Types.choices)
 
-    # A disease without a center is generic and accessible by any and all centers.
+    # A observable without a center is generic and accessible by any and all centers.
     center = models.ForeignKey(Center, null=True, blank=True, on_delete=models.PROTECT)
 
     def __str__(self):
@@ -308,8 +311,8 @@ class Disease(ModelWithViewDependency):
             self.alias = self.name.replace('_', ' ')
 
 
-class Symptom(DatedModel):
-    """ A patient's instance of models.Disease. """
+class Observation(DatedModel):
+    """ A patient's instance of models.Observable. """
 
     class Meta:
         get_latest_by = "updated_at"
@@ -317,50 +320,50 @@ class Symptom(DatedModel):
     MIN_SEVERITY = 0
     MAX_SEVERITY = 10
 
-    visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="symptom")
-    disease = models.ForeignKey(Disease, on_delete=models.CASCADE, related_name="symptom")
+    visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="observation")
+    observable = models.ForeignKey(Observable, on_delete=models.CASCADE, related_name="observation")
 
-    days_symptomatic = models.IntegerField(default=None,
-                                           blank=True,
-                                           null=True,
-                                           validators=[MinValueValidator(0)],
-                                           verbose_name="Days of Symptoms onset")
+    days_observed = models.IntegerField(default=None,
+                                        blank=True,
+                                        null=True,
+                                        validators=[MinValueValidator(0)],
+                                        verbose_name="Days of symptoms onset")
     severity = models.IntegerField(default=None,
                                    validators=[MinValueValidator(MIN_SEVERITY),
                                                              MaxValueValidator(MAX_SEVERITY)],
                                    blank=True,
                                    null=True)
 
-    # Str format for actual type/class spec'd by Disease.value_class.
-    disease_value = models.CharField(blank=True, null=True, default='', max_length=128)
+    # Str format for actual type/class spec'd by Observable.value_class.
+    observable_value = models.CharField(blank=True, null=True, default='', max_length=128)
 
     def clean(self):
         """ Model validation. """
         super().clean()
 
-        if self.disease.center and (self.disease.center != self.visit.patient.center):
-            raise ValidationError(_("Patient symptom disease category must belong to patient center: "
+        if self.observable.center and (self.observable.center != self.visit.patient.center):
+            raise ValidationError(_("Patient observation observable category must belong to patient center: "
                                     "'%(c1)s' != '%(c2)s'"),
-                                  params=dict(c1=self.disease.center, c2=self.visit.patient.center))
+                                  params=dict(c1=self.observable.center, c2=self.visit.patient.center))
 
         # Check that value is castable by casting.
-        # NOTE: ``disease_value`` is a ``CharField`` so this will get cast back to a str again, and it could be argued
-        # that there's no point in storing the cast value... but :shrug:.
+        # NOTE: ``observable_value`` is a ``CharField`` so this will get cast back to a str again, and it could be
+        # argued that there's no point in storing the cast value... but :shrug:.
         try:
-            self.disease_value = Disease.Types(self.disease.value_class).cast(self.disease_value)
+            self.observable_value = Observable.Types(self.observable.value_class).cast(self.observable_value)
         except ValueError:
             raise ValidationError(_("The value '%(value)s' can not be cast to the expected type of '%(type)s' for"
-                                    " '%(disease_name)s'"),
-                                  params={"disease_name": self.disease.name,
-                                          "type": self.disease.value_class,
-                                          "value": self.disease_value},
+                                    " '%(observable_name)s'"),
+                                  params={"observable_name": self.observable.name,
+                                          "type": self.observable.value_class,
+                                          "value": self.observable_value},
                                   code="invalid")
 
-        if self.days_symptomatic and self.visit.patient_age and (self.days_symptomatic >
+        if self.days_observed and self.visit.patient_age and (self.days_observed >
                                                                  (self.visit.patient_age * 365)):
-            raise ValidationError(_("The field `days_symptomatic` can't be greater than the patients age (in days):"
-                                    " %(days_symptomatic)i > %(age)i"),
-                                  params={"days_symptomatic": self.days_symptomatic,
+            raise ValidationError(_("The field `days_observed` can't be greater than the patients age (in days):"
+                                    " %(days_observed)i > %(age)i"),
+                                  params={"days_observed": self.days_observed,
                                           "age": self.visit.patient_age * 365},
                                   code="invalid")
 
@@ -369,7 +372,7 @@ class Symptom(DatedModel):
         return self.visit.patient.center
 
     def __str__(self):
-        return f"patient:{self.visit.patient.short_id()}_{self.disease.name}"
+        return f"patient:{self.visit.patient.short_id()}_{self.observable.name}"
 
 
 class Instrument(DatedModel):
@@ -569,76 +572,78 @@ class SpectralData(DatedModel):
         raise NotImplementedError
 
 
-class SymptomsView(SqlView, models.Model):
+class ObservationsView(SqlView, models.Model):
     db = "bsr"
 
     class Meta:
         managed = False
-        db_table = "v_symptoms"
+        db_table = "v_observations"
 
     visit_id = models.BigIntegerField(primary_key=True)
-    symptom_id = models.ForeignKey(Symptom, db_column="symptom_id", on_delete=models.DO_NOTHING)
-    disease_id = models.ForeignKey(Disease, db_column="disease_id", on_delete=models.DO_NOTHING)
-    disease = deepcopy(Disease.name.field)
-    disease.name = disease.db_column = "disease"
-    value_class = deepcopy(Disease.value_class.field)
-    days_symptomatic = deepcopy(Symptom.days_symptomatic.field)
-    severity = deepcopy(Symptom.severity.field)
-    disease_value = deepcopy(Symptom.disease_value.field)
+    observation_id = models.ForeignKey(Observation, db_column="observation_id", on_delete=models.DO_NOTHING)
+    observable_id = models.ForeignKey(Observable, db_column="observable_id", on_delete=models.DO_NOTHING)
+    observable = deepcopy(Observable.name.field)
+    observable.name = observable.db_column = "observable"
+    value_class = deepcopy(Observable.value_class.field)
+    days_observed = deepcopy(Observation.days_observed.field)
+    severity = deepcopy(Observation.severity.field)
+    observable_value = deepcopy(Observation.observable_value.field)
 
     @classmethod
     def sql(cls):
         sql = f"""
         CREATE VIEW {cls._meta.db_table} AS
         SELECT s.visit_id,
-               s.id AS symptom_id,
-               d.id AS disease_id,
-               d.name AS disease,
+               s.id AS observation_id,
+               d.id AS observable_id,
+               d.name AS observable,
                d.value_class,
-               s.days_symptomatic,
+               s.days_observed,
                s.severity,
-               s.disease_value
-        FROM uploader_symptom s
-        JOIN uploader_disease d ON d.id=s.disease_id
+               s.observable_value
+        FROM uploader_observation s
+        JOIN uploader_observable d ON d.id=s.observable_id
         """  # nosec B608
         return sql, None
 
 
-class VisitSymptomsView(SqlView, models.Model):
+class VisitObservationsView(SqlView, models.Model):
     class Meta:
         managed = False
-        db_table = "v_visit_symptoms"
+        db_table = "v_visit_observations"
 
-    sql_view_dependencies = (SymptomsView,)
+    sql_view_dependencies = (ObservationsView,)
     db = "bsr"
 
     visit_id = models.BigIntegerField(primary_key=True)
 
     @classmethod
     def sql(cls):
-        diseases = Disease.objects.all()
+        observables = Observable.objects.all()
         view = cls._meta.db_table
         d = []
-        for disease in diseases:
-            secure_name(disease.name)
-            if disease.value_class == "FLOAT":
-                value = 'cast(disease_value AS REAL)'
-            elif disease.value_class == "INTEGER":
-                value = "cast(disease_value AS INTEGER)"
+        for observable in observables:
+            secure_name(observable.name)
+            if observable.value_class == "FLOAT":
+                value = 'cast(observable_value AS REAL)'
+            elif observable.value_class == "INTEGER":
+                value = "cast(observable_value AS INTEGER)"
             else:
-                value = "disease_value"
-            d.append(f"max(case when disease = '{disease.name}' then {value} else null end) as [{disease.name}]")
+                value = "observable_value"
+            d.append(f"max(case when observable = '{observable.name}' then {value} else null end) as "
+                     f"[{observable.name}]")
 
         d = "\n,      ".join(d)
 
-        # NOTE: Params aren't allowed in view statements with sqlite. Since disease can be added to the DB this poses
-        # as a risk since someone with access to creating diseases could inject into disease.name arbitrary SQL. Calling
-        # secure_name(disease.name) may not entirely guard against this even though its intention is to do so.
+        # NOTE: Params aren't allowed in view statements with sqlite. Since observable can be added to the DB this poses
+        # as a risk since someone with access to creating observables could inject into observable.name arbitrary SQL.
+        # Calling secure_name(observable.name) may not entirely guard against this even though its intention is to do
+        # so.
         sql = f"""
         create view {view} as
         select visit_id
         ,      {d} 
-          from v_symptoms 
+          from v_observations 
          group by visit_id
         """  # nosec B608
 
@@ -650,7 +655,7 @@ class FullPatientView(SqlView, models.Model):
         managed = False
         db_table = "full_patient"
 
-    sql_view_dependencies = (VisitSymptomsView,)
+    sql_view_dependencies = (VisitObservationsView,)
     db = "bsr"
 
     @classmethod
@@ -669,7 +674,7 @@ class FullPatientView(SqlView, models.Model):
                   join uploader_spectraldata sd on sd.bio_sample_id=bs.id
                   join uploader_spectrameasurementtype sdt on sdt.id=sd.spectra_measurement_id
                   join uploader_instrument i on i.id=sd.instrument_id
-                  left outer join v_visit_symptoms vs on vs.visit_id=v.id
+                  left outer join v_visit_observations vs on vs.visit_id=v.id
                 """  # nosec B608
         return sql, None
 
@@ -787,9 +792,9 @@ def get_center(obj):
         return obj.center
 
 
-# This is Model B wo/ disease table https://miro.com/app/board/uXjVMAAlj9Y=/
-# class Symptoms(models.Model):
-#     visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="symptoms")
+# This is Model B wo/ observable table https://miro.com/app/board/uXjVMAAlj9Y=/
+# class Observations(models.Model):
+#     visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="observations")
 #
 #     # SARS-CoV-2 (COVID) viral load indicators.
 #     Ct_gene_N = models.FloatField()
@@ -797,7 +802,7 @@ def get_center(obj):
 #     Covid_RT_qPCR = models.CharField(default=NEGATIVE, choices=(NEGATIVE, POSITIVE))
 #     suspicious_contact = models.BooleanField(default=False)
 #
-#     # Symptoms/Diseases
+#     # Observations/Observables
 #     fever = models.BooleanField(default=False)
 #     dyspnoea = models.BooleanField(default=False)
 #     oxygen_saturation_lt_95 = models.BooleanField(default=False)

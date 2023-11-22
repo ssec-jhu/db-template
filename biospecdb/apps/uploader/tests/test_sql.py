@@ -3,7 +3,7 @@ import pytest
 from django.core.exceptions import SuspiciousOperation
 from django.db.utils import OperationalError
 
-from uploader.models import Disease
+from uploader.models import Observable
 from uploader.sql import drop_view, execute_sql, secure_name, update_view
 
 
@@ -18,22 +18,22 @@ class TestSQL:
         with pytest.raises(SuspiciousOperation):
             secure_name("; drop view my_table")
 
-    def test_execute_sql(self, diseases):
-        results = execute_sql("select * from uploader_disease order by name", db=self.db)
-        diseases = Disease.objects.all().order_by("name")
-        for d1, d2 in zip(results, diseases):
+    def test_execute_sql(self, observables):
+        results = execute_sql("select * from uploader_observable order by name", db=self.db)
+        observables = Observable.objects.all().order_by("name")
+        for d1, d2 in zip(results, observables):
             assert d1["name"] == d2.name
 
     def test_drop_nonexistent_view(self, db):
         drop_view("khbihb", db=self.db)
 
-    def test_update_view(self, db, diseases):
+    def test_update_view(self, db, observables):
         view = "my_view"
         resp1 = update_view(view,
                             f"""
                             create view {view} as
                             select *
-                            from uploader_disease
+                            from uploader_observable
                             """,
                             check=True,
                             limit=None,
@@ -47,7 +47,7 @@ class TestSQL:
         with pytest.raises(OperationalError, match="no such table:"):
             execute_sql("select * from my_view", db=self.db)
 
-    def test_update_view_limit(self, db, diseases):
+    def test_update_view_limit(self, db, observables):
         view = "my_view"
         limit = 1
 
@@ -55,7 +55,7 @@ class TestSQL:
                             f"""
                             create view {view} as
                             select *
-                            from uploader_disease
+                            from uploader_observable
                             """,
                             check=True,
                             limit=limit,
@@ -63,7 +63,7 @@ class TestSQL:
                             )
         assert len(resp1) == limit
 
-    def test_update_view_check(self, db, diseases):
+    def test_update_view_check(self, db, observables):
         view = "my_view"
 
         with pytest.raises(OperationalError, match="syntax error"):
@@ -71,20 +71,20 @@ class TestSQL:
                         f"""
                         ceate view {view} as -- note typo in create
                         select *
-                        from uploader_disease
+                        from uploader_observable
                         """,
                         check=True,
                         db=self.db
                         )
 
-    def test_update_view_check_transactional(self, db, diseases):
+    def test_update_view_check_transactional(self, db, observables):
         view = "my_view"
 
         update_view(view,
                     f"""
                     create view {view} as
                     select *
-                    from uploader_disease
+                    from uploader_observable
                     """,
                     check=True,
                     db=self.db
@@ -95,7 +95,7 @@ class TestSQL:
                         f"""
                         ceate view {view} as -- note typo in create
                         select *
-                        from uploader_disease
+                        from uploader_observable
                         """,
                         check=True,
                         db=self.db
@@ -108,18 +108,18 @@ class TestSQL:
         with pytest.raises(OperationalError, match="no such table:"):
             execute_sql(sql)
 
-    def test_drop_view(self, db, diseases):
+    def test_drop_view(self, db, observables):
         view = "my_view"
         update_view(view,
                     f"""
                         create view {view} as
                         select *
-                        from uploader_disease
+                        from uploader_observable
                         """,
                     db=self.db
                     )
         resp = execute_sql(f"select * from {view}", db=self.db)
-        assert len(resp) == len(Disease.objects.all())
+        assert len(resp) == len(Observable.objects.all())
         drop_view(view, db=self.db)
         with pytest.raises(OperationalError, match="no such table:"):
             execute_sql(f"select * from {view}", db=self.db)

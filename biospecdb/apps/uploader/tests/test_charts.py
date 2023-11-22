@@ -2,7 +2,7 @@ import pytest
 from django.conf import settings
 
 from uploader.tests.conftest import SimpleQueryFactory
-from uploader.charts import count_bool_diseases, get_pie_chart, get_line_chart
+from uploader.charts import count_bool_observables, get_pie_chart, get_line_chart
 
 
 @pytest.fixture()
@@ -17,8 +17,8 @@ def query(request):
 
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestCharts:
-    def test_empty_count_bool_diseases(self, query):
-        df = count_bool_diseases(query)
+    def test_empty_count_bool_observables(self, query):
+        df = count_bool_observables(query)
         assert df is None
 
     @pytest.mark.sql("select * from full_patient")

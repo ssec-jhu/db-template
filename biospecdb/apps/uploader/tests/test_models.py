@@ -8,8 +8,8 @@ from django.db.utils import IntegrityError
 import pytest
 
 import uploader.io
-from uploader.models import BioSample, BioSampleType, Disease, Instrument, Patient, SpectralData, Symptom, Visit, \
-    UploadedFile, get_center, Center, SpectraMeasurementType
+from uploader.models import BioSample, BioSampleType, Observable, Instrument, Patient, SpectralData, Observation,\
+    Visit, UploadedFile, get_center, Center, SpectraMeasurementType
 from uploader.loaddata import save_data_to_db
 from user.models import Center as UserCenter
 from uploader.models import Center as UploaderCenter
@@ -186,21 +186,21 @@ class TestVisit:
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
-class TestDisease:
-    def test_fixture_data(self, db, diseases):
-        disease = Disease.objects.get(pk=1)
-        assert disease.name == "Ct_gene_N"
-        assert disease.value_class == Disease.Types.FLOAT
+class TestObservable:
+    def test_fixture_data(self, db, observables):
+        observable = Observable.objects.get(pk=1)
+        assert observable.name == "Ct_gene_N"
+        assert observable.value_class == Observable.Types.FLOAT
 
     def test_name_uniqueness(self, db):
-        Disease.objects.create(name="A", description="blah", alias="a")
-        with pytest.raises(IntegrityError, match="unique_disease_name"):
-            Disease.objects.create(name="a", description="blah", alias="b")
+        Observable.objects.create(name="A", description="blah", alias="a")
+        with pytest.raises(IntegrityError, match="unique_observable_name"):
+            Observable.objects.create(name="a", description="blah", alias="b")
 
     def test_alias_uniqueness(self, db):
-        Disease.objects.create(name="A", description="blah", alias="a")
+        Observable.objects.create(name="A", description="blah", alias="a")
         with pytest.raises(IntegrityError, match="unique_alias_name"):
-            Disease.objects.create(name="b", description="blah", alias="A")
+            Observable.objects.create(name="b", description="blah", alias="A")
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
@@ -226,32 +226,32 @@ class TestInstrument:
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
-class TestSymptom:
-    def test_days_symptomatic_validation(self, db, diseases, visits):
+class TestObservation:
+    def test_days_observed_validation(self, db, observables, visits):
         visit = Visit.objects.get(pk=1)
         age = visit.patient_age
-        symptom = Symptom.objects.create(visit=visit,
-                                         disease=Disease.objects.get(name="fever"),
-                                         days_symptomatic=age * 365 + 1)
+        observation = Observation.objects.create(visit=visit,
+                                         observable=Observable.objects.get(name="fever"),
+                                         days_observed=age * 365 + 1)
         with pytest.raises(ValidationError):
-            symptom.full_clean()
+            observation.full_clean()
 
-    def test_disease_value_validation(self, db, diseases, visits):
-        symptom = Symptom.objects.create(visit=Visit.objects.get(pk=1),
-                                         disease=Disease.objects.get(name="Ct_gene_N"),
-                                         days_symptomatic=7,
-                                         disease_value="strings can't cast to floats")
+    def test_observable_value_validation(self, db, observables, visits):
+        observation = Observation.objects.create(visit=Visit.objects.get(pk=1),
+                                         observable=Observable.objects.get(name="Ct_gene_N"),
+                                         days_observed=7,
+                                         observable_value="strings can't cast to floats")
         with pytest.raises(ValidationError):
-            symptom.full_clean()
+            observation.full_clean()
 
     @pytest.mark.parametrize("value", (True, False))
-    def test_disease_value_bool_cast(self, db, diseases, visits, value):
-        symptom = Symptom.objects.create(visit=Visit.objects.get(pk=1),
-                                         disease=Disease.objects.get(name="fever"),
-                                         days_symptomatic=7,
-                                         disease_value=str(value))
-        symptom.full_clean()
-        assert symptom.disease_value is value
+    def test_observable_value_bool_cast(self, db, observables, visits, value):
+        observation = Observation.objects.create(visit=Visit.objects.get(pk=1),
+                                         observable=Observable.objects.get(name="fever"),
+                                         days_observed=7,
+                                         observable_value=str(value))
+        observation.full_clean()
+        assert observation.observable_value is value
 
     def test_center_validation(self, centers):
         center = Center.objects.get(name="SSEC")
@@ -259,20 +259,21 @@ class TestSymptom:
         visit = Visit.objects.create(patient_age=40, patient=patient)
 
         # OK.
-        disease = Disease.objects.create(name="snuffles", alias="snuffles", center=center)
-        Symptom(visit=visit, disease=disease).full_clean()
+        observable = Observable.objects.create(name="snuffles", alias="snuffles", center=center)
+        Observation(visit=visit, observable=observable).full_clean()
 
         # OK.
-        disease = Disease.objects.create(name="extra_snuffles", alias="extra snuffles", center=None)
-        Symptom(visit=visit, disease=disease).full_clean()
+        observable = Observable.objects.create(name="extra_snuffles", alias="extra snuffles", center=None)
+        Observation(visit=visit, observable=observable).full_clean()
 
         # Not OK.
         center
-        disease = Disease.objects.create(name="even_more_snuffles",
+        observable = Observable.objects.create(name="even_more_snuffles",
                                          alias="even more snuffles",
                                          center=Center.objects.get(name="Imperial College London"))
-        with pytest.raises(ValidationError, match="Patient symptom disease category must belong to patient center:"):
-            Symptom(visit=visit, disease=disease).full_clean()
+        with pytest.raises(ValidationError, match="Patient observation observable category must belong to patient "
+                                                  "center:"):
+            Observation(visit=visit, observable=observable).full_clean()
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
@@ -336,7 +337,7 @@ class TestUploadedFile:
     @pytest.mark.parametrize("file_ext", UploadedFile.FileFormats.list())
     def test_upload_without_error(self,
                                   db,
-                                  diseases,
+                                  observables,
                                   instruments,
                                   file_ext,
                                   center,
@@ -375,8 +376,14 @@ class TestUploadedFile:
         assert len(BioSample.objects.all()) == n_patients
         assert len(SpectralData.objects.all()) == n_patients
 
-    def test_number_symptoms(self, db, diseases, instruments, center, bio_sample_types, spectra_measurement_types):
-        """ The total number of symptoms := N_patients * N_diseases. """
+    def test_number_observations(self,
+                                 db,
+                                 observables,
+                                 instruments,
+                                 center,
+                                 bio_sample_types,
+                                 spectra_measurement_types):
+        """ The total number of observations := N_patients * N_observables. """
         assert len(Patient.objects.all()) == 0  # Assert empty.
 
         save_data_to_db(DATA_PATH / "meta_data.csv",
@@ -384,27 +391,28 @@ class TestUploadedFile:
                         center=center)
 
         n_patients = len(Patient.objects.all())
-        n_diseases = len(Disease.objects.all())
-        n_symptoms = len(Symptom.objects.all())
+        n_observables = len(Observable.objects.all())
+        n_observations = len(Observation.objects.all())
 
         # Assert not empty.
         assert n_patients > 0
-        assert n_diseases > 0
-        assert n_symptoms > 0
+        assert n_observables > 0
+        assert n_observations > 0
 
-        # When Covid_RT_qPCR is negative both Ct_gene_N & Ct_gene_ORF1ab symptoms will be null and omitted. This must be
-        # accounted for in the total.
-        n_empty_covid_symptoms = len((Symptom.objects.filter(disease=Disease.objects.get(name="Covid_RT_qPCR")))
-                                     .filter(disease_value="Negative"))
-        assert n_symptoms == n_patients * n_diseases - n_empty_covid_symptoms * 2
+        # When Covid_RT_qPCR is negative both Ct_gene_N & Ct_gene_ORF1ab observations will be null and omitted.
+        # This must be accounted for in the total.
+        n_empty_covid_observations = len((Observation.objects.filter(observable=Observable.objects.
+                                                                     get(name="Covid_RT_qPCR")))
+                                         .filter(observable_value="Negative"))
+        assert n_observations == n_patients * n_observables - n_empty_covid_observations * 2
 
-    def test_days_of_symptoms(self, mock_data_from_files):
-        week_long_symptoms = Symptom.objects.filter(days_symptomatic=7)
-        assert len(week_long_symptoms) > 1
-        assert week_long_symptoms[0].days_symptomatic == 7
-        null_days = len(Symptom.objects.filter(days_symptomatic=None))
+    def test_days_of_observations(self, mock_data_from_files):
+        week_long_observations = Observation.objects.filter(days_observed=7)
+        assert len(week_long_observations) > 1
+        assert week_long_observations[0].days_observed == 7
+        null_days = len(Observation.objects.filter(days_observed=None))
         assert null_days > 1
-        assert null_days < len(Symptom.objects.all())
+        assert null_days < len(Observation.objects.all())
 
     @pytest.mark.parametrize("file_ext", UploadedFile.FileFormats.list())
     def test_patient_ids(self, mock_data_from_files, file_ext):
@@ -418,7 +426,7 @@ class TestUploadedFile:
             assert all_patients.get(pk=index)
 
     @pytest.mark.parametrize("file_ext", UploadedFile.FileFormats.list())
-    def test_index_match_validation(self, db, diseases, instruments, file_ext, tmp_path):
+    def test_index_match_validation(self, db, observables, instruments, file_ext, tmp_path):
         meta_data_path = (DATA_PATH / "meta_data").with_suffix(file_ext)
 
         biospecdb.util.mock_bulk_spectral_data(path=tmp_path)
@@ -456,6 +464,6 @@ def test_get_center(centers, mock_data_from_files):
     for spectral_data in bio_sample.spectral_data.all():
         assert get_center(spectral_data) is center
 
-    for symptom in Symptom.objects.filter(visit__patient__center=center):
-        assert get_center(symptom) == center
-        # assert get_center(symptom.disease) is center  # TODO: Not yet related in disease.json fixture.
+    for observation in Observation.objects.filter(visit__patient__center=center):
+        assert get_center(observation) == center
+        # assert get_center(observation.observable) is center  # TODO: Not yet related in observable.json fixture.

@@ -2,8 +2,8 @@ from django.contrib import admin
 from django.db.models import Q
 import django.forms as forms
 
-from .models import BioSample, Disease, Instrument, Patient, SpectralData, Symptom, UploadedFile, Visit, QCAnnotator,\
-    QCAnnotation, Center, get_center, BioSampleType, SpectraMeasurementType
+from .models import BioSample, Observable, Instrument, Patient, SpectralData, Observation, UploadedFile, Visit,\
+    QCAnnotator, QCAnnotation, Center, get_center, BioSampleType, SpectraMeasurementType
 
 
 class RestrictedByCenterAdmin(admin.ModelAdmin):
@@ -136,18 +136,18 @@ class QCAnnotatorAdmin(RestrictedByCenterAdmin):
     list_display = ["name", "fully_qualified_class_name", "default", "value_type"]
 
 
-@admin.register(Disease)
-class DiseaseAdmin(RestrictedByCenterAdmin):
+@admin.register(Observable)
+class ObservableAdmin(RestrictedByCenterAdmin):
     search_fields = ["name"]
-    search_help_text = "Disease name"
+    search_help_text = "Observable name"
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     ordering = ["name"]
     list_filter = ("center", "value_class")
-    list_display = ["name", "description", "symptom_count"]
+    list_display = ["name", "description", "observation_count"]
 
     @admin.display
-    def symptom_count(self, obj):
-        return len(obj.symptom.all())
+    def observation_count(self, obj):
+        return len(obj.observation.all())
 
     def get_queryset(self, request):
         """ List only objects belonging to user's center. """
@@ -157,32 +157,32 @@ class DiseaseAdmin(RestrictedByCenterAdmin):
         return qs.filter(Q(center=Center.objects.get(pk=request.user.center.pk)) | Q(center=None))
 
 
-@admin.register(Symptom)
-class SymptomAdmin(RestrictedByCenterAdmin):
-    search_fields = ["disease__name", "visit__patient__patient_id", "visit__patient__patient_cid"]
-    search_help_text = "Disease, Patient ID or CID"
+@admin.register(Observation)
+class ObservationAdmin(RestrictedByCenterAdmin):
+    search_fields = ["observable__name", "visit__patient__patient_id", "visit__patient__patient_cid"]
+    search_help_text = "Observable, Patient ID or CID"
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     date_hierarchy = "updated_at"
     ordering = ("-updated_at",)
-    list_filter = ("visit__patient__center", "visit__patient__gender", "disease")
-    list_display = ["patient_id", "disease_name", "days_symptomatic", "severity", "visit"]
-    list_editable = ["days_symptomatic", "severity"]
+    list_filter = ("visit__patient__center", "visit__patient__gender", "observable")
+    list_display = ["patient_id", "observable_name", "days_observed", "severity", "visit"]
+    list_editable = ["days_observed", "severity"]
 
     @admin.display
     def patient_id(self, obj):
         return obj.visit.patient.patient_id
 
     @admin.display
-    def disease_name(self, obj):
-        return obj.disease.name
+    def observable_name(self, obj):
+        return obj.observable.name
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         """ Limit center form fields to user's center, and set initial value as such.
             Exceptions are made for superusers.
         """
-        if db_field.name == "disease" and request.user.center:
+        if db_field.name == "observable" and request.user.center:
             center = Center.objects.get(pk=request.user.center.pk)
-            kwargs["queryset"] = Disease.objects.filter(Q(center=center) | Q(center=None))
+            kwargs["queryset"] = Observable.objects.filter(Q(center=center) | Q(center=None))
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def get_queryset(self, request):
@@ -193,8 +193,8 @@ class SymptomAdmin(RestrictedByCenterAdmin):
         return qs.filter(visit__patient__center=Center.objects.get(pk=request.user.center.pk))
 
 
-class SymptomInline(admin.TabularInline):
-    model = Symptom
+class ObservationInline(admin.TabularInline):
+    model = Observation
     extra = 10
     show_change_link = True
 
@@ -283,7 +283,7 @@ class VisitAdmin(RestrictedByCenterAdmin):
     list_filter = ("patient__center",)
 
     # autocomplete_fields = ["previous_visit"]  # Conflicts with VisitAdminForm queryset.
-    inlines = [BioSampleInline, SymptomInline]
+    inlines = [BioSampleInline, ObservationInline]
 
     list_display = ["patient_id", "visit_count", "gender", "previous_visit"]
 
@@ -378,11 +378,11 @@ class DataAdminSite(admin.AdminSite):
 data_admin = DataAdminSite(name="data_admin")
 data_admin.register(Patient, admin_class=PatientAdmin)
 data_admin.register(Visit, admin_class=VisitAdmin)
-data_admin.register(Symptom, admin_class=SymptomAdmin)
+data_admin.register(Observation, admin_class=ObservationAdmin)
 data_admin.register(BioSample, admin_class=BioSampleAdmin)
 data_admin.register(SpectralData, admin_class=SpectralDataAdmin)
 data_admin.register(UploadedFile, admin_class=UploadedFileAdmin)
 data_admin.register(Instrument, admin_class=InstrumentAdmin)
 data_admin.register(QCAnnotation, admin_class=QCAnnotationAdmin)
 data_admin.register(QCAnnotator, admin_class=QCAnnotatorAdmin)
-data_admin.register(Disease, admin_class=DiseaseAdmin)
+data_admin.register(Observable, admin_class=ObservableAdmin)
