@@ -1,4 +1,5 @@
 from copy import deepcopy
+from enum import auto
 from pathlib import Path
 import uuid
 
@@ -276,6 +277,17 @@ class Observable(ModelWithViewDependency):
         A patient's instance are stored as models.Observation
     """
 
+    class Category(TextChoices):
+        BLOODWORK = auto()
+        COMORBIDITY = auto()
+        DRUG = auto()
+        PATIENT_INFO = auto()
+        PATIENT_INFO_II = auto()
+        PATIENT_PREP = auto()
+        SYMPTOM = auto()
+        TEST = auto()
+        VITALS = auto()
+
     Types = Types
 
     sql_view_dependencies = ("uploader.models.VisitObservationsView",)
@@ -287,6 +299,7 @@ class Observable(ModelWithViewDependency):
                        models.UniqueConstraint(Lower("alias"),
                                                name="unique_alias_name")]
 
+    category = models.CharField(max_length=128, null=False, blank=False, choices=Category.choices)
     # NOTE: See above constraint for case-insensitive uniqueness.
     name = models.CharField(max_length=128)
     description = models.CharField(max_length=256)

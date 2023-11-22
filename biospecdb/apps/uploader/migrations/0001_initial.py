@@ -114,6 +114,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
+                ('category', models.CharField(choices=[('BLOODWORK', 'Bloodwork'), ('COMORBIDITY', 'Comorbidity'), ('DRUG', 'Drug'), ('PATIENT_INFO', 'Patient Info'), ('PATIENT_INFO_II', 'Patient Info Ii'), ('PATIENT_PREP', 'Patient Prep'), ('SYMPTOM', 'Symptom'), ('TEST', 'Test'), ('VITALS', 'Vitals')], max_length=128)),
                 ('name', models.CharField(max_length=128)),
                 ('description', models.CharField(max_length=256)),
                 ('alias', models.CharField(help_text='Alias column name for bulk data ingestion from .csv, etc.', max_length=128)),

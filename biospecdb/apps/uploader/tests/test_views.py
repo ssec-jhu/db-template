@@ -75,7 +75,7 @@ class TestViews:
             execute_sql(f"select my_new_observable from {FullPatientView._meta.db_table}", db=FullPatientView.db)
 
         # Add new observable.
-        observable = Observable(name="my_new_observable")
+        observable = Observable(name="my_new_observable", category=Observable.Category.COMORBIDITY)
         observable.clean()
         observable.save(update_view=False)
 
@@ -97,7 +97,7 @@ class TestViews:
             execute_sql(f"select my_new_observable from {FullPatientView._meta.db_table}", db=FullPatientView.db)
 
         # Add new observable.
-        Observable.objects.create(name="my_new_observable")
+        Observable.objects.create(name="my_new_observable", category=Observable.Category.SYMPTOM)
 
         # Assert that new observable exists without having updated actual view.
         execute_sql(f"select my_new_observable from {FullPatientView._meta.db_table}", db=FullPatientView.db)

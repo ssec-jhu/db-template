@@ -142,8 +142,8 @@ class ObservableAdmin(RestrictedByCenterAdmin):
     search_help_text = "Observable name"
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     ordering = ["name"]
-    list_filter = ("center", "value_class")
-    list_display = ["name", "description", "observation_count"]
+    list_filter = ("center", "category", "value_class")
+    list_display = ["category", "name", "description", "observation_count"]
 
     @admin.display
     def observation_count(self, obj):
