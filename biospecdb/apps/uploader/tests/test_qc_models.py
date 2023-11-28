@@ -39,6 +39,7 @@ class TestQCFunctionality:
         annotation = QCAnnotation(annotator=annotator, spectral_data=spectral_data)
         assert annotation.value is None
         annotation.full_clean()
+        annotation.save()
         assert pytest.approx(float(annotation.value)) == 915.3270367661034
 
     expected_sum_results = [915.3270367661034,
@@ -201,3 +202,12 @@ class TestQCFunctionality:
         call_command("run_qc_annotators", "--no_reruns")
         for expected_results, annotation in zip(self.expected_sum_results, QCAnnotation.objects.all()):
             assert pytest.approx(annotation.get_value()) == expected_results
+
+    def test_no_file_validation(self, db):
+        """ Test that a validation error is raised rather than any other python exception which would indicate a bug.
+            See https://github.com/ssec-jhu/biospecdb/pull/182
+        """
+        annotation = QCAnnotation()
+        with pytest.raises(ValidationError):
+            annotation.full_clean()
+            annotation.save()

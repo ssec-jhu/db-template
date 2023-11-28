@@ -788,9 +788,12 @@ class QCAnnotation(DatedModel):
 
         return self.value
 
-    def clean(self):
-        super().clean()
-        self.run()
+    def save(self, *args, **kwargs):
+        self.run(save=False)
+        super().save(*args, **kwargs)
+
+    def asave(self, *args, **kwargs):
+        raise NotImplementedError
 
 
 def get_center(obj):
