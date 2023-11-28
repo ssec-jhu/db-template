@@ -38,6 +38,9 @@ class Types(TextChoices):
     FLOAT = auto()
 
     def cast(self, value):
+        if value is None:
+            return
+
         if self.name == "BOOL":
             return biospecdb.util.to_bool(value)
         elif self.name == "STR":
