@@ -514,7 +514,9 @@ class SpectralData(DatedModel):
 
             The schema is equivalent to `json.dumps(dataclasses.asdict(uploader.io.SpectralData))``.
         """
-        if self.data is None:
+
+        # Note: self.data is a FieldFile and is never None so check is "empty" instead, i.e., self.data.name is None.
+        if not self.data:
             return
 
         try:
