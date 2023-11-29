@@ -56,8 +56,10 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                     patient = Patient.objects.get(pk=index)
                 except (Patient.DoesNotExist, ValidationError):
                     try:
-                        # Allow patients to be referenced by both patient_id and patient_cid.
-                        patient = Patient.objects.get(patient_cid=index)
+                        # Allow patients to be referenced by both patient_id and patient_cid, i.e., assume that the
+                        # "patient ID" provided could actually be the patient CID.
+                        # Note: patient_cid is only guaranteed to be unique to a center and not by itself.
+                        patient = Patient.objects.get(patient_cid=index, center=center)
                     except (Patient.DoesNotExist, ValidationError):
                         # NOTE: We do not use the ``index`` read from file as the pk even if it is a UUID. The above
                         # ``get()`` only allows for existing patients to be re-used when _already_ in the db with their
