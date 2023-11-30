@@ -26,7 +26,11 @@ def count_bool_observables(result: "QueryResult"):  # noqa: F821
 
     bool_observables = [d.name for d in Observable.objects.all() if d.value_class == "BOOL"]
     df = pd.DataFrame(result.data, columns=result.header_strings)
-    df = df[bool_observables].replace({"True": True, "False": False})
+    cols = set(bool_observables) & set(df.columns)
+    if not cols:
+        return
+    df = df[list(cols)]
+    df.replace({"True": True, "False": False}, inplace=True)
     return df.sum()
 
 
