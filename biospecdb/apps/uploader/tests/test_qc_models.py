@@ -203,11 +203,18 @@ class TestQCFunctionality:
         for expected_results, annotation in zip(self.expected_sum_results, QCAnnotation.objects.all()):
             assert pytest.approx(annotation.get_value()) == expected_results
 
-    def test_no_file_validation(self, db):
+    def test_no_file_validation(self, qcannotators):
         """ Test that a validation error is raised rather than any other python exception which would indicate a bug.
             See https://github.com/ssec-jhu/biospecdb/pull/182
         """
-        annotation = QCAnnotation()
+        annotation = QCAnnotation(annotator=QCAnnotator.objects.get(name="sum"))
         with pytest.raises(ValidationError):
             annotation.full_clean()
+
+    def test_no_file_related_error(self, qcannotators):
+        """ Test that a validation error is raised rather than any other python exception which would indicate a bug.
+            See https://github.com/ssec-jhu/biospecdb/pull/182
+        """
+        annotation = QCAnnotation(annotator=QCAnnotator.objects.get(name="sum"))
+        with pytest.raises(QCAnnotation.spectral_data.RelatedObjectDoesNotExist):
             annotation.save()
