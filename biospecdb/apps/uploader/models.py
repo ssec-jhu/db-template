@@ -400,6 +400,8 @@ class Instrument(DatedModel):
     atr_crystal = models.CharField(max_length=128,
                                    verbose_name="ATR Crystal")
 
+    center = models.ForeignKey(Center, null=True, blank=True, on_delete=models.PROTECT)
+
     def __str__(self):
         return f"{self.spectrometer}_{self.atr_crystal}"
 
