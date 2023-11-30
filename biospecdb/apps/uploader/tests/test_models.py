@@ -296,6 +296,14 @@ class TestSpectralData:
         for obj in SpectralData.objects.all():
             assert Path(obj.data.name).exists()
 
+    def test_no_file_validation(self, db):
+        """ Test that a validation error is raised rather than any other python exception which would indicate a bug.
+            See https://github.com/ssec-jhu/biospecdb/pull/181
+        """
+        data = SpectralData()
+        with pytest.raises(ValidationError):
+            data.full_clean()
+
     def test_temp_files_deleted(self, mock_data_from_files):
         n_patients = 10
         assert len(SpectralData.objects.all()) == n_patients
