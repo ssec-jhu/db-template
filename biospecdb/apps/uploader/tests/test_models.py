@@ -473,21 +473,38 @@ class TestUploadedFile:
         assert Patient.objects.count() == n_patients
         assert Visit.objects.count() == n_patients
 
-        # copy patients
+        # copy patients but switch pid -> cid.
+        new_patient_list = []
+        old_pids = []
         for patient in Patient.objects.select_related("center").all():
-            new_patient = Patient(patient_cid=patient.patient_id, gender=patient.gender, center=patient.center)
+            old_pids.append(patient.patient_id)
+            new_patient_list.append(Patient(patient_cid=patient.patient_id,
+                                            gender=patient.gender,
+                                            center=patient.center))
             patient.delete()
+
+        # Check old patients successfully deleted.
+        assert Patient.objects.count() == 0
+        assert Visit.objects.count() == 0
+
+        for new_patient in new_patient_list:
             new_patient.full_clean()
             new_patient.save()
+            # Check new patients definitely aren't the old ones.
+            assert new_patient.patient_id not in old_pids
 
         assert Patient.objects.count() == n_patients
+        assert Visit.objects.count() == 0
 
-        with django_db_blocker.unblock():
-            bulk_upload()
+        # Re-ingest data.
+        # with django_db_blocker.unblock():
+        bulk_upload()
 
         assert UploadedFile.objects.count() == 2
-        assert Patient.objects.count() == n_patients * 1
-        assert Visit.objects.count() == n_patients * 1
+        # If bulk_upload failed to detect the existing patients by CID, new patients would have been created instead
+        # and Patient.objects.count() == n_patients * 2.
+        assert Patient.objects.count() == n_patients
+        assert Visit.objects.count() == n_patients
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
