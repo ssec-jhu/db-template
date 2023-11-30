@@ -8,6 +8,7 @@ from uploader.models import Patient, Visit, SpectralData, BioSample, Observation
 from biospecdb.util import is_valid_uuid, to_uuid
 
 
+@staff_member_required
 def home(request):
     return render(request, 'Home.html')
 
