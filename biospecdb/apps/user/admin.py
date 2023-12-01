@@ -29,6 +29,7 @@ class UserAdmin(BaseUserAdmin):
                 "fields": (
                     "is_active",
                     "is_staff",
+                    "is_sqluser",
                     "is_superuser",
                     "groups",
                     "user_permissions",
