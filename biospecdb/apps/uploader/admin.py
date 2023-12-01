@@ -107,9 +107,13 @@ class UploadedFileAdmin(RestrictedByCenterMixin, admin.ModelAdmin):
 
 class QCAnnotationInline(RestrictedByCenterMixin, NestedTabularInline):
     model = QCAnnotation
-    extra = 0
+    extra = 1
     min_num = 0
     show_change_link = True
+
+    def get_extra(self, request, obj=None, **kwargs):
+        # Only display inlines for those that exist, i.e., no expanded extras (if they exist).
+        return 0 if obj and obj.pk and obj.qc_annotation.count() else self.extra
 
 
 @admin.register(QCAnnotation)
@@ -218,10 +222,9 @@ class ObservationInline(ObservationMixin, RestrictedByCenterMixin, NestedTabular
     fk_name = "visit"
 
     def get_extra(self, request, obj=None, **kwargs):
-        if obj and obj.pk:
+        if obj and obj.pk and obj.observation.count():
             # Only display inlines for those that exist, i.e., no extras (when self.extra=0).
-            if len(obj.observation.all()):
-                extra = self.extra
+            extra = self.extra
         else:
             # Note: Calling ``len(self.formfield_for_foreignkey(db_field, request)`` would be better, however, it's not
             # clear how to correctly pass ``db_field``. The following was copied from
@@ -279,10 +282,14 @@ class SpectralDataAdminWithInlines(SpectralDataAdmin):
 
 class SpectralDataInline(SpectralDataMixin, RestrictedByCenterMixin, NestedStackedInline):
     model = SpectralData
-    extra = 0
+    extra = 1
     min_num = 0
     show_change_link = True
     fk_name = "bio_sample"
+
+    def get_extra(self, request, obj=None, **kwargs):
+        # Only display inlines for those that exist, i.e., no expanded extras (if they exist).
+        return 0 if obj and obj.pk and obj.spectral_data.count() else self.extra
 
 
 class BioSampleMixin:
@@ -316,11 +323,15 @@ class BioSampleAdminWithInlines(BioSampleAdmin):
 
 class BioSampleInline(BioSampleMixin, RestrictedByCenterMixin, NestedStackedInline):
     model = BioSample
-    extra = 0
+    extra = 1
     min_num = 0
     show_change_link = True
     fk_name = "visit"
     inlines = [SpectralDataInline]
+
+    def get_extra(self, request, obj=None, **kwargs):
+        # Only display inlines for those that exist, i.e., no expanded extras (if they exist).
+        return 0 if obj and obj.pk and obj.bio_sample.count() else self.extra
 
 
 class VisitAdminForm(forms.ModelForm):
@@ -357,11 +368,15 @@ class VisitAdminMixin:
 
 class VisitInline(VisitAdminMixin, RestrictedByCenterMixin, NestedTabularInline):
     model = Visit
-    extra = 0
+    extra = 1
     min_num = 0
     show_change_link = True
     fk_name = "patient"
     inlines = [BioSampleInline, ObservationInline]
+
+    def get_extra(self, request, obj=None, **kwargs):
+        # Only display inlines for those that exist, i.e., no expanded extras (if they exist).
+        return 0 if obj and obj.pk and obj.visit.count() else self.extra
 
 
 @admin.register(Visit)
