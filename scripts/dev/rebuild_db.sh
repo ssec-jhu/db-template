@@ -1,10 +1,12 @@
 # Delete initial migrations.
 rm biospecdb/apps/user/migrations/0*
 rm biospecdb/apps/uploader/migrations/0*
+rm biospecdb/apps/catalog/migrations/0*
 
 # Delete uploaded data files.
 rm spectra_data/*
 rm raw_data/*
+rm datasets/*
 
 # Delete databases.
 mkdir -p db
@@ -17,13 +19,14 @@ set -e
 # Redo migrations since they were deleted above.
 python manage.py makemigrations user
 python manage.py makemigrations uploader
+python manage.py makemigrations catalog
 
 # Create and/or migrate DBs.
 python manage.py migrate
 python manage.py migrate --database=bsr
 
 # Load initial data fixtures.
-python manage.py loaddata centers
+python manage.py loaddata centers queries
 python manage.py loaddata --database=bsr centers observables instruments qcannotators biosampletypes spectrameasurementtypes
 python manage.py update_sql_views
 

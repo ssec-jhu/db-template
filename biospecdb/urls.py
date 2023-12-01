@@ -25,6 +25,7 @@ from django.views.generic.base import RedirectView
 
 from uploader import views
 from uploader.admin import data_admin
+from catalog.admin import catalog_admin
 
 admin.site.site_header = "Biosample Spectral Repository administration"
 
@@ -37,6 +38,7 @@ urlpatterns = [
                                                          login_url="/admin/login/"),
                                         'explorer.urls')),
     path('data/', data_admin.urls),
+    path('catalog/', catalog_admin.urls),
 ]
 
 if settings.DEBUG:

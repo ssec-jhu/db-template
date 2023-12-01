@@ -1,8 +1,10 @@
+import hashlib
 from pathlib import Path
 import tempfile
 import zipfile
 
 from django.conf import settings
+from django.utils.module_loading import import_string
 import explorer.exporters
 import pandas as pd
 
@@ -37,15 +39,47 @@ class ZipSpectralDataMixin:
             value = value.getvalue()
         return value
 
-    def get_file_output(self, **kwargs):
+    def get_file_output(self,
+                        include_data_files=None,
+                        return_info=False,
+                        always_zip=False,
+                        compression_type=None,
+                        compression_level=None,
+                        **kwargs):
         self.is_zip = False  # NOTE: This doesn't need resetting anywhere else.
 
         # NOTE: The following two lines are the entire contents of explorer.exporters.BaseExporter.get_file_output.
         res = self.query.execute_query_only()
         output = self._get_output(res, **kwargs)
 
-        if not settings.EXPLORER_DATA_EXPORTERS_INCLUDE_DATA_FILES:
-            return output
+        n_rows = len(res.data)
+        spectral_data_filenames = None
+        # Compute data checksum
+        output.seek(0)
+        data_sha256 = hashlib.sha256(output.read().encode()).hexdigest()
+
+        if include_data_files is None:
+            include_data_files = settings.EXPLORER_DATA_EXPORTERS_INCLUDE_DATA_FILES
+
+        if not include_data_files:
+            if always_zip:
+                temp = tempfile.TemporaryFile()
+                with zipfile.ZipFile(temp,
+                                     mode="w",
+                                     compression=compression_type,
+                                     compresslevel=compression_level) as archive:
+                    # Add query results to zipfile.
+                    archive.writestr(self.get_filename(), output.getvalue())
+                    temp.seek(0)
+                    output = temp
+
+            return (output, (n_rows, data_sha256, spectral_data_filenames)) if return_info else output
+
+        if compression_type is None:
+            compression_type = import_string(settings.ZIP_COMPRESSION)
+
+        if compression_level is None:
+            compression_level = settings.ZIP_COMPRESSION_LEVEL
 
         data_files = []
         # Collect SpectralData files and zip along with query data from self._get_output().
@@ -68,12 +102,16 @@ class ZipSpectralDataMixin:
                 data_files = df.to_numpy().flatten().tolist()
 
         if data_files:
-            # Dedupe
-            data_files = set(data_files)
+            # Dedupe and sort.
+            data_files = sorted(set(data_files))
+            spectral_data_filenames = data_files
 
             # Zip everything together.
             temp = tempfile.TemporaryFile()
-            with zipfile.ZipFile(temp, mode="w") as archive:
+            with zipfile.ZipFile(temp,
+                                 mode="a",
+                                 compression=compression_type,
+                                 compresslevel=compression_level) as archive:
                 # Add query results to zipfile.
                 archive.writestr(self.get_filename(), output.getvalue())
 
@@ -84,7 +122,7 @@ class ZipSpectralDataMixin:
             output = temp
             self.is_zip = True
 
-        return output
+        return (output, (n_rows, data_sha256, spectral_data_filenames)) if return_info else output
 
 
 class CSVExporter(ZipSpectralDataMixin, explorer.exporters.CSVExporter):
