@@ -11,6 +11,7 @@ license = {file = "LICENSE"}
 requires-python = ">=3.11"
 dependencies = [
     "django",
+    "django-decorator-include",
     "django-nested-admin",
     "django-sql-explorer[charts]",
     "kaleido",
@@ -18,8 +19,7 @@ dependencies = [
     "pandas",
     "plotly",
     "uvicorn",
-    "xlsxwriter",
-    "django-decorator-include@git+https://github.com/twidi/django-decorator-include.git"
+    "xlsxwriter"
 ]
 
 [project.optional-dependencies]
