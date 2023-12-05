@@ -107,9 +107,13 @@ class UploadedFileAdmin(RestrictedByCenterMixin, admin.ModelAdmin):
 
 class QCAnnotationInline(RestrictedByCenterMixin, NestedTabularInline):
     model = QCAnnotation
-    extra = 0
-    min_num = 1
+    extra = 1
+    min_num = 0
     show_change_link = True
+
+    def get_extra(self, request, obj=None, **kwargs):
+        # Only display inlines for those that exist, i.e., no expanded extras (if they exist).
+        return 0 if obj and obj.pk and obj.qc_annotation.count() else self.extra
 
 
 @admin.register(QCAnnotation)
@@ -215,18 +219,20 @@ class ObservationInline(ObservationMixin, RestrictedByCenterMixin, NestedTabular
     extra = 0
     model = Observation
     show_change_link = True
+    fk_name = "visit"
 
-    def get_min_num(self, request, obj=None, **kwargs):
-        if obj and obj.pk:
-            min_num = len(obj.observation.all())
+    def get_extra(self, request, obj=None, **kwargs):
+        if obj and obj.pk and obj.observation.count():
+            # Only display inlines for those that exist, i.e., no extras (when self.extra=0).
+            extra = self.extra
         else:
             # Note: Calling ``len(self.formfield_for_foreignkey(db_field, request)`` would be better, however, it's not
             # clear how to correctly pass ``db_field``. The following was copied from
             # ``RestrictedByCenterMixin.formfield_for_foreignkey``.
             center = Center.objects.get(pk=request.user.center.pk)
-            min_num = len(Observable.objects.filter(Q(center=center) | Q(center=None)))
+            extra = len(Observable.objects.filter(Q(center=center) | Q(center=None)))
 
-        return min_num
+        return extra
 
 
 @admin.register(Observation)
@@ -268,14 +274,22 @@ class SpectralDataAdmin(SpectralDataMixin, RestrictedByCenterMixin, NestedModelA
                    "bio_sample__sample_type",
                    "bio_sample__sample_processing",
                    "bio_sample__visit__patient__gender")
+
+
+class SpectralDataAdminWithInlines(SpectralDataAdmin):
     inlines = [QCAnnotationInline]
 
 
 class SpectralDataInline(SpectralDataMixin, RestrictedByCenterMixin, NestedStackedInline):
     model = SpectralData
-    extra = 0
-    min_num = 1
+    extra = 1
+    min_num = 0
     show_change_link = True
+    fk_name = "bio_sample"
+
+    def get_extra(self, request, obj=None, **kwargs):
+        # Only display inlines for those that exist, i.e., no expanded extras (if they exist).
+        return 0 if obj and obj.pk and obj.spectral_data.count() else self.extra
 
 
 class BioSampleMixin:
@@ -301,15 +315,23 @@ class BioSampleAdmin(BioSampleMixin, RestrictedByCenterMixin, NestedModelAdmin):
     date_hierarchy = "updated_at"
     list_filter = ("visit__patient__center", "sample_type", "sample_processing")
     list_display = ["patient_id", "sample_type"]
+
+
+class BioSampleAdminWithInlines(BioSampleAdmin):
     inlines = [SpectralDataInline]
 
 
 class BioSampleInline(BioSampleMixin, RestrictedByCenterMixin, NestedStackedInline):
     model = BioSample
-    extra = 0
-    min_num = 1
+    extra = 1
+    min_num = 0
     show_change_link = True
+    fk_name = "visit"
     inlines = [SpectralDataInline]
+
+    def get_extra(self, request, obj=None, **kwargs):
+        # Only display inlines for those that exist, i.e., no expanded extras (if they exist).
+        return 0 if obj and obj.pk and obj.bio_sample.count() else self.extra
 
 
 class VisitAdminForm(forms.ModelForm):
@@ -346,10 +368,15 @@ class VisitAdminMixin:
 
 class VisitInline(VisitAdminMixin, RestrictedByCenterMixin, NestedTabularInline):
     model = Visit
-    extra = 0
-    min_num = 1
+    extra = 1
+    min_num = 0
     show_change_link = True
+    fk_name = "patient"
     inlines = [BioSampleInline, ObservationInline]
+
+    def get_extra(self, request, obj=None, **kwargs):
+        # Only display inlines for those that exist, i.e., no expanded extras (if they exist).
+        return 0 if obj and obj.pk and obj.visit.count() else self.extra
 
 
 @admin.register(Visit)
@@ -360,6 +387,9 @@ class VisitAdmin(VisitAdminMixin, RestrictedByCenterMixin, NestedModelAdmin):
     list_filter = ("patient__center",)
     # autocomplete_fields = ["previous_visit"]  # Conflicts with VisitAdminForm queryset.
     list_display = ["patient_id", "visit_count", "gender", "previous_visit"]
+
+
+class VisitAdminWithInlines(VisitAdmin):
     inlines = [BioSampleInline, ObservationInline]
 
 
@@ -372,7 +402,6 @@ class PatientAdmin(RestrictedByCenterMixin, NestedModelAdmin):
     ordering = ("-updated_at",)
     list_filter = ("center", "gender")
     list_display = ["patient_id", "patient_cid", "gender", "age", "visit_count", "center"]
-    inlines = [VisitInline]
 
     @admin.display
     def age(self, obj):
@@ -391,6 +420,11 @@ class PatientAdmin(RestrictedByCenterMixin, NestedModelAdmin):
         if request.user.is_superuser:
             return qs
         return qs.filter(center=Center.objects.get(pk=request.user.center.pk))
+
+
+class PatientAdminWithInlines(PatientAdmin):
+    inlines = [VisitInline]
+
 
 # NOTE: The following admin can be used to visually sanity check that changes by user.models.Center to the "default" DB
 # get reflected in the "bsr" DB. We never want uploader.models.Center to be editable by any admin page, so we restrict
@@ -422,15 +456,32 @@ class DataAdminSite(admin.AdminSite):
     index_title = "Data Administration"
     site_title = index_title
 
+    model_order = [Patient,
+                   Visit,
+                   Observation,
+                   BioSample,
+                   SpectralData,
+                   UploadedFile
+                   ]
+
+    def get_app_list(self, request, app_label=None):
+        app_list = super().get_app_list(request, app_label=app_label)
+
+        if hasattr(self, "model_order"):
+            for app in app_list:
+                app["models"].sort(key=lambda x: self.model_order.index(x["model"]))
+
+        return app_list
+
 
 data_admin = DataAdminSite(name="data_admin")
-data_admin.register(Patient, admin_class=PatientAdmin)
-data_admin.register(Visit, admin_class=VisitAdmin)
+data_admin.register(Patient, admin_class=PatientAdminWithInlines)
+data_admin.register(Visit, admin_class=VisitAdminWithInlines)
 data_admin.register(Observation, admin_class=ObservationAdmin)
-data_admin.register(BioSample, admin_class=BioSampleAdmin)
-data_admin.register(SpectralData, admin_class=SpectralDataAdmin)
+data_admin.register(BioSample, admin_class=BioSampleAdminWithInlines)
+data_admin.register(SpectralData, admin_class=SpectralDataAdminWithInlines)
 data_admin.register(UploadedFile, admin_class=UploadedFileAdmin)
-data_admin.register(Instrument, admin_class=InstrumentAdmin)
-data_admin.register(QCAnnotation, admin_class=QCAnnotationAdmin)
-data_admin.register(QCAnnotator, admin_class=QCAnnotatorAdmin)
-data_admin.register(Observable, admin_class=ObservableAdmin)
+# data_admin.register(Instrument, admin_class=InstrumentAdmin)
+# data_admin.register(QCAnnotation, admin_class=QCAnnotationAdmin)
+# data_admin.register(QCAnnotator, admin_class=QCAnnotatorAdmin)
+# data_admin.register(Observable, admin_class=ObservableAdmin)
