@@ -231,3 +231,8 @@ class User(AbstractUser):
 
     class Meta(AbstractUser.Meta):
         swappable = "AUTH_USER_MODEL"
+
+    is_sqluser = models.BooleanField(
+        _("SQL explorer user status"),
+        default=False,
+        help_text=_("Designates whether the user can log into the SQL explorer app."))
