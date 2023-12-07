@@ -14,7 +14,7 @@ from uploader.loaddata import save_data_to_db
 from user.models import Center as UserCenter
 from uploader.models import Center as UploaderCenter
 import biospecdb.util
-from uploader.tests.conftest import DATA_PATH
+from uploader.tests.conftest import bulk_upload, DATA_PATH
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
@@ -453,6 +453,57 @@ class TestUploadedFile:
                                                                                  name=spectral_file_path.name))
             with pytest.raises(ValidationError, match="Patient ID mismatch."):
                 data_upload.clean()
+
+    def test_re_upload(self, django_db_blocker, observables, instruments, mock_data_from_files):
+        n_patients = 10
+        assert UploadedFile.objects.count() == 1
+        assert Patient.objects.count() == n_patients
+        assert Visit.objects.count() == n_patients
+
+        with django_db_blocker.unblock():
+            bulk_upload()
+
+        assert UploadedFile.objects.count() == 2
+        assert Patient.objects.count() == n_patients
+        assert Visit.objects.count() == n_patients * 2
+
+    def test_upload_on_cid(self, django_db_blocker, observables, instruments, mock_data_from_files):
+        n_patients = 10
+        assert UploadedFile.objects.count() == 1
+        assert Patient.objects.count() == n_patients
+        assert Visit.objects.count() == n_patients
+
+        # copy patients but switch pid -> cid.
+        new_patient_list = []
+        old_pids = []
+        for patient in Patient.objects.select_related("center").all():
+            old_pids.append(patient.patient_id)
+            new_patient_list.append(Patient(patient_cid=patient.patient_id,
+                                            gender=patient.gender,
+                                            center=patient.center))
+            patient.delete()
+
+        # Check old patients successfully deleted.
+        assert Patient.objects.count() == 0
+        assert Visit.objects.count() == 0
+
+        for new_patient in new_patient_list:
+            new_patient.full_clean()
+            new_patient.save()
+            # Check new patients definitely aren't the old ones.
+            assert new_patient.patient_id not in old_pids
+
+        assert Patient.objects.count() == n_patients
+        assert Visit.objects.count() == 0
+
+        # Re-ingest data.
+        bulk_upload()
+
+        assert UploadedFile.objects.count() == 2
+        # If bulk_upload failed to detect the existing patients by CID, new patients would have been created instead
+        # and Patient.objects.count() == n_patients * 2.
+        assert Patient.objects.count() == n_patients
+        assert Visit.objects.count() == n_patients
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
