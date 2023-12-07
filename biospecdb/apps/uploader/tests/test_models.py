@@ -497,7 +497,6 @@ class TestUploadedFile:
         assert Visit.objects.count() == 0
 
         # Re-ingest data.
-        # with django_db_blocker.unblock():
         bulk_upload()
 
         assert UploadedFile.objects.count() == 2
