@@ -37,8 +37,11 @@ class Dataset(DatedModel):
 
     UPLOAD_DIR = "datasets/"  # MEDIA_ROOT/datasets
 
-    id = models.UUIDField(unique=True, primary_key=True, default=uuid.uuid4, verbose_name="ID")
+    # Cache objs.
+    _file = None
+    _filename = None
 
+    id = models.UUIDField(unique=True, primary_key=True, default=uuid.uuid4, verbose_name="ID")
     query = models.ForeignKey(Query, on_delete=models.PROTECT, related_name="dataset")
     sql = models.TextField(blank=True, null=False, editable=False, verbose_name="SQL")
     version = models.CharField(max_length=32, null=False, blank=False, help_text="Version String, i.e., YYYY.N")
@@ -96,15 +99,16 @@ class Dataset(DatedModel):
         self.name = self.name or self.query.title
         self.description = self.description or self.query.description
         self.sql = self.query.sql
-        super().clean(*args, **kwargs)
 
         if not self.file:
-            # Execute query for validation.
-            _file, info = self.execute_query()
-            _filename, n_rows, _data_sha256, _spectral_data_filenames = info
+            # Create file from query.
+            self._file, info = self.execute_query()
+            self._filename, self.n_rows, self.data_sha256, self.spectral_data_filenames = info
 
-            if not n_rows:
+            if not self.n_rows:
                 raise ValidationError(_("Query returned no data."))
+
+        super().clean(*args, **kwargs)
 
     def get_exporter(self):
         return import_string(settings.DATASET_CATALOG_FILE_CLASS)
@@ -144,20 +148,9 @@ class Dataset(DatedModel):
         return info
 
     def save(self, *args, **kwargs):
-        if not self.file:
-            # Create file from query.
-            file, info = self.execute_query()
-            filename, n_rows, data_sha256, spectral_data_filenames = info
-
-            if not n_rows:
-                raise ValidationError(_("Query returned no data."))
-
-            self.n_rows = n_rows
-            self.data_sha256 = data_sha256
-            self.spectral_data_filenames = spectral_data_filenames
-
+        if self._file:
             # Append dataset meta data as INFO.json.
-            with zipfile.ZipFile(file,
+            with zipfile.ZipFile(self._file,
                                  mode='a',
                                  compression=import_string(settings.ZIP_COMPRESSION),
                                  compresslevel=settings.ZIP_COMPRESSION_LEVEL) as archive:
@@ -165,7 +158,7 @@ class Dataset(DatedModel):
                                                          indent=1,
                                                          cls=DjangoJSONEncoder))
 
-            self.file = File(file, name=filename)
+            self.file = File(self._file, name=self._filename)
 
         # Save file (and everything else).
         super().save(*args, **kwargs)
