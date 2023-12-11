@@ -102,11 +102,17 @@ class Dataset(DatedModel):
 
         if not self.file:
             # Create file from query.
-            self._file, info = self.execute_query()
-            self._filename, self.n_rows, self.data_sha256, self.spectral_data_filenames = info
+            file, info = self.execute_query()
+            filename, n_rows, data_sha256, spectral_data_filenames = info
 
-            if not self.n_rows:
+            if not n_rows:
                 raise ValidationError(_("Query returned no data."))
+
+            self._file = file
+            self._filename = filename
+            self.n_rows = n_rows
+            self.data_sha256 = data_sha256
+            self.spectral_data_filenames = spectral_data_filenames
 
         super().clean(*args, **kwargs)
 

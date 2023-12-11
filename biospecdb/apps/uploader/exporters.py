@@ -101,7 +101,7 @@ class ZipSpectralDataMixin:
                 # There could be multiple "col_name" (aka "data") columns so flatten first.
                 data_files = df.to_numpy().flatten().tolist()
 
-        if data_files:
+        if data_files or always_zip:
             # Dedupe and sort.
             data_files = sorted(set(data_files))
             spectral_data_filenames = data_files
