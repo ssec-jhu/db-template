@@ -5,7 +5,6 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-from django.conf import settings
 import uploader.io
 from uploader.models import Observable, Patient, SpectralData
 from biospecdb.util import to_uuid
@@ -44,10 +43,7 @@ def get_pie_chart(result: "QueryResult") -> Optional[str]:  # noqa: F821
         fig = px.pie(counts, values=counts.values, names=counts.index, title=f"SQL query: '{result.sql}'")
         return fig_to_html(fig)
     except Exception:
-        if settings.DEBUG:
-            raise
-        else:
-            return
+        return
 
 
 def get_line_chart(result: "QueryResult") -> Optional[str]:  # noqa: F821
@@ -56,6 +52,9 @@ def get_line_chart(result: "QueryResult") -> Optional[str]:  # noqa: F821
 
     try:
         df = pd.DataFrame(result.data, columns=result.header_strings)
+
+        if Patient.patient_id.field.name not in df.columns or SpectralData.data.field.name not in df.columns:
+            return
         df = df[[Patient.patient_id.field.name, SpectralData.data.field.name]]
 
         fig = go.Figure()
@@ -71,7 +70,4 @@ def get_line_chart(result: "QueryResult") -> Optional[str]:  # noqa: F821
 
         return fig_to_html(fig)
     except Exception:
-        if settings.DEBUG:
-            raise
-        else:
-            return
+        return

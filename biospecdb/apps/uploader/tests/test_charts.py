@@ -1,5 +1,4 @@
 import pytest
-from django.conf import settings
 
 from uploader.tests.conftest import SimpleQueryFactory
 from uploader.charts import count_bool_observables, get_pie_chart, get_line_chart
@@ -36,10 +35,3 @@ class TestCharts:
 
     def test_empty_get_line_chart(self, query):
         assert get_line_chart(query) is None
-
-    def test_get_line_chart_exceptions(self, monkeypatch, mock_data_from_files, query):
-        assert get_line_chart(query) is None
-
-        monkeypatch.setattr(settings, "DEBUG", True)
-        with pytest.raises(KeyError):
-            get_line_chart(query)
