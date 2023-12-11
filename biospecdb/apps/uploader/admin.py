@@ -83,8 +83,41 @@ admin.site.register(SpectraMeasurementType)
 @admin.register(Instrument)
 class InstrumentAdmin(RestrictedByCenterMixin, admin.ModelAdmin):
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
-    list_display = ["spectrometer", "atr_crystal"]
-    ordering = ["spectrometer"]
+    list_display = ["id", "manufacturer", "model"]
+    list_filter = ("manufacturer", "model")
+    ordering = ["manufacturer"]
+
+    fieldsets = [
+        (
+            None,
+            {
+                "fields": [("id", "cid"),
+                           "manufacturer",
+                           "model",
+                           "serial_number",
+                           "center"]
+            }
+        ),
+        (
+            "Spectrometer",
+            {
+                "fields": ["spectrometer_manufacturer", "spectrometer_model", "spectrometer_serial_number"],
+            }
+        ),
+        (
+            "Laser",
+            {
+                "fields": ["laser_manufacturer", "laser_model", "laser_serial_number"],
+            }
+        ),
+        (
+            "More Details",
+            {
+                "classes": ["collapse"],
+                "fields": [("created_at", "updated_at")],
+            }
+        ),
+    ]
 
 
 @admin.register(UploadedFile)
@@ -246,8 +279,50 @@ class ObservationAdmin(ObservationMixin, RestrictedByCenterMixin, NestedModelAdm
 
 
 class SpectralDataMixin:
-    radio_fields = {"instrument": admin.HORIZONTAL}
     ordering = ("-updated_at",)
+    readonly_fields = ["created_at", "updated_at"]
+
+    fieldsets = [
+        (
+            None,
+            {
+                "fields": ["instrument", "bio_sample", "data"]
+            }
+        ),
+        (
+            "Measurement Details",
+            {
+                "fields": ["measurement_id",
+                           "measurement_type",
+                           "atr_crystal",
+                           "n_coadditions",
+                           "acquisition_time",
+                           "resolution",
+                           "power",
+                           "temperature",
+                           "pressure",
+                           "humidity",
+                           "date"],
+            }
+        ),
+        (
+            "SERS Details",
+            {
+                "classes": ["collapse"],
+                "fields": ["sers_description",
+                           "sers_particle_material",
+                           "sers_particle_size",
+                           "sers_particle_concentration"],
+            }
+        ),
+        (
+            "More Details",
+            {
+                "classes": ["collapse"],
+                "fields": ["id", ("created_at", "updated_at")],
+            }
+        ),
+    ]
 
     @admin.display
     def patient_id(self, obj):
@@ -270,7 +345,7 @@ class SpectralDataAdmin(SpectralDataMixin, RestrictedByCenterMixin, NestedModelA
     list_display = ["patient_id", "instrument", "data"]
     list_filter = ("bio_sample__visit__patient__center",
                    "instrument",
-                   "spectra_measurement",
+                   "measurement_type",
                    "bio_sample__sample_type",
                    "bio_sample__sample_processing",
                    "bio_sample__visit__patient__gender")

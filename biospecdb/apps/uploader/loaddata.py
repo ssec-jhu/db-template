@@ -4,8 +4,8 @@ import pandas as pd
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 from django.db import transaction
-from django.utils.translation import gettext_lazy as _
 
+from biospecdb.util import get_object_or_raise_validation
 import uploader.io
 
 
@@ -84,17 +84,7 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                 visit.bio_sample.add(biosample, bulk=False)
 
                 # SpectralData
-                # NOTE: get_or_create() returns a tuple of (object, created), where created is a bool.
-                instrument, created = Instrument.objects.get_or_create(
-                    **Instrument.parse_fields_from_pandas_series(row))
-                if created:
-                    raise ValidationError(_("New Instruments can only be added by admin: instrument details:"
-                                          "spectrometer: '%(a)%' and atr_crystal: '%(b)%'"),
-                                          params=dict(a=instrument.spectrometer, b=instrument.atr_crystal))
-                # NOTE: get_or_create() doesn't clean, so we clean after the fact. This is ok since this entire func is
-                # transactional.
-                # TODO: Remove this redundant clean upon resolving https://github.com/ssec-jhu/biospecdb/issues/28.
-                instrument.full_clean()
+                instrument = get_object_or_raise_validation(Instrument, pk=row.get("instrument"))
 
                 # Create datafile
                 json_str = uploader.io.spectral_data_to_json(file=None,

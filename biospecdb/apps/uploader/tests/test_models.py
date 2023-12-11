@@ -206,23 +206,11 @@ class TestObservable:
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestInstrument:
     def test_fixture_data(self, db, instruments):
-        instrument = Instrument.objects.get(pk=1)
-        assert instrument.spectrometer == "Agilent Cory 630"
-        assert instrument.atr_crystal == "ZnSe"
+        Instrument.objects.get(pk="4205d8ac-90c1-4529-90b2-6751f665c403")
 
     def test_new(self, db, instruments):
-        Instrument.objects.create(spectrometer="new instrument", atr_crystal="new crystal")
-        assert len(Instrument.objects.all()) == 2
-        assert Instrument.objects.filter(spectrometer="new instrument").exists()
-        assert Instrument.objects.filter(atr_crystal="new crystal").exists()
-
-    def test_uniqueness(self, db, instruments):
-        # OK
-        Instrument.objects.create(spectrometer="Agilent Cory 630", atr_crystal="new crystal")
-
-        # Not OK
-        with pytest.raises(IntegrityError, match="UNIQUE constraint failed"):
-            Instrument.objects.create(spectrometer="Agilent Cory 630", atr_crystal="ZnSe")
+        Instrument.objects.create()
+        assert Instrument.objects.count() == 2
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
@@ -335,10 +323,10 @@ class TestSpectralData:
         visit = patient.visit.create(patient_age=40)
         bio_sample = visit.bio_sample.create(sample_type=BioSampleType.objects.get(name="pharyngeal swab"))
 
-        spectral_data = SpectralData(instrument=Instrument.objects.get(pk=1),
+        spectral_data = SpectralData(instrument=Instrument.objects.get(pk="4205d8ac-90c1-4529-90b2-6751f665c403"),
                                      bio_sample=bio_sample,
                                      data=ContentFile(data_file.read_bytes(), name=data_file),
-                                     spectra_measurement=SpectraMeasurementType.objects.get(name="atr-ftir"))
+                                     measurement_type=SpectraMeasurementType.objects.get(name="atr-ftir"))
         spectral_data.full_clean()
         spectral_data.save()
 

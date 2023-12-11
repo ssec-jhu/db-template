@@ -404,13 +404,24 @@ class Instrument(DatedModel):
     """ Model the instrument/device used to measure spectral data (not the collection of the bio sample). """
 
     class Meta:
-        unique_together = [["spectrometer", "atr_crystal"]]
         get_latest_by = "updated_at"
 
-    spectrometer = models.CharField(max_length=128,
-                                    verbose_name="Spectrometer")
-    atr_crystal = models.CharField(max_length=128,
-                                   verbose_name="ATR Crystal")
+    # Instrument.
+    id = models.UUIDField(unique=True, primary_key=True, default=uuid.uuid4)
+    cid = models.CharField(max_length=128)
+    manufacturer = models.CharField(max_length=128, verbose_name="Instrument manufacturer")
+    model = models.CharField(max_length=128, verbose_name="Instrument model")
+    serial_number = models.CharField(max_length=128, verbose_name="Instrument SN#")
+
+    # Spectrometer.
+    spectrometer_manufacturer = models.CharField(max_length=128, verbose_name="Spectrometer manufacturer")
+    spectrometer_model = models.CharField(max_length=128, verbose_name="Spectrometer model")
+    spectrometer_serial_number = models.CharField(max_length=128, verbose_name="Spectrometer SN#")
+
+    # Laser.
+    laser_manufacturer = models.CharField(max_length=128, verbose_name="Laser manufacturer")
+    laser_model = models.CharField(max_length=128, verbose_name="Laser model")
+    laser_serial_number = models.CharField(max_length=128, verbose_name="Laser SN#")
 
     center = models.ForeignKey(Center, null=True, blank=True, on_delete=models.PROTECT)
 
@@ -421,7 +432,7 @@ class Instrument(DatedModel):
                     atr_crystal__iexact=get_field_value(series, cls, "atr_crystal"))
 
     def __str__(self):
-        return f"{self.spectrometer}_{self.atr_crystal}"
+        return f"{self.manufacturer}_{self.model}_{self.id}"
 
 
 class BioSampleType(DatedModel):
@@ -491,21 +502,31 @@ class SpectralData(DatedModel):
     instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE, related_name="spectral_data")
     bio_sample = models.ForeignKey(BioSample, on_delete=models.CASCADE, related_name="spectral_data")
 
-    # Spectrometer meta.
-    spectra_measurement = models.ForeignKey(SpectraMeasurementType,
-                                            on_delete=models.CASCADE,
-                                            verbose_name="Spectra Measurement",
-                                            related_name="spectral_data")
+    # Measurement info
+    measurement_id = models.CharField(max_length=128, blank=True, null=True)  # identifiable ???
+    measurement_type = models.ForeignKey(SpectraMeasurementType,
+                                         on_delete=models.CASCADE,
+                                         verbose_name="Measurement type",
+                                         related_name="spectral_data")
+    atr_crystal = models.CharField(max_length=128, blank=True, null=True, verbose_name="ATR Crystal")
+    n_coadditions = models.IntegerField(blank=True, null=True, verbose_name="Number of coadditions")
     acquisition_time = models.IntegerField(blank=True, null=True, verbose_name="Acquisition time [s]")
-
-    # TODO: What is this? Could this belong to Instrument?
-    n_coadditions = models.IntegerField(default=32, verbose_name="Number of coadditions")
-
     resolution = models.IntegerField(blank=True, null=True, verbose_name="Resolution [cm-1]")
+    power = models.FloatField(max_length=128, blank=True, null=True, verbose_name="Power incident to the sample [mW]")
+    temperature = models.FloatField(max_length=128, blank=True, null=True, verbose_name="Temperature [C]")
+    pressure = models.FloatField(max_length=128, blank=True, null=True, verbose_name="Pressure [bar]")
+    humidity = models.FloatField(max_length=128, blank=True, null=True, verbose_name="Humidity [%]")
+    date = models.DateTimeField(blank=True, null=True)
 
-    # Spectral data.
-    # TODO: We could write a custom storage class to write these all to a parquet table instead of individual files.
-    # See https://docs.djangoproject.com/en/4.2/howto/custom-file-storage/
+    # SERS info.
+    sers_description = models.CharField(max_length=128, blank=True, null=True, verbose_name="SERS description")
+    sers_particle_material = models.CharField(max_length=128,
+                                              blank=True,
+                                              null=True,
+                                              verbose_name="SERS particle material")
+    sers_particle_size = models.FloatField(blank=True, null=True, verbose_name="SERS particle size [\u03BCm]")
+    sers_particle_concentration = models.FloatField(blank=True, null=True, verbose_name="SERS particle concentration")
+
     data = models.FileField(upload_to=UPLOAD_DIR,
                             validators=[FileExtensionValidator(UploadedFile.FileFormats.choices())],
                             max_length=256,
@@ -514,12 +535,22 @@ class SpectralData(DatedModel):
     @classmethod
     def parse_fields_from_pandas_series(cls, series):
         """ Parse the pandas series for field values returning a dict. """
-        spectra_measurement = lower(get_field_value(series, cls, "spectra_measurement"))
-        spectra_measurement = get_object_or_raise_validation(SpectraMeasurementType, name=spectra_measurement)
-        return dict(spectra_measurement=spectra_measurement,
+        measurement_type = lower(get_field_value(series, cls, "measurement_type"))
+        measurement_type = get_object_or_raise_validation(SpectraMeasurementType, name=measurement_type)
+        return dict(measurement_type=measurement_type,
                     acquisition_time=get_field_value(series, cls, "acquisition_time"),
                     n_coadditions=get_field_value(series, cls, "n_coadditions"),
-                    resolution=get_field_value(series, cls, "resolution"))
+                    resolution=get_field_value(series, cls, "resolution"),
+                    atr_crystal=get_field_value(series, cls, "atr_crystal"),
+                    power=get_field_value(series, cls, "power"),
+                    temperature=get_field_value(series, cls, "temperature"),
+                    pressure=get_field_value(series, cls, "pressure"),
+                    humidity=get_field_value(series, cls, "humidity"),
+                    date=get_field_value(series, cls, "date"),
+                    sers_description=get_field_value(series, cls, "sers_description"),
+                    sers_particle_material=get_field_value(series, cls, "sers_particle_material"),
+                    sers_particle_size=get_field_value(series, cls, "sers_particle_size"),
+                    sers_particle_concentration=get_field_value(series, cls, "sers_particle_concentration"))
 
     @property
     def center(self):
@@ -719,7 +750,7 @@ class FullPatientView(SqlView, models.Model):
                 create view {cls._meta.db_table} as 
                 select p.patient_id, p.gender, v.patient_age
                 ,      bst.name, bs.sample_processing, bs.freezing_temp, bs.thawing_time
-                ,      i.spectrometer, i.atr_crystal
+                ,      i.manufacturer, i.model
                 ,      sdt.name, sd.acquisition_time, sd.n_coadditions, sd.resolution, sd.data
                 ,      vs.*
                   from uploader_patient p
@@ -727,7 +758,7 @@ class FullPatientView(SqlView, models.Model):
                   join uploader_biosample bs on bs.visit_id=v.id
                   join uploader_biosampletype bst on bst.id=bs.sample_type_id
                   join uploader_spectraldata sd on sd.bio_sample_id=bs.id
-                  join uploader_spectrameasurementtype sdt on sdt.id=sd.spectra_measurement_id
+                  join uploader_spectrameasurementtype sdt on sdt.id=sd.measurement_type_id
                   join uploader_instrument i on i.id=sd.instrument_id
                   left outer join v_visit_observations vs on vs.visit_id=v.id
                 """  # nosec B608
