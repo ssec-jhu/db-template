@@ -15,7 +15,6 @@ import pytest
 
 from biospecdb.util import find_package_location
 from uploader.models import SpectralData, UploadedFile, Center
-from uploader.forms import DataInputForm
 from user.models import Center as UserCenter
 
 DATA_PATH = Path(__file__).parent / "data"
@@ -184,31 +183,6 @@ def mock_data_from_files(request,
     with django_db_blocker.unblock():
         bulk_upload()
 
-
-    yield
-
-    # Tidy up any created files.
-    rm_all_media_dirs()
-
-
-@pytest.fixture(scope="function")
-def mock_data_from_form_and_spectral_file(request, db, data_dict, django_db_blocker, django_request):
-    spectral_file_path = (DATA_PATH/"sample").with_suffix(UploadedFile.FileFormats.XLSX)
-    with django_db_blocker.unblock():
-        with spectral_file_path.open(mode="rb") as spectral_record:
-            data_input_form = DataInputForm(
-                data=data_dict,
-                files={
-                    "spectral_data": django.core.files.File(spectral_record, name=spectral_file_path.name)
-                },
-                request=django_request
-            )
-
-            if not request.node.get_closest_marker("dont_validate"):
-                assert data_input_form.is_valid(), data_input_form.errors.as_data()
-
-            if not request.node.get_closest_marker("dont_save_to_db"):
-                data_input_form.save()
 
     yield
 

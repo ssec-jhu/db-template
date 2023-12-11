@@ -33,7 +33,6 @@ urlpatterns = [
     path('uploader/', include('biospecdb.apps.uploader.urls')),
     path('admin/', admin.site.urls),
     path('home/', views.home, name='home'),
-    path('display/', views.display_xlsx, name='MetadataDisplay'),
     path('explorer/', decorator_include(user_passes_test(lambda x: x.is_superuser or getattr(x, "is_sqluser", False),
                                                          login_url="/admin/login/"),
                                         'explorer.urls')),
