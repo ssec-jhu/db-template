@@ -4,6 +4,8 @@ import os
 from pathlib import Path
 from uuid import UUID
 
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 import numpy as np
 import pandas as pd
 
@@ -98,3 +100,20 @@ def is_valid_uuid(value):
         except (AttributeError, ValueError):
             return False
     return True
+
+
+def lower(value):
+    if hasattr(value, "lower"):
+        value = value.lower()
+    return value
+
+
+def get_object_or_raise_validation(obj, **kwargs):
+    try:
+        return obj.objects.get(**kwargs)
+    except obj.DoesNotExist:
+        raise ValidationError(_("%(name)s does not exist"), params=dict(name=obj.__name__))
+
+
+def get_field_value(series, obj, field, default=None):
+    return series.get(getattr(obj, field).field.verbose_name.lower(), default=default)

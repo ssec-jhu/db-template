@@ -4,6 +4,7 @@ import pandas as pd
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 from django.db import transaction
+from django.utils.translation import gettext_lazy as _
 
 import uploader.io
 
@@ -23,7 +24,7 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
     Note: This func is called by UploadedFile.clean() which, therefore, can't also be called here.
     """
     from uploader.models import BioSample, Observable, Instrument, Patient, SpectralData, Observation, UploadedFile,\
-        Visit, Center as UploaderCenter, BioSampleType, SpectraMeasurementType
+        Visit, Center as UploaderCenter
     from user.models import Center as UserCenter
 
     # Only user.models.User can relate to user.models,Center, all uploader models must use uploader.models.Center since
@@ -64,40 +65,32 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                         # NOTE: We do not use the ``index`` read from file as the pk even if it is a UUID. The above
                         # ``get()`` only allows for existing patients to be re-used when _already_ in the db with their
                         # pk already auto-generated.
-                        patient = Patient(gender=Patient.Gender(row.get(Patient.gender.field.verbose_name.lower())),
-                                          patient_id=index,
-                                          center=center)
+                        patient = Patient(patient_id=index,
+                                          center=center,
+                                          **Patient.parse_fields_from_pandas_series(row))
                         patient.full_clean()
                         patient.save()
 
                 # Visit
                 # TODO: Add logic to auto-find previous_visit. https://github.com/ssec-jhu/biospecdb/issues/37
-                visit = Visit(patient=patient,
-                              patient_age=row.get(Visit.patient_age.field.verbose_name.lower()),
-                              )
+                visit = Visit(patient=patient, **Visit.parse_fields_from_pandas_series(row))
                 visit.full_clean()
                 visit.save()
 
                 # BioSample
-                biosample = BioSample(visit=visit,
-                                      sample_type=BioSampleType.objects.get(name=row.get(
-                                          BioSample.sample_type.field.verbose_name.lower()).lower()),
-                                      sample_processing=row.get(BioSample.sample_processing.field.verbose_name.lower()),
-                                      freezing_temp=row.get(BioSample.freezing_temp.field.verbose_name.lower()),
-                                      thawing_time=row.get(BioSample.thawing_time.field.verbose_name.lower()))
+                biosample = BioSample(visit=visit, **BioSample.parse_fields_from_pandas_series(row))
                 biosample.full_clean()
                 biosample.save()
                 visit.bio_sample.add(biosample, bulk=False)
 
                 # SpectralData
-                spectrometer = row.get(Instrument.spectrometer.field.verbose_name.lower())
-                atr_crystal = row.get(Instrument.atr_crystal.field.verbose_name.lower())
                 # NOTE: get_or_create() returns a tuple of (object, created), where created is a bool.
-                instrument, created = Instrument.objects.get_or_create(spectrometer__iexact=spectrometer,
-                                                                       atr_crystal__iexact=atr_crystal)
+                instrument, created = Instrument.objects.get_or_create(
+                    **Instrument.parse_fields_from_pandas_series(row))
                 if created:
-                    raise ValidationError(f"New Instruments can only be added by admin: instrument details:"
-                                          f"spectrometer: '{spectrometer}' and atr_crystal: '{atr_crystal}'")
+                    raise ValidationError(_("New Instruments can only be added by admin: instrument details:"
+                                          "spectrometer: '%(a)%' and atr_crystal: '%(b)%'"),
+                                          params=dict(a=instrument.spectrometer, b=instrument.atr_crystal))
                 # NOTE: get_or_create() doesn't clean, so we clean after the fact. This is ok since this entire func is
                 # transactional.
                 # TODO: Remove this redundant clean upon resolving https://github.com/ssec-jhu/biospecdb/issues/28.
@@ -110,17 +103,9 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                                                              wavelength=row["wavelength"],
                                                              intensity=row["intensity"])
 
-                spectral_measurement_kind = SpectraMeasurementType.objects.get(name=row.get(
-                    SpectralData.spectra_measurement.field.verbose_name.lower()).lower())
-
                 spectraldata = SpectralData(instrument=instrument,
                                             bio_sample=biosample,
-                                            spectra_measurement=spectral_measurement_kind,
-                                            acquisition_time=row.get(
-                                                SpectralData.acquisition_time.field.verbose_name.lower()),
-                                            n_coadditions=row.get(
-                                                SpectralData.n_coadditions.field.verbose_name.lower()),
-                                            resolution=row.get(SpectralData.resolution.field.verbose_name.lower()))
+                                            **SpectralData.parse_fields_from_pandas_series(row))
                 filename = f"{uploader.io.TEMP_FILENAME_PREFIX if dry_run else ''}{spectraldata.generate_filename()}"
                 spectraldata.data = ContentFile(json_str, name=filename)
                 spectraldata.full_clean()
@@ -143,10 +128,9 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                     #  See https://github.com/ssec-jhu/biospecdb/issues/42
                     observation_value = Observable.Types(observable.value_class).cast(observation_value)
                     observation = Observation(observable=observable,
-                                      visit=visit,
-                                      observable_value=observation_value,
-                                      days_observed=days_observed)
-
+                                              visit=visit,
+                                              observable_value=observation_value,
+                                              days_observed=days_observed)
                     observation.full_clean()
                     observation.save()
                     observable.observation.add(observation, bulk=False)

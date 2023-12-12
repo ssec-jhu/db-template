@@ -13,7 +13,7 @@ from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 import pandas as pd
 
-from biospecdb.util import is_valid_uuid, to_uuid
+from biospecdb.util import get_field_value, get_object_or_raise_validation, is_valid_uuid, lower, to_uuid
 from biospecdb.qc.qcfilter import QcFilter
 import uploader.io
 from uploader.loaddata import save_data_to_db
@@ -158,6 +158,13 @@ class Patient(DatedModel):
                                    help_text="Patient ID prescribed by the associated center")
     center = models.ForeignKey(Center, null=False, blank=False, on_delete=models.PROTECT)
 
+    @classmethod
+    def parse_fields_from_pandas_series(cls, series):
+        """ Parse the pandas series for field values returning a dict. """
+        gender = get_field_value(series, cls, "gender")
+        gender = cls.Gender(gender)
+        return dict(gender=gender)
+
     def __str__(self):
         if self.patient_cid:
             return str(f"PCID:{self.patient_cid}")
@@ -194,6 +201,11 @@ class Visit(DatedModel):
     patient_age = models.IntegerField(validators=[MinValueValidator(Patient.MIN_AGE),
                                                   MaxValueValidator(Patient.MAX_AGE)],
                                       verbose_name="Age")
+
+    @classmethod
+    def parse_fields_from_pandas_series(cls, series):
+        """ Parse the pandas series for field values returning a dict. """
+        return dict(patient_age=get_field_value(series, cls, "patient_age"))
 
     def clean(self):
         """ Model validation. """
@@ -402,6 +414,12 @@ class Instrument(DatedModel):
 
     center = models.ForeignKey(Center, null=True, blank=True, on_delete=models.PROTECT)
 
+    @classmethod
+    def parse_fields_from_pandas_series(cls, series):
+        """ Parse the pandas series for field values returning a dict. """
+        return dict(spectrometer__iexact=get_field_value(series, cls, "spectrometer"),
+                    atr_crystal__iexact=get_field_value(series, cls, "atr_crystal"))
+
     def __str__(self):
         return f"{self.spectrometer}_{self.atr_crystal}"
 
@@ -433,6 +451,16 @@ class BioSample(DatedModel):
                                          verbose_name="Sample Processing")
     freezing_temp = models.FloatField(blank=True, null=True, verbose_name="Freezing Temperature")
     thawing_time = models.IntegerField(blank=True, null=True, verbose_name="Thawing time")
+
+    @classmethod
+    def parse_fields_from_pandas_series(cls, series):
+        """ Parse the pandas series for field values returning a dict. """
+        sample_type = lower(get_field_value(series, cls, "sample_type"))
+        sample_type = get_object_or_raise_validation(BioSampleType, name=sample_type)
+        return dict(sample_type=sample_type,
+                    sample_processing=get_field_value(series, cls, "sample_processing"),
+                    freezing_temp=get_field_value(series, cls, "freezing_temp"),
+                    thawing_time=get_field_value(series, cls, "thawing_time"))
 
     @property
     def center(self):
@@ -482,6 +510,16 @@ class SpectralData(DatedModel):
                             validators=[FileExtensionValidator(UploadedFile.FileFormats.choices())],
                             max_length=256,
                             verbose_name="Spectral data file")
+
+    @classmethod
+    def parse_fields_from_pandas_series(cls, series):
+        """ Parse the pandas series for field values returning a dict. """
+        spectra_measurement = lower(get_field_value(series, cls, "spectra_measurement"))
+        spectra_measurement = get_object_or_raise_validation(SpectraMeasurementType, name=spectra_measurement)
+        return dict(spectra_measurement=spectra_measurement,
+                    acquisition_time=get_field_value(series, cls, "acquisition_time"),
+                    n_coadditions=get_field_value(series, cls, "n_coadditions"),
+                    resolution=get_field_value(series, cls, "resolution"))
 
     @property
     def center(self):
