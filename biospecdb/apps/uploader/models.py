@@ -13,7 +13,7 @@ from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 import pandas as pd
 
-from biospecdb.util import get_object_or_raise_validation, is_valid_uuid, lower, to_uuid
+from biospecdb.util import get_field_value, get_object_or_raise_validation, is_valid_uuid, lower, to_uuid
 from biospecdb.qc.qcfilter import QcFilter
 import uploader.io
 from uploader.loaddata import save_data_to_db
@@ -161,7 +161,7 @@ class Patient(DatedModel):
     @classmethod
     def parse_fields_from_pandas_series(cls, series):
         """ Parse the pandas series for field values returning a dict. """
-        gender = series.get(cls.gender.field.verbose_name.lower(), None)
+        gender = get_field_value(series, cls, "gender")
         gender = cls.Gender(gender)
         return dict(gender=gender)
 
@@ -205,8 +205,7 @@ class Visit(DatedModel):
     @classmethod
     def parse_fields_from_pandas_series(cls, series):
         """ Parse the pandas series for field values returning a dict. """
-        patient_age = series.get(cls.patient_age.field.verbose_name.lower(), None)
-        return dict(patient_age=patient_age)
+        return dict(patient_age=get_field_value(series, cls, "patient_age"))
 
     def clean(self):
         """ Model validation. """
@@ -418,9 +417,8 @@ class Instrument(DatedModel):
     @classmethod
     def parse_fields_from_pandas_series(cls, series):
         """ Parse the pandas series for field values returning a dict. """
-        spectrometer = series.get(cls.spectrometer.field.verbose_name.lower(), None)
-        atr_crystal = series.get(cls.atr_crystal.field.verbose_name.lower(), None)
-        return dict(spectrometer__iexact=spectrometer, atr_crystal__iexact=atr_crystal)
+        return dict(spectrometer__iexact=get_field_value(series, cls, "spectrometer"),
+                    atr_crystal__iexact=get_field_value(series, cls, "atr_crystal"))
 
     def __str__(self):
         return f"{self.spectrometer}_{self.atr_crystal}"
@@ -457,15 +455,12 @@ class BioSample(DatedModel):
     @classmethod
     def parse_fields_from_pandas_series(cls, series):
         """ Parse the pandas series for field values returning a dict. """
-        sample_type = lower(series.get(cls.sample_type.field.verbose_name.lower(), None))
+        sample_type = lower(get_field_value(series, cls, "sample_type"))
         sample_type = get_object_or_raise_validation(BioSampleType, name=sample_type)
-        sample_processing = series.get(cls.sample_processing.field.verbose_name.lower(), None)
-        freezing_temp = series.get(cls.freezing_temp.field.verbose_name.lower(), None)
-        thawing_time = series.get(cls.thawing_time.field.verbose_name.lower(), None)
         return dict(sample_type=sample_type,
-                    sample_processing=sample_processing,
-                    freezing_temp=freezing_temp,
-                    thawing_time=thawing_time)
+                    sample_processing=get_field_value(series, cls, "sample_processing"),
+                    freezing_temp=get_field_value(series, cls, "freezing_temp"),
+                    thawing_time=get_field_value(series, cls, "thawing_time"))
 
     @property
     def center(self):
@@ -519,15 +514,12 @@ class SpectralData(DatedModel):
     @classmethod
     def parse_fields_from_pandas_series(cls, series):
         """ Parse the pandas series for field values returning a dict. """
-        spectra_measurement = lower(series.get(cls.spectra_measurement.field.verbose_name.lower(), None))
+        spectra_measurement = lower(get_field_value(series, cls, "spectra_measurement"))
         spectra_measurement = get_object_or_raise_validation(SpectraMeasurementType, name=spectra_measurement)
-        acquisition_time = series.get(cls.acquisition_time.field.verbose_name.lower(), None)
-        n_coadditions = series.get(cls.n_coadditions.field.verbose_name.lower(), None)
-        resolution = series.get(cls.resolution.field.verbose_name.lower(), None)
         return dict(spectra_measurement=spectra_measurement,
-                    acquisition_time=acquisition_time,
-                    n_coadditions=n_coadditions,
-                    resolution=resolution)
+                    acquisition_time=get_field_value(series, cls, "acquisition_time"),
+                    n_coadditions=get_field_value(series, cls, "n_coadditions"),
+                    resolution=get_field_value(series, cls, "resolution"))
 
     @property
     def center(self):

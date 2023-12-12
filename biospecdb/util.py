@@ -113,3 +113,7 @@ def get_object_or_raise_validation(obj, **kwargs):
         return obj.objects.get(**kwargs)
     except obj.DoesNotExist:
         raise ValidationError(_("%(name)s does not exist"), params=dict(name=obj.__name__))
+
+
+def get_field_value(series, obj, field, default=None):
+    return series.get(getattr(obj, field).field.verbose_name.lower(), default=default)
