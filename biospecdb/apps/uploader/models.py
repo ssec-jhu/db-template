@@ -159,7 +159,7 @@ class Patient(DatedModel):
     center = models.ForeignKey(Center, null=False, blank=False, on_delete=models.PROTECT)
 
     @classmethod
-    def parse_fields_from_pandas_series(cls, series, index=None):
+    def parse_fields_from_pandas_series(cls, series):
         """ Parse the pandas series for field values returning a dict. """
         gender = series.get(cls.gender.field.verbose_name.lower(), None)
         gender = cls.Gender(gender)
@@ -203,7 +203,7 @@ class Visit(DatedModel):
                                       verbose_name="Age")
 
     @classmethod
-    def parse_fields_from_pandas_series(cls, series, index=None):
+    def parse_fields_from_pandas_series(cls, series):
         """ Parse the pandas series for field values returning a dict. """
         patient_age = series.get(cls.patient_age.field.verbose_name.lower(), None)
         return dict(patient_age=patient_age)
@@ -416,7 +416,7 @@ class Instrument(DatedModel):
     center = models.ForeignKey(Center, null=True, blank=True, on_delete=models.PROTECT)
 
     @classmethod
-    def parse_fields_from_pandas_series(cls, series, index=None):
+    def parse_fields_from_pandas_series(cls, series):
         """ Parse the pandas series for field values returning a dict. """
         spectrometer = series.get(cls.spectrometer.field.verbose_name.lower(), None)
         atr_crystal = series.get(cls.atr_crystal.field.verbose_name.lower(), None)
@@ -455,7 +455,7 @@ class BioSample(DatedModel):
     thawing_time = models.IntegerField(blank=True, null=True, verbose_name="Thawing time")
 
     @classmethod
-    def parse_fields_from_pandas_series(cls, series, index=None):
+    def parse_fields_from_pandas_series(cls, series):
         """ Parse the pandas series for field values returning a dict. """
         sample_type = lower(series.get(cls.sample_type.field.verbose_name.lower(), None))
         sample_type = get_object_or_raise_validation(BioSampleType, name=sample_type)
@@ -517,7 +517,7 @@ class SpectralData(DatedModel):
                             verbose_name="Spectral data file")
 
     @classmethod
-    def parse_fields_from_pandas_series(cls, series, index=None):
+    def parse_fields_from_pandas_series(cls, series):
         """ Parse the pandas series for field values returning a dict. """
         spectra_measurement = lower(series.get(cls.spectra_measurement.field.verbose_name.lower(), None))
         spectra_measurement = get_object_or_raise_validation(SpectraMeasurementType, name=spectra_measurement)
