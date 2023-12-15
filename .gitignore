@@ -175,3 +175,4 @@ datasets/
 log/
 run/
 static/
+nginx/cert.*
