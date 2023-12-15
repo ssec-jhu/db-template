@@ -132,11 +132,21 @@ class Dataset(DatedModel):
     def compute_checksum(self):
         if not self.file:
             return ''
-        algorithm = hashlib.sha256()
-        with self.file.open() as fp:
+
+        def _hash(fp):
+            algorithm = hashlib.sha256()
             for chunk in fp.chunks():
                 algorithm.update(chunk)
-        return algorithm.hexdigest()
+            return algorithm.hexdigest()
+
+        if self.file.closed:
+            with self.file.open() as fp:
+                checksum = _hash(fp)
+        else:
+            # If already open, leave open, however, call open again to seek(0).
+            self.file.open()
+            checksum = _hash(self.file)
+        return checksum
 
     def meta_info(self, **kwargs):
         info = dict(name=self.name,
@@ -163,18 +173,13 @@ class Dataset(DatedModel):
                 archive.writestr("INFO.json", json.dumps(self.meta_info(),
                                                          indent=1,
                                                          cls=DjangoJSONEncoder))
-
             self.file = File(self._file, name=self._filename)
+
+        # Create checksum.
+        self.sha256 = self.compute_checksum()
 
         # Save file (and everything else).
         super().save(*args, **kwargs)
-
-        # Create checksum.
-        # Note: do this after the above save to ensure everything is read in and static etc.
-        if not self.sha256:
-            # Compute & save checksum.
-            self.sha256 = self.compute_checksum()
-            super().save(*args, **kwargs)
 
     def asave(self, *args, **kwargs):
         raise NotImplementedError
