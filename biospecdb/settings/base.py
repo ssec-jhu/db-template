@@ -15,25 +15,15 @@ import os
 import sys
 
 
-PROJECT_ROOT = os.path.dirname(__file__)
+PROJECT_ROOT = Path(os.path.dirname(__file__)).parent
 sys.path.insert(0, os.path.join(PROJECT_ROOT, 'apps'))
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-9ppt7g3y2ds5+nig07x(#8^th-olh5u=kr_tiqs$2*h(u!y&^m'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
@@ -137,7 +127,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / "static/"
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'biospecdb/apps/uploader/templates/static')]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -191,9 +183,6 @@ EXPLORER_DATA_EXPORTERS = [
     ('excel', 'uploader.exporters.ExcelExporter'),
     ('json', 'uploader.exporters.JSONExporter')
 ]
-
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'biospecdb/apps/uploader/templates/static')]
 
 EXPLORER_SCHEMA_INCLUDE_VIEWS = True
 

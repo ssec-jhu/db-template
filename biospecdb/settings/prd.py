@@ -1,0 +1,23 @@
+import os
+
+from .base import *  # noqa F403
+
+
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
+# e.g., python manage.py check --deploy --settings=biospecdb.settings.prd
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.environ["SECRET_KEY"]
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = False
+
+# SESSION_COOKIE_SECURE = True
+# CSRF_COOKIE_SECURE = True
+# SECURE_HSTS_SECONDS = 2592000  # (30 days). See https://securityheaders.com/
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+# SECURE_HSTS_PRELOAD = True
+# SECURE_SSL_REDIRECT = True
+
+ALLOWED_HOSTS = ['.localhost']  # TODO: replace with domain name

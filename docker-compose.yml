@@ -2,11 +2,11 @@ version: '3.8'
 
 services:
   db-setup:
-    image: bsr
+    image: biospecdb
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: bsr-db-initializer
+    container_name: biospecdb-db-initializer
     restart: "no"
     volumes:
       - db-data:/app/db
@@ -14,11 +14,14 @@ services:
       - bulk-upload-files:/app/raw_data
       - spectaldata-files:/app/datasets
     environment:
-      DJANGO_SETTINGS_MODULE: biospecdb.settings
+      DJANGO_SETTINGS_MODULE: biospecdb.settings.prd
     secrets:
       - superuser_password
+      - django_secret_key
     command: >
-      bash -c "[ ! -f /app/db/setup_complete.txt ]
+      bash -c "set -e
+      [ ! -f /app/db/setup_complete.txt ]
+      && export SECRET_KEY=$(cat /run/secrets/django_secret_key)
       && python manage.py makemigrations user
       && python manage.py makemigrations uploader
       && python manage.py makemigrations catalog
@@ -34,25 +37,61 @@ services:
     depends_on:
       db-setup:
         condition: service_completed_successfully
-    image: bsr
-    restart: unless-stopped
-    ports:
-      - "8000:8000"
+    image: biospecdb
+    deploy:
+      mode: global
+      restart_policy:
+       condition: on-failure
+       delay: 5s
+       max_attempts: 3
+       window: 60s
+    expose:
+      - 8000
     volumes:
       - db-data:/app/db
       - spectaldata-files:/app/spectral_data
       - bulk-upload-files:/app/raw_data
-      - spectaldata-files:/app/datasets
+      - dataset-catalog-files:/app/datasets
+      - static_files:/app/static
     environment:
-      DJANGO_SETTINGS_MODULE: biospecdb.settings
-    command: python manage.py runserver 0.0.0.0:8000
+      DJANGO_SETTINGS_MODULE: biospecdb.settings.prd
+    secrets:
+      - django_secret_key
+    command: >
+      bash -c "mkdir -p log
+      && mkdir -p run
+      && SECRET_KEY=$(cat /run/secrets/django_secret_key) python manage.py collectstatic --clear --noinput
+      && SECRET_KEY=$(cat /run/secrets/django_secret_key) gunicorn -c config/gunicorn/prd.py"
+
+  nginx:
+    build: ./nginx
+    deploy:
+      mode: global
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 10s
+    container_name: biospecdb-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - static_files:/static
+      - spectaldata-files:/spectral_data
+      - bulk-upload-files:/raw_data
+      - dataset-catalog-files:/datasets
+    depends_on:
+      - web
 
 secrets:
   superuser_password:
     environment: DJANGO_SUPERUSER_PASSWORD
+  django_secret_key:
+    environment: SECRET_KEY
 
 volumes:
   db-data:
   spectaldata-files:
   bulk-upload-files:
   dataset-catalog-files:
+  static_files:

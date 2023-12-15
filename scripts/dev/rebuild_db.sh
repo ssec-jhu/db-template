@@ -16,6 +16,12 @@ rm *.sqlite3
 
 set -e
 
+export DJANGO_SETTINGS_MODULE=biospecdb.settings.dev
+
+# Collect all static files to be served.
+# NOTE: `manage.py runserver` does this automatically, however, serving from gunicorn obviously doesn't.
+python manage.py collectstatic --clear --noinput
+
 # Redo migrations since they were deleted above.
 python manage.py makemigrations user
 python manage.py makemigrations uploader
