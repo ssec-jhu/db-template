@@ -93,6 +93,7 @@ class DatasetAdmin(AuthMixin, admin.ModelAdmin):
     def n_spectral_data_files(self, obj):
         if obj.spectral_data_filenames:
             return len(obj.spectral_data_filenames)
+        return 0
 
 
 class CatalogAdminSite(admin.AdminSite):
