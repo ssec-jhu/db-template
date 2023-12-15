@@ -10,6 +10,9 @@ services:
     restart: "no"
     volumes:
       - db-data:/app/db
+      - spectaldata-files:/app/spectral_data
+      - bulk-upload-files:/app/raw_data
+      - spectaldata-files:/app/datasets
     environment:
       DJANGO_SETTINGS_MODULE: biospecdb.settings
     secrets:
@@ -37,6 +40,9 @@ services:
       - "8000:8000"
     volumes:
       - db-data:/app/db
+      - spectaldata-files:/app/spectral_data
+      - bulk-upload-files:/app/raw_data
+      - spectaldata-files:/app/datasets
     environment:
       DJANGO_SETTINGS_MODULE: biospecdb.settings
     command: python manage.py runserver 0.0.0.0:8000
@@ -47,3 +53,6 @@ secrets:
 
 volumes:
   db-data:
+  spectaldata-files:
+  bulk-upload-files:
+  dataset-catalog-files:
