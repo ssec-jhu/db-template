@@ -503,7 +503,7 @@ class SpectralData(DatedModel):
     bio_sample = models.ForeignKey(BioSample, on_delete=models.CASCADE, related_name="spectral_data")
 
     # Measurement info
-    measurement_id = models.CharField(max_length=128, blank=True, null=True)  # identifiable ???
+    measurement_id = models.CharField(max_length=128, blank=True, null=True)
     measurement_type = models.ForeignKey(SpectraMeasurementType,
                                          on_delete=models.CASCADE,
                                          verbose_name="Measurement type",
