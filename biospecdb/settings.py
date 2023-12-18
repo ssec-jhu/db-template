@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     "nested_admin",
     "explorer",
     "uploader.apps.UploaderConfig",
-    "user.apps.UserConfig"
+    "user.apps.UserConfig",
+    "catalog.apps.CatalogConfig",
 ]
 
 MIDDLEWARE = [
@@ -224,3 +225,13 @@ DISABLE_QC_MANAGER = True
 # Auto-populate the model field ``Visit.previous_visit`` by searching for existing older visits and choosing the last.
 # WARNING! This may give incorrect results.
 AUTO_FIND_PREVIOUS_VISIT = True
+
+# Data Catalog settings:
+
+DATASET_CATALOG_FILE_CLASS = "uploader.exporters.CSVExporter"
+
+# For options see https://docs.python.org/3/library/zipfile.html#zipfile.ZIP_STORED
+ZIP_COMPRESSION = "zipfile.ZIP_DEFLATED"
+
+# For options see https://docs.python.org/3/library/zlib.html#zlib.compressobj
+ZIP_COMPRESSION_LEVEL = -1

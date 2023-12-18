@@ -236,3 +236,8 @@ class User(AbstractUser):
         _("SQL explorer user status"),
         default=False,
         help_text=_("Designates whether the user can log into the SQL explorer app."))
+
+    is_catalogviewer = models.BooleanField(
+        _("Dataset Catalog user status (readonly)"),
+        default=False,
+        help_text=_("Designates whether the user can log into the Dataset Catalog app. (readonly)"))

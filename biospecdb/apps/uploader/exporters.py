@@ -1,8 +1,10 @@
+import hashlib
 from pathlib import Path
 import tempfile
 import zipfile
 
 from django.conf import settings
+from django.utils.module_loading import import_string
 import explorer.exporters
 import pandas as pd
 
@@ -37,43 +39,70 @@ class ZipSpectralDataMixin:
             value = value.getvalue()
         return value
 
-    def get_file_output(self, **kwargs):
+    def get_file_output(self,
+                        include_data_files=None,
+                        return_info=False,
+                        always_zip=False,
+                        compression_type=None,
+                        compression_level=None,
+                        **kwargs):
         self.is_zip = False  # NOTE: This doesn't need resetting anywhere else.
+
+        if include_data_files is None:
+            include_data_files = settings.EXPLORER_DATA_EXPORTERS_INCLUDE_DATA_FILES
+
+        if compression_type is None:
+            compression_type = import_string(settings.ZIP_COMPRESSION)
+
+        if compression_level is None:
+            compression_level = settings.ZIP_COMPRESSION_LEVEL
 
         # NOTE: The following two lines are the entire contents of explorer.exporters.BaseExporter.get_file_output.
         res = self.query.execute_query_only()
         output = self._get_output(res, **kwargs)
 
-        if not settings.EXPLORER_DATA_EXPORTERS_INCLUDE_DATA_FILES:
-            return output
+        n_rows = len(res.data)
+        spectral_data_filenames = None
+        # Compute data checksum
+        output.seek(0)
+
+        # For .xlsx output is already a bytes object so doesn't need encoding.
+        _output = output.read()
+        if hasattr(_output, "encode"):
+            _output = _output.encode()
+        data_sha256 = hashlib.sha256(_output).hexdigest()
 
         data_files = []
-        # Collect SpectralData files and zip along with query data from self._get_output().
-        if settings.EXPLORER_DATA_EXPORTERS_ALLOW_DATA_FILE_ALIAS:
-            # Spectral data files are modeled by the Spectraldata.data field, however, the sql query could have aliased
-            # these so it wouldn't be safe to search by column name. Instead, we can only exhaustively search all
-            # entries for some marker indicating that they are spectral data files, where this "marker" is the upload
-            # directory - SpectralData.data.field.upload_to.
+        if include_data_files:
+            # Collect SpectralData files and zip along with query data from self._get_output().
+            if settings.EXPLORER_DATA_EXPORTERS_ALLOW_DATA_FILE_ALIAS:
+                # Spectral data files are modeled by the Spectraldata.data field, however, the sql query could have
+                # aliased these so it wouldn't be safe to search by column name. Instead, we can only exhaustively
+                # search all entries for some marker indicating that they are spectral data files, where this "marker"
+                # is the upload directory - SpectralData.data.field.upload_to.
+                upload_dir = SpectralData.data.field.upload_to  # NOTE: We don't need to inc. the MEDIA_ROOT for this.
+                for row in res.data:
+                    for item in row:
+                        if isinstance(item, str) and item.startswith(upload_dir):
+                            data_files.append(item)
+            else:
+                if (col_name := SpectralData.data.field.name) in res.header_strings:
+                    df = pd.DataFrame(res.data, columns=res.header_strings)
+                    df = df[col_name]
+                    # There could be multiple "col_name" (aka "data") columns so flatten first.
+                    data_files = df.to_numpy().flatten().tolist()
 
-            upload_dir = SpectralData.data.field.upload_to  # NOTE: We don't need to inc. the MEDIA_ROOT for this.
-            for row in res.data:
-                for item in row:
-                    if isinstance(item, str) and item.startswith(upload_dir):
-                        data_files.append(item)
-        else:
-            if (col_name := SpectralData.data.field.name) in res.header_strings:
-                df = pd.DataFrame(res.data, columns=res.header_strings)
-                df = df[col_name]
-                # There could be multiple "col_name" (aka "data") columns so flatten first.
-                data_files = df.to_numpy().flatten().tolist()
-
-        if data_files:
-            # Dedupe
-            data_files = set(data_files)
+        if data_files or always_zip:
+            # Dedupe and sort.
+            data_files = sorted(set(data_files))
+            spectral_data_filenames = data_files
 
             # Zip everything together.
             temp = tempfile.TemporaryFile()
-            with zipfile.ZipFile(temp, mode="w") as archive:
+            with zipfile.ZipFile(temp,
+                                 mode="w",
+                                 compression=compression_type,
+                                 compresslevel=compression_level) as archive:
                 # Add query results to zipfile.
                 archive.writestr(self.get_filename(), output.getvalue())
 
@@ -84,7 +113,7 @@ class ZipSpectralDataMixin:
             output = temp
             self.is_zip = True
 
-        return output
+        return (output, (n_rows, data_sha256, spectral_data_filenames)) if return_info else output
 
 
 class CSVExporter(ZipSpectralDataMixin, explorer.exporters.CSVExporter):

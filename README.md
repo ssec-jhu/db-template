@@ -74,7 +74,7 @@ below. The default superuser credentials are username: admin, password: admin. S
 * ``python manage.py migrate``
 * ``python manage.py migrate --database=bsr``
 * ``python manage.py createsuperuser``
-* ``python manage.py loaddata centers``
+* ``python manage.py loaddata centers queries``
 * ``python manage.py loaddata --database=bsr centers observables instruments qcannotators biosampletypes spectrameasurementtypes``
 * ``python manage.py update_sql_views``
 * ``python manage.py runserver``
@@ -93,6 +93,7 @@ disk.
 When the models are changed only the following migration commands are required:
 * ``python manage.py makemigrations user``
 * ``python manage.py makemigrations uploader``
+* ``python manage.py makemigrations catalog``
 * ``git add biospecdb/apps/uploader/migrations``
 * ``git add biospecdb/apps/user/migrations``
 * ``git commit -asm"Update model migrations"``
