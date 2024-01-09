@@ -273,6 +273,8 @@ class ObservationInlineForm(forms.ModelForm):
             widget = forms.NumberInput()
         elif value_class is Observable.Types.STR:
             widget = forms.TextInput()
+        else:
+            raise NotImplementedError(f"Dev error: missing widget mapping for type '{value_class}'.")
         return widget
 
     def __init__(self, *args, **kwargs):
