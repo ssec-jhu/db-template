@@ -3,9 +3,10 @@ from inspect import signature
 from django.contrib import admin
 from django.db.models import Q
 from django.db.utils import OperationalError
-import django.forms as forms
+from django import forms
 from nested_admin import NestedStackedInline, NestedTabularInline, NestedModelAdmin
 
+from biospecdb.util import to_bool
 from .models import BioSample, Observable, Instrument, Patient, SpectralData, Observation, UploadedFile, Visit,\
     QCAnnotator, QCAnnotation, Center, get_center, BioSampleType, SpectraMeasurementType
 
@@ -194,7 +195,7 @@ class ObservableAdmin(RestrictedByCenterMixin, NestedModelAdmin):
     search_fields = ["name"]
     search_help_text = "Observable name"
     list_filter = ("center", "category", "value_class")
-    list_display = ["category", "name", "description", "observation_count"]
+    list_display = ["name", "description", "category", "observation_count"]
 
     @admin.display
     def observation_count(self, obj):
@@ -209,8 +210,38 @@ class ObservableAdmin(RestrictedByCenterMixin, NestedModelAdmin):
 
 
 class ObservationMixin:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        try:
+            # Only auto-populate "global" observables, i.e., those not related to a center (center=null).
+            query = Q(center=None)
+            if hasattr(self, "verbose_name"):  # Only Inline admins have verbose names.
+                query &= Q(category=self.verbose_name.upper())
+            kwargs = {"observables": iter(Observable.objects.filter(query))}
+        except OperationalError:
+            kwargs = {}
+        self.form = type("NewObservationForm", (ObservationInlineForm,), kwargs)
+
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     ordering = ("-updated_at",)
+
+    fieldsets = [
+        (
+            None,
+            {
+                "fields": ["visit",
+                           "observable",
+                           "observable_value"]
+            }
+        ),
+        (
+            "More details",
+            {
+                "classes": ["collapse"],
+                "fields": [("created_at", "updated_at")]
+            }
+        )
+    ]
 
     @admin.display
     def patient_id(self, obj):
@@ -231,30 +262,58 @@ class ObservationMixin:
 class ObservationInlineForm(forms.ModelForm):
     observables = iter([])
 
+    @staticmethod
+    def _get_widget(value_class):
+        value_class = Observable.Types(value_class)
+        if value_class is Observable.Types.BOOL:
+            widget = forms.CheckboxInput(check_test=to_bool)
+        elif value_class is Observable.Types.FLOAT:
+            widget = forms.NumberInput()
+        elif value_class is Observable.Types.INT:
+            widget = forms.NumberInput()
+        elif value_class is Observable.Types.STR:
+            widget = forms.TextInput()
+        else:
+            raise NotImplementedError(f"Dev error: missing widget mapping for type '{value_class}'.")
+        return widget
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         try:
-            self.fields["observable"].initial = next(self.observables)
+            observable = next(self.observables)
+            self.fields["observable"].initial = observable
+            self.fields["observable_value"].widget = self._get_widget(observable.value_class)
         except StopIteration:
             pass
 
 
 class ObservationInline(ObservationMixin, RestrictedByCenterMixin, NestedTabularInline):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        try:
-            kwargs = {"observables": iter(Observable.objects.all())}
-        except OperationalError:
-            kwargs = {}
-
-        self.form = type("NewObservationForm", (ObservationInlineForm,), kwargs)
-
     extra = 0
     model = Observation
     show_change_link = True
     fk_name = "visit"
 
+    # Override fieldsets from ObservationMixin as fields & fieldsets cannot both be set.
+    fieldsets = None
+    fields = ["observable", "observable_value"]
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """ Limit observable to user's center (super's functionality) and admin category. """
+        field = super().formfield_for_foreignkey(db_field, request, **kwargs)
+        if db_field.name == "observable":
+            field.queryset = Observable.objects.filter(category=self.verbose_name.upper())
+        return field
+
+    def get_queryset(self, request):
+        """ Limit observable to user's center and admin category. """
+        qs = super().get_queryset(request)
+        center = Center.objects.get(pk=request.user.center.pk)
+        query = Q(observable__category=self.verbose_name.upper()) & \
+            (Q(visit__patient__center=center) | Q(visit__patient__center=None))
+        return qs.filter(query)
+
     def get_extra(self, request, obj=None, **kwargs):
+        """ Only list extra inline forms when no data exists, i.e., new patient form. """
         if obj and obj.pk and obj.observation.count():
             # Only display inlines for those that exist, i.e., no extras (when self.extra=0).
             extra = self.extra
@@ -263,9 +322,15 @@ class ObservationInline(ObservationMixin, RestrictedByCenterMixin, NestedTabular
             # clear how to correctly pass ``db_field``. The following was copied from
             # ``RestrictedByCenterMixin.formfield_for_foreignkey``.
             center = Center.objects.get(pk=request.user.center.pk)
-            extra = len(Observable.objects.filter(Q(center=center) | Q(center=None)))
+            query = Q(category=self.verbose_name.upper()) & (Q(center=center) | Q(center=None))
+            extra = Observable.objects.filter(query).count()
 
         return extra
+
+    @classmethod
+    def factory(cls):
+        return [type(f"{x}ObservationInline", (cls,), dict(verbose_name=x.lower(),
+                                                           verbose_name_plural=x.lower())) for x in Observable.Category]
 
 
 @admin.register(Observation)
@@ -274,8 +339,7 @@ class ObservationAdmin(ObservationMixin, RestrictedByCenterMixin, NestedModelAdm
     search_help_text = "Observable, Patient ID or CID"
     date_hierarchy = "updated_at"
     list_filter = ("visit__patient__center", "observable__category", "visit__patient__gender", "observable")
-    list_display = ["patient_id", "observable_name", "days_observed", "severity", "visit"]
-    list_editable = ["days_observed", "severity"]
+    list_display = ["patient_id", "observable_name", "visit"]
 
 
 class SpectralDataMixin:
@@ -420,6 +484,7 @@ class VisitAdminMixin:
     form = VisitAdminForm
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     ordering = ("-updated_at",)
+    fields = ("patient", "patient_age", "previous_visit")
 
     @admin.display
     def patient_id(self, obj):
@@ -447,7 +512,7 @@ class VisitInline(VisitAdminMixin, RestrictedByCenterMixin, NestedTabularInline)
     min_num = 0
     show_change_link = True
     fk_name = "patient"
-    inlines = [BioSampleInline, ObservationInline]
+    inlines = [BioSampleInline, *ObservationInline.factory()]
 
     def get_extra(self, request, obj=None, **kwargs):
         # Only display inlines for those that exist, i.e., no expanded extras (if they exist).
@@ -465,7 +530,7 @@ class VisitAdmin(VisitAdminMixin, RestrictedByCenterMixin, NestedModelAdmin):
 
 
 class VisitAdminWithInlines(VisitAdmin):
-    inlines = [BioSampleInline, ObservationInline]
+    inlines = [BioSampleInline, *ObservationInline.factory()]
 
 
 @admin.register(Patient)
