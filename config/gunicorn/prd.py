@@ -13,7 +13,6 @@ loglevel = "info"
 
 # The number of worker processes for handling requests.
 # Note: this is multiprocessing and not multithreading, because the GIL.
-# Note: Keep in mind that sqlite blocks on all connections and has no concurrency!
 workers = multiprocessing.cpu_count() * 2 + 1
 worker_class = "sync"
 threads = 1  # Run each worker with this specified number of threads.
