@@ -73,7 +73,7 @@ autosummary_generate = True
 sys.path.insert(0, os.path.abspath(".."))  # For discovery of Python modules
 
 # This tells Django where to find the settings file
-os.environ["DJANGO_SETTINGS_MODULE"] = "biospecdb.settings"
+os.environ["DJANGO_SETTINGS_MODULE"] = "biospecdb.settings.dev"
 # This activates Django and makes it possible for Sphinx to
 # autodoc your project
 django.setup()

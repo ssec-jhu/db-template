@@ -14,11 +14,11 @@ dependencies = [
     "django-decorator-include",
     "django-nested-admin",
     "django-sql-explorer[charts]",
+    "gunicorn",
     "kaleido",
     "openpyxl",
     "pandas",
     "plotly",
-    "uvicorn",
     "xlsxwriter"
 ]
 
@@ -61,7 +61,7 @@ include-package-data = true
 write_to = "biospecdb/_version.py"
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "biospecdb.settings"
+DJANGO_SETTINGS_MODULE = "biospecdb.settings.dev"
 markers = [
     "allow_aliases: override setiings.EXPLORER_DATA_EXPORTERS_ALLOW_DATA_FILE_ALIAS (where applicable)",
     "media_root: override settings.MEDIA_ROOT (where applicable)",

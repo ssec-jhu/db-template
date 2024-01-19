@@ -8,3 +8,4 @@ omit =
     biospecdb/apps/dash/*
     biospecdb/asgi.py
     biospecdb/wsgi.py
+    biospecdb/settings/*

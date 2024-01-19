@@ -41,15 +41,21 @@ For additional cmds see the [Conda cheat-sheet](https://docs.conda.io/projects/c
 
 ### Run:
 
-  #### using Docker:
+  #### using Docker (for production):
   * Download & install Docker - see [Docker install docs](https://docs.docker.com/get-docker/).
   * ``cd`` into repo dir.
-  * Build and run with ``DJANGO_SUPERUSER_PASSWORD=admin docker compose up``
+  * Setup env vars:
+    * ``export DJANGO_SUPERUSER_PASSWORD=admin``
+    * ``source scripts/prd/gen_secret_key.sh``
+  * Build and run with ``docker compose up``, add ``-d`` to run in the background.
   * Alternatively, images can be pulled from ``ghcr.io/ssec-jhu/`` e.g., ``docker pull ghcr.io/ssec-jhu/base-template:pr-1``.
+  * The site can then be accessed using any browser from ``http://localhost``
 
-  #### with Python ecosystem:
+  #### with Python ecosystem (for development):
   * Follow the above [Build with Python ecosystem instructions](#with-python-ecosystem).
-  * Run ``uvicorn biospecdb.asgi:application --host 0.0.0.0 --port 8000``. _NOTE: This is just an example and is obviously application dependent._
+  * For a completely fresh start and rebuild of the database: ``./scripts/dev/rebuild_db.sh``.
+  * Run ``DJANGO_SETTINGS_MODULE=biospecdb.settings.dev python manage.py runserver 0.0.0.0:8000``
+  * The site can then be accessed using any browser from ``http://localhost:8000``
 
 
 ### Custom Deployment Settings:
@@ -124,7 +130,7 @@ population of the ``QCAnnotation`` table is configurable and is described below.
 
 #### Settings:
 
-The following QC annotator settings are available in ``biospecdb.settings``:
+The following QC annotator settings are available in ``biospecdb.settings.base``:
 
  * ``AUTO_ANNOTATE``: If ``True`` and if default annotators exist in the DB, they will be automatically run upon
                       adding/updating ``SpectralData`` entries. _(Default: True)_

@@ -16,3 +16,6 @@ db
 spectral_data
 raw_data
 datasets
+log
+run
+static
