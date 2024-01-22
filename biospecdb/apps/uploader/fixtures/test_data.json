@@ -106,7 +106,6 @@
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "patient": "9c4b7f69-b9af-47f7-a5e7-9cfd4354e021",
-        "previous_visit": null,
         "patient_age": 21
     }
 },
@@ -117,7 +116,6 @@
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "patient": "0d545f26-2fc8-4c0e-bb2b-557419a6c9f5",
-        "previous_visit": null,
         "patient_age": 97
     }
 },
@@ -128,7 +126,6 @@
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "patient": "32c203d7-e91b-40d8-8a1f-7efc21a65986",
-        "previous_visit": null,
         "patient_age": 6
     }
 },
@@ -139,7 +136,6 @@
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "patient": "e6ae2d34-99fe-4392-bb2e-0c977a9fc0af",
-        "previous_visit": null,
         "patient_age": 44
     }
 },
@@ -150,7 +146,7 @@
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "patient": "ec1d65b8-bf7e-48ce-9186-89ffda275141",
-        "previous_visit": null,
+
         "patient_age": 55
     }
 },
@@ -161,7 +157,6 @@
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "patient": "613f660d-2e9f-422f-9f4c-5093b7d5ae2e",
-        "previous_visit": null,
         "patient_age": 22
     }
 },
@@ -172,7 +167,6 @@
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "patient": "bc32b8d9-508d-43cc-9ea2-936b71d625e6",
-        "previous_visit": null,
         "patient_age": 17
     }
 },
@@ -183,7 +177,6 @@
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "patient": "5a19aa92-1620-4459-990b-92ccfd203a77",
-        "previous_visit": null,
         "patient_age": 57
     }
 },
@@ -194,7 +187,6 @@
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "patient": "b69ff30d-3e73-46aa-9135-2d184fd90e5a",
-        "previous_visit": null,
         "patient_age": 9
     }
 },
@@ -205,7 +197,6 @@
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "patient": "8f18c408-5cbe-43f8-a850-da41a356e01a",
-        "previous_visit": null,
         "patient_age": 31
     }
 },

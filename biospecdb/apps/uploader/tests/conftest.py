@@ -20,15 +20,6 @@ from user.models import Center as UserCenter
 DATA_PATH = Path(__file__).parent / "data"
 
 
-@pytest.fixture(scope="function", autouse=True)
-def exec_custom_markers(request, monkeypatch):
-    auto_find = request.node.get_closest_marker("auto_find_previous_visit")
-    if auto_find:
-        monkeypatch.setattr(settings, "AUTO_FIND_PREVIOUS_VISIT", auto_find.args[0])
-
-    # TODO: add all the other existing ones in here.
-
-
 class CenterFactory(DjangoModelFactory):
 
     class Meta:

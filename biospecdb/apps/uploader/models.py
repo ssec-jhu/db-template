@@ -194,10 +194,6 @@ class Visit(DatedModel):
 
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name="visit")
 
-    # NOTE: This has to allow for blank to accommodate the initial vist for which there is no prior.
-    previous_visit = models.ForeignKey("self", default=None, blank=True, null=True, on_delete=models.SET_NULL,
-                                       related_name="next_visit")
-
     patient_age = models.IntegerField(validators=[MinValueValidator(Patient.MIN_AGE),
                                                   MaxValueValidator(Patient.MAX_AGE)],
                                       verbose_name="Age")
@@ -207,81 +203,12 @@ class Visit(DatedModel):
         """ Parse the pandas series for field values returning a dict. """
         return dict(patient_age=get_field_value(series, cls, "patient_age"))
 
-    def clean(self):
-        """ Model validation. """
-        super().clean()
-
-        if settings.AUTO_FIND_PREVIOUS_VISIT and not self.previous_visit:
-            last_visit, duplicates_exist = self.auto_find_previous_visit()
-            if duplicates_exist:
-                raise ValidationError(_("Auto previous visit ambiguity: multiple visits have the exact same"
-                                        "'created_at' timestamp - '%(timestamp)s'"),
-                                      params={"timestamp": last_visit.created_at})
-            self.previous_visit = last_visit
-
-        # Validate that previous visit isn't this visit.
-        if self.previous_visit is not None and (self.previous_visit.pk == self.pk):
-            raise ValidationError(_("Previous visit cannot not be this current visit"))
-
-        # Validate visits belong to same patient.
-        if self.previous_visit is not None and (self.previous_visit.patient_id != self.patient_id):
-            raise ValidationError(_("Previous visits do not belong to this patient!"), code="invalid")
-
-        # Validate visits are entered ordered by age.
-        if self.previous_visit is not None and (self.patient_age < self.previous_visit.patient_age):
-            raise ValidationError(_("Previous visit must NOT be older than this one: patient age before %(prior_age)i "
-                                    " > %(current_age)i"),
-                                  params={"current_age": self.patient_age,
-                                          "prior_age": self.previous_visit.patient_age},
-                                  code="invalid")
-
-    def auto_find_previous_visit(self):
-        """ Find the previous visit.
-
-            This is defined as the last visit with a ``created_at`` timestamp less than that of ``self.created_at``.
-            WARNING! This may give incorrect results.
-        """
-
-        # New visits will not yet have a ``created_at`` entry as that happens upon save to the DB. In this case,
-        # we could assume that save() is imminent and use the current time, i.e., ``datatime.datetime.now()``. However,
-        # this seems sketchy, instead, it's safer to just not filter by creation timestamp since everything present
-        # was added in the past. Note: Django fixture data could have future timestamps but that would be a curator bug.
-        if self.created_at:
-            previous_visits = Visit.objects.filter(patient_id=self.patient_id,
-                                                   created_at__lt=self.created_at).order_by('created_at')
-        else:
-            previous_visits = Visit.objects.filter(patient_id=self.patient_id).order_by('created_at')
-
-        if not previous_visits:
-            return None, False
-
-        last_visit = previous_visits.last()
-
-        if last_visit == self:
-            # This could be true when updating the only existing visit for a given patient, however, the above
-            # filter(created_at__lt=self.created_at) would prevent this and shouldn't be possible otherwise. That being
-            # said, we might as well make this more robust, just in case.
-            return None, False
-
-        # Is last visit unique?
-        # TODO: Disambiguate using age and/or pk, and/or something else?
-        duplicates_exist = len(previous_visits.filter(created_at=last_visit.created_at)) > 1
-
-        return last_visit, duplicates_exist
-
-    def count_prior_visits(self):
-        return 0 if self.previous_visit is None else 1 + self.previous_visit.count_prior_visits()
-
-    @property
-    def visit_number(self):
-        return 1 + self.count_prior_visits()
-
     @property
     def center(self):
         return self.patient.center
 
     def __str__(self):
-        return f"patient:{self.patient.short_id()}_visit:{self.visit_number}"
+        return f"patient:{self.patient.short_id()}_visit:{self.pk}"
 
 
 class Observable(ModelWithViewDependency):
