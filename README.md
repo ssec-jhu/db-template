@@ -47,9 +47,11 @@ For additional cmds see the [Conda cheat-sheet](https://docs.conda.io/projects/c
   * Setup env vars:
     * ``export DJANGO_SUPERUSER_PASSWORD=admin``
     * ``source scripts/prd/gen_secret_key.sh``
+  * Copy both the SSL certificate and the private key to ``nginx/cert.crt`` & ``nginx/cert.key`` respectively. For local
+    testing of the prd service see [creating self-signed SSL certificates](#self-signed-ssl-certificates) for
+    instructions on how to create "fake" ones.
   * Build and run with ``docker compose up``, add ``-d`` to run in the background.
-  * Alternatively, images can be pulled from ``ghcr.io/ssec-jhu/`` e.g., ``docker pull ghcr.io/ssec-jhu/base-template:pr-1``.
-  * The site can then be accessed using any browser from ``http://localhost``
+  * The site can then be accessed using any browser from ``https://localhost``
 
   #### with Python ecosystem (for development):
   * Follow the above [Build with Python ecosystem instructions](#with-python-ecosystem).
@@ -57,6 +59,13 @@ For additional cmds see the [Conda cheat-sheet](https://docs.conda.io/projects/c
   * Run ``DJANGO_SETTINGS_MODULE=biospecdb.settings.dev python manage.py runserver 0.0.0.0:8000``
   * The site can then be accessed using any browser from ``http://localhost:8000``
 
+  ### Self signed SSL certificates:
+    Warning! This is intended of local testing only and not for use in production.
+  * Install ``openssl``
+  * ``cd nginx``
+  * ``openssl req -newkey rsa:4096 -nodes -x509 -out cert.crt -keyout cert.key -days 365``
+    Note: This certificate is valid for 365 days. Also, when accessing https://localhost your browser will flag the site
+    as unsafe and the certificate as invalid. 
 
 ### Custom Deployment Settings:
 
