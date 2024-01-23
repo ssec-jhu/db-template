@@ -63,9 +63,7 @@ For additional cmds see the [Conda cheat-sheet](https://docs.conda.io/projects/c
     Warning! This is intended of local testing only and not for use in production.
   * Install ``openssl``
   * ``cd nginx``
-  * Create private key: ``openssl genrsa -out cert.key 4096``
-  * Create the certificate singing request (CSR): ``openssl req -new -key cert.key -out cert.csr``
-  * Create and sign the certificate with the private key: ``openssl x509 -req -days 365 -in cert.csr -signkey cert.key -out cert.crt``
+  * ``openssl req -newkey rsa:4096 -nodes -x509 -out cert.crt -keyout cert.key -days 365``
     Note: This certificate is valid for 365 days. Also, when accessing https://localhost your browser will flag the site
     as unsafe and the certificate as invalid. 
 
