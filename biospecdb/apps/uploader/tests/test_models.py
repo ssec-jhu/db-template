@@ -119,70 +119,7 @@ class TestPatient:
 
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestVisit:
-    def test_visit_number(self, db, visits):
-        assert Visit.objects.get(pk=1).visit_number == 1
-        assert Visit.objects.get(pk=3).visit_number == 2
-
-    def test_walk(self, db, visits):
-        v1 = Visit.objects.get(pk=1)
-        v2 = Visit.objects.get(pk=3)
-        assert v1.patient.pk == v2.patient.pk
-
-    def test_previous_visit_same_patient_validation(self, db, visits):
-        visit = Visit.objects.get(pk=2)
-        visit.previous_visit = Visit.objects.get(pk=1)
-        with pytest.raises(ValidationError):
-            visit.full_clean()
-
-    @pytest.mark.auto_find_previous_visit(False)
-    def test_disabled_auto_find_previous_visit(self, visits):
-        visit = Visit.objects.get(pk=4)
-        assert not visit.previous_visit
-        visit.full_clean()
-        assert not visit.previous_visit
-
-    @pytest.mark.auto_find_previous_visit(True)
-    def test_auto_find_previous_visit(self, visits):
-        visit = Visit.objects.get(pk=4)
-        assert not visit.previous_visit
-        visit.full_clean()
-        previous_visit = Visit.objects.get(pk=2)
-        assert visit.previous_visit == previous_visit
-
-        new_visit = Visit.objects.get(pk=5)
-        new_visit.full_clean()
-        assert new_visit.previous_visit == visit
-
-    @pytest.mark.auto_find_previous_visit(True)
-    def test_ambiguous_previous_visit(self, visits):
-        assert Visit.objects.get(pk=5).created_at == Visit.objects.get(pk=6).created_at
-        assert Visit.objects.get(pk=7).created_at > Visit.objects.get(pk=5).created_at
-        with pytest.raises(ValidationError, match="Auto previous visit ambiguity:"):
-            Visit.objects.get(pk=7).full_clean()
-
-    @pytest.mark.auto_find_previous_visit(True)
-    def test_previous_visit_update(self, visits):
-        visit = Visit.objects.get(pk=4)
-        visit.full_clean()
-        assert visit.previous_visit == Visit.objects.get(pk=2)
-
-        visit.patient_age += 1
-        visit.full_clean()
-        assert visit.previous_visit == Visit.objects.get(pk=2)
-
-    def test_previous_visit_patient_age_validation(self, db, visits):
-        previous_visit = Visit.objects.get(pk=1)
-        visit = Visit(patient=previous_visit.patient,
-                      previous_visit=previous_visit,
-                      patient_age=previous_visit.patient_age - 1)
-        with pytest.raises(ValidationError, match="Previous visit must NOT be older than this one"):
-            visit.full_clean()
-
-    def test_circular_previous_visit(self, db, visits):
-        visit = Visit.objects.get(pk=1)
-        visit.previous_visit = visit
-        with pytest.raises(ValidationError, match="Previous visit cannot not be this current visit"):
-            visit.full_clean()
+    ...
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])

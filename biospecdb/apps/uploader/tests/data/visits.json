@@ -24,7 +24,6 @@
     "pk": 3,
     "fields": {
       "patient": "437de0d7-6618-4445-bab2-03822310b0ef",
-      "previous_visit": 1,
       "patient_age": 42,
       "created_at": "2013-09-06T00:00:00+00:00",
       "updated_at": "2013-09-06T00:00:00+00:00"
