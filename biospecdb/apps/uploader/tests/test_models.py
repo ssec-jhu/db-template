@@ -185,6 +185,14 @@ class TestVisit:
         with pytest.raises(ValidationError, match="Previous visit cannot not be this current visit"):
             visit.full_clean()
 
+    def test_days_of_symptoms_onset(self, mock_data_from_files):
+        week_long_observations = Visit.objects.filter(days_observed=7)
+        assert len(week_long_observations) == 1
+        assert week_long_observations[0].days_observed == 7
+        null_days = len(Visit.objects.filter(days_observed=None))
+        assert null_days == 1
+        assert null_days < len(Visit.objects.all())
+
 
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestObservable:
@@ -409,14 +417,6 @@ class TestUploadedFile:
                                                                      get(name="Covid_RT_qPCR")))
                                          .filter(observable_value="Negative"))
         assert n_observations == n_patients * n_observables - n_empty_covid_observations * 2
-
-    def test_days_of_observations(self, mock_data_from_files):
-        week_long_observations = Observation.objects.filter(days_observed=7)
-        assert len(week_long_observations) > 1
-        assert week_long_observations[0].days_observed == 7
-        null_days = len(Observation.objects.filter(days_observed=None))
-        assert null_days > 1
-        assert null_days < len(Observation.objects.all())
 
     @pytest.mark.parametrize("file_ext", UploadedFile.FileFormats.list())
     def test_patient_ids(self, mock_data_from_files, file_ext):

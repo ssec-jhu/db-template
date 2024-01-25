@@ -198,6 +198,13 @@ class Visit(DatedModel):
     previous_visit = models.ForeignKey("self", default=None, blank=True, null=True, on_delete=models.SET_NULL,
                                        related_name="next_visit")
 
+    days_observed = models.IntegerField(default=None,
+                                        blank=True,
+                                        null=True,
+                                        validators=[MinValueValidator(0)],
+                                        verbose_name="Days of symptoms onset",
+                                        help_text="Applies to entire visit unless otherwise specified")
+
     patient_age = models.IntegerField(validators=[MinValueValidator(Patient.MIN_AGE),
                                                   MaxValueValidator(Patient.MAX_AGE)],
                                       verbose_name="Age")
@@ -205,7 +212,8 @@ class Visit(DatedModel):
     @classmethod
     def parse_fields_from_pandas_series(cls, series):
         """ Parse the pandas series for field values returning a dict. """
-        return dict(patient_age=get_field_value(series, cls, "patient_age"))
+        return dict(days_observed=get_field_value(series, cls, "days_observed"),
+                    patient_age=get_field_value(series, cls, "patient_age"))
 
     def clean(self):
         """ Model validation. """
@@ -353,7 +361,8 @@ class Observation(DatedModel):
                                         blank=True,
                                         null=True,
                                         validators=[MinValueValidator(0)],
-                                        verbose_name="Days of symptoms onset")
+                                        verbose_name="Days of symptoms onset",
+                                        help_text="Supersedes Visit.days_observed")
     severity = models.IntegerField(default=None,
                                    validators=[MinValueValidator(MIN_SEVERITY),
                                                              MaxValueValidator(MAX_SEVERITY)],
