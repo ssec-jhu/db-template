@@ -11,8 +11,6 @@ rm datasets/*
 # Delete databases.
 mkdir -p db
 rm db/*.sqlite3
-# Delete older DB files during interim development, see https://github.com/ssec-jhu/biospecdb/issues/152.
-rm *.sqlite3
 
 set -e
 
