@@ -228,7 +228,8 @@ class Visit(DatedModel):
             raise ValidationError(_("Previous visits do not belong to this patient!"), code="invalid")
 
         # Validate visits are entered ordered by age.
-        if self.previous_visit is not None and (self.patient_age < self.previous_visit.patient_age):
+        if settings.AUTO_FIND_PREVIOUS_VISIT and (self.previous_visit is not None) and \
+                (self.patient_age < self.previous_visit.patient_age):
             raise ValidationError(_("Previous visit must NOT be older than this one: patient age before %(prior_age)i "
                                     " > %(current_age)i"),
                                   params={"current_age": self.patient_age,
@@ -281,7 +282,7 @@ class Visit(DatedModel):
         return self.patient.center
 
     def __str__(self):
-        return f"patient:{self.patient.short_id()}_visit:{self.visit_number}"
+        return f"patient:{self.patient}_visit:{self.visit_number}"
 
 
 class Observable(ModelWithViewDependency):
