@@ -473,18 +473,25 @@ class BioSampleInline(BioSampleMixin, RestrictedByCenterMixin, NestedStackedInli
         return 0 if obj and obj.pk and obj.bio_sample.count() else self.extra
 
 
-class VisitAdminForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if self.instance.patient_id:
-            self.fields["previous_visit"].queryset = Visit.objects.filter(patient=self.instance.patient_id)
-
-
 class VisitAdminMixin:
-    form = VisitAdminForm
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     ordering = ("-updated_at",)
-    fields = ("patient", "patient_age", "previous_visit")
+
+    fieldsets = [
+        (
+            None,
+            {
+                "fields": ["patient", "patient_age"]
+            }
+        ),
+        (
+            "Advanced",
+            {
+                "classes": ["collapse"],
+                "fields": ["previous_visit"],
+            }
+        ),
+    ]
 
     @admin.display
     def patient_id(self, obj):
@@ -492,7 +499,7 @@ class VisitAdminMixin:
 
     @admin.display
     def visit_count(self, obj):
-        return obj.visit_number
+        return Visit.objects.filter(patient=obj.patient).count()
 
     @admin.display
     def gender(self, obj):
@@ -504,6 +511,27 @@ class VisitAdminMixin:
         if request.user.is_superuser:
             return qs
         return qs.filter(patient__center=Center.objects.get(pk=request.user.center.pk))
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """ Limit previous_visit to user's center (super's functionality) and admin category. """
+        field = super().formfield_for_foreignkey(db_field, request, **kwargs)
+        if db_field.name == "previous_visit":
+            visit_pk = request.resolver_match.kwargs.get("object_id", None)
+            visit = Visit.objects.get(pk=visit_pk) if visit_pk else None
+            patient = visit.patient if visit else None
+
+            # Note: Our forms aren't dynamic and thus this still won't solve the situation where a new visit is
+            #       added, a patient selected AND then have the previous_visit selection reduced based on the selected
+            #       patient. The form knows nothing about the selected patient until posted.
+
+            if patient:
+                field.queryset = Visit.objects.filter(patient=patient).exclude(pk=visit_pk)
+            else:
+                if request.user.is_superuser:
+                    field.queryset = Visit.objects.all()
+                else:
+                    field.queryset = Visit.objects.filter(patient__center=Center.objects.get(pk=request.user.center.pk))
+        return field
 
 
 class VisitInline(VisitAdminMixin, RestrictedByCenterMixin, NestedTabularInline):
@@ -526,7 +554,7 @@ class VisitAdmin(VisitAdminMixin, RestrictedByCenterMixin, NestedModelAdmin):
     date_hierarchy = "updated_at"
     list_filter = ("patient__center",)
     # autocomplete_fields = ["previous_visit"]  # Conflicts with VisitAdminForm queryset.
-    list_display = ["patient_id", "visit_count", "gender", "previous_visit"]
+    list_display = ["patient_id", "visit_count", "gender"]
 
 
 class VisitAdminWithInlines(VisitAdmin):

@@ -170,6 +170,7 @@ class TestVisit:
         visit.full_clean()
         assert visit.previous_visit == Visit.objects.get(pk=2)
 
+    @pytest.mark.auto_find_previous_visit(True)
     def test_previous_visit_patient_age_validation(self, db, visits):
         previous_visit = Visit.objects.get(pk=1)
         visit = Visit(patient=previous_visit.patient,
