@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from uuid import uuid4
 
@@ -343,6 +344,14 @@ class TestSpectralData:
         cleaned_data = spectral_data.get_spectral_data()
         assert cleaned_data == data
 
+    def test_deletion(self, mock_data_from_files):
+        spectral_data = SpectralData.objects.all()
+        for item in spectral_data:
+            assert os.path.exists(item.data.name)
+            item.delete()
+            assert not os.path.exists(item.data.name)
+        assert not SpectralData.objects.count()
+
 
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestUploadedFile:
@@ -493,6 +502,15 @@ class TestUploadedFile:
         # and Patient.objects.count() == n_patients * 2.
         assert Patient.objects.count() == n_patients
         assert Visit.objects.count() == n_patients
+
+    def test_deletion(self, mock_data_from_files):
+        bulk_upload = UploadedFile.objects.all()[0]
+        assert os.path.exists(bulk_upload.meta_data_file.name)
+        assert os.path.exists(bulk_upload.spectral_data_file.name)
+        bulk_upload.delete()
+        assert not UploadedFile.objects.count()
+        assert not os.path.exists(bulk_upload.meta_data_file.name)
+        assert not os.path.exists(bulk_upload.spectral_data_file.name)
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
