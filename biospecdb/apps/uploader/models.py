@@ -202,8 +202,8 @@ class Visit(DatedModel):
                                         blank=True,
                                         null=True,
                                         validators=[MinValueValidator(0)],
-                                        verbose_name="Days of symptoms onset",
-                                        help_text="Applies to entire visit unless otherwise specified")
+                                        verbose_name="Days observed",
+                                        help_text="Applies to all visit observations unless otherwise specified")
 
     patient_age = models.IntegerField(validators=[MinValueValidator(Patient.MIN_AGE),
                                                   MaxValueValidator(Patient.MAX_AGE)],
@@ -358,7 +358,7 @@ class Observation(DatedModel):
                                         blank=True,
                                         null=True,
                                         validators=[MinValueValidator(0)],
-                                        verbose_name="Days of symptoms onset",
+                                        verbose_name="Days observed",
                                         help_text="Supersedes Visit.days_observed")
 
     # Str format for actual type/class spec'd by Observable.value_class.
