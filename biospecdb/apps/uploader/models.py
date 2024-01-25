@@ -351,9 +351,6 @@ class Observation(DatedModel):
     class Meta:
         get_latest_by = "updated_at"
 
-    MIN_SEVERITY = 0
-    MAX_SEVERITY = 10
-
     visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="observation")
     observable = models.ForeignKey(Observable, on_delete=models.CASCADE, related_name="observation")
 
@@ -363,11 +360,6 @@ class Observation(DatedModel):
                                         validators=[MinValueValidator(0)],
                                         verbose_name="Days of symptoms onset",
                                         help_text="Supersedes Visit.days_observed")
-    severity = models.IntegerField(default=None,
-                                   validators=[MinValueValidator(MIN_SEVERITY),
-                                                             MaxValueValidator(MAX_SEVERITY)],
-                                   blank=True,
-                                   null=True)
 
     # Str format for actual type/class spec'd by Observable.value_class.
     observable_value = models.CharField(blank=True, null=True, default='', max_length=128)
@@ -682,7 +674,6 @@ class ObservationsView(SqlView, models.Model):
     observable.name = observable.db_column = "observable"
     value_class = deepcopy(Observable.value_class.field)
     days_observed = deepcopy(Observation.days_observed.field)
-    severity = deepcopy(Observation.severity.field)
     observable_value = deepcopy(Observation.observable_value.field)
 
     @classmethod
@@ -695,7 +686,6 @@ class ObservationsView(SqlView, models.Model):
                d.name AS observable,
                d.value_class,
                s.days_observed,
-               s.severity,
                s.observable_value
         FROM uploader_observation s
         JOIN uploader_observable d ON d.id=s.observable_id

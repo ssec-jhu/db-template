@@ -239,7 +239,6 @@ class ObservationMixin:
             {
                 "classes": ["collapse"],
                 "fields": ["days_observed",
-                           "severity",
                            ("created_at", "updated_at")]
             }
         )
