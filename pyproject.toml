@@ -66,8 +66,8 @@ markers = [
     "allow_aliases: override setiings.EXPLORER_DATA_EXPORTERS_ALLOW_DATA_FILE_ALIAS (where applicable)",
     "media_root: override settings.MEDIA_ROOT (where applicable)",
     "include_data_files: override settings.EXPLORER_DATA_EXPORTERS_INCLUDE_DATA_FILES (where applicable)",
-    "sql: specifiy SQL query (where applicable)"
-    ]
+    "sql: specifiy SQL query (where applicable)",
+    "auto_find_previous_visit: override settings.AUTO_FIND_PREVIOUS_VISIT"]
 
 [tool.bandit]
 exclude_dirs = ["tests"]

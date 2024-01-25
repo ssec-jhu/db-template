@@ -72,6 +72,7 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                         patient.save()
 
                 # Visit
+                # TODO: Add logic to auto-find previous_visit. https://github.com/ssec-jhu/biospecdb/issues/37
                 visit = Visit(patient=patient, **Visit.parse_fields_from_pandas_series(row))
                 visit.full_clean()
                 visit.save()

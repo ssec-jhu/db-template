@@ -473,10 +473,18 @@ class BioSampleInline(BioSampleMixin, RestrictedByCenterMixin, NestedStackedInli
         return 0 if obj and obj.pk and obj.bio_sample.count() else self.extra
 
 
+class VisitAdminForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance.patient_id:
+            self.fields["previous_visit"].queryset = Visit.objects.filter(patient=self.instance.patient_id)
+
+
 class VisitAdminMixin:
+    form = VisitAdminForm
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     ordering = ("-updated_at",)
-    fields = ("patient", "patient_age")
+    fields = ("patient", "patient_age", "previous_visit")
 
     @admin.display
     def patient_id(self, obj):
@@ -484,7 +492,7 @@ class VisitAdminMixin:
 
     @admin.display
     def visit_count(self, obj):
-        return Visit.objects.filter(patient=obj.patient).count()
+        return obj.visit_number
 
     @admin.display
     def gender(self, obj):
@@ -517,7 +525,8 @@ class VisitAdmin(VisitAdminMixin, RestrictedByCenterMixin, NestedModelAdmin):
     search_help_text = "Patient ID or CID"
     date_hierarchy = "updated_at"
     list_filter = ("patient__center",)
-    list_display = ["patient_id", "visit_count", "gender"]
+    # autocomplete_fields = ["previous_visit"]  # Conflicts with VisitAdminForm queryset.
+    list_display = ["patient_id", "visit_count", "gender", "previous_visit"]
 
 
 class VisitAdminWithInlines(VisitAdmin):

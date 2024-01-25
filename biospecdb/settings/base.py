@@ -210,6 +210,9 @@ RUN_DEFAULT_ANNOTATORS_WHEN_SAVED = False
 # when implementing background tasks for https://github.com/ssec-jhu/biospecdb/pull/77.
 DISABLE_QC_MANAGER = True
 
+# Auto-populate the model field ``Visit.previous_visit`` by searching for existing older visits and choosing the last.
+# WARNING! This may give incorrect results.
+AUTO_FIND_PREVIOUS_VISIT = True
 
 # Data Catalog settings:
 
