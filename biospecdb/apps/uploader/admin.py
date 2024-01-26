@@ -238,7 +238,8 @@ class ObservationMixin:
             "More details",
             {
                 "classes": ["collapse"],
-                "fields": [("created_at", "updated_at")]
+                "fields": ["days_observed",
+                           ("created_at", "updated_at")]
             }
         )
     ]
@@ -481,7 +482,7 @@ class VisitAdminMixin:
         (
             None,
             {
-                "fields": ["patient", "patient_age"]
+                "fields": ["patient", "patient_age", "days_observed"]
             }
         ),
         (
