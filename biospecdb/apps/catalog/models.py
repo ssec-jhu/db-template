@@ -1,6 +1,7 @@
 import datetime
 import hashlib
 import json
+import os
 from pathlib import Path
 import uuid
 import zipfile
@@ -182,4 +183,13 @@ class Dataset(DatedModel):
         super().save(*args, **kwargs)
 
     def asave(self, *args, **kwargs):
+        raise NotImplementedError
+
+    def delete(self, *args, **kwargs):
+        count, deleted = super().delete(*args, **kwargs)
+        if count == 1:
+            os.remove(self.file.name)
+        return count, deleted
+
+    def adelete(self, *args, **kwargs):
         raise NotImplementedError

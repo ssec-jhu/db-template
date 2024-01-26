@@ -1,5 +1,6 @@
 from copy import deepcopy
 from enum import auto
+import os
 from pathlib import Path
 import uuid
 
@@ -130,6 +131,16 @@ class UploadedFile(DatedModel):
         self._validate_and_save_data_to_db(dry_run=False)
 
     def asave(self, *args, **kwargs):
+        raise NotImplementedError
+
+    def delete(self, *args, **kwargs):
+        count, deleted = super().delete(*args, **kwargs)
+        if count == 1:
+            os.remove(self.meta_data_file.name)
+            os.remove(self.spectral_data_file.name)
+        return count, deleted
+
+    def adelete(self, *args, **kwargs):
         raise NotImplementedError
 
 
@@ -657,6 +668,15 @@ class SpectralData(DatedModel):
             self.annotate()
 
     def asave(self, *args, **kwargs):
+        raise NotImplementedError
+
+    def delete(self, *args, **kwargs):
+        count, deleted = super().delete(*args, **kwargs)
+        if count == 1:
+            os.remove(self.data.name)
+        return count, deleted
+
+    def adelete(self, *args, **kwargs):
         raise NotImplementedError
 
 

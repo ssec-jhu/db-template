@@ -1,4 +1,5 @@
 import json
+import os.path
 from pathlib import Path
 import zipfile
 
@@ -63,3 +64,10 @@ class TestDataset:
                     meta_info.pop("timestamp")
 
                     assert meta_info == expected_meta_info
+
+    def test_deletion(self, saved_dataset):
+        assert Dataset.objects.get(pk=saved_dataset.pk)
+        assert os.path.exists(saved_dataset.file.name)
+        saved_dataset.delete()
+        assert not Dataset.objects.count()
+        assert not os.path.exists(saved_dataset.file.name)
