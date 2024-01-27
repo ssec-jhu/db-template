@@ -242,7 +242,7 @@ class Visit(DatedModel):
             raise ValidationError(_("Previous visits do not belong to this patient!"), code="invalid")
 
         # Validate visits are entered ordered by age.
-        if settings.AUTO_FIND_PREVIOUS_VISIT and self.previous_visit is not None:
+        if self.previous_visit is not None:
             try:
                 patient_age = int(self.observation.get(observable__name="patient_age").observable_value)
             except Observation.DoesNotExist:
