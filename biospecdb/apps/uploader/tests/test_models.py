@@ -30,18 +30,18 @@ class TestPatient:
         Patient.objects.create(gender=Patient.Gender.FEMALE, center=center).full_clean()
         Patient.objects.create(gender=Patient.Gender.UNSPECIFIED, center=center).full_clean()
 
-        assert len(Patient.objects.all()) == 3
+        assert Patient.objects.count() == 3
 
         Patient.objects.create(gender=Patient.Gender.MALE, center=center).full_clean()
-        assert len(Patient.objects.all()) == 4
+        assert Patient.objects.count() == 4
 
         males = Patient.objects.filter(gender=Patient.Gender.MALE, center=center)
         females = Patient.objects.filter(gender=Patient.Gender.FEMALE, center=center)
         unspecified = Patient.objects.filter(gender=Patient.Gender.UNSPECIFIED, center=center)
         
-        assert len(males) == 2
-        assert len(females) == 1
-        assert len(unspecified) == 1
+        assert males.count() == 2
+        assert females.count() == 1
+        assert unspecified.count() == 1
         
         assert males[0].patient_id != males[1].patient_id
 
@@ -57,7 +57,7 @@ class TestPatient:
             Patient(gender="blah").full_clean()
 
     def test_fixture_data(self, db, patients):
-        assert len(Patient.objects.all()) == 3
+        assert Patient.objects.count() == 3
         assert Patient.objects.get(pk="437de0d7-6618-4445-bab2-03822310b0ef")
 
     def test_editable_patient_id(self, center):
@@ -188,11 +188,11 @@ class TestVisit:
 
     def test_days_of_symptoms_onset(self, mock_data_from_files):
         week_long_observations = Visit.objects.filter(days_observed=7)
-        assert len(week_long_observations) == 1
+        assert week_long_observations.count() == 1
         assert week_long_observations[0].days_observed == 7
-        null_days = len(Visit.objects.filter(days_observed=None))
+        null_days = Visit.objects.filter(days_observed=None).count()
         assert null_days == 1
-        assert null_days < len(Visit.objects.all())
+        assert null_days < Visit.objects.count()
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
@@ -290,7 +290,7 @@ class TestBioSample:
 class TestSpectralData:
     def test_files_added(self, mock_data_from_files):
         n_patients = 10
-        assert len(SpectralData.objects.all()) == n_patients
+        assert SpectralData.objects.count() == n_patients
         for obj in SpectralData.objects.all():
             assert Path(obj.data.name).exists()
 
@@ -304,7 +304,7 @@ class TestSpectralData:
 
     def test_temp_files_deleted(self, mock_data_from_files):
         n_patients = 10
-        assert len(SpectralData.objects.all()) == n_patients
+        assert SpectralData.objects.count() == n_patients
         filename = Path(SpectralData.objects.all()[0].data.name)
         assert filename.parent.exists()
         assert filename.parent.is_dir()
@@ -312,7 +312,7 @@ class TestSpectralData:
 
     def test_no_duplicate_data_files(self, mock_data_from_files):
         n_patients = 10
-        assert len(SpectralData.objects.all()) == n_patients
+        assert SpectralData.objects.count() == n_patients
         filename = Path(SpectralData.objects.all()[0].data.name)
         assert filename.parent.exists()
         assert filename.parent.is_dir()
@@ -377,25 +377,25 @@ class TestUploadedFile:
 
     def test_mock_data_from_files_fixture(self, mock_data_from_files):
         n_patients = 10
-        assert len(UploadedFile.objects.all()) == 1
-        assert len(Patient.objects.all()) == n_patients
-        assert len(Visit.objects.all()) == n_patients
-        assert len(BioSample.objects.all()) == n_patients
-        assert len(SpectralData.objects.all()) == n_patients
+        assert UploadedFile.objects.count() == 1
+        assert Patient.objects.count() == n_patients
+        assert Visit.objects.count() == n_patients
+        assert BioSample.objects.count() == n_patients
+        assert SpectralData.objects.count() == n_patients
 
     def test_center(self, mock_data_from_files):
-        n_patients = len(Patient.objects.all())
+        n_patients = Patient.objects.count()
         assert n_patients == 10
         center = Center.objects.get(name="SSEC")
-        assert n_patients == len(Patient.objects.filter(center=center))
+        assert n_patients == Patient.objects.filter(center=center).count()
         assert not Patient.objects.filter(center=None)
 
     def test_mock_data_fixture(self, mock_data):
         n_patients = 10
-        assert len(Patient.objects.all()) == n_patients
-        assert len(Visit.objects.all()) == n_patients
-        assert len(BioSample.objects.all()) == n_patients
-        assert len(SpectralData.objects.all()) == n_patients
+        assert Patient.objects.count() == n_patients
+        assert Visit.objects.count() == n_patients
+        assert BioSample.objects.count() == n_patients
+        assert SpectralData.objects.count() == n_patients
 
     def test_number_observations(self,
                                  db,
@@ -405,15 +405,15 @@ class TestUploadedFile:
                                  bio_sample_types,
                                  spectra_measurement_types):
         """ The total number of observations := N_patients * N_observables. """
-        assert len(Patient.objects.all()) == 0  # Assert empty.
+        assert Patient.objects.count() == 0  # Assert empty.
 
         save_data_to_db(DATA_PATH / "meta_data.csv",
                         DATA_PATH / "spectral_data.csv",
                         center=center)
 
-        n_patients = len(Patient.objects.all())
-        n_observables = len(Observable.objects.all())
-        n_observations = len(Observation.objects.all())
+        n_patients = Patient.objects.count()
+        n_observables = Observable.objects.count()
+        n_observations = Observation.objects.count()
 
         # Assert not empty.
         assert n_patients > 0
@@ -422,9 +422,8 @@ class TestUploadedFile:
 
         # When Covid_RT_qPCR is negative both Ct_gene_N & Ct_gene_ORF1ab observations will be null and omitted.
         # This must be accounted for in the total.
-        n_empty_covid_observations = len((Observation.objects.filter(observable=Observable.objects.
-                                                                     get(name="Covid_RT_qPCR")))
-                                         .filter(observable_value="Negative"))
+        n_empty_covid_observations = Observation.objects.filter(observable__name="Covid_RT_qPCR")\
+            .filter(observable_value="Negative").count()
         assert n_observations == n_patients * n_observables - n_empty_covid_observations * 2
 
     @pytest.mark.parametrize("file_ext", UploadedFile.FileFormats.list())
@@ -434,7 +433,7 @@ class TestUploadedFile:
 
         all_patients = Patient.objects.all()
 
-        assert len(all_patients) == len(df)
+        assert all_patients.count() == len(df)
         for index in df.index:
             assert all_patients.get(pk=index)
 

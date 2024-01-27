@@ -285,7 +285,7 @@ class Visit(DatedModel):
 
         # Is last visit unique?
         # TODO: Disambiguate using age and/or pk, and/or something else?
-        duplicates_exist = len(previous_visits.filter(created_at=last_visit.created_at)) > 1
+        duplicates_exist = previous_visits.filter(created_at=last_visit.created_at).count() > 1
 
         return last_visit, duplicates_exist
 

@@ -29,8 +29,8 @@ class TestCenters:
         new_center.full_clean()
         new_center.save()
 
-        assert len(UserCenter.objects.all()) == 1
-        assert len(UploaderCenter.objects.all()) == 1
+        assert UserCenter.objects.count() == 1
+        assert UploaderCenter.objects.count() == 1
 
         replica_center = UploaderCenter.objects.all()[0]
 
@@ -44,13 +44,13 @@ class TestCenters:
         assert not UploaderCenter.objects.all()
 
         UserCenter.objects.create(name="test", country="nowhere")
-        assert len(UserCenter.objects.all()) == 1
+        assert UserCenter.objects.count() == 1
         # Create doesn't call save()!!!
-        assert len(UploaderCenter.objects.all()) == 0
+        assert UploaderCenter.objects.count() == 0
 
     def test_delete_replication(self, centers):
-        assert len(UserCenter.objects.all()) == 2
-        assert len(UploaderCenter.objects.all()) == 2
+        assert UserCenter.objects.count() == 2
+        assert UploaderCenter.objects.count() == 2
 
         for obj in UserCenter.objects.all():
             obj.delete()
@@ -61,13 +61,13 @@ class TestCenters:
     def test_bulk_delete_replication(self, centers):
         """ Bulk delete doesn't call delete()!!! """
 
-        assert len(UserCenter.objects.all()) == 2
-        assert len(UploaderCenter.objects.all()) == 2
+        assert UserCenter.objects.count() == 2
+        assert UploaderCenter.objects.count() == 2
 
         UserCenter.objects.all().delete()
 
         assert not UserCenter.objects.all()
-        assert len(UploaderCenter.objects.all()) == 2
+        assert UploaderCenter.objects.count() == 2
 
     def test_equivalence(self):
         user_center = UserCenter(name="test", country="nowhere")

@@ -119,7 +119,7 @@ class TestSQL:
                     db=self.db
                     )
         resp = execute_sql(f"select * from {view}", db=self.db)
-        assert len(resp) == len(Observable.objects.all())
+        assert len(resp) == Observable.objects.count()
         drop_view(view, db=self.db)
         with pytest.raises(OperationalError, match="no such table:"):
             execute_sql(f"select * from {view}", db=self.db)

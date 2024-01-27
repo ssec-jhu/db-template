@@ -199,7 +199,7 @@ class ObservableAdmin(RestrictedByCenterMixin, NestedModelAdmin):
 
     @admin.display
     def observation_count(self, obj):
-        return len(obj.observation.all())
+        return obj.observation.count()
 
     def get_queryset(self, request):
         """ List only objects belonging to user's center. """
@@ -581,7 +581,7 @@ class PatientAdmin(RestrictedByCenterMixin, NestedModelAdmin):
 
     @admin.display
     def visit_count(self, obj):
-        return len(obj.visit.all())
+        return obj.visit.count()
 
     def get_queryset(self, request):
         """ List only objects belonging to user's center. """
