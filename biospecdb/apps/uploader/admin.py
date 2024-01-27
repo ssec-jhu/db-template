@@ -482,7 +482,7 @@ class VisitAdminMixin:
         (
             None,
             {
-                "fields": ["patient", "patient_age", "days_observed"]
+                "fields": ["patient", "days_observed"]
             }
         ),
         (
@@ -576,7 +576,12 @@ class PatientAdmin(RestrictedByCenterMixin, NestedModelAdmin):
     def age(self, obj):
         age = 0
         for visit in obj.visit.all():
-            age = max(age, visit.patient_age)
+            try:
+                patient_age = int(visit.observation.get(observable__name="patient_age").observable_value)
+            except Observation.DoesNotExist:
+                continue
+            else:
+                age = max(age, patient_age)
         return age
 
     @admin.display

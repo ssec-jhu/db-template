@@ -7,7 +7,7 @@ import uuid
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
-from django.core.validators import FileExtensionValidator, MinValueValidator, MaxValueValidator
+from django.core.validators import FileExtensionValidator, MinValueValidator
 from django.db import models
 from django.db.models.functions import Lower
 from django.utils.module_loading import import_string
@@ -216,15 +216,10 @@ class Visit(DatedModel):
                                         verbose_name="Days observed",
                                         help_text="Applies to all visit observations unless otherwise specified")
 
-    patient_age = models.IntegerField(validators=[MinValueValidator(Patient.MIN_AGE),
-                                                  MaxValueValidator(Patient.MAX_AGE)],
-                                      verbose_name="Age")
-
     @classmethod
     def parse_fields_from_pandas_series(cls, series):
         """ Parse the pandas series for field values returning a dict. """
-        return dict(days_observed=get_field_value(series, cls, "days_observed"),
-                    patient_age=get_field_value(series, cls, "patient_age"))
+        return dict(days_observed=get_field_value(series, cls, "days_observed"))
 
     def clean(self):
         """ Model validation. """
@@ -247,13 +242,24 @@ class Visit(DatedModel):
             raise ValidationError(_("Previous visits do not belong to this patient!"), code="invalid")
 
         # Validate visits are entered ordered by age.
-        if settings.AUTO_FIND_PREVIOUS_VISIT and (self.previous_visit is not None) and \
-                (self.patient_age < self.previous_visit.patient_age):
-            raise ValidationError(_("Previous visit must NOT be older than this one: patient age before %(prior_age)i "
-                                    " > %(current_age)i"),
-                                  params={"current_age": self.patient_age,
-                                          "prior_age": self.previous_visit.patient_age},
-                                  code="invalid")
+        if settings.AUTO_FIND_PREVIOUS_VISIT and self.previous_visit is not None:
+            try:
+                patient_age = int(self.observation.get(observable__name="patient_age").observable_value)
+            except Observation.DoesNotExist:
+                pass
+            else:
+                try:
+                    previous_visit_patient_age = int(self.previous_visit.observation.get(
+                        observable__name="patient_age").observable_value)
+                except Observation.DoesNotExist:
+                    pass
+                else:
+                    if patient_age < previous_visit_patient_age:
+                        raise ValidationError(_("Previous visit must NOT be older than this one: patient age before"
+                                                "%(prior_age)i > %(current_age)i"),
+                                              params={"current_age": patient_age,
+                                                      "prior_age": previous_visit_patient_age},
+                                              code="invalid")
 
     def auto_find_previous_visit(self):
         """ Find the previous visit.
@@ -397,13 +403,18 @@ class Observation(DatedModel):
                                           "value": self.observable_value},
                                   code="invalid")
 
-        if self.days_observed and self.visit.patient_age and (self.days_observed >
-                                                                 (self.visit.patient_age * 365)):
-            raise ValidationError(_("The field `days_observed` can't be greater than the patients age (in days):"
-                                    " %(days_observed)i > %(age)i"),
-                                  params={"days_observed": self.days_observed,
-                                          "age": self.visit.patient_age * 365},
-                                  code="invalid")
+        if self.days_observed:
+            try:
+                patient_age = int(self.visit.observation.get(observable__name="patient_age").observable_value)
+            except Observation.DoesNotExist:
+                pass
+            else:
+                if self.days_observed > patient_age * 365:
+                    raise ValidationError(_("The field `days_observed` can't be greater than the patients age"
+                                            "(in days): %(days_observed)i > %(age)i"),
+                                          params={"days_observed": self.days_observed,
+                                                  "age": patient_age * 365},
+                                          code="invalid")
 
     @property
     def center(self):
@@ -768,7 +779,7 @@ class FullPatientView(SqlView, models.Model):
     def sql(cls):
         sql = f"""
                 create view {cls._meta.db_table} as 
-                select p.patient_id, p.gender, v.patient_age
+                select p.patient_id, p.gender
                 ,      bst.name, bs.sample_processing, bs.freezing_temp, bs.thawing_time
                 ,      i.manufacturer, i.model
                 ,      sdt.name, sd.acquisition_time, sd.n_coadditions, sd.resolution, sd.data
