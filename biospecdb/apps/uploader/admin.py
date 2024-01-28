@@ -4,7 +4,7 @@ from django.apps import apps
 from django.core.exceptions import NON_FIELD_ERRORS, ObjectDoesNotExist, ValidationError
 from django.contrib import admin
 from django.contrib.auth import get_user_model
-from django.db.models import Q
+from django.db.models import Manager, Q
 from django.db.utils import OperationalError
 from django import forms
 from nested_admin import NestedStackedInline, NestedTabularInline, NestedModelAdmin
@@ -24,14 +24,22 @@ class RestrictedByCenterMixin:
 
         try:
             if not (user_center := request.user.center):
-                return False # Strict security.
+                return False  # Strict security.
         except User.center.RelatedObjectDoesNotExist:
             return False  # Strict security.
 
         obj_center = get_center(obj)
+
+        if isinstance(obj_center, Manager):
+            if obj_center.count():
+                return user_center in obj_center.all()
+            else:
+                # Objects without centers are "owned" by all.
+                return True
+
         if not obj_center:
             # This func is called for new obj forms where obj.center obviously hasn't been set yet. In this scenario
-            # limited visibilty is defered to self.formfield_for_foreignkey.
+            # limited visibility is deferred to self.formfield_for_foreignkey.
             return True
 
         return obj_center == user_center
@@ -360,8 +368,8 @@ class ObservationInline(ObservationMixin, RestrictedByCenterMixin, NestedTabular
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         try:
-            # Only auto-populate "global" observables, i.e., those not related to a center (center=null).
-            query = Q(center=None)
+            # Only auto-populate "global" observables, i.e., those not related to a specific center (default=null).
+            query = Q(center=None) & Q(default=None)
             if hasattr(self, "verbose_name"):  # Only Inline admins have verbose names.
                 query &= Q(category=self.verbose_name.upper())
             kwargs = {"observables": iter(Observable.objects.filter(query))}
