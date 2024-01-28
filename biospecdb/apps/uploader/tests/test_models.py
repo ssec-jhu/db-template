@@ -235,19 +235,6 @@ class TestInstrument:
 
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestObservation:
-    def test_days_observed_validation(self, db, observables, visits):
-        visit = Visit.objects.get(pk=1)
-        age = 10
-        patient_age = Observation.objects.create(visit=visit,
-                                                 observable=Observable.objects.get(name="patient_age"),
-                                                 observable_value=age)
-        visit.observation.add(patient_age, bulk=False)
-        observation = Observation.objects.create(visit=visit,
-                                                 observable=Observable.objects.get(name="fever"),
-                                                 days_observed=age * 365 + 1)
-        with pytest.raises(ValidationError):
-            observation.full_clean()
-
     def test_observable_value_validation(self, db, observables, visits):
         observation = Observation.objects.create(visit=Visit.objects.get(pk=1),
                                          observable=Observable.objects.get(name="Ct_gene_N"),

@@ -403,19 +403,6 @@ class Observation(DatedModel):
                                           "value": self.observable_value},
                                   code="invalid")
 
-        if self.days_observed:
-            try:
-                patient_age = int(self.visit.observation.get(observable__name="patient_age").observable_value)
-            except Observation.DoesNotExist:
-                pass
-            else:
-                if self.days_observed > patient_age * 365:
-                    raise ValidationError(_("The field `days_observed` can't be greater than the patients age"
-                                            "(in days): %(days_observed)i > %(age)i"),
-                                          params={"days_observed": self.days_observed,
-                                                  "age": patient_age * 365},
-                                          code="invalid")
-
     @property
     def center(self):
         return self.visit.patient.center
