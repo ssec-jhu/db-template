@@ -106,8 +106,7 @@
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "patient": "9c4b7f69-b9af-47f7-a5e7-9cfd4354e021",
-        "previous_visit": null,
-        "patient_age": 21
+        "previous_visit": null
     }
 },
 {
@@ -117,8 +116,7 @@
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "patient": "0d545f26-2fc8-4c0e-bb2b-557419a6c9f5",
-        "previous_visit": null,
-        "patient_age": 97
+        "previous_visit": null
     }
 },
 {
@@ -128,8 +126,7 @@
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "patient": "32c203d7-e91b-40d8-8a1f-7efc21a65986",
-        "previous_visit": null,
-        "patient_age": 6
+        "previous_visit": null
     }
 },
 {
@@ -139,8 +136,7 @@
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "patient": "e6ae2d34-99fe-4392-bb2e-0c977a9fc0af",
-        "previous_visit": null,
-        "patient_age": 44
+        "previous_visit": null
     }
 },
 {
@@ -150,8 +146,7 @@
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "patient": "ec1d65b8-bf7e-48ce-9186-89ffda275141",
-        "previous_visit": null,
-        "patient_age": 55
+        "previous_visit": null
     }
 },
 {
@@ -161,8 +156,7 @@
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "patient": "613f660d-2e9f-422f-9f4c-5093b7d5ae2e",
-        "previous_visit": null,
-        "patient_age": 22
+        "previous_visit": null
     }
 },
 {
@@ -172,8 +166,7 @@
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "patient": "bc32b8d9-508d-43cc-9ea2-936b71d625e6",
-        "previous_visit": null,
-        "patient_age": 17
+        "previous_visit": null
     }
 },
 {
@@ -183,8 +176,7 @@
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "patient": "5a19aa92-1620-4459-990b-92ccfd203a77",
-        "previous_visit": null,
-        "patient_age": 57
+        "previous_visit": null
     }
 },
 {
@@ -194,8 +186,7 @@
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "patient": "b69ff30d-3e73-46aa-9135-2d184fd90e5a",
-        "previous_visit": null,
-        "patient_age": 9
+        "previous_visit": null
     }
 },
 {
@@ -205,8 +196,7 @@
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00",
         "patient": "8f18c408-5cbe-43f8-a850-da41a356e01a",
-        "previous_visit": null,
-        "patient_age": 31
+        "previous_visit": null
     }
 },
 {
@@ -492,6 +482,19 @@
         "name": "chronic_or_neuromuscular_neurological_disease",
         "description": "Chronic or neuromuscular neurological disease.",
         "alias": "Chronic or neuromuscular neurological disease",
+        "value_class": "BOOL"
+    }
+},
+{
+    "model": "uploader.observable",
+    "pk": 23,
+    "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
+        "category": "PATIENT_INFO",
+        "name": "patient_age",
+        "description": "Patient's age at time of visit (years).",
+        "alias": "Age",
         "value_class": "BOOL"
     }
 },
@@ -2941,6 +2944,116 @@
         "observable": 22,
         "days_observed": 12,
         "observable_value": "False"
+    }
+},
+{
+    "model": "uploader.observation",
+    "pk": 23378,
+    "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
+        "visit": 1118,
+        "observable": 23,
+        "observable_value": 21
+    }
+},
+{
+    "model": "uploader.observation",
+    "pk": 23379,
+    "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
+        "visit": 1119,
+        "observable": 23,
+        "observable_value": 97
+    }
+},
+{
+    "model": "uploader.observation",
+    "pk": 23380,
+    "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
+        "visit": 1120,
+        "observable": 23,
+        "observable_value": 6
+    }
+},
+{
+    "model": "uploader.observation",
+    "pk": 23381,
+    "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
+        "visit": 1121,
+        "observable": 23,
+        "observable_value": 44
+    }
+},
+{
+    "model": "uploader.observation",
+    "pk": 23382,
+    "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
+        "visit": 1122,
+        "observable": 23,
+        "observable_value": 55
+    }
+},
+{
+    "model": "uploader.observation",
+    "pk": 23383,
+    "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
+        "visit": 1123,
+        "observable": 23,
+        "observable_value": 22
+    }
+},
+{
+    "model": "uploader.observation",
+    "pk": 23384,
+    "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
+        "visit": 1124,
+        "observable": 23,
+        "observable_value": 17
+    }
+},
+{
+    "model": "uploader.observation",
+    "pk": 23385,
+    "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
+        "visit": 1125,
+        "observable": 23,
+        "observable_value": 57
+    }
+},
+{
+    "model": "uploader.observation",
+    "pk": 23386,
+    "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
+        "visit": 1126,
+        "observable": 23,
+        "observable_value": 9
+    }
+},
+{
+    "model": "uploader.observation",
+    "pk": 23387,
+    "fields": {
+        "created_at": "2013-09-06T00:00:00+00:00",
+        "updated_at": "2013-09-06T00:00:00+00:00",
+        "visit": 1127,
+        "observable": 23,
+        "observable_value": 31
     }
 },
 {

@@ -167,16 +167,26 @@ class TestVisit:
         visit.full_clean()
         assert visit.previous_visit == Visit.objects.get(pk=2)
 
-        visit.patient_age += 1
         visit.full_clean()
         assert visit.previous_visit == Visit.objects.get(pk=2)
 
-    @pytest.mark.auto_find_previous_visit(True)
-    def test_previous_visit_patient_age_validation(self, db, visits):
+    @pytest.mark.parametrize(tuple(),
+                             [pytest.param(marks=pytest.mark.auto_find_previous_visit(False)),
+                              pytest.param(marks=pytest.mark.auto_find_previous_visit(True))])
+    def test_previous_visit_patient_age_validation(self, db, visits, observables):
         previous_visit = Visit.objects.get(pk=1)
-        visit = Visit(patient=previous_visit.patient,
-                      previous_visit=previous_visit,
-                      patient_age=previous_visit.patient_age - 1)
+        age = 10
+        patient_age = Observation.objects.create(visit=previous_visit,
+                                                 observable=Observable.objects.get(name="patient_age"),
+                                                 observable_value=age)
+        previous_visit.observation.add(patient_age, bulk=False)
+
+        visit = Visit.objects.create(patient=previous_visit.patient, previous_visit=previous_visit)
+        patient_age = Observation.objects.create(visit=visit,
+                                                 observable=Observable.objects.get(name="patient_age"),
+                                                 observable_value=age - 1)
+        visit.observation.add(patient_age, bulk=False)
+
         with pytest.raises(ValidationError, match="Previous visit must NOT be older than this one"):
             visit.full_clean()
 
@@ -225,15 +235,6 @@ class TestInstrument:
 
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestObservation:
-    def test_days_observed_validation(self, db, observables, visits):
-        visit = Visit.objects.get(pk=1)
-        age = visit.patient_age
-        observation = Observation.objects.create(visit=visit,
-                                         observable=Observable.objects.get(name="fever"),
-                                         days_observed=age * 365 + 1)
-        with pytest.raises(ValidationError):
-            observation.full_clean()
-
     def test_observable_value_validation(self, db, observables, visits):
         observation = Observation.objects.create(visit=Visit.objects.get(pk=1),
                                          observable=Observable.objects.get(name="Ct_gene_N"),
@@ -254,7 +255,7 @@ class TestObservation:
     def test_center_validation(self, centers):
         center = Center.objects.get(name="SSEC")
         patient = Patient.objects.create(center=center)
-        visit = Visit.objects.create(patient_age=40, patient=patient)
+        visit = Visit.objects.create(patient=patient)
 
         # OK.
         observable = Observable.objects.create(name="snuffles",
@@ -330,7 +331,7 @@ class TestSpectralData:
 
         patient = Patient.objects.create(patient_id=data.patient_id,
                                          center=Center.objects.get(name="SSEC"))
-        visit = patient.visit.create(patient_age=40)
+        visit = patient.visit.create()
         bio_sample = visit.bio_sample.create(sample_type=BioSampleType.objects.get(name="pharyngeal swab"))
 
         spectral_data = SpectralData(instrument=Instrument.objects.get(pk="4205d8ac-90c1-4529-90b2-6751f665c403"),
