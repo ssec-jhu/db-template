@@ -36,16 +36,18 @@ class Command(BaseCommand):
             return
 
         # TODO: Care about accurate reporting of N annotators depending on whether they're default annotators.
-        self.stdout.write(f"There are {len(all_annotators)} annotators and {len(all_data)} entries in the"
+        n_annotators = all_annotators.count()
+        n_data = all_data.count()
+        self.stdout.write(f"There are {n_annotators} annotators and {n_data} entries in the"
                           f" '{SpectralData.__name__}' table to annotate."
-                          f"\nThat's {len(all_annotators) * len(all_data)} annotations in total.")
+                          f"\nThat's {n_annotators * n_data} annotations in total.")
 
         for i, data in enumerate(all_data):
             try:
                 annotations = data.annotate(force=not options["no_reruns"])
                 if annotations:
                     # TODO: Might not want to print everyone.
-                    self.stdout.write(f"{i * len(annotations)} out of {len(all_data)} completed...")
+                    self.stdout.write(f"{i * len(annotations)} out of {n_data} completed...")
             except Exception:
                 raise CommandError(f"An error occurred when running annotators for '{data}'")
 

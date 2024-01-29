@@ -16,7 +16,7 @@ import biospecdb.util
 class TestQCFunctionality:
     def test_qcannotators_django_fixture(self, qcannotators):
         annotators = QCAnnotator.objects.all()
-        assert len(annotators) == 1
+        assert annotators.count() == 1
         assert annotators[0].name == "sum"
 
     def test_qualified_class_name_import_validation_validator(db):

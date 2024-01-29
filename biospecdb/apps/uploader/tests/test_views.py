@@ -11,14 +11,14 @@ class TestViews:
     def test_observations_view(self, mock_data):
         all_view_data = ObservationsView.update_view(check=True, limit=None)
         all_observations = Observation.objects.all()
-        assert len(all_observations) > 1  # Check non-empty.
-        assert len(all_view_data) == len(all_observations)
+        assert all_observations.count() > 1  # Check non-empty.
+        assert len(all_view_data) == all_observations.count()
 
     def test_observations_view_django_model(self, mock_data):
         all_view_data = ObservationsView.update_view(limit=None)
         all_django_view_data = ObservationsView.objects.all()
         assert len(all_view_data) > 1  # Check non-empty.
-        assert len(all_view_data) == len(all_django_view_data)
+        assert len(all_view_data) == all_django_view_data.count()
 
     def test_observations_view_django_model_filter(self, mock_data, sql_views):
         ObservationsView.update_view()
@@ -30,7 +30,7 @@ class TestViews:
                                            db=ObservationsView.db)
         week_long_observations_2 = ObservationsView.objects.filter(days_observed=7)
         assert len(week_long_observations_1) > 1  # Check non-empty.
-        assert len(week_long_observations_1) == len(week_long_observations_2)
+        assert len(week_long_observations_1) == week_long_observations_2.count()
 
     def test_django_raise_on_missing_view(self, mock_data):
         ObservationsView.drop_view()

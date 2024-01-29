@@ -19,5 +19,5 @@ class TestCenterAdmin:
 
     def test_patient_count(self, centers, site, patients):  # noqa: F811
         for center in UserCenter.objects.all():
-            n_patients = len(Patient.objects.filter(center=UploaderCenter.objects.get(pk=center.pk)))
+            n_patients = Patient.objects.filter(center=UploaderCenter.objects.get(pk=center.pk)).count()
             assert site.patient_count(center) == n_patients
