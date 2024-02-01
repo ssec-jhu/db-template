@@ -1,5 +1,7 @@
 from inspect import signature
 
+from django.apps import apps
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import admin
 from django.db.models import Q
 from django.db.utils import OperationalError
@@ -517,21 +519,44 @@ class VisitAdminMixin:
         """ Limit previous_visit to user's center (super's functionality) and admin category. """
         field = super().formfield_for_foreignkey(db_field, request, **kwargs)
         if db_field.name == "previous_visit":
-            visit_pk = request.resolver_match.kwargs.get("object_id", None)
-            visit = Visit.objects.get(pk=visit_pk) if visit_pk else None
-            patient = visit.patient if visit else None
 
-            # Note: Our forms aren't dynamic and thus this still won't solve the situation where a new visit is
+            # Get the object ID - not yet sure which model the ID belongs to.
+            object_id = request.resolver_match.kwargs.get("object_id", None)
+            if not object_id:
+                return field
+
+            # Parse the url_name and retrieve the model for the above object_id.
+            try:
+                app, model, action = request.resolver_match.url_name.split('_')
+            except ValueError:  # too many values to unpack.
+                return field
+
+            try:
+                model = apps.get_model(app, model)
+            except LookupError:
+                return field
+
+            # Note: Our forms are RESTful and thus this still won't solve the situation where a new visit is
             #       added, a patient selected AND then have the previous_visit selection reduced based on the selected
             #       patient. The form knows nothing about the selected patient until posted.
-
-            if patient:
-                field.queryset = Visit.objects.filter(patient=patient).exclude(pk=visit_pk)
-            else:
-                if request.user.is_superuser:
-                    field.queryset = Visit.objects.all()
+            try:
+                # Limit the QS for previous_visit.
+                if model is Patient:
+                    # Limit to all visits belonging to this patient (inc self - unfortunatley. It would be better to
+                    # exclude (See below), however, there is no visit-self when looking at the patient level).
+                    patient = Patient.objects.get(pk=object_id)
+                    field.queryset = Visit.objects.filter(patient=patient)
+                elif model is Visit:
+                    # Limit to all visits belonging to this patient (exc self - since a self-referential previous_visit
+                    # doesn't make much sense).
+                    visit = Visit.objects.get(id=object_id)
+                    patient = visit.patient
+                    field.queryset = Visit.objects.filter(patient=patient).exclude(pk=object_id)
                 else:
-                    field.queryset = Visit.objects.filter(patient__center=Center.objects.get(pk=request.user.center.pk))
+                    return field
+            except ObjectDoesNotExist:
+                return field
+
         return field
 
 
