@@ -68,15 +68,16 @@ class RestrictedByCenterMixin:
         """ Limit center form fields to user's center, and set initial value as such.
             Exceptions are made for superusers.
         """
+        field = super().formfield_for_foreignkey(db_field, request, **kwargs)
         if db_field.name == "center" and request.user.center:
-            kwargs["initial"] = Center.objects.get(pk=request.user.center.pk)
+            field.initial = Center.objects.get(pk=request.user.center.pk)
             if not request.user.is_superuser:
-                kwargs["queryset"] = Center.objects.filter(pk=request.user.center.pk)
+                field.queryset = field.queryset.filter(pk=request.user.center.pk)
         elif db_field.name == "observable" and request.user.center:
             center = Center.objects.get(pk=request.user.center.pk)
-            kwargs["queryset"] = Observable.objects.filter(Q(center=center) | Q(center=None))
+            field.queryset = field.queryset.filter(Q(center=center) | Q(center=None))
 
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+        return field
 
 
 admin.site.register(BioSampleType)
@@ -309,7 +310,7 @@ class ObservationInline(ObservationMixin, RestrictedByCenterMixin, NestedTabular
         """ Limit observable to user's center (super's functionality) and admin category. """
         field = super().formfield_for_foreignkey(db_field, request, **kwargs)
         if db_field.name == "observable":
-            field.queryset = Observable.objects.filter(category=self.verbose_name.upper())
+            field.queryset = field.queryset.filter(category=self.verbose_name.upper())
         return field
 
     def get_queryset(self, request):
@@ -586,13 +587,13 @@ class VisitAdminMixin:
                     # Limit to all visits belonging to this patient (inc self - unfortunatley. It would be better to
                     # exclude (See below), however, there is no visit-self when looking at the patient level).
                     patient = Patient.objects.get(pk=object_id)
-                    field.queryset = Visit.objects.filter(patient=patient)
+                    field.queryset = field.queryset.filter(patient=patient)
                 elif model is Visit:
                     # Limit to all visits belonging to this patient (exc self - since a self-referential previous_visit
                     # doesn't make much sense).
                     visit = Visit.objects.get(id=object_id)
                     patient = visit.patient
-                    field.queryset = Visit.objects.filter(patient=patient).exclude(pk=object_id)
+                    field.queryset = field.queryset.filter(patient=patient).exclude(pk=object_id)
                 else:
                     return field
             except ObjectDoesNotExist:
