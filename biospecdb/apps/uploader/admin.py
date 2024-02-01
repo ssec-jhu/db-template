@@ -19,12 +19,12 @@ class RestrictedByCenterMixin:
         user_center = request.user.center if request.user else None
 
         if (not user_center) or (obj is None):
-            # Those without centers "own" all.
-            return True  # security risk!?
+            return False  # Strict security.
 
         obj_center = get_center(obj)
         if not obj_center:
-            # Objects without centers are "owned" by all.
+            # This func is called for new obj forms where obj.center obviously hasn't been set yet. In this scenario
+            # limited visibilty is defered to self.formfield_for_foreignkey.
             return True
 
         return obj_center == user_center
@@ -69,13 +69,45 @@ class RestrictedByCenterMixin:
             Exceptions are made for superusers.
         """
         field = super().formfield_for_foreignkey(db_field, request, **kwargs)
-        if db_field.name == "center" and request.user.center:
-            field.initial = Center.objects.get(pk=request.user.center.pk)
-            if not request.user.is_superuser:
-                field.queryset = field.queryset.filter(pk=request.user.center.pk)
-        elif db_field.name == "observable" and request.user.center:
-            center = Center.objects.get(pk=request.user.center.pk)
+
+        if request.user.is_superuser:
+            return field
+
+        # User.center can't be Null so this isn't actually possible, but just in case return an empty queryset.
+        if not request.user.center:
+            field.queryset = field.queryset.none()
+            return field
+
+        center = Center.objects.get(pk=request.user.center.pk)
+
+        if db_field.name == "center":
+            field.initial = center
+            field.queryset = field.queryset.filter(pk=request.user.center.pk)
+        elif db_field.name in ("observable", "instrument"):
+            # For these fields a Null center implies visible to all centers.
             field.queryset = field.queryset.filter(Q(center=center) | Q(center=None))
+        elif db_field.name == "patient":
+            field.queryset = field.queryset.filter(center=center)
+        elif db_field.name == "visit":
+            field.queryset = field.queryset.filter(patient__center=center)
+        elif db_field.name == "previous_visit":
+            field.queryset = field.queryset.filter(patient__center=center)
+        elif db_field.name == "next_visit":
+            field.queryset = field.queryset.filter(patient__center=center)
+        elif db_field.name == "observation":
+            field.queryset = field.queryset.filter(visit__center=center)
+        elif db_field.name == "bio_sample":
+            field.queryset = field.queryset.filter(visit__patient__center=center)
+        elif db_field.name == "spectral_data":
+            field.queryset = field.queryset.filter(bio_sample__visit__patient__center=center)
+        elif db_field.name == "qc_annotation":
+            field.queryset = field.queryset.filter(spectral_data__bio_sample__visit__patient__center=center)
+        elif db_field.name in ("annotator", "measurement_type", "sample_type"):
+            # These aren't limited/restricted by center.
+            pass
+        else:
+            # For extra security raise rather than return leaky data.
+            raise NotImplementedError(f"Whoops! Looks like someone forgot to account for '{db_field.name}'!")
 
         return field
 
@@ -558,7 +590,9 @@ class VisitAdminMixin:
         return qs.filter(patient__center=Center.objects.get(pk=request.user.center.pk))
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        """ Limit previous_visit to user's center (super's functionality) and admin category. """
+        """ Limit previous_visit to user's center (super's functionality) and only those visits belonging to the same
+            patient.
+        """
         field = super().formfield_for_foreignkey(db_field, request, **kwargs)
         if db_field.name == "previous_visit":
 
