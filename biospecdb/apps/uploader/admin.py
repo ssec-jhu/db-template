@@ -526,7 +526,11 @@ class VisitAdminMixin:
                 return field
 
             # Parse the url_name and retrieve the model for the above object_id.
-            app, model, action = request.resolver_match.url_name.split('_')
+            try:
+                app, model, action = request.resolver_match.url_name.split('_')
+            except ValueError:  # too many values to unpack.
+                return field
+
             try:
                 model = apps.get_model(app, model)
             except LookupError:
@@ -538,11 +542,13 @@ class VisitAdminMixin:
             try:
                 # Limit the QS for previous_visit.
                 if model is Patient:
-                    # Limit to all visits belonging to this patient (inc self).
+                    # Limit to all visits belonging to this patient (inc self - unfortunatley. It would be better to
+                    # exclude (See below), however, there is no visit-self when looking at the patient level).
                     patient = Patient.objects.get(pk=object_id)
                     field.queryset = Visit.objects.filter(patient=patient)
                 elif model is Visit:
-                    # Limit to all visits belonging to this patient (exc self).
+                    # Limit to all visits belonging to this patient (exc self - since a self-referential previous_visit
+                    # doesn't make much sense).
                     visit = Visit.objects.get(id=object_id)
                     patient = visit.patient
                     field.queryset = Visit.objects.filter(patient=patient).exclude(pk=object_id)
