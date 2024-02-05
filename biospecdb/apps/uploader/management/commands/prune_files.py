@@ -36,13 +36,16 @@ class Command(BaseCommand):
             for i, file in enumerate(orphaned_files):
                 msg = f"{i + 1}/{len(orphaned_files)} files: '{file}'..."
                 if options["dry_run"]:
-                    self.stdout.write(msg)
+                    self.stdout.write("(dry-run) " + msg)
                 else:
                     self.stdout.write(f"Deleting {msg}")
-                    os.remove(file)
+                    try:
+                        os.remove(file)
+                    except FileNotFoundError:
+                        continue
 
             if options["dry_run"]:
-                self.stdout.write(self.style.SUCCESS("[Done] 0 files deleted"))
+                self.stdout.write(self.style.SUCCESS("(dry-run) [Done] 0 files deleted"))
             else:
                 self.stdout.write(self.style.SUCCESS(f"[Done] {len(orphaned_files)} files deleted"))
 
