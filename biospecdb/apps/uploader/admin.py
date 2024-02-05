@@ -3,6 +3,7 @@ from inspect import signature
 from django.apps import apps
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import admin
+from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.db.utils import OperationalError
 from django import forms
@@ -12,13 +13,19 @@ from biospecdb.util import to_bool
 from .models import BioSample, Observable, Instrument, Patient, SpectralData, Observation, UploadedFile, Visit,\
     QCAnnotator, QCAnnotation, Center, get_center, BioSampleType, SpectraMeasurementType
 
+User = get_user_model()
+
 
 class RestrictedByCenterMixin:
     """ Restrict admin access to objects belong to user's center. """
     def _has_perm(self, request, obj):
-        user_center = request.user.center if request.user else None
+        if (request.user is None) or (obj is None):
+            return False # Strict security.
 
-        if (not user_center) or (obj is None):
+        try:
+            if not (user_center := request.user.center):
+                return False # Strict security.
+        except User.center.RelatedObjectDoesNotExist:
             return False  # Strict security.
 
         obj_center = get_center(obj)
@@ -74,7 +81,11 @@ class RestrictedByCenterMixin:
             return field
 
         # User.center can't be Null so this isn't actually possible, but just in case return an empty queryset.
-        if not request.user.center:
+        try:
+            if not request.user.center:
+                field.queryset = field.queryset.none()
+                return field
+        except User.center.RelatedObjectDoesNotExist:
             field.queryset = field.queryset.none()
             return field
 
