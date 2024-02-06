@@ -438,6 +438,38 @@ class BioSampleMixin:
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     ordering = ("-updated_at",)
 
+    fieldsets = [
+        (
+            None,
+            {
+                "fields": ["visit"]
+            }
+        ),
+        (
+            "Sample Tagging",
+            {
+                "fields": [("sample_study_id", "sample_study_name", "sample_cid"),
+                           ("sample_type", "sample_processing")]
+            }
+        ),
+        (
+            "Sample Extraction",
+            {
+                "fields": ["sample_extraction",
+                           ("freezing_temp", "freezing_time"),
+                           ("thawing_temp", "thawing_time"),
+                           ("sample_extraction_tube", "centrifuge_rpm", "centrifuge_time")]
+            }
+        ),
+        (
+            "More Details",
+            {
+                "classes": ["collapse"],
+                "fields": ["created_at", "updated_at"],
+            }
+        ),
+    ]
+
     @admin.display
     def patient_id(self, obj):
         return obj.visit.patient_id
@@ -455,7 +487,7 @@ class BioSampleAdmin(BioSampleMixin, RestrictedByCenterMixin, NestedModelAdmin):
     search_fields = ["visit__patient__patient_id", "visit__patient__patient_cid"]
     search_help_text = "Patient ID or CID"
     date_hierarchy = "updated_at"
-    list_filter = ("visit__patient__center", "sample_type", "sample_processing")
+    list_filter = ("visit__patient__center", "sample_study_id", "sample_type", "sample_processing")
     list_display = ["patient_id", "sample_type"]
 
 
