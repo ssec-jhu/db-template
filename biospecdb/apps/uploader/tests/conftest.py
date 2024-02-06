@@ -46,16 +46,15 @@ class UserFactory(ExplorerUserFactory):
 def rm_dir(path):
     if path.exists() and path.is_dir():
         shutil.rmtree(path)
+        assert not path.exists()
 
 
 def rm_all_media_dirs():
     from catalog.models import Dataset
     # Tidy up any created files.
-    media_root = Path(settings.MEDIA_ROOT)
-    rm_dir(media_root / UploadedFile.meta_data_file.field.upload_to)
-    rm_dir(media_root / UploadedFile.spectral_data_file.field.upload_to)
-    rm_dir(media_root / SpectralData.data.field.upload_to)
-    rm_dir(media_root / Dataset.file.field.upload_to)
+    rm_dir(Path(UploadedFile.UPLOAD_DIR))
+    rm_dir(Path(SpectralData.UPLOAD_DIR))
+    rm_dir(Path(Dataset.UPLOAD_DIR))
 
 
 class SimpleQueryFactory(DjangoModelFactory):
