@@ -462,17 +462,40 @@ class BioSample(DatedModel):
     visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="bio_sample")
 
     # Sample meta.
+    sample_cid = models.CharField(blank=True,
+                                  null=True,
+                                  max_length=256,
+                                  verbose_name="Sample Center ID")
+    sample_study_id = models.CharField(blank=True,
+                                       null=True,
+                                       max_length=256,
+                                       verbose_name="Sample Study ID")
+    sample_study_name = models.CharField(blank=True,
+                                         null=True,
+                                         max_length=256,
+                                         verbose_name="Sample Study Name")
     sample_type = models.ForeignKey(BioSampleType,
                                     on_delete=models.CASCADE,
                                     related_name="bio_sample",
                                     verbose_name="Sample Type")
-    sample_processing = models.CharField(default="None",
-                                         blank=True,
+    sample_processing = models.CharField(blank=True,
                                          null=True,
                                          max_length=128,
-                                         verbose_name="Sample Processing")
-    freezing_temp = models.FloatField(blank=True, null=True, verbose_name="Freezing Temperature")
-    thawing_time = models.IntegerField(blank=True, null=True, verbose_name="Thawing time")
+                                         verbose_name="Sample Processing Description")
+    sample_extraction = models.CharField(blank=True,
+                                         null=True,
+                                         max_length=128,
+                                         verbose_name="Sample Extraction Description")
+    sample_extraction_tube = models.CharField(blank=True,
+                                              null=True,
+                                              max_length=128,
+                                              verbose_name="Sample Extraction Tube Brand Name")
+    centrifuge_time = models.IntegerField(blank=True, null=True, verbose_name="Extraction Tube Centrifuge Time (s)")
+    centrifuge_rpm = models.IntegerField(blank=True, null=True, verbose_name="Extraction Tube Centrifuge RPM")
+    freezing_temp = models.FloatField(blank=True, null=True, verbose_name="Freezing Temperature (C)")
+    thawing_temp = models.FloatField(blank=True, null=True, verbose_name="Thawing Temperature (C)")
+    thawing_time = models.IntegerField(blank=True, null=True, verbose_name="Thawing time (s)")
+    freezing_time = models.IntegerField(blank=True, null=True, verbose_name="Freezing time (s)")
 
     @classmethod
     def parse_fields_from_pandas_series(cls, series):
@@ -480,9 +503,18 @@ class BioSample(DatedModel):
         sample_type = lower(get_field_value(series, cls, "sample_type"))
         sample_type = get_object_or_raise_validation(BioSampleType, name=sample_type)
         return dict(sample_type=sample_type,
+                    sample_cid=get_field_value(series, cls, "sample_cid"),
+                    sample_study_id=get_field_value(series, cls, "sample_study_id"),
+                    sample_study_name=get_field_value(series, cls, "sample_study_name"),
                     sample_processing=get_field_value(series, cls, "sample_processing"),
+                    sample_extraction=get_field_value(series, cls, "sample_extraction"),
+                    sample_extraction_tube=get_field_value(series, cls, "sample_extraction_tube"),
+                    centrifuge_time=get_field_value(series, cls, "centrifuge_time"),
+                    centrifuge_rpm=get_field_value(series, cls, "centrifuge_rpm"),
                     freezing_temp=get_field_value(series, cls, "freezing_temp"),
-                    thawing_time=get_field_value(series, cls, "thawing_time"))
+                    freezing_time=get_field_value(series, cls, "freezing_time"),
+                    thawing_time=get_field_value(series, cls, "thawing_time"),
+                    thawing_temp=get_field_value(series, cls, "thawing_temp"))
 
     @property
     def center(self):
