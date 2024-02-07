@@ -303,6 +303,7 @@ class Visit(DatedModel):
 
 
 def validate_import(value):
+    """ Validate that ``value`` (fully-quilified-name) can be imported. """
     try:
         import_string(value)
     except ImportError:
