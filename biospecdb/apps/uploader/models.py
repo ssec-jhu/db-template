@@ -929,36 +929,3 @@ def get_center(obj):
             return
     elif hasattr(obj, "center"):
         return obj.center
-
-
-# This is Model B wo/ observable table https://miro.com/app/board/uXjVMAAlj9Y=/
-# class Observations(models.Model):
-#     visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="observations")
-#
-#     # SARS-CoV-2 (COVID) viral load indicators.
-#     Ct_gene_N = models.FloatField()
-#     Ct_gene_ORF1ab = models.FloatField()
-#     Covid_RT_qPCR = models.CharField(default=NEGATIVE, choices=(NEGATIVE, POSITIVE))
-#     suspicious_contact = models.BooleanField(default=False)
-#
-#     # Observations/Observables
-#     fever = models.BooleanField(default=False)
-#     dyspnoea = models.BooleanField(default=False)
-#     oxygen_saturation_lt_95 = models.BooleanField(default=False)
-#     cough = models.BooleanField(default=False)
-#     coryza = models.BooleanField(default=False)
-#     odinophagy = models.BooleanField(default=False)
-#     diarrhea = models.BooleanField(default=False)
-#     nausea = models.BooleanField(default=False)
-#     headache = models.BooleanField(default=False)
-#     weakness = models.BooleanField(default=False)
-#     anosmia = models.BooleanField(default=False)
-#     myalgia = models.BooleanField(default=False)
-#     no_appetite = models.BooleanField(default=False)
-#     vomiting = models.BooleanField(default=False)
-#     chronic_pulmonary_inc_asthma = models.BooleanField(default=False)
-#     cardiovascular_disease_inc_hypertension = models.BooleanField(default=False)
-#     diabetes = models.BooleanField(default=False)
-#     chronic_or_neuromuscular_neurological_disease = models.BooleanField(default=False)
-#
-#     more = models.JSONField()
