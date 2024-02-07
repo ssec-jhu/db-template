@@ -254,7 +254,7 @@ class ObservationInlineForm(forms.ModelForm):
     observables = iter([])
 
     @staticmethod
-    def _get_widget(value_class):
+    def _get_widget(value_class, choices=()):
         value_class = Observable.Types(value_class)
         if value_class is Observable.Types.BOOL:
             widget = forms.CheckboxInput(check_test=to_bool)
@@ -263,7 +263,10 @@ class ObservationInlineForm(forms.ModelForm):
         elif value_class is Observable.Types.INT:
             widget = forms.NumberInput()
         elif value_class is Observable.Types.STR:
-            widget = forms.TextInput()
+            if choices:
+                widget = forms.Select(choices=Observable.djangofy_choices(choices))
+            else:
+                widget = forms.TextInput()
         else:
             raise NotImplementedError(f"Dev error: missing widget mapping for type '{value_class}'.")
         return widget
@@ -273,7 +276,8 @@ class ObservationInlineForm(forms.ModelForm):
         try:
             observable = next(self.observables)
             self.fields["observable"].initial = observable
-            self.fields["observable_value"].widget = self._get_widget(observable.value_class)
+            self.fields["observable_value"].widget = self._get_widget(observable.value_class,
+                                                                      choices=observable.value_choices)
         except StopIteration:
             pass
 
@@ -342,7 +346,7 @@ class ObservationAdmin(ObservationMixin, RestrictedByCenterMixin, NestedModelAdm
     search_fields = ["observable__name", "visit__patient__patient_id", "visit__patient__patient_cid"]
     search_help_text = "Observable, Patient ID or CID"
     date_hierarchy = "updated_at"
-    list_filter = ("visit__patient__center", "observable__category", "visit__patient__gender", "observable")
+    list_filter = ("visit__patient__center", "observable__category", "observable")
     list_display = ["patient_id", "observable_name", "visit"]
 
 
@@ -416,7 +420,7 @@ class SpectralDataAdmin(SpectralDataMixin, RestrictedByCenterMixin, NestedModelA
                    "measurement_type",
                    "bio_sample__sample_type",
                    "bio_sample__sample_processing",
-                   "bio_sample__visit__patient__gender")
+                   "bio_sample__visit__observation__observable")
 
 
 class SpectralDataAdminWithInlines(SpectralDataAdmin):
@@ -539,7 +543,10 @@ class VisitAdminMixin:
 
     @admin.display
     def gender(self, obj):
-        return obj.patient.gender
+        try:
+            return obj.observation.get(observable__name="gender").observable_value
+        except Observation.DoesNotExist:
+            pass
 
     def get_queryset(self, request):
         """ List only objects belonging to user's center. """
@@ -627,7 +634,7 @@ class PatientAdmin(RestrictedByCenterMixin, NestedModelAdmin):
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     date_hierarchy = "updated_at"
     ordering = ("-updated_at",)
-    list_filter = ("center", "gender")
+    list_filter = ("center", "visit__observation__observable")
     list_display = ["patient_id", "patient_cid", "gender", "age", "visit_count", "center"]
 
     @admin.display
@@ -641,6 +648,14 @@ class PatientAdmin(RestrictedByCenterMixin, NestedModelAdmin):
             else:
                 age = max(age, patient_age)
         return age
+
+    @admin.display
+    def gender(self, obj):
+        try:
+            if visit := obj.visit.last():
+                return visit.observation.get(observable__name="gender").observable_value
+        except Observation.DoesNotExist:
+            pass
 
     @admin.display
     def visit_count(self, obj):
