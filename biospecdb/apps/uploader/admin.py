@@ -212,18 +212,6 @@ class ObservableAdmin(RestrictedByCenterMixin, NestedModelAdmin):
 
 
 class ObservationMixin:
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        try:
-            # Only auto-populate "global" observables, i.e., those not related to a center (center=null).
-            query = Q(center=None)
-            if hasattr(self, "verbose_name"):  # Only Inline admins have verbose names.
-                query &= Q(category=self.verbose_name.upper())
-            kwargs = {"observables": iter(Observable.objects.filter(query))}
-        except OperationalError:
-            kwargs = {}
-        self.form = type("NewObservationForm", (ObservationInlineForm,), kwargs)
-
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     ordering = ("-updated_at",)
 
@@ -291,6 +279,18 @@ class ObservationInlineForm(forms.ModelForm):
 
 
 class ObservationInline(ObservationMixin, RestrictedByCenterMixin, NestedTabularInline):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        try:
+            # Only auto-populate "global" observables, i.e., those not related to a center (center=null).
+            query = Q(center=None)
+            if hasattr(self, "verbose_name"):  # Only Inline admins have verbose names.
+                query &= Q(category=self.verbose_name.upper())
+            kwargs = {"observables": iter(Observable.objects.filter(query))}
+        except OperationalError:
+            kwargs = {}
+        self.form = type("NewObservationForm", (ObservationInlineForm,), kwargs)
+
     extra = 0
     model = Observation
     show_change_link = True
