@@ -203,3 +203,8 @@ Facilitates in building, testing & viewing the docs.
  * ``make clean``
  * ``make html``
  * To view the docs in your default browser run ``open docs/_build/html/index.html``.
+
+
+# The DB Model:
+
+![BioSpecDB Model.jpg](..%2F..%2F..%2FDownloads%2FBioSpecDB%20Model.jpg)
