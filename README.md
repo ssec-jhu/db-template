@@ -127,7 +127,13 @@ The DB can be dumped to a file using the following:
  * ``python manage.py update_sql_views``: Create/update all custom SQL views in uploader.models.
  * ``python manage.py run_qc_annotators [--no_reruns]``: Run all Quality Control annotators on the SpectralData database table.
    * ``--no_reruns``: Don't run annotators on existing annotations, leave computed values as is.
+ * ``python manage.py get_column_names [--exlcude_observables] [--exclude_non_observables] [--center=<name|id>]``
+   * ``--exlcude_observables``: Only output column names for all observables currently in the database.
+   * ``--exclude_non_observables``: Only output column names for non-observables.
+   * ``--center=<name|id>``: Filter observables by center name or center ID.
+   * ``--category=<category>``: Filter observables by category.
 
+_NOTE: These commands must be run from the ``/app/`` directory on the server.
 
 # Usage
 
@@ -208,3 +214,9 @@ Facilitates in building, testing & viewing the docs.
 # The DB Model:
 
 ![BioSpecDB Model.jpg](..%2F..%2F..%2FDownloads%2FBioSpecDB%20Model.jpg)
+
+## Column Names:
+
+When constructing bulk data files to be uploaded, the server must parse matching column names with model fields. To
+obtain a list of these column names run ``python manage.py get_column_names``.
+See [Custom Commands](#custom-commands)
