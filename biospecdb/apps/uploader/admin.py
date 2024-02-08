@@ -333,7 +333,8 @@ class ObservationInline(ObservationMixin, RestrictedByCenterMixin, NestedTabular
     @classmethod
     def factory(cls):
         return [type(f"{x}ObservationInline", (cls,), dict(verbose_name=x.lower(),
-                                                           verbose_name_plural=x.lower())) for x in Observable.Category]
+                                                           verbose_name_plural=x.lower(),
+                                                           classes=("collapse",))) for x in Observable.Category]
 
 
 @admin.register(Observation)
