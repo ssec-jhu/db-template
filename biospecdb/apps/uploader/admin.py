@@ -278,6 +278,7 @@ class ObservationInlineForm(forms.ModelForm):
             self.fields["observable"].initial = observable
             self.fields["observable_value"].widget = self._get_widget(observable.value_class,
                                                                       choices=observable.value_choices)
+            self.fields["observable"].queryset = Observable.objects.filter(name=observable.name)
         except StopIteration:
             pass
 
