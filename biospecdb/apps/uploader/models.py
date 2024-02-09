@@ -153,16 +153,10 @@ class Patient(DatedModel):
         unique_together = [["patient_cid", "center"]]
         get_latest_by = "updated_at"
 
-    class Gender(TextChoices):
-        UNSPECIFIED = ("X", _("Unspecified"))  # NOTE: Here variation here act as aliases for bulk column ingestion.
-        MALE = ("M", _("Male"))  # NOTE: Here variation here act as aliases for bulk column ingestion.
-        FEMALE = ("F", _("Female"))  # NOTE: Here variation here act as aliases for bulk column ingestion.
-
     patient_id = models.UUIDField(unique=True,
                                   primary_key=True,
                                   default=uuid.uuid4,
                                   verbose_name="Patient ID")
-    gender = models.CharField(max_length=8, choices=Gender.choices, null=True, verbose_name="Gender (M/F)")
     patient_cid = models.CharField(max_length=128,
                                    null=True,
                                    blank=True,
@@ -172,9 +166,7 @@ class Patient(DatedModel):
     @classmethod
     def parse_fields_from_pandas_series(cls, series):
         """ Parse the pandas series for field values returning a dict. """
-        gender = get_field_value(series, cls, "gender")
-        gender = cls.Gender(gender)
-        return dict(gender=gender)
+        return {}
 
     def __str__(self):
         if self.patient_cid:
@@ -310,6 +302,17 @@ class Visit(DatedModel):
         return f"patient:{self.patient}_visit:{self.visit_number}"
 
 
+def validate_import(value):
+    """ Validate that ``value`` (fully-quilified-name) can be imported. """
+    try:
+        import_string(value)
+    except ImportError:
+        raise ValidationError(_("'%(a)s' cannot be imported. Server re-deployment may be required."
+                                " Please reach out to the server admin."),
+                              params=dict(a=value),
+                              code="invalid")
+
+
 class Observable(ModelWithViewDependency):
     """ Model an individual observable, observation, or health condition.
         A patient's instance are stored as models.Observation
@@ -338,6 +341,7 @@ class Observable(ModelWithViewDependency):
                                                name="unique_alias_name")]
 
     category = models.CharField(max_length=128, null=False, blank=False, choices=Category.choices)
+
     # NOTE: See above constraint for case-insensitive uniqueness.
     name = models.CharField(max_length=128)
     description = models.CharField(max_length=256)
@@ -348,6 +352,17 @@ class Observable(ModelWithViewDependency):
 
     # This represents the type/class for Observation.observable_value.
     value_class = models.CharField(max_length=128, default=Types.BOOL, choices=Types.choices)
+    value_choices = models.CharField(max_length=512,
+                                     blank=True,
+                                     null=True,
+                                     help_text="Supply comma separated text choices for STR value_classes."
+                                               " E.g., 'LOW, MEDIUM, HIGH'")
+    validator = models.CharField(max_length=128,
+                                 blank=True,
+                                 null=True,
+                                 help_text="This must be the fully qualified Python name."
+                                           " E.g., 'django.core.validators.validate_email'.",
+                                 validators=[validate_import])
 
     # A observable without a center is generic and accessible by any and all centers.
     center = models.ForeignKey(Center, null=True, blank=True, on_delete=models.PROTECT)
@@ -360,6 +375,22 @@ class Observable(ModelWithViewDependency):
 
         if not self.alias:
             self.alias = self.name.replace('_', ' ')
+
+        if self.value_choices and (Observable.Types(self.value_class) is not Observable.Types.STR):
+            raise ValidationError(_("Observable choices are only permitted of STR value_class, not '%(a)s'."),
+                                  params=dict(a=self.value_class))
+
+    @staticmethod
+    def list_choices(choices):
+        """ Convert a csv string of choices to a list. """
+        if choices:
+            return [x.strip().upper() for x in choices.split(',')]
+
+    @staticmethod
+    def djangofy_choices(choices):
+        """ Convert a csv string of choices to that needed by Django. """
+        if choices:
+            return [(x, x) for x in Observable.list_choices(choices)]
 
 
 class Observation(DatedModel):
@@ -379,7 +410,10 @@ class Observation(DatedModel):
                                         help_text="Supersedes Visit.days_observed")
 
     # Str format for actual type/class spec'd by Observable.value_class.
-    observable_value = models.CharField(blank=True, null=True, default='', max_length=128)
+    observable_value = models.CharField(blank=True,
+                                        null=True,
+                                        default='',
+                                        max_length=128)
 
     def clean(self):
         """ Model validation. """
@@ -402,6 +436,15 @@ class Observation(DatedModel):
                                           "type": self.observable.value_class,
                                           "value": self.observable_value},
                                   code="invalid")
+
+        if choices := self.observable.value_choices:
+            if (value := str(self.observable_value).strip().upper()) not in Observable.list_choices(choices):
+                raise ValidationError(_("Value must be one of '%(a)s', not '%(b)s'"),
+                                      params=dict(a=choices, b=value))
+
+        if self.observable.validator:
+            func = import_string(self.observable.validator)
+            func(self.observable_value)
 
     @property
     def center(self):
@@ -798,7 +841,7 @@ class FullPatientView(SqlView, models.Model):
     def sql(cls):
         sql = f"""
                 create view {cls._meta.db_table} as 
-                select p.patient_id, p.gender
+                select p.patient_id
                 ,      bst.name, bs.sample_processing, bs.freezing_temp, bs.thawing_time
                 ,      i.manufacturer, i.model
                 ,      sdt.name, sd.acquisition_time, sd.n_coadditions, sd.resolution, sd.data
