@@ -69,6 +69,7 @@ class Center(UserBaseCenter):
 
 class UploadedFile(DatedModel):
     class Meta:
+        db_table = "bulk_upload"
         verbose_name = "Bulk Data Upload"
         get_latest_by = "updated_at"
 
@@ -150,6 +151,7 @@ class Patient(DatedModel):
     MAX_AGE = 150  # NOTE: HIPAA requires a max age of 90 to be stored. However, this is GDPR data so... :shrug:
 
     class Meta:
+        db_table = "patient"
         unique_together = [["patient_cid", "center"]]
         get_latest_by = "updated_at"
 
@@ -193,6 +195,7 @@ class Visit(DatedModel):
     """ Model a patient's visitation to collect health data and biological samples.  """
 
     class Meta:
+        db_table = "visit"
         get_latest_by = "updated_at"
 
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name="visit")
@@ -337,6 +340,7 @@ class Observable(ModelWithViewDependency):
     sql_view_dependencies = ("uploader.models.VisitObservationsView",)
 
     class Meta:
+        db_table = "observable"
         get_latest_by = "updated_at"
         constraints = [models.UniqueConstraint(Lower("name"),
                                                name="unique_observable_name"),
@@ -400,6 +404,7 @@ class Observation(DatedModel):
     """ A patient's instance of models.Observable. """
 
     class Meta:
+        db_table = "observation"
         get_latest_by = "updated_at"
 
     visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="observation")
@@ -461,6 +466,7 @@ class Instrument(DatedModel):
     """ Model the instrument/device used to measure spectral data (not the collection of the bio sample). """
 
     class Meta:
+        db_table = "instrument"
         get_latest_by = "updated_at"
 
     # Instrument.
@@ -493,6 +499,10 @@ class Instrument(DatedModel):
 
 
 class BioSampleType(DatedModel):
+    class Meta:
+        db_table = "bio_sample_type"
+        get_latest_by = "updated_at"
+
     name = models.CharField(max_length=128, verbose_name="Sample Type")
 
     def __str__(self):
@@ -503,6 +513,7 @@ class BioSample(DatedModel):
     """ Model biological sample and collection method. """
 
     class Meta:
+        db_table = "bio_sample"
         get_latest_by = "updated_at"
 
     visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="bio_sample")
@@ -571,6 +582,10 @@ class BioSample(DatedModel):
 
 
 class SpectraMeasurementType(DatedModel):
+    class Meta:
+        db_table = "spectra_measurement_type"
+        get_latest_by = "updated_at"
+
     name = models.CharField(max_length=128, verbose_name="Spectra Measurement")
 
     def __str__(self):
@@ -581,6 +596,7 @@ class SpectralData(DatedModel):
     """ Model spectral data measured by spectrometer instrument. """
 
     class Meta:
+        db_table = "spectral_data"
         verbose_name = "Spectral Data"
         verbose_name_plural = verbose_name
         get_latest_by = "updated_at"
@@ -783,8 +799,8 @@ class ObservationsView(SqlView, models.Model):
                d.value_class,
                s.days_observed,
                s.observable_value
-        FROM uploader_observation s
-        JOIN uploader_observable d ON d.id=s.observable_id
+        FROM observation s
+        JOIN observable d ON d.id=s.observable_id
         """  # nosec B608
         return sql, None
 
@@ -849,13 +865,13 @@ class FullPatientView(SqlView, models.Model):
                 ,      i.manufacturer, i.model
                 ,      sdt.name, sd.acquisition_time, sd.n_coadditions, sd.resolution, sd.data
                 ,      vs.*
-                  from uploader_patient p
-                  join uploader_visit v on p.patient_id=v.patient_id
-                  join uploader_biosample bs on bs.visit_id=v.id
-                  join uploader_biosampletype bst on bst.id=bs.sample_type_id
-                  join uploader_spectraldata sd on sd.bio_sample_id=bs.id
-                  join uploader_spectrameasurementtype sdt on sdt.id=sd.measurement_type_id
-                  join uploader_instrument i on i.id=sd.instrument_id
+                  from patient p
+                  join visit v on p.patient_id=v.patient_id
+                  join bio_sample bs on bs.visit_id=v.id
+                  join bio_sample_type bst on bst.id=bs.sample_type_id
+                  join spectral_data sd on sd.bio_sample_id=bs.id
+                  join spectra_measurement_type sdt on sdt.id=sd.measurement_type_id
+                  join instrument i on i.id=sd.instrument_id
                   left outer join v_visit_observations vs on vs.visit_id=v.id
                 """  # nosec B608
         return sql, None
@@ -879,6 +895,7 @@ def validate_qc_annotator_import(value):
 
 class QCAnnotator(DatedModel):
     class Meta:
+        db_table = "qc_annotator"
         get_latest_by = "updated_at"
 
     Types = Types
@@ -924,6 +941,7 @@ class QCAnnotator(DatedModel):
 class QCAnnotation(DatedModel):
 
     class Meta:
+        db_table = "qc_annotation"
         unique_together = [["annotator", "spectral_data"]]
         get_latest_by = "updated_at"
 
