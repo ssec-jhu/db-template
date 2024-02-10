@@ -237,7 +237,10 @@ class Visit(DatedModel):
         if self.previous_visit is not None:
             try:
                 patient_age = int(self.observation.get(observable__name="patient_age").observable_value)
-            except Observation.DoesNotExist:
+            except (Observation.DoesNotExist, ValueError):
+                # Note: ``ValueError`` accounts for ``self.observation`` when self.pk hasn't yet been set, since objs
+                # are cleaned before saving and the DB populates the pk. Relationships and their traversal aren't
+                # possible for objs without primary keys.
                 pass
             else:
                 try:

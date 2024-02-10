@@ -3,6 +3,7 @@ from inspect import signature
 from django.apps import apps
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import admin
+from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.db.utils import OperationalError
 from django import forms
@@ -12,19 +13,25 @@ from biospecdb.util import to_bool
 from .models import BioSample, Observable, Instrument, Patient, SpectralData, Observation, UploadedFile, Visit,\
     QCAnnotator, QCAnnotation, Center, get_center, BioSampleType, SpectraMeasurementType
 
+User = get_user_model()
+
 
 class RestrictedByCenterMixin:
     """ Restrict admin access to objects belong to user's center. """
     def _has_perm(self, request, obj):
-        user_center = request.user.center if request.user else None
+        if (request.user is None) or (obj is None):
+            return False # Strict security.
 
-        if (not user_center) or (obj is None):
-            # Those without centers "own" all.
-            return True  # security risk!?
+        try:
+            if not (user_center := request.user.center):
+                return False # Strict security.
+        except User.center.RelatedObjectDoesNotExist:
+            return False  # Strict security.
 
         obj_center = get_center(obj)
         if not obj_center:
-            # Objects without centers are "owned" by all.
+            # This func is called for new obj forms where obj.center obviously hasn't been set yet. In this scenario
+            # limited visibilty is defered to self.formfield_for_foreignkey.
             return True
 
         return obj_center == user_center
@@ -68,15 +75,52 @@ class RestrictedByCenterMixin:
         """ Limit center form fields to user's center, and set initial value as such.
             Exceptions are made for superusers.
         """
-        if db_field.name == "center" and request.user.center:
-            kwargs["initial"] = Center.objects.get(pk=request.user.center.pk)
-            if not request.user.is_superuser:
-                kwargs["queryset"] = Center.objects.filter(pk=request.user.center.pk)
-        elif db_field.name == "observable" and request.user.center:
-            center = Center.objects.get(pk=request.user.center.pk)
-            kwargs["queryset"] = Observable.objects.filter(Q(center=center) | Q(center=None))
+        field = super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+        if request.user.is_superuser:
+            return field
+
+        # User.center can't be Null so this isn't actually possible, but just in case return an empty queryset.
+        try:
+            if not request.user.center:
+                field.queryset = field.queryset.none()
+                return field
+        except User.center.RelatedObjectDoesNotExist:
+            field.queryset = field.queryset.none()
+            return field
+
+        center = Center.objects.get(pk=request.user.center.pk)
+
+        if db_field.name == "center":
+            field.initial = center
+            field.queryset = field.queryset.filter(pk=request.user.center.pk)
+        elif db_field.name in ("observable", "instrument"):
+            # For these fields a Null center implies visible to all centers.
+            field.queryset = field.queryset.filter(Q(center=center) | Q(center=None))
+        elif db_field.name == "patient":
+            field.queryset = field.queryset.filter(center=center)
+        elif db_field.name == "visit":
+            field.queryset = field.queryset.filter(patient__center=center)
+        elif db_field.name == "previous_visit":
+            field.queryset = field.queryset.filter(patient__center=center)
+        elif db_field.name == "next_visit":
+            field.queryset = field.queryset.filter(patient__center=center)
+        elif db_field.name == "observation":
+            field.queryset = field.queryset.filter(visit__center=center)
+        elif db_field.name == "bio_sample":
+            field.queryset = field.queryset.filter(visit__patient__center=center)
+        elif db_field.name == "spectral_data":
+            field.queryset = field.queryset.filter(bio_sample__visit__patient__center=center)
+        elif db_field.name == "qc_annotation":
+            field.queryset = field.queryset.filter(spectral_data__bio_sample__visit__patient__center=center)
+        elif db_field.name in ("annotator", "measurement_type", "sample_type"):
+            # These aren't limited/restricted by center.
+            pass
+        else:
+            # For extra security raise rather than return leaky data.
+            raise NotImplementedError(f"Whoops! Looks like someone forgot to account for '{db_field.name}'!")
+
+        return field
 
 
 admin.site.register(BioSampleType)
@@ -309,7 +353,7 @@ class ObservationInline(ObservationMixin, RestrictedByCenterMixin, NestedTabular
         """ Limit observable to user's center (super's functionality) and admin category. """
         field = super().formfield_for_foreignkey(db_field, request, **kwargs)
         if db_field.name == "observable":
-            field.queryset = Observable.objects.filter(category=self.verbose_name.upper())
+            field.queryset = field.queryset.filter(category=self.verbose_name.upper())
         return field
 
     def get_queryset(self, request):
@@ -557,7 +601,9 @@ class VisitAdminMixin:
         return qs.filter(patient__center=Center.objects.get(pk=request.user.center.pk))
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        """ Limit previous_visit to user's center (super's functionality) and admin category. """
+        """ Limit previous_visit to user's center (super's functionality) and only those visits belonging to the same
+            patient.
+        """
         field = super().formfield_for_foreignkey(db_field, request, **kwargs)
         if db_field.name == "previous_visit":
 
@@ -586,13 +632,13 @@ class VisitAdminMixin:
                     # Limit to all visits belonging to this patient (inc self - unfortunatley. It would be better to
                     # exclude (See below), however, there is no visit-self when looking at the patient level).
                     patient = Patient.objects.get(pk=object_id)
-                    field.queryset = Visit.objects.filter(patient=patient)
+                    field.queryset = field.queryset.filter(patient=patient)
                 elif model is Visit:
                     # Limit to all visits belonging to this patient (exc self - since a self-referential previous_visit
                     # doesn't make much sense).
                     visit = Visit.objects.get(id=object_id)
                     patient = visit.patient
-                    field.queryset = Visit.objects.filter(patient=patient).exclude(pk=object_id)
+                    field.queryset = field.queryset.filter(patient=patient).exclude(pk=object_id)
                 else:
                     return field
             except ObjectDoesNotExist:
