@@ -63,7 +63,7 @@ class SimpleQueryFactory(DjangoModelFactory):
         model = Query
 
     title = Sequence(lambda n: f'My simple query {n}')
-    sql = "select * from uploader_spectraldata"
+    sql = "select * from spectral_data"
     description = "Stuff"
     connection = settings.EXPLORER_DEFAULT_CONNECTION
     created_by_user = SubFactory(UserFactory)
