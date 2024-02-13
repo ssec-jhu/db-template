@@ -30,6 +30,7 @@ from catalog.admin import catalog_admin
 admin.site.site_header = "Biosample Spectral Repository administration"
 
 urlpatterns = [
+    path(r"healthz/", include("health_check.urls")),
     path("favicon.ico", views.favicon),
     path('', RedirectView.as_view(pattern_name="home", permanent=True)),
     path('uploader/', include('biospecdb.apps.uploader.urls')),
