@@ -1,15 +1,33 @@
 import json
 import pytest
 
+from django.db import DatabaseError
 from django.test import Client
+
+from health_check.db.models import TestModel
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestHealthCheck:
-    def test_healthz(self):
+    @pytest.fixture
+    def sabotage_db(self, monkeypatch):
+        def save(*args, **kwargs):
+            raise DatabaseError("Nice try")
+
+        # Monkeypatch health_check's TestModel to raise when testing a DB write.
+        monkeypatch.setattr(TestModel, "save", save)
+
+    @pytest.mark.parametrize("method", ("get", "head"))
+    def test_healthz(self, method):
         c = Client()
-        response = c.get("/healthz/")
+        response = getattr(c, method)("/healthz/")
         assert response.status_code == 200
+
+    @pytest.mark.parametrize("method", ("get", "head"))
+    def test_fail(self, sabotage_db, method):
+        c = Client()
+        response = getattr(c, method)("/healthz/")
+        assert response.status_code == 500
 
     @pytest.mark.parametrize(("url", "header"), (("/healthz/?format=json", None),
                                                  ("/healthz/", {"accept": "application/json"})))
