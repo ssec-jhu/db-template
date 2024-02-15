@@ -1,5 +1,6 @@
 django==4.2.7
 django-decorator-include==3.0
+django-health-check==3.18.1
 django-nested-admin==4.0.2
 django-sql-explorer[charts]==3.2.1
 gunicorn==21.2.0

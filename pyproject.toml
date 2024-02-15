@@ -12,6 +12,7 @@ requires-python = ">=3.11"
 dependencies = [
     "django",
     "django-decorator-include",
+    "django-health-check",
     "django-nested-admin",
     "django-sql-explorer[charts]",
     "gunicorn",
