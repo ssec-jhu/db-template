@@ -54,7 +54,7 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                 try:
                     # NOTE: ValidationError is raised when ``index`` is not a UUID, or not UUID-like, e.g., 1 is ok (as
                     # it's an int), however, '1' isn't. Here ``index`` is a string - and needs to be for UUIDs.
-                    patient = Patient.objects.get(pk=index)
+                    patient = Patient.objects.get(pk=index, center=center)
                 except (Patient.DoesNotExist, ValidationError):
                     try:
                         # Allow patients to be referenced by both patient_id and patient_cid, i.e., assume that the

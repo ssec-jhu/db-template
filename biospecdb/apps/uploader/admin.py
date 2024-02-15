@@ -1,7 +1,7 @@
 from inspect import signature
 
 from django.apps import apps
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import NON_FIELD_ERRORS, ObjectDoesNotExist, ValidationError
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.db.models import Q
@@ -167,8 +167,37 @@ class InstrumentAdmin(RestrictedByCenterMixin, admin.ModelAdmin):
     ]
 
 
+class UploadedFileForm(forms.ModelForm):
+    def add_error(self, field, error):
+        """ Override this method for validation errors that aren't fields of this form.
+
+            Django Validation errors contain dicts where the keys are field names and their values a list of exceptions.
+            This is so exceptions are render beside their corresponding field widget in the form.
+            In the case of bulk uploads, validation errors can occur for fields NOT belonging to the form, e.g.,
+            patient_id, visit, etc, - basically everything. When this happens Django will raise an exception which is
+            undesirable. Instead, we map the field to ``NON_FIELD_ERRORS`` which Django then correctly renders in the form.
+        """
+
+        try:
+            return super().add_error(field, error)
+        except ValueError:
+            if field or (not isinstance(error, ValidationError)) or (not hasattr(error, "error_dict")):
+                raise
+
+            for key in error.error_dict.copy():
+                if key not in self.fields:
+                    if NON_FIELD_ERRORS in error.error_dict:
+                        # Note: Values for error_dict are always lists, so we can blindly append.
+                        error.error_dict[NON_FIELD_ERRORS].append(error.error_dict.pop(key))
+                    else:
+                        error.error_dict[NON_FIELD_ERRORS] = error.error_dict.pop(key)
+            # Try again.
+            return super().add_error(None, error)
+
+
 @admin.register(UploadedFile)
 class UploadedFileAdmin(RestrictedByCenterMixin, admin.ModelAdmin):
+    form = UploadedFileForm
     search_fields = ["created_at"]
     search_help_text = "Creation timestamp"
     list_display = ["pk", "created_at", "meta_data_file", "spectral_data_file", "center"]

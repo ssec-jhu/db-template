@@ -1,7 +1,9 @@
 from inspect import getmembers
+from pathlib import Path
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
+import django.core.files
 from django.db import models
 from django.test import Client
 import pytest
@@ -11,6 +13,7 @@ from uploader.admin import DataAdminSite, RestrictedByCenterMixin
 from uploader.base_models import DatedModel, SqlView, ModelWithViewDependency
 import uploader.models
 
+DATA_PATH = Path(__file__).parent / "data"
 
 User = get_user_model()
 
@@ -186,3 +189,32 @@ class TestRestrictedByCenterMixin:
 
         django_request.user.center = None
         assert not RestrictedByCenterMixin()._has_perm(django_request, instrument)
+
+
+@pytest.mark.django_db(databases=["default", "bsr"])
+class TestUploadedFile:
+    def test_non_form_field_validation(self, mock_data_from_files):
+        # Note: ``mock_data_from_files`` uses Center(name="SSEC")``, so create a new user of a different center.
+        user = User.objects.create(username="staff2",
+                                   email="staff2@jhu.edu",
+                                   password="secret",
+                                   center=UserCenter.objects.get(name__iexact="imperial college london"),
+                                   is_staff=True,
+                                   is_superuser=False)
+        add_model_perms(user)
+
+        c = Client()
+        c.force_login(user)
+
+        meta_data_path = (DATA_PATH / "meta_data").with_suffix(uploader.models.UploadedFile.FileFormats.XLSX)
+        spectral_file_path = (DATA_PATH / "spectral_data").with_suffix(uploader.models.UploadedFile.FileFormats.XLSX)
+        with meta_data_path.open(mode="rb") as meta_data:
+            with spectral_file_path.open(mode="rb") as spectral_data:
+                meta_data_file = django.core.files.File(meta_data, name=meta_data_path.name)
+                spectral_data_file = django.core.files.File(spectral_data, name=spectral_file_path.name)
+                response = c.post("/data/uploader/uploadedfile/add/",
+                                  follow=False,
+                                  data={"meta_data_file": meta_data_file,
+                                        "spectral_data_file": spectral_data_file,
+                                        "center": user.center.pk})
+        assert response.status_code == 200
