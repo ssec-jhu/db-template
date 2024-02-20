@@ -7,7 +7,27 @@ import biospecdb.util
 from uploader.sql import drop_view, update_view
 
 
-class DatedModel(models.Model):
+class BasedModel(models.Model):
+    class Meta:
+        abstract = True
+
+    @classmethod
+    def get_column_names(cls):
+        # Note: This is a set of model.field.name and not model.field.verbose_name.
+        exclude = {"created at",
+                   "data",
+                   "date",
+                   "id",
+                   "spectral data file",
+                   "updated at"}
+
+        if hasattr(cls, "parse_fields_from_pandas_series"):  # Only models with this func have bulk data upload columns.
+            return {field.verbose_name.lower() for field in cls._meta.fields if not field.is_relation} - exclude
+
+        return set()
+
+
+class DatedModel(BasedModel):
     class Meta:
         abstract = True
 

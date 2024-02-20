@@ -470,8 +470,8 @@ class Instrument(DatedModel):
         get_latest_by = "updated_at"
 
     # Instrument.
-    id = models.UUIDField(unique=True, primary_key=True, default=uuid.uuid4)
-    cid = models.CharField(max_length=128)
+    id = models.UUIDField(unique=True, primary_key=True, default=uuid.uuid4, verbose_name="instrument id")
+    cid = models.CharField(max_length=128, verbose_name="instrument cid")
     manufacturer = models.CharField(max_length=128, verbose_name="Instrument manufacturer")
     model = models.CharField(max_length=128, verbose_name="Instrument model")
     serial_number = models.CharField(max_length=128, verbose_name="Instrument SN#")
@@ -522,7 +522,7 @@ class BioSample(DatedModel):
     sample_cid = models.CharField(blank=True,
                                   null=True,
                                   max_length=256,
-                                  verbose_name="Sample Center ID")
+                                  verbose_name="Sample CID")
     sample_study_id = models.CharField(blank=True,
                                        null=True,
                                        max_length=256,
