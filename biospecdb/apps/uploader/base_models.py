@@ -24,7 +24,7 @@ class BasedModel(models.Model):
         if hasattr(cls, "parse_fields_from_pandas_series"):  # Only models with this func have bulk data upload columns.
             return {field.verbose_name.lower() for field in cls._meta.fields if not field.is_relation} - exclude
 
-        return ()
+        return set()
 
 
 class DatedModel(BasedModel):
