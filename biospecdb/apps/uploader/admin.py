@@ -368,8 +368,8 @@ class ObservationInline(ObservationMixin, RestrictedByCenterMixin, NestedTabular
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         try:
-            # Only auto-populate "global" observables, i.e., those not related to a specific center (default=null).
-            query = Q(center=None) & Q(default=None)
+            # Only auto-populate "global" observables, i.e., those not related to a specific center (center=null).
+            query = Q(center=None)
             if hasattr(self, "verbose_name"):  # Only Inline admins have verbose names.
                 query &= Q(category=self.verbose_name.upper())
             kwargs = {"observables": iter(Observable.objects.filter(query))}

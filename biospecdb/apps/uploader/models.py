@@ -376,14 +376,16 @@ class Observable(ModelWithViewDependency):
                                     blank=True,
                                     related_name="observable",
                                     help_text="Only visible to users of these centers.\n"
-                                              "Selecting none is equivalent to all.")
+                                              "Selecting none is equivalent to all. When None, blank inline "
+                                              "observations of this observable will be automatically added to data "
+                                              "input forms.")
 
-    default = models.ManyToManyField(Center,
-                                     blank=True,
-                                     related_name="observable_default",
-                                     help_text="Automatically add an observation of this observable to the data input"
-                                               " form for users of these centers.\n"
-                                               "Selecting none is equivalent to all.")
+    # default = models.ManyToManyField(Center,
+    #                                  blank=True,
+    #                                  related_name="observable_default",
+    #                                  help_text="Automatically add an observation of this observable to the data input"
+    #                                            " form for users of these centers.\n"
+    #                                            "Selecting none is equivalent to all.")
 
     def __str__(self):
         return self.name
