@@ -12,6 +12,7 @@ from nested_admin import NestedStackedInline, NestedTabularInline, NestedModelAd
 from biospecdb.util import to_bool
 from .models import BioSample, Observable, Instrument, Patient, SpectralData, Observation, UploadedFile, Visit,\
     QCAnnotator, QCAnnotation, Center, get_center, BioSampleType, SpectraMeasurementType
+from uploader.forms import ModelForm
 
 User = get_user_model()
 
@@ -167,7 +168,7 @@ class InstrumentAdmin(RestrictedByCenterMixin, admin.ModelAdmin):
     ]
 
 
-class UploadedFileForm(forms.ModelForm):
+class UploadedFileForm(ModelForm):
     def add_error(self, field, error):
         """ Override this method for validation errors that aren't fields of this form.
 
@@ -323,7 +324,7 @@ class ObservationMixin:
         return qs.filter(visit__patient__center=Center.objects.get(pk=request.user.center.pk))
 
 
-class ObservationInlineForm(forms.ModelForm):
+class ObservationInlineForm(ModelForm):
     observables = iter([])
 
     @staticmethod
