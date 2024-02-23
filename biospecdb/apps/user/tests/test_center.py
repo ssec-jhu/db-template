@@ -49,8 +49,8 @@ class TestCenters:
         assert UploaderCenter.objects.count() == 0
 
     def test_delete_replication(self, centers):
-        assert UserCenter.objects.count() == 3
-        assert UploaderCenter.objects.count() == 3
+        assert UserCenter.objects.count() == 4
+        assert UploaderCenter.objects.count() == 4
 
         for obj in UserCenter.objects.all():
             obj.delete()
@@ -61,13 +61,13 @@ class TestCenters:
     def test_bulk_delete_replication(self, centers):
         """ Bulk delete doesn't call delete()!!! """
 
-        assert UserCenter.objects.count() == 3
-        assert UploaderCenter.objects.count() == 3
+        assert UserCenter.objects.count() == 4
+        assert UploaderCenter.objects.count() == 4
 
         UserCenter.objects.all().delete()
 
         assert not UserCenter.objects.all()
-        assert UploaderCenter.objects.count() == 3
+        assert UploaderCenter.objects.count() == 4
 
     def test_equivalence(self):
         user_center = UserCenter(name="test", country="nowhere")

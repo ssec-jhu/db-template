@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 import sys
 
@@ -115,6 +116,19 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
+LOGIN_URL = "/admin/login"
+LOGOUT_URL = "logout"
+
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = "smtp.sendgrid.net"
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "apikey"  # this is exactly the value 'apikey'
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_API_KEY", None)
+EMAIL_FROM = "admin@spadd.org"
+EMAIL_SUBJECT_PREFIX = "SPaDD"
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/

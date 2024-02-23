@@ -41,7 +41,7 @@ class TestGetColumnNames:
     @pytest.fixture
     def more_observables(self, centers):
         category = (x.value for x in Observable.Category)
-        names = iter(("blah", "foo", "bar"))
+        names = iter(("blah", "foo", "bar", "huh"))
         for center in Center.objects.all():
             name = next(names)
             observable = Observable.objects.create(name=name,

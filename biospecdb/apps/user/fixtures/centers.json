@@ -23,6 +23,14 @@
       "country": "UK"
     }
   },
+    {
+    "model": "user.Center",
+    "pk": "16721944-ff91-4adf-8fb3-323b99aba801",
+    "fields": {
+      "name": "spadd",
+      "country": "UK"
+    }
+  },
   {
     "model": "uploader.Center",
     "pk": "d61f1c2a-9c0a-4309-a031-ab5b8d2106b0",
@@ -44,6 +52,14 @@
     "pk": "d2160c33-0bbc-4605-a2ce-7e83296e7c84",
     "fields": {
       "name": "Oxford University",
+      "country": "UK"
+    }
+  },
+  {
+    "model": "uploader.Center",
+    "pk": "16721944-ff91-4adf-8fb3-323b99aba801",
+    "fields": {
+      "name": "spadd",
       "country": "UK"
     }
   }
