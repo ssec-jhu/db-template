@@ -146,6 +146,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 EXPLORER_CONNECTIONS = {"data": "bsr"}
 EXPLORER_DEFAULT_CONNECTION = "bsr"
 
+EXPLORER_PERMISSION_VIEW = lambda r: r.user.is_sqluser or r.user.is_superuser  # noqa:  E731
+EXPLORER_PERMISSION_CHANGE = lambda r: r.user.is_superuser  # noqa:  E731
+
 EXPLORER_DEFAULT_ROWS = 1000
 
 EXPLORER_SQL_BLACKLIST = (
