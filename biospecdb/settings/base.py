@@ -116,6 +116,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+DOMAIN_NAME = "spadd.org"
 
 LOGIN_URL = "/admin/login"
 LOGOUT_URL = "logout"
@@ -127,7 +128,7 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = "apikey"  # this is exactly the value 'apikey'
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_API_KEY", None)
-EMAIL_FROM = "admin@spadd.org"
+EMAIL_FROM = f"admin@{DOMAIN_NAME}"
 EMAIL_SUBJECT_PREFIX = "SPaDD"
 
 # Internationalization
