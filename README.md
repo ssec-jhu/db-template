@@ -137,7 +137,16 @@ _NOTE: These commands must be run from the ``/app/`` directory on the server.
 
 # Usage
 
-    WIP.
+### URL Paths:
+
+ * ``catalog/``: Access cataloged datasets to download and explore for research purposes.
+ * ``data/``: Data ingestion and editing. The following paths are the principal ingestion methods:
+     * ``data/uploader/patient/add/``: Add all data associated with a given patient, new or existing.
+     * ``data/uploader/uploadedfile/add/``: Bulk upload data in a tabulated format, e.g., ``.csv``, ``.xlsx``, & ``.json``.
+ * ``explorer/``: SQL UI interface for direct data exploration. Privileged user permissions required.
+ * ``admin/``: Access to patient data, explorer queries, center info, user info, and general database admin.
+ Privileged user permissions required. Note that the data input forms are simpler (not nested) than those at ``data/``. 
+ * ``healthz/``: Display simple health check system status for both the web application and backend infrastructure.
 
 # Quality Control Annotations
 
