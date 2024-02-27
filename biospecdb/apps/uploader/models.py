@@ -371,8 +371,21 @@ class Observable(ModelWithViewDependency):
                                            " E.g., 'django.core.validators.validate_email'.",
                                  validators=[validate_import])
 
-    # A observable without a center is generic and accessible by any and all centers.
-    center = models.ForeignKey(Center, null=True, blank=True, on_delete=models.PROTECT)
+    # An observable without a center is generic and accessible by any and all centers.
+    center = models.ManyToManyField(Center,
+                                    blank=True,
+                                    related_name="observable",
+                                    help_text="Only visible to users of these centers.\n"
+                                              "Selecting none is equivalent to all. When None, blank inline "
+                                              "observations of this observable will be automatically added to data "
+                                              "input forms.")
+
+    # default = models.ManyToManyField(Center,
+    #                                  blank=True,
+    #                                  related_name="observable_default",
+    #                                  help_text="Automatically add an observation of this observable to the data input"
+    #                                            " form for users of these centers.\n"
+    #                                            "Selecting none is equivalent to all.")
 
     def __str__(self):
         return self.name
@@ -427,10 +440,10 @@ class Observation(DatedModel):
         """ Model validation. """
         super().clean()
 
-        if self.observable.center and (self.observable.center != self.visit.patient.center):
-            raise ValidationError(_("Patient observation observable category must belong to patient center: "
-                                    "'%(c1)s' != '%(c2)s'"),
-                                  params=dict(c1=self.observable.center, c2=self.visit.patient.center))
+        # Note: global observables have no observable.center.
+        if self.observable.center.count() and (self.visit.patient.center not in self.observable.center.all()):
+            # Note: Don't expose centers here.
+            raise ValidationError(_("Patient observation.observable must belong to patient's center."))
 
         # Check that value is castable by casting.
         # NOTE: ``observable_value`` is a ``CharField`` so this will get cast back to a str again, and it could be

@@ -279,25 +279,22 @@ class TestObservation:
         # OK.
         observable = Observable.objects.create(name="snuffles",
                                                alias="snuffles",
-                                               center=center,
                                                category=Observable.Category.SYMPTOM)
+        observable.center.set([center])
         Observation(visit=visit, observable=observable).full_clean()
 
         # OK.
         observable = Observable.objects.create(name="extra_snuffles",
                                                alias="extra snuffles",
-                                               center=None,
                                                category=Observable.Category.SYMPTOM)
         Observation(visit=visit, observable=observable).full_clean()
 
         # Not OK.
-        center
         observable = Observable.objects.create(name="even_more_snuffles",
                                                alias="even more snuffles",
-                                               center=Center.objects.get(name="Imperial College London"),
                                                category=Observable.Category.SYMPTOM)
-        with pytest.raises(ValidationError, match="Patient observation observable category must belong to patient "
-                                                  "center:"):
+        observable.center.set([Center.objects.get(name="Imperial College London")])
+        with pytest.raises(ValidationError, match="Patient observation.observable must belong to patient's center"):
             Observation(visit=visit, observable=observable).full_clean()
 
     def test_observable_choices(self, observables, visits):

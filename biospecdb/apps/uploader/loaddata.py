@@ -4,6 +4,7 @@ import pandas as pd
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 from django.db import transaction
+from django.db.models import Q
 
 from biospecdb.util import get_object_or_raise_validation
 import uploader.io
@@ -105,7 +106,7 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                 instrument.spectral_data.add(spectraldata, bulk=False)
 
                 # Observations
-                for observable in Observable.objects.all():
+                for observable in Observable.objects.filter(Q(center=center) | Q(center=None)):
                     observation_value = row.get(observable.alias.lower(), None)
                     if observation_value is None:
                         continue

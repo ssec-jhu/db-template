@@ -44,10 +44,13 @@ class TestGetColumnNames:
         names = iter(("blah", "foo", "bar"))
         for center in Center.objects.all():
             name = next(names)
-            Observable.objects.create(name=name,
-                                      alias=name,
-                                      center=center,
-                                      category=next(category))
+            observable = Observable.objects.create(name=name,
+                                                   alias=name,
+                                                   description=name,
+                                                   category=next(category))
+            observable.center.set([center])
+            observable.full_clean()
+            observable.save()
 
     def test_observables_only(self, observables):
         out = StringIO()
