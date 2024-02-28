@@ -1,0 +1,43 @@
+version: 1.0
+runtime: python311
+build:
+  commands:
+    build:
+      - pip3 install pipenv
+      - pipenv install -r requirements/prd.txt
+  env:
+    - name: DJANGO_SETTINGS_MODULE
+      value: "biospecdb.settings.aws"
+run:
+  runtime-version: 3.11
+  pre-run:
+    - pip3 install pipenv
+    - pipenv install -r requirements/prd.txt
+  command: sh scripts/prd/deploy.sh
+  network:
+    port: 8000
+    env: HOST_PORT
+  env:
+    - name: DJANGO_SETTINGS_MODULE
+      value: "biospecdb.settings.aws"
+    - name: DJANGO_LOG_LEVEL
+      value: "DEBUG"
+  secrets:
+    - name: DB_BSR_HOST
+      value-from: "arn:aws:secretsmanager:us-east-2:492611697298:secret:DB_BSR_HOST-sQbLkp"
+    - name: DB_ADMIN_HOST
+      value-from: "arn:aws:secretsmanager:us-east-2:492611697298:secret:DB_ADMIN_HOST-SPbpSS"
+    - name: DB_BSR_USER
+      value-from: "arn:aws:secretsmanager:us-east-2:492611697298:secret:DB_BSR_USER-owLinb"
+    - name: DB_BSR_PORT
+      value-from: "arn:aws:secretsmanager:us-east-2:492611697298:secret:DB_BSR_PORT-v3M4FJ"
+    - name: DB_ADMIN_USER
+      value-from: "arn:aws:secretsmanager:us-east-2:492611697298:secret:DB_ADMIN_USER-hQq4ft"
+    - name: DB_ADMIN_PORT
+      value-from: "arn:aws:secretsmanager:us-east-2:492611697298:secret:DB_ADMIN_PORT-bxSK1G"
+    - name: DB_BSR_PASSWORD
+      value-from: "arn:aws:secretsmanager:us-east-2:492611697298:secret:DB_BSR_PASSWORD-hBsBQO"
+    - name: DB_ADMIN_PASSWORD
+      value-from: "arn:aws:secretsmanager:us-east-2:492611697298:secret:DB_ADMIN_PASSWORD-9ebMTl"
+    - name: SECRET_KEY
+      value-from: "arn:aws:secretsmanager:us-east-2:492611697298:secret:SECRET_KEY-AISfiM"

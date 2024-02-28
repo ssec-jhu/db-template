@@ -21,6 +21,7 @@ dependencies = [
     "openpyxl",
     "pandas",
     "plotly",
+    "psycopg[binary,pool]",
     "xlsxwriter"
 ]
 
