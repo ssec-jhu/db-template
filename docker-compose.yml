@@ -30,7 +30,7 @@ services:
       && python manage.py loaddata centers queries
       && python manage.py loaddata --database=bsr centers observables instruments qcannotators biosampletypes spectrameasurementtypes
       && python manage.py update_sql_views
-      && DJANGO_SUPERUSER_PASSWORD=$(cat /run/secrets/superuser_password) python manage.py createsuperuser --noinput --username=admin --email=admin@jhu.edu --center=d61f1c2a-9c0a-4309-a031-ab5b8d2106b0
+      && DJANGO_SUPERUSER_PASSWORD=$(cat /run/secrets/superuser_password) python manage.py createsuperuser --noinput --username=admin --email=admin@spadda.org --center=16721944-ff91-4adf-8fb3-323b99aba801
       && touch /app/db/setup_complete.txt || echo done!"
 
   web:
@@ -57,11 +57,12 @@ services:
       DJANGO_SETTINGS_MODULE: biospecdb.settings.prd
     secrets:
       - django_secret_key
+      - email_api_key
     command: >
       bash -c "mkdir -p log
       && mkdir -p run
       && SECRET_KEY=$(cat /run/secrets/django_secret_key) python manage.py collectstatic --clear --noinput
-      && SECRET_KEY=$(cat /run/secrets/django_secret_key) gunicorn -c config/gunicorn/prd.py"
+      && SECRET_KEY=$(cat /run/secrets/django_secret_key) EMAIL_API_KEY=$(cat /run/secrets/email_api_key) gunicorn -c config/gunicorn/prd.py"
     healthcheck:
       test: ["CMD-SHELL", "curl --head --fail --header 'X-Forwarded-Proto: https' http://localhost:8000/healthz/ || exit 1"]
       interval: 60s
@@ -96,6 +97,9 @@ secrets:
     environment: DJANGO_SUPERUSER_PASSWORD
   django_secret_key:
     environment: SECRET_KEY
+  email_api_key:
+    environment: EMAIL_API_KEY
+
 
 volumes:
   db-data:

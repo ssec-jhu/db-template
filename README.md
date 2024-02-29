@@ -132,6 +132,7 @@ The DB can be dumped to a file using the following:
    * ``--exclude_non_observables``: Only output column names for non-observables.
    * ``--center=<name|id>``: Filter observables by center name or center ID.
    * ``--category=<category>``: Filter observables by category.
+ * ``python manage.py send_test_email <send_to_email_address>``: Send a test email to "send_to_email_address" to test email setup.
 
 _NOTE: These commands must be run from the ``/app/`` directory on the server.
 
