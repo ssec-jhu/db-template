@@ -1,5 +1,7 @@
 FROM python:3.11
 
+RUN ln -sf /bin/bash /bin/sh
+
 ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
