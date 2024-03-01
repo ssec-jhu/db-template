@@ -41,3 +41,5 @@ run:
       value-from: "arn:aws:secretsmanager:us-east-2:492611697298:secret:DB_ADMIN_PASSWORD-9ebMTl"
     - name: SECRET_KEY
       value-from: "arn:aws:secretsmanager:us-east-2:492611697298:secret:SECRET_KEY-AISfiM"
+    - name: DJANGO_SUPERUSER_PASSWORD
+      value-from: "arn:aws:secretsmanager:us-east-2:492611697298:secret:DJANGO_SUPERUSER_PASSWORD-Jn5l4f"
