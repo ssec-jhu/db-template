@@ -3,10 +3,13 @@ from pathlib import Path
 
 import pytest
 
+from django.contrib.auth import get_user_model
 from django.core.management import call_command, CommandError
 from django.db.models import Q
 
 from uploader.models import Center, Observable, UploadedFile, SpectralData
+
+User = get_user_model()
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
@@ -153,3 +156,27 @@ class TestGetColumnNames:
                          "--exclude_non_observables",
                          f"--category={'this is not a category '}",
                          stdout=out)
+
+
+@pytest.mark.django_db(databases=["default", "bsr"])
+class TestMakeSuperUser:
+    def test_existing_user(self, centers):
+        user = "admin"
+        assert not User.objects.count()
+
+        options = [f"--username={user}",
+                   "--noinput",
+                   "--email=admin@site.com",
+                   "--center=16721944-ff91-4adf-8fb3-323b99aba801"]
+
+        cmd = ("createsuperuser", *options)
+        call_command(*cmd)
+        assert User.objects.get(username=user)
+
+        with pytest.raises(CommandError):
+            call_command(*cmd)
+
+        call_command(*("makesuperuser", *options))
+
+        with pytest.raises(CommandError, match="That username is already taken"):
+            call_command(*("makesuperuser", "--fail", *options))

@@ -133,6 +133,11 @@ The DB can be dumped to a file using the following:
    * ``--center=<name|id>``: Filter observables by center name or center ID.
    * ``--category=<category>``: Filter observables by category.
  * ``python manage.py send_test_email <send_to_email_address>``: Send a test email to "send_to_email_address" to test email setup.
+ * ``python manage.py makesuperuser``: This is a wrapper of Django's builtin ``createsuperuser`` command except that it
+   doesn't fail when the user already exists.
+   * See ``python manage.py createsuperuser --help`` for options.
+   * ``--fail``: Revert to ``createsuperuser`` behavior and fail when the user already exists.
+
 
 _NOTE: These commands must be run from the ``/app/`` directory on the server.
 
