@@ -45,3 +45,7 @@ run:
       value-from: "arn:aws:secretsmanager:us-east-2:492611697298:secret:DJANGO_SUPERUSER_PASSWORD-Jn5l4f"
     - name: N_WORKERS
       value-from: "arn:aws:secretsmanager:us-east-2:492611697298:secret:N_WORKERS-AHp6uO"
+    - name: AWS_STORAGE_BUCKET_NAME
+      value-from: "arn:aws:secretsmanager:us-east-2:492611697298:secret:AWS_STORAGE_BUCKET_NAME-6OOTxO"
+    - name: AWS_S3_REGION_NAME
+      value-from: "arn:aws:secretsmanager:us-east-2:492611697298:secret:AWS_S3_REGION_NAME-C8KWHx"
