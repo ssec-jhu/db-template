@@ -49,3 +49,5 @@ run:
       value-from: "arn:aws:secretsmanager:us-east-2:492611697298:secret:AWS_STORAGE_BUCKET_NAME-6OOTxO"
     - name: AWS_S3_REGION_NAME
       value-from: "arn:aws:secretsmanager:us-east-2:492611697298:secret:AWS_S3_REGION_NAME-C8KWHx"
+    - name: SESSION_COOKIE_AGE
+      value-from: "arn:aws:secretsmanager:us-east-2:492611697298:secret:SESSION_COOKIE_AGE-Ml1Jzr"
