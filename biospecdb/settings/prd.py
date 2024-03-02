@@ -23,3 +23,6 @@ SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 SECURE_SSL_REDIRECT = True
 
 ALLOWED_HOSTS = ['.localhost']  # TODO: replace with domain name
+
+SESSION_COOKIE_AGE = os.getenv("SESSION_COOKIE_AGE", 60 * 60 * 24)  # Age in seconds
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
