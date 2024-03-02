@@ -104,18 +104,25 @@ LOGGING = {
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
-DB_DIR = "db"
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / DB_DIR / 'admin.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'admin',
+        "HOST": os.getenv("DB_ADMIN_HOST"),
+        "PORT": os.getenv("DB_ADMIN_PORT"),
+        "USER": os.getenv("DB_ADMIN_USER"),
+        "PASSWORD": os.getenv("DB_ADMIN_PASSWORD"),
     },
     "bsr": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / DB_DIR / "bsr.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "bsr",
+        "HOST": os.getenv("DB_BSR_HOST"),
+        "PORT": os.getenv("DB_BSR_PORT"),
+        "USER": os.getenv("DB_BSR_USER"),
+        "PASSWORD": os.getenv("DB_BSR_PASSWORD"),
     }
 }
+
 
 # The order in which routers are processed is significant. Routers will be queried in the order they are listed here.
 DATABASE_ROUTERS = ["biospecdb.routers.BSRRouter"]
