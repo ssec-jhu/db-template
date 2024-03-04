@@ -33,6 +33,7 @@ admin.site.site_header = "Biosample Spectral Repository"
 
 urlpatterns = [
     path(r"healthz/", include("health_check.urls")),
+    path("version/", views.version, name="version"),
     path("favicon.ico", views.favicon),
     path('', RedirectView.as_view(pattern_name="home", permanent=True)),
     path('uploader/', include('biospecdb.apps.uploader.urls')),
