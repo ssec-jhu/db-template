@@ -7,9 +7,6 @@ pipenv run python3 manage.py collectstatic --clear --noinput
 
 # Migrate DB
 mkdir -p db
-pipenv run python3 manage.py makemigrations user
-pipenv run python3 manage.py makemigrations uploader
-pipenv run python3 manage.py makemigrations catalog
 pipenv run python3 manage.py migrate
 pipenv run python3 manage.py migrate --database=bsr
 
