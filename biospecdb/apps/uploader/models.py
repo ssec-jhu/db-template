@@ -862,7 +862,7 @@ class VisitObservationsView(SqlView, models.Model):
 
     @classmethod
     def sql(cls):
-        observables = Observable.objects.all()
+        observables = Observable.objects.all().order_by("pk")
         view = cls._meta.db_table
         d = []
         for observable in observables:
@@ -874,7 +874,7 @@ class VisitObservationsView(SqlView, models.Model):
             else:
                 value = "observable_value"
             d.append(f"max(case when observable = '{observable.name}' then {value} else null end) as "
-                     f"[{observable.name}]")
+                     f"{observable.name}")
 
         d = "\n,      ".join(d)
 
@@ -906,9 +906,9 @@ class FullPatientView(SqlView, models.Model):
         sql = f"""
                 create view {cls._meta.db_table} as 
                 select p.patient_id
-                ,      bst.name, bs.sample_processing, bs.freezing_temp, bs.thawing_time
+                ,      bst.name as bio_sample_type, bs.sample_processing, bs.freezing_temp, bs.thawing_time
                 ,      i.manufacturer, i.model
-                ,      sdt.name, sd.acquisition_time, sd.n_coadditions, sd.resolution, sd.data
+                ,      sdt.name as spectral_data_type, sd.acquisition_time, sd.n_coadditions, sd.resolution, sd.data
                 ,      vs.*
                   from patient p
                   join visit v on p.patient_id=v.patient_id

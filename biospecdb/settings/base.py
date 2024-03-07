@@ -211,8 +211,8 @@ EXPLORER_SQL_BLACKLIST = (
 
      # DDL
      'ALTER',
-     'CREATE',
-     'DROP',
+     # 'CREATE',
+     # 'DROP',
      'RENAME',
      'TRUNCATE',
 
