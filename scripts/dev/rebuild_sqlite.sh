@@ -14,6 +14,7 @@ rm db/*.sqlite3
 
 set -e
 
+export DB_VENDOR=sqlite
 export DJANGO_SETTINGS_MODULE=biospecdb.settings.dev
 
 # Collect all static files to be served.
@@ -21,9 +22,7 @@ export DJANGO_SETTINGS_MODULE=biospecdb.settings.dev
 python manage.py collectstatic --clear --noinput
 
 # Redo migrations since they were deleted above.
-python manage.py makemigrations user
-python manage.py makemigrations uploader
-python manage.py makemigrations catalog
+python manage.py makemigrations
 
 # Create and/or migrate DBs.
 python manage.py migrate

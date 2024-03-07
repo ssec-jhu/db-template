@@ -18,6 +18,8 @@ run:
     port: 8000
     env: HOST_PORT
   env:
+    - name: DB_VENDOR
+      value: "postgresql"
     - name: DJANGO_SETTINGS_MODULE
       value: "biospecdb.settings.aws"
     - name: DJANGO_LOG_LEVEL
