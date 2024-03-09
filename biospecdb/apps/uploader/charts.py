@@ -66,7 +66,7 @@ def get_line_chart(result: "QueryResult") -> Optional[str]:  # noqa: F821
             assert to_uuid(spectral_data.patient_id) == to_uuid(row.patient_id)
             fig.add_scatter(x=spectral_data.wavelength,
                             y=spectral_data.intensity,
-                            name=row.patient_id)
+                            name=str(row.patient_id))
 
         return fig_to_html(fig)
     except Exception:
