@@ -1,7 +1,6 @@
 import datetime
 import hashlib
 import json
-import os
 from pathlib import Path
 import uuid
 import zipfile
@@ -185,11 +184,27 @@ class Dataset(DatedModel):
     def asave(self, *args, **kwargs):
         raise NotImplementedError
 
-    def delete(self, *args, **kwargs):
+    def delete(self, *args, delete_files=True, **kwargs):
         count, deleted = super().delete(*args, **kwargs)
         if count == 1:
-            os.remove(self.file.name)
+            if delete_files:
+                self.file.storage.delete(self.file.name)
         return count, deleted
 
     def adelete(self, *args, **kwargs):
         raise NotImplementedError
+
+    @classmethod
+    def get_orphan_files(cls):
+        storage = cls.file.field.storage
+        path = Path(cls.file.field.upload_to)
+        # Collect all stored media files.
+        try:
+            fs_files = set([str(path / x) for x in storage.listdir(path)[1]])
+        except FileNotFoundError:
+            return storage, {}
+        # Collect all media files referenced in the DB.
+        data_files = set(x.file.name for x in cls.objects.all())
+        # Compute orphaned file list.
+        orphaned_files = fs_files - data_files
+        return storage, orphaned_files

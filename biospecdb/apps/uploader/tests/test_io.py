@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 
 from django.core.files.base import ContentFile
+from django.core.files.storage import storages
 
 import uploader.io
 from uploader.tests.conftest import DATA_PATH
@@ -63,18 +64,18 @@ class TestSpectralDataToJson:
         assert isinstance(json_str, str)
         assert json.loads(json_str) == json_data
 
-    def test_data_as_filename(self, json_data, tmp_path):
-        filename = (Path(tmp_path)/"myjson").with_suffix(uploader.io.FileFormats.JSONL)
+    def test_data_as_filename(self, json_data):
+        filename = Path("myjson").with_suffix(uploader.io.FileFormats.JSONL)
         # Write data.
-        uploader.io.spectral_data_to_json(filename, json_data)
+        filename = uploader.io.spectral_data_to_json(filename, json_data)
         # Read data.
         data = uploader.io.spectral_data_from_json(filename)
         assert uploader.io.SpectralData(**json_data) == data
 
-    def test_data_as_fp(self, json_data, tmp_path):
-        filename = (Path(tmp_path)/"myjson").with_suffix(uploader.io.FileFormats.JSONL)
+    def test_data_as_fp(self, json_data):
+        filename = Path("myjson").with_suffix(uploader.io.FileFormats.JSONL)
         # Write data.
-        with filename.open(mode='w') as fp:
+        with storages["default"].open(filename, mode='w') as fp:
             uploader.io.spectral_data_to_json(fp, json_data)
         # Read data.
         data = uploader.io.spectral_data_from_json(filename)

@@ -1,6 +1,5 @@
 from copy import deepcopy
 from enum import auto
-import os
 from pathlib import Path
 import uuid
 
@@ -134,16 +133,32 @@ class UploadedFile(DatedModel):
     def asave(self, *args, **kwargs):
         raise NotImplementedError
 
-    def delete(self, *args, **kwargs):
+    def delete(self, *args, delete_files=True, **kwargs):
         count, deleted = super().delete(*args, **kwargs)
         if count == 1:
-            os.remove(self.meta_data_file.name)
-            os.remove(self.spectral_data_file.name)
+            if delete_files:
+                self.meta_data_file.storage.delete(self.meta_data_file.name)
+                self.spectral_data_file.storage.delete(self.spectral_data_file.name)
         return count, deleted
 
     def adelete(self, *args, **kwargs):
         raise NotImplementedError
 
+    @classmethod
+    def get_orphan_files(cls):
+        storage = cls.meta_data_file.field.storage
+        path = Path(settings.MEDIA_ROOT) / cls.UPLOAD_DIR
+        # Collect all stored media files.
+        try:
+            fs_files = set([str(path / x) for x in storage.listdir(str(path))[1]])
+        except FileNotFoundError:
+            return storage, {}
+        # Collect all media files referenced in the DB.
+        meta_data_files = set(x.meta_data_file.name for x in cls.objects.all())
+        spectral_data_files = set(x.spectral_data_file.name for x in cls.objects.all())
+        # Compute orphaned file list.
+        orphaned_files = fs_files - (meta_data_files | spectral_data_files)
+        return storage, orphaned_files
 
 class Patient(DatedModel):
     """ Model an individual patient. """
@@ -775,14 +790,31 @@ class SpectralData(DatedModel):
     def asave(self, *args, **kwargs):
         raise NotImplementedError
 
-    def delete(self, *args, **kwargs):
+    def delete(self, *args, delete_files=True, **kwargs):
         count, deleted = super().delete(*args, **kwargs)
         if count == 1:
-            os.remove(self.data.name)
+            if delete_files:
+                self.data.storage.delete(self.data.name)
         return count, deleted
+
 
     def adelete(self, *args, **kwargs):
         raise NotImplementedError
+
+    @classmethod
+    def get_orphan_files(cls):
+        storage = cls.data.field.storage
+        path = Path(settings.MEDIA_ROOT) / cls.UPLOAD_DIR
+        # Collect all stored media files.
+        try:
+            fs_files = set([str(path / x) for x in storage.listdir(str(path))[1]])
+        except FileNotFoundError:
+            return storage, {}
+        # Collect all media files referenced in the DB.
+        data_files = set(x.data.name for x in cls.objects.all())
+        # Compute orphaned file list.
+        orphaned_files = fs_files - data_files
+        return storage, orphaned_files
 
 
 class ObservationsView(SqlView, models.Model):

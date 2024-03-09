@@ -5,6 +5,8 @@ from pathlib import Path
 from uuid import UUID
 
 import django.core.files
+from django.core.files.base import ContentFile
+from django.core.files.storage import storages
 import django.core.files.uploadedfile
 from django.core.serializers.json import DjangoJSONEncoder
 import pandas as pd
@@ -211,13 +213,11 @@ def spectral_data_to_json(file, data: SpectralData, patient_id=None, wavelength=
 
     if file is None:
         return json.dumps(data, **opts)
-
-    if isinstance(file, (str, Path)):
-        with open(file, mode="w") as fp:
-            return json.dump(data, fp, **opts)
+    elif isinstance(file, (str, Path)):
+        return storages["default"].save(file, ContentFile(json.dumps(data, **opts), name=file))
     else:
         # Note: We assume that this is pointing to the correct section of the file, i.e., the beginning.
-        return json.dump(data, file, **opts)
+        json.dump(data, file, **opts)
 
 
 def spectral_data_from_json(file):
@@ -235,7 +235,7 @@ def spectral_data_from_json(file):
         # Note: We assume that this is pointing to the correct section of the file, i.e., the beginning.
         data = json.load(fp)
     elif filename:
-        with open(filename, mode="r") as fp:
+        with storages["default"].open(filename, mode="r") as fp:
             data = json.load(fp)
     else:
         raise ValueError("A path-like or file-like object must be specified.")

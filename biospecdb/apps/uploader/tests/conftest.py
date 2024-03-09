@@ -57,6 +57,12 @@ def rm_all_media_dirs():
     rm_dir(Path(Dataset.UPLOAD_DIR))
 
 
+@pytest.fixture(scope="function", autouse=True)
+def clean_up():
+    yield
+    rm_all_media_dirs()
+
+
 class SimpleQueryFactory(DjangoModelFactory):
 
     class Meta:
@@ -183,7 +189,6 @@ def mock_data_from_files(request,
 
     with django_db_blocker.unblock():
         bulk_upload()
-
 
     yield
 

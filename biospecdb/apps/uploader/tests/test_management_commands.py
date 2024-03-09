@@ -17,21 +17,41 @@ class TestPruneFiles:
         call_command("prune_files", stdout=out)
         assert "No orphaned files detected." in out.getvalue()
 
-    @pytest.mark.parametrize(("cmd", "expected"),
-                             ((("prune_files",), (0, 0)),
-                              (("prune_files", "--dry_run"), (2, 10))))
-    def test_core(self, mock_data_from_files, cmd, expected):
-        assert len(list(Path(UploadedFile.UPLOAD_DIR).glob('*'))) == 2
-        assert len(list(Path(SpectralData.UPLOAD_DIR).glob('*'))) == 10
+    @pytest.mark.parametrize(("cmd", "delete", "expected"),
+                             ((("prune_files",), True, (0, 0)),
+                              (("prune_files", "--dry_run"), True, (0, 0)),
+                              (("prune_files",), False, (0, 0)),
+                              (("prune_files", "--dry_run"), False, (2, 10))))
+    def test_core(self, mock_data_from_files, cmd, delete, expected):
+        def get_file_count(path):
+            return len(list(Path(path).glob('*')))
 
+        # Check objects exist.
+        assert UploadedFile.objects.count() == 1
+        assert SpectralData.objects.count() == 10
+
+        # Check files exist.
+        assert get_file_count(UploadedFile.UPLOAD_DIR) == 2
+        assert get_file_count(SpectralData.UPLOAD_DIR) == 10
+
+        # Delete objects and files (if delete).
+        def delete_objs(model):
+            for obj in model.objects.all():
+                obj.delete(delete_files=delete)
+            assert model.objects.count() == 0
+        delete_objs(UploadedFile)
+        delete_objs(SpectralData)
+
+        # Run prune_files command.
         out = StringIO()
         call_command(*cmd, stdout=out)
 
-        assert len(list(Path(UploadedFile.UPLOAD_DIR).glob('*'))) == expected[0]
-        assert len(list(Path(SpectralData.UPLOAD_DIR).glob('*'))) == expected[1]
+        # Check files have been deleted.
+        assert get_file_count(UploadedFile.UPLOAD_DIR) == expected[0]
+        assert get_file_count(SpectralData.UPLOAD_DIR) == expected[1]
 
         out.seek(0)
-        assert len(out.readlines()) == 13
+        assert len(out.readlines()) == 1 if delete else 13
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
