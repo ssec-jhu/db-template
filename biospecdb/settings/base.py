@@ -84,9 +84,16 @@ WSGI_APPLICATION = 'biospecdb.wsgi.application'
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{name} {asctime} {levelname} {message}",
+            "style": "{",
+        },
+    },
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
+            "formatter": "verbose",
         },
     },
     "root": {
@@ -101,6 +108,7 @@ LOGGING = {
         },
     },
 }
+
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
