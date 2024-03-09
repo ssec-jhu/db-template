@@ -23,7 +23,7 @@ run:
     - name: DJANGO_SETTINGS_MODULE
       value: "biospecdb.settings.aws"
     - name: DJANGO_LOG_LEVEL
-      value: "DEBUG"
+      value: "INFO"
   secrets:
     - name: DB_BSR_HOST
       value-from: "arn:aws:secretsmanager:us-east-2:492611697298:secret:DB_BSR_HOST-sQbLkp"
