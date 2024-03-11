@@ -30,6 +30,7 @@ services:
       && python manage.py loaddata centers queries
       && python manage.py loaddata --database=bsr centers observables instruments qcannotators biosampletypes spectrameasurementtypes
       && python manage.py update_sql_views
+      && python manage crontab add
       && DJANGO_SUPERUSER_PASSWORD=$(cat /run/secrets/superuser_password) python manage.py createsuperuser --noinput --username=admin --email=admin@spadda.org --center=16721944-ff91-4adf-8fb3-323b99aba801
       && touch /app/db/setup_complete.txt || echo done!"
 
