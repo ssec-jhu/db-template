@@ -3,7 +3,6 @@ import tempfile
 import zipfile
 
 from django.conf import settings
-from django.core.files.storage import storages
 from django.utils.module_loading import import_string
 import explorer.exporters
 import pandas as pd
@@ -74,6 +73,7 @@ class ZipSpectralDataMixin:
 
         data_files = []
         if include_data_files:
+            storage = SpectralData.data.field.storage
             # Collect SpectralData files and zip along with query data from self._get_output().
             if settings.EXPLORER_DATA_EXPORTERS_ALLOW_DATA_FILE_ALIAS:
                 # Spectral data files are modeled by the Spectraldata.data field, however, the sql query could have
@@ -109,11 +109,11 @@ class ZipSpectralDataMixin:
                 # Add all data files to zipfile.
                 for filename in data_files:
                     try:
-                        archive.write(storages["default"].path(filename), arcname=filename)
+                        archive.write(storage.path(filename), arcname=filename)
                     except NotImplementedError:
-                        # storages["default"].path() will raise NotImplementedError for remote storages like S3. In this
+                        # storage.path() will raise NotImplementedError for remote storages like S3. In this
                         # scenario, open and read all the file contents to zip.
-                        with storages["default"].open(filename) as fp:
+                        with storage.open(filename) as fp:
                             data = fp.read()
                         archive.writestr(filename, data)
             temp.seek(0)

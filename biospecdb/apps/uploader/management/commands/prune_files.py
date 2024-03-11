@@ -24,23 +24,21 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.WARNING("No orphaned files detected."))
                 return
 
-            n_orphaned_files = 0
-            for x in all_orphaned_files:
-                n_orphaned_files += len(x[1])
+            n_orphaned_files = sum(len(x) for _, x in all_orphaned_files)
 
             # Delete orphaned files.
             n_deleted = 0
             for storage, files in all_orphaned_files:
                 for file in files:
-                    n_deleted += 1
-
-                    msg = f"{n_deleted}/{n_orphaned_files} files: '{file}'..."
+                    msg = f"{n_deleted + 1}/{n_orphaned_files} files: '{file}'..."
                     if options["dry_run"]:
                         self.stdout.write("(dry-run) " + msg)
+                        n_deleted += 1
                     else:
                         self.stdout.write(f"Deleting {msg}")
                         try:
                             storage.delete(file)
+                            n_deleted += 1
                         except FileNotFoundError:
                             continue
 
