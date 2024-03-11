@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     "health_check.db",
     "health_check.cache",
     "health_check.storage",
-    "health_check.contrib.migrations"
+    "health_check.contrib.migrations",
+    "django_crontab"
 ]
 
 MIDDLEWARE = [
@@ -250,3 +251,7 @@ ZIP_COMPRESSION = "zipfile.ZIP_DEFLATED"
 
 # For options see https://docs.python.org/3/library/zlib.html#zlib.compressobj
 ZIP_COMPRESSION_LEVEL = -1
+
+CRONJOBS = [
+    ("0 0 * * *", "django.core.management.call_command", ["prune_files"]),  # Every day at 12am (00:00).
+]
