@@ -391,9 +391,9 @@ class TestSpectralData:
     def test_deletion(self, mock_data_from_files):
         spectral_data = SpectralData.objects.all()
         for item in spectral_data:
-            assert os.path.exists(item.data.name)
+            assert SpectralData.data.field.storage.exists(item.data.name)
             item.delete()
-            assert not os.path.exists(item.data.name)
+            assert not SpectralData.data.field.storage.exists(item.data.name)
         assert not SpectralData.objects.count()
 
 

@@ -1,5 +1,4 @@
 import hashlib
-from pathlib import Path
 import tempfile
 import zipfile
 
@@ -74,6 +73,7 @@ class ZipSpectralDataMixin:
 
         data_files = []
         if include_data_files:
+            storage = SpectralData.data.field.storage
             # Collect SpectralData files and zip along with query data from self._get_output().
             if settings.EXPLORER_DATA_EXPORTERS_ALLOW_DATA_FILE_ALIAS:
                 # Spectral data files are modeled by the Spectraldata.data field, however, the sql query could have
@@ -108,7 +108,14 @@ class ZipSpectralDataMixin:
 
                 # Add all data files to zipfile.
                 for filename in data_files:
-                    archive.write(Path(filename))
+                    try:
+                        archive.write(storage.path(filename), arcname=filename)
+                    except NotImplementedError:
+                        # storage.path() will raise NotImplementedError for remote storages like S3. In this
+                        # scenario, open and read all the file contents to zip.
+                        with storage.open(filename) as fp:
+                            data = fp.read()
+                        archive.writestr(filename, data)
             temp.seek(0)
             output = temp
             self.is_zip = True
