@@ -368,15 +368,15 @@ class ObservationInlineForm(ModelForm):
 class ObservationInline(ObservationMixin, RestrictedByCenterMixin, NestedTabularInline):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # try:
-        #     # Only auto-populate "global" observables, i.e., those not related to a specific center (center=null).
-        #     query = Q(center=None)
-        #     if hasattr(self, "verbose_name"):  # Only Inline admins have verbose names.
-        #         query &= Q(category=self.verbose_name.upper())
-        #     kwargs = {"observables": iter(Observable.objects.filter(query))}
-        # except (OperationalError, ProgrammingError):
-        #     kwargs = {}
-        # self.form = type("NewObservationForm", (ObservationInlineForm,), kwargs)
+        try:
+            # Only auto-populate "global" observables, i.e., those not related to a specific center (center=null).
+            query = Q(center=None)
+            if hasattr(self, "verbose_name"):  # Only Inline admins have verbose names.
+                query &= Q(category=self.verbose_name.upper())
+            kwargs = {"observables": iter(Observable.objects.filter(query))}
+        except (OperationalError, ProgrammingError):
+            kwargs = {}
+        self.form = type("NewObservationForm", (ObservationInlineForm,), kwargs)
 
     extra = 0
     model = Observation
