@@ -17,6 +17,9 @@ pipenv run python3 manage.py loaddata --database=bsr centers observables instrum
 # Update SQL views.
 pipenv run python3 manage.py update_sql_views full_patient
 
+# Install crontab.
+pipenv run python3 manage.py crontab add
+
 # Create superuser.
 pipenv run python3 manage.py makesuperuser --noinput --username=admin --email=admin@spadda.org --center=16721944-ff91-4adf-8fb3-323b99aba801
 
