@@ -149,8 +149,8 @@ elif db_vendor == "postgresql":
             "NAME": "bsr",
             "HOST": os.getenv("DB_BSR_HOST"),
             "PORT": os.getenv("DB_BSR_PORT"),
-            "USER": os.getenv("DB_BSR_USER"),
-            "PASSWORD": os.getenv("DB_BSR_PASSWORD"),
+            "USER": os.getenv("DB_BSR_USER_READONLY"),
+            "PASSWORD": os.getenv("DB_BSR_PASSWORD_READONLY"),
             'OPTIONS': {
                 'options': '-c default_transaction_read_only=on'
             }

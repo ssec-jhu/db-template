@@ -27,6 +27,9 @@ export DB_BSR_PORT=5432
 export DB_BSR_USER="bsrdbuser"
 export DB_BSR_PASSWORD=$PGPASSWORD
 
+export DB_BSR_USER_READONLY="bsrdbreadonlyuser"
+export DB_BSR_PASSWORD_READONLY=$PGPASSWORD
+
 export DJANGO_SETTINGS_MODULE=biospecdb.settings.dev
 
 # Collect all static files to be served.
@@ -43,10 +46,12 @@ createdb bsr
 # Drop users.
 dropuser --if-exists $DB_ADMIN_USER
 dropuser --if-exists $DB_BSR_USER
+dropuser --if-exists $DB_BSR_USER_READONLY
 
 # create users.
 createuser --superuser --no-password $DB_ADMIN_USER
 createuser --superuser --no-password $DB_BSR_USER
+createuser --superuser --no-password $DB_BSR_USER_READONLY
 
 # Migrate DBs.
 python manage.py migrate

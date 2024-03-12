@@ -3,7 +3,6 @@ import re
 from django.core.cache import cache
 from django.core.exceptions import SuspiciousOperation
 from django.db import connection, connections, transaction
-from django.db.utils import ProgrammingError
 
 from explorer.schema import connection_schema_cache_key
 
@@ -17,17 +16,9 @@ def execute_sql(sql, db=None, params=None):
     con = connections[db] if db else connection
     with con.cursor() as cursor:
         cursor.execute(sql, params=params)
-
-        try:
-            if result := cursor.fetchall():
-                columns = [col[0] for col in cursor.description]
-                return [dict(zip(columns, row)) for row in result]
-        except ProgrammingError as error:
-            # With postgres, fetchall() raises rather than returning None (seems like a bug).
-            if "the last operation didn't produce a result" in str(error) or "no result available" in str(error):
-                pass
-            else:
-                raise
+        if cursor.rowcount > 0 and (result := cursor.fetchall()):
+            columns = [col[0] for col in cursor.description]
+            return [dict(zip(columns, row)) for row in result]
 
 
 def drop_view(view, db=None):

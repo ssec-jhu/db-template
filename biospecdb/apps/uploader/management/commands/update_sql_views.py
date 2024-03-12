@@ -7,7 +7,6 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("view",
-                            default=None,
                             help="Specific SQL view to update.")
 
     def handle(self, *args, **options):
@@ -16,7 +15,11 @@ class Command(BaseCommand):
             for model in apps.get_models():
                 if hasattr(model, "_meta") and hasattr(model._meta, "db_table") and model._meta.db_table == view:
                     self.stdout.write(f"Creating/updating SQL view: {view}...", ending='')
-                    model.update_view()
+                    try:
+                        model.update_view()
+                    except Exception as error:
+                        raise CommandError(f"An error occurred whilst trying to create/update the sql-view: '{view}' -"
+                                           f" '{error}'")
                     self.stdout.write(
                         self.style.SUCCESS("[Done]")
                     )

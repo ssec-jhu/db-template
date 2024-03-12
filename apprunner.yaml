@@ -55,3 +55,7 @@ run:
       value-from: "arn:aws:secretsmanager:us-east-2:492611697298:secret:SESSION_COOKIE_AGE-Ml1Jzr"
     - name: HOST_DOMAIN
       value-from: "arn:aws:secretsmanager:us-east-2:492611697298:secret:HOST_DOMAIN-N3M36y"
+    - name: DB_BSR_PASSWORD_READONLY
+      value-from: "arn:aws:secretsmanager:us-east-2:492611697298:secret:DB_BSR_PASSWORD_READONLY-PrOaHR"
+    - name: DB_BSR_USER_READONLY
+      value-from: "arn:aws:secretsmanager:us-east-2:492611697298:secret:DB_BSR_USER_READONLY-cee3jX"
