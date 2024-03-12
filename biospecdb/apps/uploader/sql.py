@@ -1,8 +1,11 @@
 import re
 
+from django.core.cache import cache
 from django.core.exceptions import SuspiciousOperation
 from django.db import connection, connections, transaction
 from django.db.utils import OperationalError
+
+from explorer.schema import connection_schema_cache_key
 
 
 def secure_name(name):
@@ -32,6 +35,10 @@ def drop_view(view, db=None):
 
 def update_view(view, sql, db=None, params=None, check=True, limit=1):
     """ SQLite can't alter views, so they must first be dropped and then re-added. """
+    # django-sql-explorer caches schemas, so invalidate entries to trigger schema rebuild.
+    key = connection_schema_cache_key(db)
+    cache.delete(key)  # Doesn't raise.
+
     secure_name(view)
 
     # NOTE: We don't include the drop within the transaction. If the view requires updating but fails, it seems safer to
