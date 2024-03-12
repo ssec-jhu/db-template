@@ -143,6 +143,17 @@ elif db_vendor == "postgresql":
             "PORT": os.getenv("DB_BSR_PORT"),
             "USER": os.getenv("DB_BSR_USER"),
             "PASSWORD": os.getenv("DB_BSR_PASSWORD"),
+        },
+        "bsr_readonly": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "bsr",
+            "HOST": os.getenv("DB_BSR_HOST"),
+            "PORT": os.getenv("DB_BSR_PORT"),
+            "USER": os.getenv("DB_BSR_USER"),
+            "PASSWORD": os.getenv("DB_BSR_PASSWORD"),
+            'OPTIONS': {
+                'options': '-c default_transaction_read_only=on'
+            }
         }
     }
 else:
@@ -212,9 +223,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # SQL explorer settings.
-
-EXPLORER_CONNECTIONS = {"data": "bsr"}
-EXPLORER_DEFAULT_CONNECTION = "bsr"
+if db_vendor == "postgresql":
+    EXPLORER_CONNECTIONS = {"data": "bsr_readonly"}
+    EXPLORER_DEFAULT_CONNECTION = "bsr_readonly"
+else:
+    EXPLORER_CONNECTIONS = {"data": "bsr"}
+    EXPLORER_DEFAULT_CONNECTION = "bsr"
 
 EXPLORER_PERMISSION_VIEW = lambda r: r.user.is_sqluser or r.user.is_superuser  # noqa:  E731
 EXPLORER_PERMISSION_CHANGE = lambda r: r.user.is_superuser  # noqa:  E731
