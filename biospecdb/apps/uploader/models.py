@@ -352,7 +352,7 @@ class Observable(ModelWithViewDependency):
 
     Types = Types
 
-    sql_view_dependencies = ("uploader.models.VisitObservationsView",)
+    sql_view_dependencies = ("uploader.models.FullPatientView",)
 
     class Meta:
         db_table = "observable"
