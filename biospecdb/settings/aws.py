@@ -18,4 +18,8 @@ STORAGES = {
     }
 }
 
-ALLOWED_HOSTS = [".awsapprunner.com"]
+HOST_DOMAIN = os.getenv("HOST_DOMAIN")
+if not HOST_DOMAIN:
+    raise OSError("A 'HOST_DOMAIN' env var must be set! "
+                  "See https://docs.djangoproject.com/en/5.0/ref/settings/#allowed-hosts")
+ALLOWED_HOSTS = [f".{HOST_DOMAIN}"]
