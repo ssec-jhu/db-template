@@ -99,7 +99,7 @@ class TestGetColumnNames:
         out.seek(0)
         assert len(out.readlines()) == Observable.objects.count() + self.n_non_observables
 
-    @pytest.mark.parametrize("center_filter", ("ssec",
+    @pytest.mark.parametrize("center_filter", ("spadda",
                                                "imperial college london",
                                                "oxford university",
                                                "d2160c33-0bbc-4605-a2ce-7e83296e7c84"))
@@ -113,7 +113,7 @@ class TestGetColumnNames:
         out.seek(0)
         assert len(out.readlines()) == queryset.count()
 
-    @pytest.mark.parametrize(("center_filter", "category_filter"), (("ssec", "bloodwork"),
+    @pytest.mark.parametrize(("center_filter", "category_filter"), (("spadda", "bloodwork"),
                                                                     ("imperial college london", "comorbidity"),
                                                                     ("oxford university", "drug"),
                                                                     ("d2160c33-0bbc-4605-a2ce-7e83296e7c84", "bloodwork")))

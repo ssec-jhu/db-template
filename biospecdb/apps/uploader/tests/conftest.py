@@ -79,7 +79,7 @@ class SimpleQueryFactory(DjangoModelFactory):
 def django_request(center):
     request = RequestFactory()
     user = UserFactory()
-    user.center = UserCenter.objects.get(name="SSEC")
+    user.center = UserCenter.objects.get(name="spadda")
     request.user = user
     return request
 
@@ -93,7 +93,7 @@ def centers(django_db_blocker):
 
 @pytest.fixture(scope="function")
 def center(centers):
-    return Center.objects.get(name="SSEC")
+    return Center.objects.get(name="spadda")
 
 
 @pytest.fixture(scope="function")
@@ -163,7 +163,7 @@ def bulk_upload():
                                                                              name=meta_data_path.name),
                                        spectral_data_file=django.core.files.File(spectral_data,
                                                                                  name=spectral_file_path.name),
-                                       center=Center.objects.get(name="SSEC"))
+                                       center=Center.objects.get(name="spadda"))
             data_upload.clean()
             data_upload.save()
 

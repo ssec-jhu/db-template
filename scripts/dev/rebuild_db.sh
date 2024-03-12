@@ -35,5 +35,5 @@ python manage.py loaddata --database=bsr centers observables instruments qcannot
 python manage.py update_sql_views
 
 # Creat superuser.
-# Note: This center ID is that for the SSEC and the default password is "admin".
-DJANGO_SUPERUSER_PASSWORD="${DJANGO_SUPERUSER_PASSWORD:-admin}" python manage.py createsuperuser --noinput --username=admin --email=admin@jhu.edu --center=d61f1c2a-9c0a-4309-a031-ab5b8d2106b0
+# Note: This center ID is that for the spadda and the default password is "admin".
+DJANGO_SUPERUSER_PASSWORD="${DJANGO_SUPERUSER_PASSWORD:-admin}" python manage.py createsuperuser --noinput --username=admin --email=admin@jhu.edu --center=16721944-ff91-4adf-8fb3-323b99aba801
