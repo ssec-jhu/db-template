@@ -9,12 +9,12 @@ from uploader.models import Center as UploaderCenter
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestCenters:
     def test_centers_fixture(self, centers):
-        ssec_from_user_table = UserCenter.objects.get(name="SSEC")
-        ssec_from_uploader_table = UploaderCenter.objects.get(name="SSEC")
+        spadda_from_user_table = UserCenter.objects.get(name="spadda")
+        spadda_from_uploader_table = UploaderCenter.objects.get(name="spadda")
 
-        assert ssec_from_user_table.pk == ssec_from_uploader_table.pk
-        assert ssec_from_user_table.name == ssec_from_uploader_table.name
-        assert ssec_from_user_table.country == ssec_from_uploader_table.country
+        assert spadda_from_user_table.pk == spadda_from_uploader_table.pk
+        assert spadda_from_user_table.name == spadda_from_uploader_table.name
+        assert spadda_from_user_table.country == spadda_from_uploader_table.country
 
     def test_validation(self):
         UserCenter.objects.create(name="test", country="nowhere")
@@ -49,8 +49,8 @@ class TestCenters:
         assert UploaderCenter.objects.count() == 0
 
     def test_delete_replication(self, centers):
-        assert UserCenter.objects.count() == 4
-        assert UploaderCenter.objects.count() == 4
+        assert UserCenter.objects.count() == 3
+        assert UploaderCenter.objects.count() == 3
 
         for obj in UserCenter.objects.all():
             obj.delete()
@@ -61,13 +61,13 @@ class TestCenters:
     def test_bulk_delete_replication(self, centers):
         """ Bulk delete doesn't call delete()!!! """
 
-        assert UserCenter.objects.count() == 4
-        assert UploaderCenter.objects.count() == 4
+        assert UserCenter.objects.count() == 3
+        assert UploaderCenter.objects.count() == 3
 
         UserCenter.objects.all().delete()
 
         assert not UserCenter.objects.all()
-        assert UploaderCenter.objects.count() == 4
+        assert UploaderCenter.objects.count() == 3
 
     def test_equivalence(self):
         user_center = UserCenter(name="test", country="nowhere")

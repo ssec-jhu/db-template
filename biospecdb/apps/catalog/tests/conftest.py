@@ -23,7 +23,7 @@ def staffuser(centers):  # noqa: F811
     return User.objects.create(username="staff",
                                email="staff@jhu.edu",
                                password="secret",
-                               center=UserCenter.objects.get(name="SSEC"),
+                               center=UserCenter.objects.get(name="spadda"),
                                is_staff=True,
                                is_superuser=False)
 
@@ -33,7 +33,7 @@ def cataloguser(centers):  # noqa: F811
     return User.objects.create(username="analyst",
                                email="analyst@jhu.edu",
                                password="secret",
-                               center=UserCenter.objects.get(name="SSEC"),
+                               center=UserCenter.objects.get(name="spadda"),
                                is_staff=True,
                                is_superuser=False,
                                is_catalogviewer=True)
@@ -44,7 +44,7 @@ def superuser(centers):  # noqa: F811
     return User.objects.create(username="admin",
                                email="admin@jhu.edu",
                                password="secret",
-                               center=UserCenter.objects.get(name="SSEC"),
+                               center=UserCenter.objects.get(name="spadda"),
                                is_staff=True,
                                is_superuser=True)
 

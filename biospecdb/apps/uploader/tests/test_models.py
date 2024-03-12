@@ -51,7 +51,7 @@ class TestPatient:
         assert Patient.objects.get(pk=patient_id)
 
     def test_center_validation(self, centers):
-        center = UploaderCenter.objects.get(name="SSEC")
+        center = UploaderCenter.objects.get(name="spadda")
         assert UserCenter.objects.filter(pk=center.pk).exists()
         assert UploaderCenter.objects.filter(pk=center.pk).exists()
 
@@ -64,10 +64,10 @@ class TestPatient:
         patient_id = uuid4()
         with pytest.raises(ValueError, match="Cannot assign"):
             patient = Patient(patient_id=patient_id,
-                              center=UserCenter.objects.get(name="SSEC"))
+                              center=UserCenter.objects.get(name="spadda"))
 
     def test_unique_cid_center_id(self, centers):
-        center = UploaderCenter.objects.get(name="SSEC")
+        center = UploaderCenter.objects.get(name="spadda")
         cid = uuid4()
         Patient.objects.create(patient_id=uuid4(),
                                center=center,
@@ -92,7 +92,7 @@ class TestPatient:
         id = uuid4()
         patient = Patient(patient_id=id,
                           patient_cid=id,
-                          center=Center.objects.get(name="SSEC"))
+                          center=Center.objects.get(name="spadda"))
         with pytest.raises(ValidationError, match="Patient ID and patient CID cannot be the same"):
             patient.full_clean()
 
@@ -272,7 +272,7 @@ class TestObservation:
         assert observation.observable_value is value
 
     def test_center_validation(self, centers):
-        center = Center.objects.get(name="SSEC")
+        center = Center.objects.get(name="spadda")
         patient = Patient.objects.create(center=center)
         visit = Visit.objects.create(patient=patient)
 
@@ -373,7 +373,7 @@ class TestSpectralData:
         data = uploader.io.read_spectral_data(data_file)
 
         patient = Patient.objects.create(patient_id=data.patient_id,
-                                         center=Center.objects.get(name="SSEC"))
+                                         center=Center.objects.get(name="spadda"))
         visit = patient.visit.create()
         bio_sample = visit.bio_sample.create(sample_type=BioSampleType.objects.get(name="pharyngeal swab"))
 
@@ -430,7 +430,7 @@ class TestUploadedFile:
     def test_center(self, mock_data_from_files):
         n_patients = Patient.objects.count()
         assert n_patients == 10
-        center = Center.objects.get(name="SSEC")
+        center = Center.objects.get(name="spadda")
         assert n_patients == Patient.objects.filter(center=center).count()
         assert not Patient.objects.filter(center=None)
 
@@ -557,7 +557,7 @@ class TestUploadedFile:
 
 @pytest.mark.django_db(databases=["default", "bsr"])
 def test_get_center(centers, mock_data_from_files):
-    center = Center.objects.get(name="SSEC")
+    center = Center.objects.get(name="spadda")
     assert get_center(center) is center
 
     from user.models import Center as UserCenter
