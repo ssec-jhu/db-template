@@ -23,18 +23,18 @@ class TestUpdateSqlViews:
 
     def test_ok(self, mock_data_from_files):
         # Check views don't exist.
-        with pytest.raises(OperationalError, match="no such table: full_patient"):
-            execute_sql("SELECT * FROM full_patient LIMIT 1", db="bsr")
+        with pytest.raises(OperationalError, match="no such table: flat_view"):
+            execute_sql("SELECT * FROM flat_view LIMIT 1", db="bsr")
         with pytest.raises(OperationalError, match="no such table: v_observations"):
             execute_sql("SELECT * FROM v_observations LIMIT 1", db="bsr")
         with pytest.raises(OperationalError, match="no such table: v_visit_observations"):
             execute_sql("SELECT * FROM v_visit_observations LIMIT 1", db="bsr")
 
         # Update views.
-        call_command("update_sql_views", "full_patient")
+        call_command("update_sql_views", "flat_view")
 
         # Check they exist.
-        execute_sql("SELECT * FROM full_patient LIMIT 1", db="bsr")
+        execute_sql("SELECT * FROM flat_view LIMIT 1", db="bsr")
         execute_sql("SELECT * FROM v_observations LIMIT 1", db="bsr")
         execute_sql("SELECT * FROM v_visit_observations LIMIT 1", db="bsr")
 

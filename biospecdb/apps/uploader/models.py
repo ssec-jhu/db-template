@@ -900,7 +900,7 @@ class VisitObservationsView(SqlView, models.Model):
 class FullPatientView(SqlView, models.Model):
     class Meta:
         managed = False
-        db_table = "full_patient"
+        db_table = "flat_view"
 
     sql_view_dependencies = (VisitObservationsView,)
     db = "bsr"

@@ -33,7 +33,7 @@ python manage.py loaddata centers queries
 python manage.py loaddata --database=bsr centers observables instruments qcannotators biosampletypes spectrameasurementtypes
 
 # Update SQL views.
-python manage.py update_sql_views full_patient
+python manage.py update_sql_views flat_view
 
 # Clean up orphaned files.
 python manage.py prune_files

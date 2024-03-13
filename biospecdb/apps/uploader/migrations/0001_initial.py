@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
             ],
             options={
-                'db_table': 'full_patient',
+                'db_table': 'flat_view',
                 'managed': False,
             },
             bases=(uploader.base_models.SqlView, models.Model),
