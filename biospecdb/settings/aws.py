@@ -18,8 +18,7 @@ STORAGES = {
     }
 }
 
-HOST_DOMAIN = os.getenv("HOST_DOMAIN")
-if not HOST_DOMAIN:
+if not HOST_DOMAIN:  # noqa: F405
     raise OSError("A 'HOST_DOMAIN' env var must be set! "
                   "See https://docs.djangoproject.com/en/5.0/ref/settings/#allowed-hosts")
-ALLOWED_HOSTS = [f".{HOST_DOMAIN}"]
+ALLOWED_HOSTS = [f".{HOST_DOMAIN}"]  # noqa: F405
