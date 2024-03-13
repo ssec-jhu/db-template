@@ -269,8 +269,9 @@ EXPLORER_SCHEMA_EXCLUDE_TABLE_PREFIXES = (
     "explorer",
     "user",
     "catalog",
-    "uploader_center"
-
+    "uploader_center",
+    "health_check",
+    "whitenoise"
 )
 
 EXPLORER_DATA_EXPORTERS = [
