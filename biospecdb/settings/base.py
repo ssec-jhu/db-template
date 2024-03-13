@@ -324,3 +324,6 @@ ZIP_COMPRESSION_LEVEL = -1
 CRONJOBS = [
     ("0 0 * * *", "django.core.management.call_command", ["prune_files"]),  # Every day at 12am (00:00).
 ]
+
+FLAT_VIEW_OBSERVABLE_EXCLUSION_LIST = ["patient_age"]
+FLAT_VIEW_OBSERVABLE_EXCLUSION_LIST = [x.lower() for x in FLAT_VIEW_OBSERVABLE_EXCLUSION_LIST]

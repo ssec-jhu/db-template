@@ -831,6 +831,7 @@ class ObservationsView(SqlView, models.Model):
     observable.name = observable.db_column = "observable"
     value_class = deepcopy(Observable.value_class.field)
     days_observed = deepcopy(Observation.days_observed.field)
+    observable_category = deepcopy(Observable.category.field)
     observable_value = deepcopy(Observation.observable_value.field)
 
     @classmethod
@@ -841,6 +842,7 @@ class ObservationsView(SqlView, models.Model):
                s.id AS observation_id,
                d.id AS observable_id,
                d.name AS observable,
+               d.category AS observable_category,
                d.value_class,
                s.days_observed,
                s.observable_value
@@ -866,6 +868,8 @@ class VisitObservationsView(SqlView, models.Model):
         view = cls._meta.db_table
         d = []
         for observable in observables:
+            if observable.name.lower() in settings.FLAT_VIEW_OBSERVABLE_EXCLUSION_LIST:
+                continue
             secure_name(observable.name)
             if observable.value_class == "FLOAT":
                 value = 'cast(observable_value AS REAL)'
@@ -903,19 +907,34 @@ class FullPatientView(SqlView, models.Model):
 
     @classmethod
     def sql(cls):
+        # WARNING: The data exporters and charts rely on the spectral data column := "data", so we special case this
+        # instead of using ``_create_field_str_list``. The charts also rely on the field "patient_id" being present, so
+        # that too we special case. Besides, patient.center shouldn't be included and that's the only other field.
         sql = f"""
                 create view {cls._meta.db_table} as 
-                select p.patient_id
-                ,      bst.name as bio_sample_type, bs.sample_processing, bs.freezing_temp, bs.thawing_time
-                ,      i.manufacturer, i.model
-                ,      sdt.name as spectral_data_type, sd.acquisition_time, sd.n_coadditions, sd.resolution, sd.data
-                ,      vs.*
+                select p.patient_id,
+                       {cls._create_field_str_list("bst", BioSampleType, extra_excluded_field_names=["id"])}
+                       {cls._create_field_str_list("bs",
+                                                   BioSample,
+                                                   extra_excluded_field_names=["id",
+                                                                               "sample_cid",
+                                                                               "sample_study_name"])}
+                       {cls._create_field_str_list("i", Instrument, extra_excluded_field_names=["id", "cid"])}
+                       {cls._create_field_str_list("smt", SpectraMeasurementType, extra_excluded_field_names=["id"])}
+                       {cls._create_field_str_list("sd",
+                                                   SpectralData,
+                                                   extra_excluded_field_names=[SpectralData.data.field.name,
+                                                                               "id",
+                                                                               "measurement_id",
+                                                                               "date"])}
+                       sd.data,              
+                       vs.*
                   from patient p
                   join visit v on p.patient_id=v.patient_id
                   join bio_sample bs on bs.visit_id=v.id
                   join bio_sample_type bst on bst.id=bs.sample_type_id
                   join spectral_data sd on sd.bio_sample_id=bs.id
-                  join spectra_measurement_type sdt on sdt.id=sd.measurement_type_id
+                  join spectra_measurement_type smt on smt.id=sd.measurement_type_id
                   join instrument i on i.id=sd.instrument_id
                   left outer join v_visit_observations vs on vs.visit_id=v.id
                 """  # nosec B608
