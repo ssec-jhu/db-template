@@ -1,4 +1,5 @@
 from io import StringIO
+import logging
 from typing import Optional
 
 import pandas as pd
@@ -8,6 +9,8 @@ import plotly.graph_objects as go
 import uploader.io
 from uploader.models import Observable, Patient, SpectralData
 from biospecdb.util import to_uuid
+
+logger = logging.getLogger(__name__)
 
 
 def fig_to_html(fig) -> str:
@@ -42,7 +45,8 @@ def get_pie_chart(result: "QueryResult") -> Optional[str]:  # noqa: F821
 
         fig = px.pie(counts, values=counts.values, names=counts.index, title=f"SQL query: '{result.sql}'")
         return fig_to_html(fig)
-    except Exception:
+    except Exception as error:
+        logger.exception(f"Exception raised from `get_pie_chart`: {error}")
         return
 
 
@@ -66,8 +70,9 @@ def get_line_chart(result: "QueryResult") -> Optional[str]:  # noqa: F821
             assert to_uuid(spectral_data.patient_id) == to_uuid(row.patient_id)
             fig.add_scatter(x=spectral_data.wavelength,
                             y=spectral_data.intensity,
-                            name=row.patient_id)
+                            name=str(row.patient_id))
 
         return fig_to_html(fig)
-    except Exception:
+    except Exception as error:
+        logger.error(f"Exception raised from `get_line_chart`: {error}")
         return

@@ -1,4 +1,6 @@
 """Gunicorn *production* config file"""
+import os
+
 import multiprocessing
 
 
@@ -6,19 +8,19 @@ import multiprocessing
 wsgi_app = "biospecdb.wsgi:application"
 
 # The socket to bind
-bind = "0.0.0.0:8000"
+bind = f"0.0.0.0:{os.getenv('HOST_PORT', 8000)}"
 
 # The granularity of Error log outputs
-loglevel = "info"
+loglevel = os.getenv("DJANGO_LOG_LEVEL", "INFO")
 
 # The number of worker processes for handling requests.
 # Note: this is multiprocessing and not multithreading, because the GIL.
-workers = multiprocessing.cpu_count() * 2 + 1
+workers = os.getenv("N_WORKERS", multiprocessing.cpu_count())
 worker_class = "sync"
-threads = 1  # Run each worker with this specified number of threads.
+
 # Note: If you try to use the sync worker type and set the threads setting to more than 1, the gthread worker class will
 # be used instead.
-assert threads == 1
+threads = os.getenv("N_THREADS", 1)  # Run each worker with this specified number of threads.
 
 # Restart workers when code changes (development only!)
 reload = False
@@ -33,14 +35,14 @@ timeout = 60
 graceful_timeout = 30
 
 # Write access and error info to:
-accesslog = "log/prd_access.log"
-errorlog = "log/prd_error.log"
+# accesslog = "log/prd_access.log"
+# errorlog = "log/prd_error.log"
 
 # Redirect stdout/stderr to log file
-capture_output = True
+capture_output = False
 
 # PID file so you can easily fetch process ID
-pidfile = "run/prd.pid"
+# pidfile = "run/prd.pid"
 
 # Daemonize the Gunicorn process (detach & enter background)
 daemon = False

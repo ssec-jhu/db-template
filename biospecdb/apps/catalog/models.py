@@ -27,6 +27,10 @@ def empty_list():
     return []
 
 
+def get_app_version(*args, **kwargs):
+    return str(__version__)
+
+
 class Dataset(DatedModel):
     """ Model pre-canned dataset. """
 
@@ -59,7 +63,7 @@ class Dataset(DatedModel):
                             blank=True,
                             max_length=256)
     app_version = models.CharField(max_length=32,
-                                   default=str(__version__),
+                                   default=get_app_version,
                                    editable=False,
                                    null=False,
                                    blank=True,

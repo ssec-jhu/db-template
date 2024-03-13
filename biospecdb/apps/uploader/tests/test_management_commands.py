@@ -3,10 +3,40 @@ from pathlib import Path
 
 import pytest
 
+from django.contrib.auth import get_user_model
 from django.core.management import call_command, CommandError
 from django.db.models import Q
+from django.db.utils import OperationalError
 
 from uploader.models import Center, Observable, UploadedFile, SpectralData
+from uploader.sql import execute_sql
+
+User = get_user_model()
+
+
+@pytest.mark.django_db(databases=["default", "bsr"])
+class TestUpdateSqlViews:
+    def test_exception(self):
+        out = StringIO()
+        with pytest.raises(CommandError, match="No model with view 'some_random_view' exists"):
+            call_command("update_sql_views", "some_random_view", stdout=out)
+
+    def test_ok(self, mock_data_from_files):
+        # Check views don't exist.
+        with pytest.raises(OperationalError, match="no such table: full_patient"):
+            execute_sql("SELECT * FROM full_patient LIMIT 1", db="bsr")
+        with pytest.raises(OperationalError, match="no such table: v_observations"):
+            execute_sql("SELECT * FROM v_observations LIMIT 1", db="bsr")
+        with pytest.raises(OperationalError, match="no such table: v_visit_observations"):
+            execute_sql("SELECT * FROM v_visit_observations LIMIT 1", db="bsr")
+
+        # Update views.
+        call_command("update_sql_views", "full_patient")
+
+        # Check they exist.
+        execute_sql("SELECT * FROM full_patient LIMIT 1", db="bsr")
+        execute_sql("SELECT * FROM v_observations LIMIT 1", db="bsr")
+        execute_sql("SELECT * FROM v_visit_observations LIMIT 1", db="bsr")
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
@@ -153,3 +183,27 @@ class TestGetColumnNames:
                          "--exclude_non_observables",
                          f"--category={'this is not a category '}",
                          stdout=out)
+
+
+@pytest.mark.django_db(databases=["default", "bsr"])
+class TestMakeSuperUser:
+    def test_existing_user(self, centers):
+        user = "admin"
+        assert not User.objects.count()
+
+        options = [f"--username={user}",
+                   "--noinput",
+                   "--email=admin@site.com",
+                   "--center=16721944-ff91-4adf-8fb3-323b99aba801"]
+
+        cmd = ("createsuperuser", *options)
+        call_command(*cmd)
+        assert User.objects.get(username=user)
+
+        with pytest.raises(CommandError):
+            call_command(*cmd)
+
+        call_command(*("makesuperuser", *options))
+
+        with pytest.raises(CommandError, match="That username is already taken"):
+            call_command(*("makesuperuser", "--fail", *options))

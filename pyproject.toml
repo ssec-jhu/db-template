@@ -15,12 +15,15 @@ dependencies = [
     "django-decorator-include",
     "django-health-check",
     "django-nested-admin",
+    "django-storages[s3]",
     "django-sql-explorer[charts]",
     "gunicorn",
     "kaleido",
     "openpyxl",
     "pandas",
     "plotly",
+    "psycopg[binary,pool]",
+    "whitenoise",
     "xlsxwriter"
 ]
 

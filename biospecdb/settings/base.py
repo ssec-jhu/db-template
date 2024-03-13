@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "storages",
     "nested_admin",
     "explorer",
     "uploader.apps.UploaderConfig",
@@ -49,6 +50,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -79,21 +81,84 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'biospecdb.wsgi.application'
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{name} {asctime} {levelname} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "WARNING",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
+            "propagate": False,
+        },
+    },
+}
+
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
+db_vendor = os.getenv("DB_VENDOR", "sqlite")
 
-DB_DIR = "db"
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / DB_DIR / 'admin.sqlite3',
-    },
-    "bsr": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / DB_DIR / "bsr.sqlite3",
+if db_vendor == "sqlite":
+    DB_DIR = "db"
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / DB_DIR / 'admin.sqlite3',
+        },
+        "bsr": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / DB_DIR / "bsr.sqlite3",
+        }
     }
-}
+elif db_vendor == "postgresql":
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'admin',
+            "HOST": os.getenv("DB_ADMIN_HOST"),
+            "PORT": os.getenv("DB_ADMIN_PORT"),
+            "USER": os.getenv("DB_ADMIN_USER"),
+            "PASSWORD": os.getenv("DB_ADMIN_PASSWORD"),
+        },
+        "bsr": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "bsr",
+            "HOST": os.getenv("DB_BSR_HOST"),
+            "PORT": os.getenv("DB_BSR_PORT"),
+            "USER": os.getenv("DB_BSR_USER"),
+            "PASSWORD": os.getenv("DB_BSR_PASSWORD"),
+        },
+        "bsr_readonly": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "bsr",
+            "HOST": os.getenv("DB_BSR_HOST"),
+            "PORT": os.getenv("DB_BSR_PORT"),
+            "USER": os.getenv("DB_BSR_USER"),
+            "PASSWORD": os.getenv("DB_BSR_PASSWORD"),
+            'OPTIONS': {
+                'options': '-c default_transaction_read_only=on'
+            }
+        }
+    }
+else:
+    raise NotImplementedError
+
 
 # The order in which routers are processed is significant. Routers will be queried in the order they are listed here.
 DATABASE_ROUTERS = ["biospecdb.routers.BSRRouter"]
@@ -158,9 +223,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # SQL explorer settings.
-
-EXPLORER_CONNECTIONS = {"data": "bsr"}
-EXPLORER_DEFAULT_CONNECTION = "bsr"
+if db_vendor == "postgresql":
+    EXPLORER_CONNECTIONS = {"data": "bsr_readonly"}
+    EXPLORER_DEFAULT_CONNECTION = "bsr_readonly"
+else:
+    EXPLORER_CONNECTIONS = {"data": "bsr"}
+    EXPLORER_DEFAULT_CONNECTION = "bsr"
 
 EXPLORER_PERMISSION_VIEW = lambda r: r.user.is_sqluser or r.user.is_superuser  # noqa:  E731
 EXPLORER_PERMISSION_CHANGE = lambda r: r.user.is_superuser  # noqa:  E731

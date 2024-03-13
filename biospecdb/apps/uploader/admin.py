@@ -5,7 +5,7 @@ from django.core.exceptions import NON_FIELD_ERRORS, ObjectDoesNotExist, Validat
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.db.models import Manager, Q
-from django.db.utils import OperationalError
+from django.db.utils import OperationalError, ProgrammingError
 from django import forms
 from nested_admin import NestedStackedInline, NestedTabularInline, NestedModelAdmin
 
@@ -374,7 +374,7 @@ class ObservationInline(ObservationMixin, RestrictedByCenterMixin, NestedTabular
             if hasattr(self, "verbose_name"):  # Only Inline admins have verbose names.
                 query &= Q(category=self.verbose_name.upper())
             kwargs = {"observables": iter(Observable.objects.filter(query))}
-        except OperationalError:
+        except (OperationalError, ProgrammingError):
             kwargs = {}
         self.form = type("NewObservationForm", (ObservationInlineForm,), kwargs)
 

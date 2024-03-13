@@ -1,6 +1,6 @@
 from enum import auto
 
-from django.db import models, transaction
+from django.db import connection, models, transaction
 from django.utils.module_loading import import_string
 
 import biospecdb.util
@@ -102,10 +102,16 @@ class SqlView:
         if "db" not in kwargs:
             kwargs["db"] = cls.db
 
+        sql, params = cls.sql()
+
+        if connection.vendor == "postgresql":
+            # Drop views on the way down so that all are gone before any are created.
+            # psql allows only cascading view deletions so this order is necessary.
+            cls.drop_view(*args, **kwargs)
+
         for view_dependency in cls.sql_view_dependencies:
             view_dependency.update_view(*args, **kwargs)
 
-        sql, params = cls.sql()
         return update_view(cls._meta.db_table, sql, *args, params=params, **kwargs)
 
 
@@ -113,6 +119,7 @@ class ModelWithViewDependency(DatedModel):
     class Meta:
         abstract = True
 
+    # Note: This should only inc. direct dependencies and let the view itself handle its own subsequent dependencies.
     sql_view_dependencies = None
 
     @transaction.atomic(using="bsr")

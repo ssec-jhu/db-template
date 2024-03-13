@@ -91,7 +91,7 @@ below. The default superuser credentials are username: admin, password: admin. S
 * ``python manage.py createsuperuser``
 * ``python manage.py loaddata centers queries``
 * ``python manage.py loaddata --database=bsr centers observables instruments qcannotators biosampletypes spectrameasurementtypes``
-* ``python manage.py update_sql_views``
+* ``python manage.py update_sql_views full_patient``
 * ``python manage.py runserver``
 
 For running the Quality Control Annotators (QCAnnotators) use the following:
@@ -124,7 +124,7 @@ The DB can be dumped to a file using the following:
 
  * ``python manage.py prune_files [--dry_run]``: Delete any and all orphaned data files.
    * ``--dry_run``: Output files to be deleted but don't actually delete anything.
- * ``python manage.py update_sql_views``: Create/update all custom SQL views in uploader.models.
+ * ``python manage.py update_sql_views <view>``: Create/update the custom SQL view provided and its view dependencies if any.
  * ``python manage.py run_qc_annotators [--no_reruns]``: Run all Quality Control annotators on the SpectralData database table.
    * ``--no_reruns``: Don't run annotators on existing annotations, leave computed values as is.
  * ``python manage.py get_column_names [--exlcude_observables] [--exclude_non_observables] [--center=<name|id>]``
@@ -133,6 +133,11 @@ The DB can be dumped to a file using the following:
    * ``--center=<name|id>``: Filter observables by center name or center ID.
    * ``--category=<category>``: Filter observables by category.
  * ``python manage.py send_test_email <send_to_email_address>``: Send a test email to "send_to_email_address" to test email setup.
+ * ``python manage.py makesuperuser``: This is a wrapper of Django's builtin ``createsuperuser`` command except that it
+   doesn't fail when the user already exists.
+   * See ``python manage.py createsuperuser --help`` for options.
+   * ``--fail``: Revert to ``createsuperuser`` behavior and fail when the user already exists.
+
 
 _NOTE: These commands must be run from the ``/app/`` directory on the server.
 
