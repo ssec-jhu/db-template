@@ -48,9 +48,9 @@ docs = [
 ]
 
 [project.urls]
-homepage = "https://github.com/ssec-jhu/base-template"
-documentation = "https://github.com/ssec-jhu/base-template"
-repository = "https://github.com/ssec-jhu/base-template"
+homepage = "https://github.com/rispadd/biospecdb"
+documentation = "https://github.com/rispadd/biospecdb"
+repository = "https://github.com/rispadd/biospecdb"
 
 [build-system]
 requires = ["setuptools>=61.2", "setuptools_scm[toml]>=8.0"]
