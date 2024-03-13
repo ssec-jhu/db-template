@@ -182,7 +182,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-DOMAIN_NAME = "spadda.org"
+HOST_DOMAIN = os.getenv("HOST_DOMAIN")
 
 LOGIN_URL = "/admin/login"
 LOGOUT_URL = "logout"
@@ -194,7 +194,7 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = "apikey"  # this is exactly the value 'apikey', this is NOT a placeholder.
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_API_KEY", None)
-EMAIL_FROM = f"admin@{DOMAIN_NAME}"
+EMAIL_FROM = f"admin@{HOST_DOMAIN}"
 EMAIL_SUBJECT_PREFIX = "SPaDDa"
 
 # Internationalization
