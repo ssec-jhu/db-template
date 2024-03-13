@@ -188,14 +188,14 @@ LOGIN_URL = "/admin/login"
 LOGOUT_URL = "logout"
 
 # Email settings
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = "smtp.sendgrid.net"
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.getenv("EMAIL_HOST")
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = "apikey"  # this is exactly the value 'apikey', this is NOT a placeholder.
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_API_KEY", None)
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 EMAIL_FROM = f"admin@{HOST_DOMAIN}"
-EMAIL_SUBJECT_PREFIX = "SPaDDa"
+EMAIL_SUBJECT_PREFIX = os.getenv("EMAIL_SUBJECT_PREFIX")
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
