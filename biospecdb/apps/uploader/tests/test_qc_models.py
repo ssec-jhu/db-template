@@ -205,7 +205,7 @@ class TestQCFunctionality:
 
     def test_no_file_validation(self, qcannotators):
         """ Test that a validation error is raised rather than any other python exception which would indicate a bug.
-            See https://github.com/ssec-jhu/biospecdb/pull/182
+            See https://github.com/rispadd/biospecdb/pull/182
         """
         annotation = QCAnnotation(annotator=QCAnnotator.objects.get(name="sum"))
         with pytest.raises(ValidationError):
@@ -213,7 +213,7 @@ class TestQCFunctionality:
 
     def test_no_file_related_error(self, qcannotators):
         """ Test that a validation error is raised rather than any other python exception which would indicate a bug.
-            See https://github.com/ssec-jhu/biospecdb/pull/182
+            See https://github.com/rispadd/biospecdb/pull/182
         """
         annotation = QCAnnotation(annotator=QCAnnotator.objects.get(name="sum"))
         with pytest.raises(QCAnnotation.spectral_data.RelatedObjectDoesNotExist):

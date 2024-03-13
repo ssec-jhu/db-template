@@ -13,7 +13,7 @@ class QcManager:
     def __init__(self):
         if settings.DISABLE_QC_MANAGER:
             # Disable this class for now as #69 made it obsolete, however, there's a very good chance it will be needed
-            # when implementing background tasks for https://github.com/ssec-jhu/biospecdb/pull/77.
+            # when implementing background tasks for https://github.com/rispadd/biospecdb/pull/77.
             raise NotImplementedError()
 
         self._validators = {}

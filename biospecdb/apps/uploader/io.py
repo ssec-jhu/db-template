@@ -100,7 +100,7 @@ def _read_raw_data(file, ext=None):
     # ‘NULL’, ‘NaN’, ‘None’, ‘n/a’, ‘nan’, ‘null’.
 
     # NOTE: When the file size is > 2.5M Django will chunk and this will need to be handled. See
-    # https://github.com/ssec-jhu/biospecdb/issues/38
+    # https://github.com/rispadd/biospecdb/issues/38
     if ext == FileFormats.CSV:
         data = pd.read_csv(file, **kwargs)
     elif ext == FileFormats.XLSX:

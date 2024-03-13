@@ -1,9 +1,9 @@
 # SSEC-JHU BioSpecDB
 
-[![CI](https://github.com/ssec-jhu/biospecdb/actions/workflows/ci.yml/badge.svg)](https://github.com/ssec-jhu/biospecdb/actions/workflows/ci.yml)
+[![CI](https://github.com/rispadd/biospecdb/actions/workflows/ci.yml/badge.svg)](https://github.com/rispadd/biospecdb/actions/workflows/ci.yml)
 [![Documentation Status](https://readthedocs.org/projects/biospecdb/badge/?version=latest)](https://biospecdb.readthedocs.io/en/latest/?badge=latest)
-[![codecov](https://codecov.io/gh/ssec-jhu/biospecdb/graph/badge.svg?token=P9I3UXlmOc)](https://codecov.io/gh/ssec-jhu/biospecdb)
-[![Security](https://github.com/ssec-jhu/biospecdb/actions/workflows/security.yml/badge.svg)](https://github.com/ssec-jhu/biospecdb/actions/workflows/security.yml)
+[![codecov](https://codecov.io/gh/rispadd/biospecdb/graph/badge.svg?token=P9I3UXlmOc)](https://codecov.io/gh/rispadd/biospecdb)
+[![Security](https://github.com/rispadd/biospecdb/actions/workflows/security.yml/badge.svg)](https://github.com/rispadd/biospecdb/actions/workflows/security.yml)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10048241.svg)](https://doi.org/10.5281/zenodo.10048241)
 
 ![SSEC-JHU Logo](docs/_static/SSEC_logo_horiz_blue_1152x263.png)
