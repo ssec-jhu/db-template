@@ -85,7 +85,7 @@ class SqlView:
         if extra_excluded_field_names:
             excluded_field_names.extend(extra_excluded_field_names)
         excluded_field_names = [x.lower() for x in excluded_field_names]
-        return ''.join([f'{prefix}.{field.name} as {model.__name__.lower()}_{field.name}, '
+        return ','.join([f'{prefix}.{field.name} as {model.__name__.lower()}_{field.name}'
                         for field in model._meta.fields
                         if (not field.is_relation and field.name.lower() not in excluded_field_names)])
 

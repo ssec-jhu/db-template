@@ -913,20 +913,20 @@ class FullPatientView(SqlView, models.Model):
         sql = f"""
                 create view {cls._meta.db_table} as 
                 select p.patient_id,
-                       {cls._create_field_str_list("bst", BioSampleType, extra_excluded_field_names=["id"])}
+                       {cls._create_field_str_list("bst", BioSampleType, extra_excluded_field_names=["id"])},
                        {cls._create_field_str_list("bs",
                                                    BioSample,
                                                    extra_excluded_field_names=["id",
                                                                                "sample_cid",
-                                                                               "sample_study_name"])}
-                       {cls._create_field_str_list("i", Instrument, extra_excluded_field_names=["id", "cid"])}
-                       {cls._create_field_str_list("smt", SpectraMeasurementType, extra_excluded_field_names=["id"])}
+                                                                               "sample_study_name"])},
+                       {cls._create_field_str_list("i", Instrument, extra_excluded_field_names=["id", "cid"])},
+                       {cls._create_field_str_list("smt", SpectraMeasurementType, extra_excluded_field_names=["id"])},
                        {cls._create_field_str_list("sd",
                                                    SpectralData,
                                                    extra_excluded_field_names=[SpectralData.data.field.name,
                                                                                "id",
                                                                                "measurement_id",
-                                                                               "date"])}
+                                                                               "date"])},
                        sd.data,              
                        vs.*
                   from patient p
