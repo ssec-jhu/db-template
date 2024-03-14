@@ -51,7 +51,7 @@ def superuser(centers):  # noqa: F811
 
 @pytest.fixture
 def query(mock_data_from_files, sql_views):  # noqa: F811
-    q = SimpleQueryFactory(sql="select * from full_patient",
+    q = SimpleQueryFactory(sql="select * from flat_view",
                            title="clean_test",
                            description="something to test")
     q.save()

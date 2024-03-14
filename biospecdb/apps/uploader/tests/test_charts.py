@@ -20,12 +20,12 @@ class TestCharts:
         df = count_bool_observables(query)
         assert df is None
 
-    @pytest.mark.sql("select * from full_patient")
+    @pytest.mark.sql("select * from flat_view")
     def test_get_pie_chart(self, mock_data_from_files, sql_views, query):
         html = get_pie_chart(query)
         assert html
 
-    @pytest.mark.sql("select * from full_patient")
+    @pytest.mark.sql("select * from flat_view")
     def test_get_line_chart(self, mock_data_from_files, sql_views, query):
         html = get_line_chart(query)
         assert html

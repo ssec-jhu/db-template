@@ -15,7 +15,7 @@ pipenv run python3 manage.py loaddata centers queries
 pipenv run python3 manage.py loaddata --database=bsr centers observables instruments qcannotators biosampletypes spectrameasurementtypes
 
 # Update SQL views.
-pipenv run python3 manage.py update_sql_views full_patient
+pipenv run python3 manage.py update_sql_views flat_view
 
 # Install crontab.
 pipenv run python3 manage.py crontab add

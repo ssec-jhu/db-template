@@ -91,7 +91,7 @@ below. The default superuser credentials are username: admin, password: admin. S
 * ``python manage.py createsuperuser``
 * ``python manage.py loaddata centers queries``
 * ``python manage.py loaddata --database=bsr centers observables instruments qcannotators biosampletypes spectrameasurementtypes``
-* ``python manage.py update_sql_views full_patient``
+* ``python manage.py update_sql_views flat_view``
 * ``python manage.py runserver``
 
 For running the Quality Control Annotators (QCAnnotators) use the following:

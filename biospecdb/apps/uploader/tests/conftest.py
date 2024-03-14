@@ -99,7 +99,7 @@ def center(centers):
 @pytest.fixture(scope="function")
 def sql_views(django_db_blocker):
     with django_db_blocker.unblock():
-        call_command("update_sql_views", "full_patient")
+        call_command("update_sql_views", "flat_view")
 
 
 @pytest.fixture(scope="function")
