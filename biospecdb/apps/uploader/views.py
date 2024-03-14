@@ -17,7 +17,7 @@ def favicon(request: HttpRequest) -> HttpResponse:
 
 @staff_member_required
 def home(request):
-    return render(request, 'Home.html')
+    return render(request, 'Home.html', context={"site_header": settings.SITE_HEADER})
 
 
 def version(request):

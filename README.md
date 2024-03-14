@@ -8,7 +8,7 @@
 
 ![SSEC-JHU Logo](docs/_static/SSEC_logo_horiz_blue_1152x263.png)
 
-Biosample Spectral Repository.
+Spectroscopy for Patient Diagnosis Database (SPaDDa)
 
 # Installation, Build, & Run instructions
 

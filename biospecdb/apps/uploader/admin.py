@@ -1,6 +1,7 @@
 from inspect import signature
 
 from django.apps import apps
+from django.conf import settings
 from django.core.exceptions import NON_FIELD_ERRORS, ObjectDoesNotExist, ValidationError
 from django.contrib import admin
 from django.contrib.auth import get_user_model
@@ -784,7 +785,7 @@ class PatientAdminWithInlines(PatientAdmin):
 
 
 class DataAdminSite(admin.AdminSite):
-    site_header = "Biosample Spectral Repository"
+    site_header = settings.SITE_HEADER
     index_title = "Data Administration"
     site_title = index_title
 

@@ -16,6 +16,9 @@ import sys
 
 from biospecdb import __project__
 
+
+SITE_HEADER = "Spectroscopy for Patient Diagnosis Database (SPaDDa)"
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 PROJECT_ROOT = BASE_DIR / __project__
