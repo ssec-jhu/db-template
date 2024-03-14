@@ -59,3 +59,11 @@ run:
       value-from: "arn:aws:secretsmanager:eu-west-2:339712857727:secret:DB_BSR_PASSWORD_READONLY-qFuKvJ"
     - name: DB_BSR_USER_READONLY
       value-from: "arn:aws:secretsmanager:eu-west-2:339712857727:secret:DB_BSR_USER_READONLY-wtGBhZ"
+    - name: EMAIL_HOST
+      value-from: "arn:aws:secretsmanager:eu-west-2:339712857727:secret:EMAIL_HOST-x2J4ik"
+    - name: EMAIL_HOST_USER
+      value-from: "arn:aws:secretsmanager:eu-west-2:339712857727:secret:EMAIL_HOST_USER-s7GAZD"
+    - name: EMAIL_HOST_PASSWORD
+      value-from: "arn:aws:secretsmanager:eu-west-2:339712857727:secret:EMAIL_HOST_PASSWORD-kPI0AW"
+    - name: EMAIL_SUBJECT_PREFIX
+      value-from: "arn:aws:secretsmanager:eu-west-2:339712857727:secret:EMAIL_SUBJECT_PREFIX-9oWLpA"
