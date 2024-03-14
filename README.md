@@ -141,6 +141,12 @@ The DB can be dumped to a file using the following:
 
 _NOTE: These commands must be run from the ``/app/`` directory on the server.
 
+### AWS:
+
+The above management commands (and others) can be run in production from an EC2 instance correctly configured. To
+aid in shell setup, the following script can be executed:
+ * ``source repo/biospecdb/scripts/prd/ec2_init.sh``
+
 # Usage
 
 ### URL Paths:
