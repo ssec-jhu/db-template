@@ -3,7 +3,9 @@ import importlib
 import os
 from pathlib import Path
 from uuid import UUID
+import yaml
 
+import boto3
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 import numpy as np
@@ -117,3 +119,31 @@ def get_object_or_raise_validation(obj, **kwargs):
 
 def get_field_value(series, obj, field, default=None):
     return series.get(getattr(obj, field).field.verbose_name.lower(), default=default)
+
+
+def get_aws_secret(arn, region):
+    session = boto3.session.Session()
+    client = session.client(service_name='secretsmanager', region_name=region)
+    return client.get_secret_value(SecretId=arn)['SecretString']
+
+
+def parse_secure_secrets_from_apprunner(apprunner_yaml_file=find_repo_location() / "apprunner.yaml"):
+    with open(apprunner_yaml_file) as fp:
+        config = yaml.safe_load(fp)
+    return {list(d.values())[0]: list(d.values())[1] for d in config["run"]["secrets"]}
+
+
+def get_aws_secrets(apprunner_yaml_file=find_repo_location() / "apprunner.yaml", region="eu-west-2", export=False):
+    secure_secrets = parse_secure_secrets_from_apprunner(apprunner_yaml_file)
+    unsecure_secrets = {k: get_aws_secret(v, region=region) for k, v in secure_secrets.items()}
+
+    if export:
+        for k, v in unsecure_secrets:
+            os.environ[k] = v
+
+    return unsecure_secrets
+
+
+def print_aws_secrets(apprunner_yaml_file=find_repo_location() / "apprunner.yaml", region="eu-west-2"):
+    for k, v in get_aws_secrets(apprunner_yaml_file, region).items():
+        print(f"{k}={v}")
