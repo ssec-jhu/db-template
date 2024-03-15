@@ -59,7 +59,7 @@ class TestCenters:
         assert not UploaderCenter.objects.all()
 
     def test_bulk_delete_replication(self, centers):
-        """ Bulk delete doesn't call delete()!!! """
+        """ Bulk delete doesn't call delete() so this is handled by a post_delete signale handler. """
 
         assert UserCenter.objects.count() == 3
         assert UploaderCenter.objects.count() == 3
@@ -67,7 +67,7 @@ class TestCenters:
         UserCenter.objects.all().delete()
 
         assert not UserCenter.objects.all()
-        assert UploaderCenter.objects.count() == 3
+        assert UploaderCenter.objects.count() == 0
 
     def test_equivalence(self):
         user_center = UserCenter(name="test", country="nowhere")

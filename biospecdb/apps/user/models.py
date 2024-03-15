@@ -2,6 +2,8 @@ from functools import partial
 import uuid
 
 from django.db import models, transaction
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 from django.contrib.auth.validators import UnicodeUsernameValidator
@@ -102,21 +104,24 @@ class Center(BaseCenter):
     def asave(self, *args, **kwargs):
         raise NotImplementedError
 
+    def _delete_replica(self, keep_parents=False):
+        # Replicate action to BSR database.
+        from uploader.models import Center as UploaderCenter
+        try:
+            # This should definitely exist but sanity check via a try-except.
+            center = UploaderCenter.objects.get(id=self.id)
+        except UploaderCenter.DoesNotExist:
+            pass
+        else:
+            center.delete(keep_parents=keep_parents)
+
     def delete(self, using=None, keep_parents=False):
         """ When deleting user.Center also replicate for uploader.Center. """
 
         delete = partial(super().delete, keep_parents=keep_parents)
 
         if using in (None, "bsr"):
-            # Replicate action to BSR database.
-            from uploader.models import Center as UploaderCenter
-            try:
-                # This should definitely exist but sanity check via a try-except.
-                center = UploaderCenter.objects.get(id=self.id)
-            except UploaderCenter.DoesNotExist:
-                pass
-            else:
-                center.delete(keep_parents=keep_parents)
+            self._delete_replica(keep_parents=keep_parents)
 
             # Delete the original.
             # Note: This has to be done last such that self.pk still exists to conduct the above lookup.
@@ -130,6 +135,11 @@ class Center(BaseCenter):
 
     def adelete(self, *args, **kwargs):
         raise NotImplementedError
+
+
+@receiver(post_delete, sender=Center)
+def center_deletion_handler(sender, **kwargs):
+    kwargs["instance"]._delete_replica()
 
 
 class CustomUserManager(UserManager):
