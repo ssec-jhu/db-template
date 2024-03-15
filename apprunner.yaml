@@ -25,7 +25,6 @@ run:
     - name: DJANGO_LOG_LEVEL
       value: "INFO"
   secrets:
-    # When adding/editing secrets, remember to also do so in scripts/prd/export_secrets.sh
     - name: DB_BSR_HOST
       value-from: "arn:aws:secretsmanager:eu-west-2:339712857727:secret:DB_BSR_HOST-Hq7aa9"
     - name: DB_ADMIN_HOST

@@ -147,6 +147,8 @@ The above management commands (and others) can be run in production from an EC2 
 aid in shell setup, the following script can be executed:
  * ``source repo/biospecdb/scripts/prd/ec2_init.sh``
 
+_NOTE: ``scripts/prd/ec2_init.sh`` will export all AWS secrets as shell environment variables. 
+
 # Usage
 
 ### URL Paths:

@@ -142,3 +142,8 @@ def get_aws_secrets(apprunner_yaml_file=find_repo_location() / "apprunner.yaml",
             os.environ[k] = v
 
     return unsecure_secrets
+
+
+def print_aws_secrets(apprunner_yaml_file=find_repo_location() / "apprunner.yaml", region="eu-west-2"):
+    for k, v in get_aws_secrets(apprunner_yaml_file, region).items():
+        print(f"{k}={v}")
