@@ -23,13 +23,12 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic.base import RedirectView
 
-
 from uploader import views
 from uploader.admin import data_admin
 from catalog.admin import catalog_admin
 
 
-admin.site.site_header = "Biosample Spectral Repository"
+admin.site.site_header = settings.SITE_HEADER
 
 urlpatterns = [
     path(r"healthz/", include("health_check.urls")),

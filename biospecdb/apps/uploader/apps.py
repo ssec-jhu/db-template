@@ -1,10 +1,11 @@
 from django.apps import AppConfig
+from django.conf import settings
 
 
 class UploaderConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'uploader'
-    verbose_name = "Biosample Spectral Repository"
+    verbose_name = settings.SITE_HEADER
 
     def ready(self):
         import explorer.charts

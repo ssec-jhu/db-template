@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.conf import settings
 
 from catalog.models import Dataset
 
@@ -97,7 +98,7 @@ class DatasetAdmin(AuthMixin, admin.ModelAdmin):
 
 
 class CatalogAdminSite(admin.AdminSite):
-    site_header = "Biosample Spectral Repository"
+    site_header = settings.SITE_HEADER
     index_title = "Data Catalog"
     site_title = index_title
 

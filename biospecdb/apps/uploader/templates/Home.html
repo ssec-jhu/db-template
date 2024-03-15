@@ -18,14 +18,13 @@
 </head>
 
 <body class=" dashboard" data-admin-utc-offset="-18000">
-<a href="http://127.0.0.1:8000/admin/#content-start" class="skip-to-content-link">Skip to main content</a>
 <!-- Container -->
-<div id="container">  
+<div id="container">
     <!-- Header -->
     <div id="header">
-        <div id="branding"> 
-            <h1 id="site-name"><a href="http://127.0.0.1:8000/home/">Biosample Spectral Repository</a></h1>
-        </div> 
+        <div id="branding">
+            <h1 id="site-name"><a href="{% url 'home'%}">{{ site_header }}</a></h1>
+        </div>
     </div>
     <!-- END Header -->
     

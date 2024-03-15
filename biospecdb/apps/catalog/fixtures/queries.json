@@ -4,7 +4,7 @@
     "pk": 1,
     "fields": {
       "title": "BSR",
-      "description": "This data product contains all viable data within the Biosample Spectral Repository database",
+      "description": "This data product contains all viable data within the database",
       "sql": "SELECT * FROM FLAT_VIEW",
       "created_at": "2023-12-01T00:00:00+00:00",
       "last_run_date": "2023-12-01T00:00:00+00:00"
