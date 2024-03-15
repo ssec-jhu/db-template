@@ -235,7 +235,7 @@ class User(AbstractUser):
     is_sqluser_view = models.BooleanField(
         _("SQL explorer user status (view/execute existing queries only)"),
         default=False,
-        help_text=_("Designates whether the user can log into the SQL explorer app with permissions to and only view "
+        help_text=_("Designates whether the user can log into the SQL explorer app with permissions to only view "
                     "and execute existing queries."))
 
     is_sqluser_change = models.BooleanField(
