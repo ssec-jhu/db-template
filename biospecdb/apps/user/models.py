@@ -232,10 +232,17 @@ class User(AbstractUser):
     class Meta(AbstractUser.Meta):
         swappable = "AUTH_USER_MODEL"
 
-    is_sqluser = models.BooleanField(
-        _("SQL explorer user status"),
+    is_sqluser_view = models.BooleanField(
+        _("SQL explorer user status (view/execute existing queries only)"),
         default=False,
-        help_text=_("Designates whether the user can log into the SQL explorer app."))
+        help_text=_("Designates whether the user can log into the SQL explorer app with permissions to and only view "
+                    "and execute existing queries."))
+
+    is_sqluser_change = models.BooleanField(
+        _("SQL explorer user status (view/add/change/delete/execute)"),
+        default=False,
+        help_text=_("Designates whether the user can log into the SQL explorer app with permissions to "
+                    "view/add/change/delete/execute queries."))
 
     is_catalogviewer = models.BooleanField(
         _("Dataset Catalog user status (readonly)"),
