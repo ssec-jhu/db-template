@@ -233,8 +233,16 @@ else:
     EXPLORER_CONNECTIONS = {"data": "bsr"}
     EXPLORER_DEFAULT_CONNECTION = "bsr"
 
-EXPLORER_PERMISSION_VIEW = lambda r: r.user.is_sqluser or r.user.is_superuser  # noqa:  E731
-EXPLORER_PERMISSION_CHANGE = lambda r: r.user.is_superuser  # noqa:  E731
+# Note: The following perms are duplicated in biospecdb.urls.
+EXPLORER_PERMISSION_VIEW = lambda r: (r.user.is_active and  # noqa:  E731
+                                      r.user.is_staff) and \
+                                     (r.user.is_sqluser_view or
+                                      r.user.is_sqluser_change or
+                                      r.user.is_superuser)
+EXPLORER_PERMISSION_CHANGE = lambda r: (r.user.is_active and  # noqa:  E731
+                                        r.user.is_staff) and \
+                                       (r.user.is_sqluser_change or
+                                        r.user.is_superuser)
 
 EXPLORER_DEFAULT_ROWS = 1000
 
