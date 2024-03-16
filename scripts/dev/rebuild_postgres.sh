@@ -1,8 +1,3 @@
-# Delete initial migrations.
-rm biospecdb/apps/user/migrations/0*
-rm biospecdb/apps/uploader/migrations/0*
-rm biospecdb/apps/catalog/migrations/0*
-
 # Delete uploaded data files.
 rm spectra_data/*
 rm raw_data/*
@@ -36,7 +31,7 @@ export DJANGO_SETTINGS_MODULE=biospecdb.settings.dev
 # NOTE: `manage.py runserver` does this automatically, however, serving from gunicorn obviously doesn't.
 python manage.py collectstatic --clear --noinput
 
-# Redo migrations since they were deleted above.
+# Create migrations for any model changes.
 python manage.py makemigrations
 
 # Create DBs.
@@ -69,4 +64,4 @@ python manage.py prune_files
 
 # Creat superuser.
 # Note: This center ID is that for the SSEC and the default password is "admin".
-DJANGO_SUPERUSER_PASSWORD="${DJANGO_SUPERUSER_PASSWORD:-admin}" python manage.py createsuperuser --noinput --username=admin --email=admin@jhu.edu --center=d61f1c2a-9c0a-4309-a031-ab5b8d2106b0
+DJANGO_SUPERUSER_PASSWORD="${DJANGO_SUPERUSER_PASSWORD:-admin}" python manage.py createsuperuser --noinput --username=admin --email=admin@jhu.edu --center=16721944-ff91-4adf-8fb3-323b99aba801

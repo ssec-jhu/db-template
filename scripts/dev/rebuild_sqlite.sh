@@ -1,8 +1,3 @@
-# Delete initial migrations.
-rm biospecdb/apps/user/migrations/0*
-rm biospecdb/apps/uploader/migrations/0*
-rm biospecdb/apps/catalog/migrations/0*
-
 # Delete uploaded data files.
 rm spectra_data/*
 rm raw_data/*
@@ -21,7 +16,7 @@ export DJANGO_SETTINGS_MODULE=biospecdb.settings.dev
 # NOTE: `manage.py runserver` does this automatically, however, serving from gunicorn obviously doesn't.
 python manage.py collectstatic --clear --noinput
 
-# Redo migrations since they were deleted above.
+# Create migrations for any model changes.
 python manage.py makemigrations
 
 # Create and/or migrate DBs.
