@@ -9,6 +9,8 @@ from django.core.files.base import ContentFile
 from django.core.validators import FileExtensionValidator, MinValueValidator
 from django.db import models
 from django.db.models.functions import Lower
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 import pandas as pd
@@ -63,7 +65,19 @@ NEGATIVE = "negative"
 
 
 class Center(UserBaseCenter):
-    ...
+    @property
+    def replica_model(self):
+        from user.models import Center as UserCenter
+        return UserCenter
+
+    @property
+    def replica_db(self):
+        return "default"
+
+
+@receiver(post_delete, sender=Center)
+def center_deletion_handler(sender, **kwargs):
+    kwargs["instance"].delete_replica()
 
 
 class UploadedFile(DatedModel):

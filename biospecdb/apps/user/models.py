@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from functools import partial
 import uuid
 
@@ -28,7 +29,6 @@ def validate_country(value):
 
 
 class BaseCenter(models.Model):
-
     class Meta:
         abstract = True
         unique_together = [["name", "country"]]
@@ -57,8 +57,22 @@ class BaseCenter(models.Model):
 
     __hash__ = models.Model.__hash__
 
+    def save_replica(self, *args, **kwargs):
+        # Replicate action to other database.
+        try:
+            # Save is used to update fields, so we need to account for this.
+            # Note: We can't use get_or_create() since the fields passed in might not match existing DB
+            # entry if this use of save is an update.
+            center = self.replica_model.objects.get(id=self.id)
+        except self.replica_model.DoesNotExist:
+            self.replica_model.objects.create(id=self.id, name=self.name, country=self.country)
+        else:
+            # Update field values.
+            center.name = self.name
+            center.country = self.country
+            center.full_clean()
+            center.save(*args, **kwargs)
 
-class Center(BaseCenter):
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         """ When saving user.Center also replicate for uploader.Center.
 
@@ -72,7 +86,7 @@ class Center(BaseCenter):
                        update_fields=update_fields)
 
         # Save to the default intended DB. Do this first so self.pk is generated.
-        if using in (None, "bsr"):
+        if using in (None, self.replica_db):
             # Save to both or not at all.
             # NOTE: This is brittle to DB alias changes and also assumes there's only these two.
             assert len(settings.DATABASES) == 2  # Should help - though asserts are optimized away.
@@ -81,65 +95,70 @@ class Center(BaseCenter):
                     if using is None:
                         save(using=using)
 
-                    # Replicate action to BSR database.
-                    from uploader.models import Center as UploaderCenter
-                    try:
-                        # Save is used to update fields, so we need to account for this.
-                        # Note: We can't use get_or_create() since the fields passed in might not match existing DB
-                        # entry if this use of save is an update.
-                        center = UploaderCenter.objects.get(id=self.id)
-                    except UploaderCenter.DoesNotExist:
-                        UploaderCenter.objects.create(id=self.id, name=self.name, country=self.country)
-                    else:
-                        # Update field values.
-                        center.name = self.name
-                        center.country = self.country
-                        center.full_clean()
-                        center.save(force_insert=force_insert,
-                                    force_update=force_update,
-                                    update_fields=update_fields)
+                    self.save_replica(force_insert=force_insert, force_update=force_update, update_fields=update_fields)
         else:
             save(using=using)
 
     def asave(self, *args, **kwargs):
         raise NotImplementedError
 
-    def _delete_replica(self, keep_parents=False):
-        # Replicate action to BSR database.
-        from uploader.models import Center as UploaderCenter
+    def delete_replica(self, *args, **kwargs):
         try:
             # This should definitely exist but sanity check via a try-except.
-            center = UploaderCenter.objects.get(id=self.id)
-        except UploaderCenter.DoesNotExist:
+            center = self.replica_model.objects.get(id=self.id)
+        except self.replica_model.DoesNotExist:
             pass
         else:
-            center.delete(keep_parents=keep_parents)
+            center.delete(*args, using=self.replica_db, **kwargs)
 
     def delete(self, using=None, keep_parents=False):
         """ When deleting user.Center also replicate for uploader.Center. """
 
         delete = partial(super().delete, keep_parents=keep_parents)
 
-        if using in (None, "bsr"):
-            self._delete_replica(keep_parents=keep_parents)
+        if using in (None, self.replica_db):
+            with transaction.atomic(using="default"):
+                with transaction.atomic(using="bsr"):
+                    self.delete_replica(keep_parents=keep_parents)
 
-            # Delete the original.
-            # Note: This has to be done last such that self.pk still exists to conduct the above lookup.
-            # Additionally, deleting this last also means that we don't need to wrap this in a transaction on the
-            # default DB since the other way around could delete from "default" but then fail on "BSR" due to protected
-            # relations but leaving it deleted on the default DB.
-            if using is None:
-                delete(using=using)
+                    # Delete the original.
+                    # Note: This has to be done last such that self.pk still exists to conduct the above lookup.
+                    # Additionally, deleting this last also means that we don't need to wrap this in a transaction on the
+                    # default DB since the other way around could delete from "default" but then fail on "BSR" due to protected
+                    # relations but leaving it deleted on the default DB.
+                    if using is None:
+                        delete(using=using)
         else:
             delete(using=using)
 
     def adelete(self, *args, **kwargs):
         raise NotImplementedError
 
+    @property
+    @abstractmethod
+    def replica_model(self):
+        ...
+
+    @property
+    @abstractmethod
+    def replica_db(self):
+        ...
+
+
+class Center(BaseCenter):
+    @property
+    def replica_model(self):
+        from uploader.models import Center as UploaderCenter
+        return UploaderCenter
+
+    @property
+    def replica_db(self):
+        return "bsr"
+
 
 @receiver(post_delete, sender=Center)
 def center_deletion_handler(sender, **kwargs):
-    kwargs["instance"]._delete_replica()
+    kwargs["instance"].delete_replica()
 
 
 class CustomUserManager(UserManager):
