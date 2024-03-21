@@ -51,7 +51,8 @@ urlpatterns = [
 
     path("admin/password_reset/",
          auth_views.PasswordResetView.as_view(from_email=settings.EMAIL_FROM,
-                                              extra_context={"site_header": admin.site.site_header}),
+                                              extra_context={"site_header": admin.site.site_header,
+                                                             "from_email": settings.EMAIL_FROM}),
          name="admin_password_reset"),
     path("admin/password_reset/done/",
          auth_views.PasswordResetDoneView.as_view(extra_context={"site_header": admin.site.site_header}),
