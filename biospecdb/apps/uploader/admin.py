@@ -14,6 +14,7 @@ from biospecdb.util import to_bool
 from .models import BioSample, Observable, Instrument, Patient, SpectralData, Observation, UploadedFile, Visit,\
     QCAnnotator, QCAnnotation, Center, get_center, BioSampleType, SpectraMeasurementType
 from uploader.forms import ModelForm
+from user.admin import CenterAdmin as UserCenterAdmin
 
 User = get_user_model()
 
@@ -759,29 +760,9 @@ class PatientAdminWithInlines(PatientAdmin):
     inlines = [VisitInline]
 
 
-# NOTE: The following admin can be used to visually sanity check that changes by user.models.Center to the "default" DB
-# get reflected in the "bsr" DB. We never want uploader.models.Center to be editable by any admin page, so we restrict
-# access below even if this is never used. Admin functionality belong to the admin page for ``user.models.Center``.
-# @admin.register(Center)
-# class CenterAdmin(admin.ModelAdmin):
-#     fields = ("name", "country", "id")
-#     list_display = ("name", "country")
-#     readonly_fields = ("name", "country", "id")
-#
-#     def has_view_permission(self, request, obj=None):
-#         return request.user.is_superuser
-#
-#     def has_module_permission(self, request):
-#         return request.user.is_superuser
-#
-#     def has_add_permission(self, request):
-#         return False
-#
-#     def has_change_permission(self, request, obj=None):
-#         return False
-#
-#     def has_delete_permission(self, request, obj=None):
-#         return False
+@admin.register(Center)
+class CenterAdmin(UserCenterAdmin):
+    ...
 
 
 class DataAdminSite(admin.AdminSite):
