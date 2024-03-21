@@ -193,13 +193,15 @@ LOGOUT_URL = "logout"
 # Email settings
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = os.getenv("EMAIL_HOST")
-EMAIL_USE_TLS = True
-EMAIL_PORT = 587
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True").strip() == "True"  # This is mutually exclusive with EMAIL_USE_SSL.
+EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "False").strip() == "True"  # This is mutually exclusive with EMAIL_USE_TSL.
+assert not (EMAIL_USE_TLS and EMAIL_USE_SSL)
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))  # TLS on 587 and SSL on 465.
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 EMAIL_FROM = f"admin@{HOST_DOMAIN}"
 EMAIL_SUBJECT_PREFIX = os.getenv("EMAIL_SUBJECT_PREFIX")
-EMAIL_TIMEOUT = os.getenv("EMAIL_TIMEOUT")
+EMAIL_TIMEOUT = int(os.getenv("EMAIL_TIMEOUT", 60))
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
