@@ -199,6 +199,7 @@ EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 EMAIL_FROM = f"admin@{HOST_DOMAIN}"
 EMAIL_SUBJECT_PREFIX = os.getenv("EMAIL_SUBJECT_PREFIX")
+EMAIL_TIMEOUT = os.getenv("EMAIL_TIMEOUT")
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/

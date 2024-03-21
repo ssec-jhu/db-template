@@ -23,6 +23,8 @@ run:
     - name: DJANGO_SETTINGS_MODULE
       value: "biospecdb.settings.aws"
   secrets:
+    - name: EMAIL_TIMEOUT
+      value-from: "arn:aws:secretsmanager:eu-west-2:339712857727:secret:EMAIL_TIMEOUT-rwHtBm"
     - name: DJANGO_LOG_LEVEL
       value-from: "arn:aws:secretsmanager:eu-west-2:339712857727:secret:DJANGO_LOG_LEVEL-K52Fqe"
     - name: DB_BSR_HOST
