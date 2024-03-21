@@ -172,7 +172,7 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_("email address"), blank=True)
 
     # NOTE: Allow this to be null for the exception of some admin users that have no listed centers.
-    center = models.ForeignKey(Center, blank=False, null=False, on_delete=models.CASCADE, related_name="user")
+    center = models.ForeignKey(Center, blank=False, null=False, on_delete=models.PROTECT, related_name="user")
 
     is_staff = models.BooleanField(
         _("staff status"),
