@@ -5,7 +5,6 @@ import uuid
 from django.db import models, transaction
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
-from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.exceptions import ValidationError
@@ -89,7 +88,6 @@ class BaseCenter(models.Model):
         if using in (None, self.replica_db):
             # Save to both or not at all.
             # NOTE: This is brittle to DB alias changes and also assumes there's only these two.
-            assert len(settings.DATABASES) == 2  # Should help - though asserts are optimized away.
             with transaction.atomic(using="default"):
                 with transaction.atomic(using="bsr"):
                     if using is None:
