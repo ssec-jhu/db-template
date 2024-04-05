@@ -6,6 +6,7 @@ from uuid import UUID
 import yaml
 
 import boto3
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 import numpy as np
@@ -58,7 +59,7 @@ def mock_bulk_spectral_data(path=Path.home(),
     path = Path(path)
     data = pd.DataFrame(data=np.random.rand(n_patients, n_bins),
                         columns=np.arange(max_wavelength, min_wavelength, (min_wavelength - max_wavelength) / n_bins))
-    data.index.name = "PATIENT ID"
+    data.index.name = settings.BULK_UPLOAD_INDEX_COLUMN_NAME
     data.index += 1  # Make index 1 based.
 
     data.to_excel(path / "spectral_data.xlsx")

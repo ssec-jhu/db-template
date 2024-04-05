@@ -213,7 +213,7 @@ class TestUploadedFile:
                 meta_data_file = django.core.files.File(meta_data, name=meta_data_path.name)
                 spectral_data_file = django.core.files.File(spectral_data, name=spectral_file_path.name)
                 response = c.post("/data/uploader/uploadedfile/add/",
-                                  follow=False,
+                                  follow=True,
                                   data={"meta_data_file": meta_data_file,
                                         "spectral_data_file": spectral_data_file,
                                         "center": user.center.pk})

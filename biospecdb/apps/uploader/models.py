@@ -111,7 +111,7 @@ class UploadedFile(DatedModel):
     def join_with_validation(meta_data, spec_data):
         """ Validate primary keys are unique and associative. """
         if not meta_data.index.equals(spec_data.index):
-            raise ValidationError(_("Patient ID mismatch. IDs from %(a)s must exactly match all those from %(b)s"),
+            raise ValidationError(_("Patient index mismatch. indexes from %(a)s must exactly match all those from %(b)s"),
                                   params=dict(a=UploadedFile.meta_data_file.field.name,
                                               b=UploadedFile.spectral_data_file.field.name),
                                   code="invalid")
@@ -120,13 +120,15 @@ class UploadedFile(DatedModel):
             # The simplest way to do this is to utilize pandas.DataFrame.join().
             return meta_data.join(spec_data, how="left", validate="1:1")  # Might as well return the join.
         except pd.errors.MergeError as error:
-            raise ValidationError(_("meta and spectral data must have unique and identical patient IDs")) from error
+            raise ValidationError(_("meta and spectral data must have unique and identical patient identifiers")) from error
 
     def _validate_and_save_data_to_db(self, dry_run=False):
         # Read in all data.
         # Note: When accessing ``models.FileField`` Django returns ``models.FieldFile`` as a proxy.
-        meta_data = uploader.io.read_meta_data(self.meta_data_file.file)
-        spec_data = uploader.io.read_spectral_data_table(self.spectral_data_file.file)
+        meta_data = uploader.io.read_meta_data(self.meta_data_file.file,
+                                               index_column=settings.BULK_UPLOAD_INDEX_COLUMN_NAME)
+        spec_data = uploader.io.read_spectral_data_table(self.spectral_data_file.file,
+                                                         index_column=settings.BULK_UPLOAD_INDEX_COLUMN_NAME)
         # Validate.
         UploadedFile.validate_lengths(meta_data, spec_data)
         # This uses a join so returns the joined data so that it doesn't go to waste if needed, which it is here.
@@ -188,8 +190,7 @@ class Patient(DatedModel):
                                   primary_key=True,
                                   default=uuid.uuid4,
                                   verbose_name="Patient ID")
-    patient_cid = models.CharField(max_length=128,
-                                   null=True,
+    patient_cid = models.UUIDField(null=True,
                                    blank=True,
                                    help_text="Patient ID prescribed by the associated center")
     center = models.ForeignKey(Center, null=False, blank=False, on_delete=models.PROTECT)
