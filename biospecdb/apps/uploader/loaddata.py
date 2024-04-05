@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import pandas as pd
-from django.core.exceptions import ValidationError
+from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import transaction
 from django.db.models import Q
@@ -33,11 +33,14 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
     if center and isinstance(center, UserCenter):
         center = UploaderCenter.objects.get(pk=center.pk)
 
+    index_column = settings.BULK_UPLOAD_INDEX_COLUMN_NAME
+
     if joined_data is None:
         # Read in all data.
-        meta_data = meta_data if isinstance(meta_data, pd.DataFrame) else uploader.io.read_meta_data(meta_data)
+        meta_data = meta_data if isinstance(meta_data, pd.DataFrame) else \
+            uploader.io.read_meta_data(meta_data, index_column=index_column)
         spec_data = spectral_data if isinstance(spectral_data, pd.DataFrame) else \
-            uploader.io.read_spectral_data_table(spectral_data)
+            uploader.io.read_spectral_data_table(spectral_data, index_column=index_column)
 
         UploadedFile.validate_lengths(meta_data, spec_data)
         joined_data = UploadedFile.join_with_validation(meta_data, spec_data)
@@ -55,22 +58,14 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                 try:
                     # NOTE: ValidationError is raised when ``index`` is not a UUID, or not UUID-like, e.g., 1 is ok (as
                     # it's an int), however, '1' isn't. Here ``index`` is a string - and needs to be for UUIDs.
-                    patient = Patient.objects.get(pk=index, center=center)
-                except (Patient.DoesNotExist, ValidationError):
-                    try:
-                        # Allow patients to be referenced by both patient_id and patient_cid, i.e., assume that the
-                        # "patient ID" provided could actually be the patient CID.
-                        # Note: patient_cid is only guaranteed to be unique to a center and not by itself.
-                        patient = Patient.objects.get(patient_cid=index, center=center)
-                    except (Patient.DoesNotExist, ValidationError):
-                        # NOTE: We do not use the ``index`` read from file as the pk even if it is a UUID. The above
-                        # ``get()`` only allows for existing patients to be re-used when _already_ in the db with their
-                        # pk already auto-generated.
-                        patient = Patient(patient_id=index,
-                                          center=center,
-                                          **Patient.parse_fields_from_pandas_series(row))
-                        patient.full_clean()
-                        patient.save()
+                    opts = {index_column: index, "center": center}
+                    patient = Patient.objects.get(**opts)
+                except Patient.DoesNotExist:
+                    # NOTE: The order of dicts matters here such that index_column clobbers that from
+                    # Patient.parse_fields_from_pandas_series().
+                    patient = Patient(**(Patient.parse_fields_from_pandas_series(row) | opts))
+                    patient.full_clean()
+                    patient.save()
 
                 # Visit
                 visit = Visit(patient=patient, **Visit.parse_fields_from_pandas_series(row))
@@ -89,7 +84,7 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                 # Create datafile
                 json_str = uploader.io.spectral_data_to_json(file=None,
                                                              data=None,
-                                                             patient_id=index,
+                                                             patient_id=patient.patient_id,
                                                              wavelength=row["wavelength"],
                                                              intensity=row["intensity"])
 

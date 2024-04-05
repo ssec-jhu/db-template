@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from uuid import UUID
 
+from django.conf import settings
 import django.core.files
 from django.core.files.base import ContentFile
 from django.core.files.storage import storages
@@ -14,7 +15,10 @@ from pandas._libs.parsers import STR_NA_VALUES
 
 from biospecdb.util import StrEnum, to_uuid
 
-PATIENT_ID_STR = "patient_id"
+# TODO: move to settings
+DEFAULT_PATIENT_ID_STR = "patient_id"
+PATIENT_UUID_STR_ALLOWED_ALIASES = {"patient_id": ["patient id", "Patient ID", "PATIENT ID"],
+                                    "patient_cid": ["patient cid", "Patient CID", "PATIENT CID"]}
 
 
 @dataclasses.dataclass
@@ -57,14 +61,17 @@ def _clean_df(df, inplace=False):
     _cleaned_df = cleaned_df.rename(columns=lambda x: x.lower() if isinstance(x, str) else x, inplace=inplace)
     cleaned_df = cleaned_df if inplace else _cleaned_df
 
-    _cleaned_df = cleaned_df.rename(columns={"patient id": PATIENT_ID_STR}, inplace=inplace, errors="ignore")
+    _cleaned_df = cleaned_df.rename(columns={x: k for k, v in PATIENT_UUID_STR_ALLOWED_ALIASES.items() for x in v},
+                                    inplace=inplace,
+                                    errors="ignore")
     cleaned_df = cleaned_df if inplace else _cleaned_df
 
     # Note: This func is used to read in the data table returned from an SQL query from the explorer app and therefore,
     # may not contain a PATIENT_ID_STR column - ``dropna`` has no ``errors`` arg.
-    if PATIENT_ID_STR in cleaned_df.columns:
+    index_columns = set(PATIENT_UUID_STR_ALLOWED_ALIASES) & set(cleaned_df.columns)
+    if index_columns:
         # TODO: Raise on null patient id instead of silently dropping possible data.
-        _cleaned_df = cleaned_df.dropna(subset=[PATIENT_ID_STR], inplace=inplace)
+        _cleaned_df = cleaned_df.dropna(subset=list(index_columns), inplace=inplace)
         cleaned_df = cleaned_df if inplace else _cleaned_df
 
     return cleaned_df
@@ -89,12 +96,14 @@ def _read_raw_data(file, ext=None):
     else:
         raise ValueError("A path-like or file-like object must be specified.")
 
+    # NOTE: Reading the patient ID & CID as a str is crucial for converting to UUIDs as floats cannot be safely
+    # converted nor is it ok to read in as int as they could be actual UUID str.
+    type_mapping = {y: str for x in PATIENT_UUID_STR_ALLOWED_ALIASES.values() for y in x} | \
+                   {x: str for x in PATIENT_UUID_STR_ALLOWED_ALIASES}
     kwargs = dict(true_values=["yes", "Yes"],  # In addition to case-insensitive variants of True.
                   false_values=["no", "No"],  # In addition to case-insensitive variants of False.
                   na_values=[' ', "unknown", "Unknown", "na", "none"],
-                  dtype={"Patient ID":  str, "patient id": str, PATIENT_ID_STR: str})
-    # NOTE: The patient ID as a str is crucial for converting to UUIDs as floats cannot be safely converted nor is it
-    # ok to read in as int as they could be actual UUID str.
+                  dtype=type_mapping)
     # NOTE: The following default na_values are also used:
     # ‘’, ‘  # N/A’, ‘#N/A N/A’, ‘#NA’, ‘-1.#IND’, ‘-1.#QNAN’, ‘-NaN’, ‘-nan’, ‘1.#IND’, ‘1.#QNAN’, ‘<NA>’, ‘N/A’, ‘NA’,
     # ‘NULL’, ‘NaN’, ‘None’, ‘n/a’, ‘nan’, ‘null’.
@@ -119,11 +128,11 @@ def _read_raw_data(file, ext=None):
     return data
 
 
-def read_meta_data(file):
+def read_meta_data(file, index_column=settings.BULK_UPLOAD_INDEX_COLUMN_NAME):
     df = _read_raw_data(file)
 
-    # Set index as "patient_id" column.
-    cleaned_data = df.set_index(PATIENT_ID_STR)
+    # Set index.
+    cleaned_data = df.set_index(index_column)
 
     # Insist on index as UUIDs.
     cleaned_data = cleaned_data.set_index(cleaned_data.index.map(lambda x: to_uuid(x)))
@@ -134,7 +143,7 @@ def read_meta_data(file):
     return cleaned_data
 
 
-def read_spectral_data_table(file):
+def read_spectral_data_table(file, index_column=DEFAULT_PATIENT_ID_STR):
     """ Read in multiple rows of data returning a pandas.DataFrame.
 
         The data to be read in, needs to be of the following table layout for .csv & .xlsx:
@@ -153,20 +162,20 @@ def read_spectral_data_table(file):
     df = _read_raw_data(file)
 
     # Clean.
-    spec_only = df.drop(columns=[PATIENT_ID_STR], inplace=False, errors="raise")
+    spec_only = df.drop(columns=[index_column], inplace=False, errors="raise")
     wavelengths = spec_only.columns.tolist()
     specv = spec_only.values.tolist()
     freqs = [wavelengths for i in range(len(specv))]
 
-    df = pd.DataFrame({PATIENT_ID_STR: [to_uuid(x) for x in df[PATIENT_ID_STR]],
+    df = pd.DataFrame({index_column: [to_uuid(x) for x in df[index_column]],
                        "wavelength": freqs,
                        "intensity": specv})
 
-    df.set_index(PATIENT_ID_STR, inplace=True, drop=False)
+    df.set_index(index_column, inplace=True, drop=False)
     return df
 
 
-def read_single_row_spectral_data_table(file):
+def read_single_row_spectral_data_table(file, index_column=DEFAULT_PATIENT_ID_STR):
     """ Read in single row spectral data.
 
         The data to be read in, needs to be of the following table layout for .csv & .xlsx:
@@ -185,7 +194,7 @@ def read_single_row_spectral_data_table(file):
         {"patient_id": value, "wavelength": [values], "intensity": [values]}
     """
 
-    df = read_spectral_data_table(file)
+    df = read_spectral_data_table(file, index_column=index_column)
 
     if (length := len(df)) != 1:
         raise ValueError(f"The file read should contain only a single row not '{length}'")

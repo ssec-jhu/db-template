@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 import pytest
 
+from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.files.storage import storages
 
@@ -29,7 +30,8 @@ class TestReadSingleRowSpectralDataTable:
     @pytest.mark.parametrize("ext", uploader.io.FileFormats.list())
     def test_multiple_row_exception(self, ext):
         with pytest.raises(ValueError, match="The file read should contain only a single row"):
-            uploader.io.read_single_row_spectral_data_table((DATA_PATH/"spectral_data").with_suffix(ext))
+            uploader.io.read_single_row_spectral_data_table((DATA_PATH/"spectral_data").with_suffix(ext),
+                                                            index_column=settings.BULK_UPLOAD_INDEX_COLUMN_NAME)
 
 
 class TestSpectralDataFromJson:

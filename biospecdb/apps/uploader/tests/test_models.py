@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from uuid import uuid4
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 import django.core.files
 from django.core.files.base import ContentFile
@@ -479,7 +480,7 @@ class TestUploadedFile:
 
         assert all_patients.count() == len(df)
         for index in df.index:
-            assert all_patients.get(pk=index)
+            assert all_patients.get(**{settings.BULK_UPLOAD_INDEX_COLUMN_NAME: index})
 
     @pytest.mark.parametrize("file_ext", UploadedFile.FileFormats.list())
     def test_index_match_validation(self, db, observables, instruments, file_ext, tmp_path):
@@ -492,7 +493,7 @@ class TestUploadedFile:
                                                                              name=meta_data_path.name),
                                        spectral_data_file=django.core.files.File(spectral_data,
                                                                                  name=spectral_file_path.name))
-            with pytest.raises(ValidationError, match="Patient ID mismatch."):
+            with pytest.raises(ValidationError, match="Patient index mismatch."):
                 data_upload.clean()
 
     def test_re_upload(self, django_db_blocker, observables, instruments, mock_data_from_files):
@@ -509,6 +510,9 @@ class TestUploadedFile:
         assert Visit.objects.count() == n_patients * 2
 
     def test_upload_on_cid(self, django_db_blocker, observables, instruments, mock_data_from_files):
+        if settings.BULK_UPLOAD_INDEX_COLUMN_NAME != "patient_id":
+            pytest.skip("Test not applicable.")
+
         n_patients = 10
         assert UploadedFile.objects.count() == 1
         assert Patient.objects.count() == n_patients
