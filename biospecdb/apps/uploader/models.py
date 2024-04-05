@@ -190,8 +190,7 @@ class Patient(DatedModel):
                                   primary_key=True,
                                   default=uuid.uuid4,
                                   verbose_name="Patient ID")
-    patient_cid = models.CharField(max_length=128,
-                                   null=True,
+    patient_cid = models.UUIDField(null=True,
                                    blank=True,
                                    help_text="Patient ID prescribed by the associated center")
     center = models.ForeignKey(Center, null=False, blank=False, on_delete=models.PROTECT)
