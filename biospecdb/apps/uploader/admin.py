@@ -539,7 +539,8 @@ class BioSampleMixin:
             "Sample Tagging",
             {
                 "fields": [("sample_study_id", "sample_study_name", "sample_cid"),
-                           ("sample_type", "sample_processing")]
+                           "sample_type",
+                           "sample_processing"]
             }
         ),
         (
