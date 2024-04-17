@@ -357,14 +357,21 @@ class ObservationInlineForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        try:
-            observable = next(self.observables)
-            self.fields["observable"].initial = observable
+
+        observable = None
+        if instance := kwargs.get("instance"):
+            observable = instance.observable
+        else:
+            try:
+                observable = next(self.observables)
+                self.fields["observable"].initial = observable
+            except StopIteration:
+                pass
+
+        if observable:
+            self.fields["observable"].queryset = Observable.objects.filter(name=observable.name)
             self.fields["observable_value"].widget = self._get_widget(observable.value_class,
                                                                       choices=observable.value_choices)
-            self.fields["observable"].queryset = Observable.objects.filter(name=observable.name)
-        except StopIteration:
-            pass
 
 
 class ObservationInline(ObservationMixin, RestrictedByCenterMixin, NestedTabularInline):
@@ -408,16 +415,19 @@ class ObservationInline(ObservationMixin, RestrictedByCenterMixin, NestedTabular
         """ Only list extra inline forms when no data exists, i.e., new patient form. """
         if obj and obj.pk and obj.observation.count():
             # Only display inlines for those that exist, i.e., no extras (when self.extra=0).
-            extra = self.extra
-        else:
-            # Note: Calling ``len(self.formfield_for_foreignkey(db_field, request)`` would be better, however, it's not
-            # clear how to correctly pass ``db_field``. The following was copied from
-            # ``RestrictedByCenterMixin.formfield_for_foreignkey``.
-            center = Center.objects.get(pk=request.user.center.pk)
-            query = Q(category=self.verbose_name.upper()) & (Q(center=center) | Q(center=None))
-            extra = Observable.objects.filter(query).count()
+            return self.extra
 
-        return extra
+        # For whatever reason, obj=None when it shouldn't be, so we grab the ID from the resolver.
+        obj, model = get_obj_from_request(request)
+        if obj and obj.pk:
+            if model is Patient and Observation.objects.filter(visit__patient__pk=obj.pk).count():
+                return self.extra
+            elif model is Visit and obj.observation.count():
+                return self.extra
+
+        center = Center.objects.get(pk=request.user.center.pk)
+        query = Q(category=self.verbose_name.upper()) & (Q(center=center) | Q(center=None))
+        return Observable.objects.filter(query).count()
 
     @classmethod
     def factory(cls):
@@ -599,6 +609,27 @@ class BioSampleInline(BioSampleMixin, RestrictedByCenterMixin, NestedStackedInli
         return 0 if obj and obj.pk and obj.bio_sample.count() else self.extra
 
 
+def get_obj_from_request(request):
+    if not (object_id := request.resolver_match.kwargs.get("object_id", None)):
+        return None, None
+
+    # Parse the url_name and retrieve the model for the above object_id.
+    try:
+        app, model, action = request.resolver_match.url_name.split('_')
+    except ValueError:  # too many values to unpack.
+        return None, None
+
+    try:
+        model = apps.get_model(app, model)
+    except LookupError:
+        return None, None
+
+    try:
+        return model.objects.get(pk=object_id), model
+    except ObjectDoesNotExist:
+        return None, model
+
+
 class VisitAdminMixin:
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     ordering = ("-updated_at",)
@@ -647,42 +678,25 @@ class VisitAdminMixin:
         """
         field = super().formfield_for_foreignkey(db_field, request, **kwargs)
         if db_field.name == "previous_visit":
-
-            # Get the object ID - not yet sure which model the ID belongs to.
-            object_id = request.resolver_match.kwargs.get("object_id", None)
-            if not object_id:
-                return field
-
-            # Parse the url_name and retrieve the model for the above object_id.
-            try:
-                app, model, action = request.resolver_match.url_name.split('_')
-            except ValueError:  # too many values to unpack.
-                return field
-
-            try:
-                model = apps.get_model(app, model)
-            except LookupError:
+            obj, model = get_obj_from_request(request)
+            if obj is None:
                 return field
 
             # Note: Our forms are RESTful and thus this still won't solve the situation where a new visit is
             #       added, a patient selected AND then have the previous_visit selection reduced based on the selected
             #       patient. The form knows nothing about the selected patient until posted.
-            try:
-                # Limit the QS for previous_visit.
-                if model is Patient:
-                    # Limit to all visits belonging to this patient (inc self - unfortunatley. It would be better to
-                    # exclude (See below), however, there is no visit-self when looking at the patient level).
-                    patient = Patient.objects.get(pk=object_id)
-                    field.queryset = field.queryset.filter(patient=patient)
-                elif model is Visit:
-                    # Limit to all visits belonging to this patient (exc self - since a self-referential previous_visit
-                    # doesn't make much sense).
-                    visit = Visit.objects.get(id=object_id)
-                    patient = visit.patient
-                    field.queryset = field.queryset.filter(patient=patient).exclude(pk=object_id)
-                else:
-                    return field
-            except ObjectDoesNotExist:
+
+            # Limit the QS for previous_visit.
+            if model is Patient:
+                # Limit to all visits belonging to this patient (inc self - unfortunatley. It would be better to
+                # exclude (See below), however, there is no visit-self when looking at the patient level).
+                field.queryset = field.queryset.filter(patient=obj)
+            elif model is Visit:
+                # Limit to all visits belonging to this patient (exc self - since a self-referential previous_visit
+                # doesn't make much sense).
+                patient = obj.patient
+                field.queryset = field.queryset.filter(patient=patient).exclude(pk=obj.pk)
+            else:
                 return field
 
         return field
