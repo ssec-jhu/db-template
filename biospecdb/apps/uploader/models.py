@@ -594,8 +594,8 @@ class BioSample(DatedModel):
     centrifuge_rpm = models.IntegerField(blank=True, null=True, verbose_name="Extraction Tube Centrifuge RPM")
     freezing_temp = models.FloatField(blank=True, null=True, verbose_name="Freezing Temperature (C)")
     thawing_temp = models.FloatField(blank=True, null=True, verbose_name="Thawing Temperature (C)")
-    thawing_time = models.IntegerField(blank=True, null=True, verbose_name="Thawing time (s)")
-    freezing_time = models.IntegerField(blank=True, null=True, verbose_name="Freezing time (s)")
+    thawing_time = models.FloatField(blank=True, null=True, verbose_name="Thawing time (minutes)")
+    freezing_time = models.FloatField(blank=True, null=True, verbose_name="Freezing time (days)")
 
     @classmethod
     def parse_fields_from_pandas_series(cls, series):
