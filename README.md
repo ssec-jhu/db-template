@@ -125,6 +125,7 @@ The DB can be dumped to a file using the following:
  * ``python manage.py prune_files [--dry_run]``: Delete any and all orphaned data files.
    * ``--dry_run``: Output files to be deleted but don't actually delete anything.
  * ``python manage.py update_sql_views <view>``: Create/update the custom SQL view provided and its view dependencies if any.
+   * ``--drop_only``: Drop SQL view (and dependencies) but don't re-create.
  * ``python manage.py run_qc_annotators [--no_reruns]``: Run all Quality Control annotators on the SpectralData database table.
    * ``--no_reruns``: Don't run annotators on existing annotations, leave computed values as is.
  * ``python manage.py get_column_names [--exlcude_observables] [--exclude_non_observables] [--center=<name|id>]``

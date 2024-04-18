@@ -5,6 +5,9 @@ set -e
 # Collect static files.
 pipenv run python3 manage.py collectstatic --clear --noinput
 
+# Drop SQL views before migration as views can't be migrated and thus block certain migrations.
+pipenv run python3 manage.py update_sql_views --drop_only flat_view
+
 # Migrate DB
 mkdir -p db
 pipenv run python3 manage.py migrate
