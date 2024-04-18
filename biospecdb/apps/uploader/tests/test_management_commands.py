@@ -132,13 +132,17 @@ class TestGetColumnNames:
     @pytest.mark.parametrize("center_filter", ("spadda",
                                                "imperial college london",
                                                "oxford university",
-                                               "d2160c33-0bbc-4605-a2ce-7e83296e7c84"))
+                                               "d2160c33-0bbc-4605-a2ce-7e83296e7c84",
+                                               "None"))
     def test_center_filter(self, observables, more_observables, center_filter):
         out = StringIO()
         call_command("get_column_names", "--exclude_non_observables", f"--center={center_filter}", stdout=out)
 
-        queryset = Observable.objects.filter(Q(center__name__iexact=center_filter) |
-                                             Q(center__id__iexact=center_filter))
+        if center_filter == "None":
+            queryset = Observable.objects.filter(center=None)
+        else:
+            queryset = Observable.objects.filter(Q(center__name__iexact=center_filter) |
+                                                 Q(center__id__iexact=center_filter))
         assert queryset.count()
         out.seek(0)
         assert len(out.readlines()) == queryset.count()
@@ -183,6 +187,21 @@ class TestGetColumnNames:
                          "--exclude_non_observables",
                          f"--category={'this is not a category '}",
                          stdout=out)
+
+    def test_descriptions(self, observables):
+        out = StringIO()
+        call_command("get_column_names",
+                     "--exclude_non_observables",
+                     "--descriptions",
+                     stdout=out)
+        queryset = Observable.objects.all()
+        assert queryset.count()
+        out.seek(0)
+        info = out.readlines()
+        assert len(info) == queryset.count()
+        for line in info:
+            name, description = line.split(',')
+            assert Observable.objects.get(alias__iexact=name.strip()).description.strip() == description.strip()
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])

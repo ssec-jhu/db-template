@@ -13,18 +13,22 @@ class Command(BaseCommand):
         parser.add_argument("--exclude_observables",
                             action="store_true",
                             default=False,
-                            help="Only output column names for all observables currently in the database.")
+                            help="Only output column names for non-observables.")
         parser.add_argument("--exclude_non_observables",
                             action="store_true",
                             default=False,
-                            help="Only output column names for non-observables.")
+                            help="Only output column names for observables currently in the database.")
         parser.add_argument("--center",
                             default=None,
                             help="Filter observables by center name or center ID."
-                                 " Defaults to global observables where center=None.")
+                                 " Defaults to global observables when center=None.")
         parser.add_argument("--category",
                             default=None,
                             help="Filter observables by category.")
+        parser.add_argument("--descriptions",
+                            action="store_true",
+                            default=False,
+                            help="Also print field.help_text and observation.description.")
 
     def handle(self, *args, **options):
         column_names = []
@@ -32,8 +36,11 @@ class Command(BaseCommand):
             # Collect observable column names.
             if not options["exclude_observables"]:
                 center = options["center"]
-                queryset = uploader.models.Observable.objects.filter(Q(center__name__iexact=center) |
-                                                                     Q(center__id__iexact=center))
+                if center == "None":
+                    queryset = uploader.models.Observable.objects.filter(center=None)
+                else:
+                    queryset = uploader.models.Observable.objects.filter(Q(center__name__iexact=center) |
+                                                                         Q(center__id__iexact=center))
 
                 if category := options["category"]:
                     # Validate category.
@@ -46,20 +53,32 @@ class Command(BaseCommand):
                     # Filter category.
                     queryset = queryset.filter(category__iexact=category)
 
-                column_names.extend([obj.alias.strip().lower() for obj in queryset])
+                if options["descriptions"]:
+                    column_names.extend([(obj.alias.strip().lower(), obj.description) for obj in queryset])
+                else:
+                    column_names.extend([obj.alias.strip().lower() for obj in queryset])
 
-            # Collect all other column names.
+                # Sort.
+                column_names = sorted(column_names)
+
+            # Collect all other column name info.
             if not options["exclude_non_observables"]:
+                non_observables = []
                 for _name, model in getmembers(uploader.models):
                     if hasattr(model, "get_column_names"):
-                        column_names.extend(model.get_column_names())
+                        non_observables.extend(model.get_column_names(help_text=options["descriptions"]))
+                column_names.extend(sorted(non_observables))
 
-            # Dedupe & Sort.
-            column_names = sorted(set(column_names))
+            # Dedupe.
+            column_names = set(column_names)
 
-            # Print column names.
-            for name in column_names:
-                self.stdout.write(name)
+            # Print column name info.
+            if options["descriptions"]:
+                for name, description in column_names:
+                    self.stdout.write(f"{name}, {description}")
+            else:
+                for name in column_names:
+                    self.stdout.write(name)
 
         except CommandError:
             raise
