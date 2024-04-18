@@ -29,6 +29,12 @@ class Command(BaseCommand):
                             action="store_true",
                             default=False,
                             help="Also print field.help_text and observation.description.")
+        parser.add_argument("--include_instrument_fields",
+                            action="store_true",
+                            default=False,
+                            help="Also include Instrument fields. Note: These are not used for bulk uploads, only the"
+                                 " database Instrument ID is used. Therefore these aren't that useful to list."
+                                 " Does nothing when used with --exclude_non_observables.")
 
     def handle(self, *args, **options):
         column_names = []
@@ -66,6 +72,8 @@ class Command(BaseCommand):
                 non_observables = []
                 for _name, model in getmembers(uploader.models):
                     if hasattr(model, "get_column_names"):
+                        if model is uploader.models.Instrument and not options["include_instrument_fields"]:
+                            continue
                         non_observables.extend(model.get_column_names(help_text=options["descriptions"]))
                 column_names.extend(sorted(non_observables))
 
