@@ -12,7 +12,7 @@ class BasedModel(models.Model):
         abstract = True
 
     @classmethod
-    def get_column_names(cls):
+    def get_column_names(cls, help_text=False):
         # Note: This is a set of model.field.name and not model.field.verbose_name.
         exclude = {"created at",
                    "data",
@@ -22,7 +22,14 @@ class BasedModel(models.Model):
                    "updated at"}
 
         if hasattr(cls, "parse_fields_from_pandas_series"):  # Only models with this func have bulk data upload columns.
-            return {field.verbose_name.lower() for field in cls._meta.fields if not field.is_relation} - exclude
+            if help_text:
+                info = {field.verbose_name.lower(): field.help_text for field in cls._meta.fields
+                        if not field.is_relation}
+                fields = info.keys() - exclude
+
+                return [(k, v) for k, v in info.items() if k in fields]
+            else:
+                return {field.verbose_name.lower() for field in cls._meta.fields if not field.is_relation} - exclude
 
         return set()
 

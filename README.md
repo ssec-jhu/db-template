@@ -132,6 +132,7 @@ The DB can be dumped to a file using the following:
    * ``--exclude_non_observables``: Only output column names for non-observables.
    * ``--center=<name|id>``: Filter observables by center name or center ID.
    * ``--category=<category>``: Filter observables by category.
+   * ``--descriptions``: Also print field.help_text and observation.description.
  * ``python manage.py send_test_email <send_to_email_address>``: Send a test email to "send_to_email_address" to test email setup.
  * ``python manage.py makesuperuser``: This is a wrapper of Django's builtin ``createsuperuser`` command except that it
    doesn't fail when the user already exists.
