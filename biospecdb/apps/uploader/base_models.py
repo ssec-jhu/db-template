@@ -102,9 +102,14 @@ class SqlView:
         raise NotImplementedError
 
     @classmethod
-    def drop_view(cls, *args, **kwargs):
+    def drop_view(cls, *args, drop_dependencies=False, **kwargs):
         if "db" not in kwargs:
             kwargs["db"] = cls.db
+
+        if drop_dependencies:
+            for view_dependency in cls.sql_view_dependencies:
+                view_dependency.drop_view(*args, drop_dependencies=drop_dependencies, **kwargs)
+
         return drop_view(cls._meta.db_table, *args, **kwargs)
 
     @classmethod
