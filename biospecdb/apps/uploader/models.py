@@ -250,6 +250,8 @@ class Visit(DatedModel):
         """ Model validation. """
         super().clean()
 
+        # Note: Since previous_visit is a foreign key with itself, self.previous_visit is None when blank and doesn't
+        # require the ``hasattr(self, previous_visit)`` pattern check that other relations require.
         if settings.AUTO_FIND_PREVIOUS_VISIT and not self.previous_visit:
             last_visit, duplicates_exist = self.auto_find_previous_visit()
             if duplicates_exist:
@@ -470,32 +472,33 @@ class Observation(DatedModel):
         """ Model validation. """
         super().clean()
 
-        # Note: global observables have no observable.center.
-        if self.observable.center.count() and (self.visit.patient.center not in self.observable.center.all()):
-            # Note: Don't expose centers here.
-            raise ValidationError(_("Patient observation.observable must belong to patient's center."))
+        if hasattr(self, "observable"):
+            # Note: global observables have no observable.center.
+            if self.observable.center.count() and (self.visit.patient.center not in self.observable.center.all()):
+                # Note: Don't expose centers here.
+                raise ValidationError(_("Patient observation.observable must belong to patient's center."))
 
-        # Check that value is castable by casting.
-        # NOTE: ``observable_value`` is a ``CharField`` so this will get cast back to a str again, and it could be
-        # argued that there's no point in storing the cast value... but :shrug:.
-        try:
-            self.observable_value = Observable.Types(self.observable.value_class).cast(self.observable_value)
-        except ValueError:
-            raise ValidationError(_("The value '%(value)s' can not be cast to the expected type of '%(type)s' for"
-                                    " '%(observable_name)s'"),
-                                  params={"observable_name": self.observable.name,
-                                          "type": self.observable.value_class,
-                                          "value": self.observable_value},
-                                  code="invalid")
+            # Check that value is castable by casting.
+            # NOTE: ``observable_value`` is a ``CharField`` so this will get cast back to a str again, and it could be
+            # argued that there's no point in storing the cast value... but :shrug:.
+            try:
+                self.observable_value = Observable.Types(self.observable.value_class).cast(self.observable_value)
+            except ValueError:
+                raise ValidationError(_("The value '%(value)s' can not be cast to the expected type of '%(type)s' for"
+                                        " '%(observable_name)s'"),
+                                      params={"observable_name": self.observable.name,
+                                              "type": self.observable.value_class,
+                                              "value": self.observable_value},
+                                      code="invalid")
 
-        if choices := self.observable.value_choices:
-            if (value := str(self.observable_value).strip().upper()) not in Observable.list_choices(choices):
-                raise ValidationError(_("Value must be one of '%(a)s', not '%(b)s'"),
-                                      params=dict(a=choices, b=value))
+            if choices := self.observable.value_choices:
+                if (value := str(self.observable_value).strip().upper()) not in Observable.list_choices(choices):
+                    raise ValidationError(_("Value must be one of '%(a)s', not '%(b)s'"),
+                                          params=dict(a=choices, b=value))
 
-        if self.observable.validator:
-            func = import_string(self.observable.validator)
-            func(self.observable_value)
+            if self.observable.validator:
+                func = import_string(self.observable.validator)
+                func(self.observable_value)
 
     @property
     def center(self):
