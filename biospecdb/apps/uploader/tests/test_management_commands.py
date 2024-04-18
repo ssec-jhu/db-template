@@ -86,7 +86,7 @@ class TestPruneFiles:
 
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestGetColumnNames:
-    n_non_observables = 39
+    n_non_observables = 28  # 39 including instrument fields.
 
     @pytest.fixture
     def more_observables(self, centers):
@@ -202,6 +202,19 @@ class TestGetColumnNames:
         for line in info:
             name, description = line.split(',')
             assert Observable.objects.get(alias__iexact=name.strip()).description.strip() == description.strip()
+
+    @pytest.mark.parametrize("include", (True, False))
+    def test_instrument(self, observables, include):
+        out = StringIO()
+        if include:
+            call_command("get_column_names", "--include_instrument_fields", stdout=out)
+        else:
+            call_command("get_column_names", stdout=out)
+        out.seek(0)
+        if include:
+            assert "instrument" in out.read()
+        else:
+            assert "instrument" not in out.read()
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
