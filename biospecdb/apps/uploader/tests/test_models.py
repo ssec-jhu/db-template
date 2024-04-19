@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import shutil
 from uuid import uuid4
 
 from django.conf import settings
@@ -557,6 +558,32 @@ class TestUploadedFile:
         assert not UploadedFile.objects.count()
         assert not os.path.exists(bulk_upload.meta_data_file.name)
         assert not os.path.exists(bulk_upload.spectral_data_file.name)
+
+    def test_bad_ext(self,
+                     db,
+                     tmp_path,
+                     observables,
+                     instruments,
+                     center,
+                     bio_sample_types,
+                     spectra_measurement_types):
+        meta_data_path = (DATA_PATH/"meta_data").with_suffix(UploadedFile.FileFormats.CSV)
+        spectral_file_path = (DATA_PATH / "spectral_data").with_suffix(UploadedFile.FileFormats.CSV)
+
+        new_meta_data_path = tmp_path / meta_data_path.with_suffix(".blah")
+        new_spectral_file_path = tmp_path / spectral_file_path.with_suffix(".blah")
+
+        shutil.copyfile(meta_data_path, new_meta_data_path)
+        shutil.copyfile(spectral_file_path, new_spectral_file_path)
+
+        with new_meta_data_path.open(mode="rb") as meta_data, new_spectral_file_path.open(mode="rb") as spectral_data:
+            data_upload = UploadedFile(meta_data_file=django.core.files.File(meta_data,
+                                                                             name=new_meta_data_path.name),
+                                       spectral_data_file=django.core.files.File(spectral_data,
+                                                                                 name=new_spectral_file_path.name),
+                                       center=center)
+            with pytest.raises(ValidationError, match="Allowed extensions"):
+                data_upload.full_clean()
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])

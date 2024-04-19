@@ -123,19 +123,24 @@ class UploadedFile(DatedModel):
             raise ValidationError(_("meta and spectral data must have unique and identical patient identifiers")) from error
 
     def _validate_and_save_data_to_db(self, dry_run=False):
-        # Read in all data.
-        # Note: When accessing ``models.FileField`` Django returns ``models.FieldFile`` as a proxy.
-        meta_data = uploader.io.read_meta_data(self.meta_data_file.file,
-                                               index_column=settings.BULK_UPLOAD_INDEX_COLUMN_NAME)
-        spec_data = uploader.io.read_spectral_data_table(self.spectral_data_file.file,
-                                                         index_column=settings.BULK_UPLOAD_INDEX_COLUMN_NAME)
-        # Validate.
-        UploadedFile.validate_lengths(meta_data, spec_data)
-        # This uses a join so returns the joined data so that it doesn't go to waste if needed, which it is here.
-        joined_data = UploadedFile.join_with_validation(meta_data, spec_data)
+        try:
+            # Read in all data.
+            # Note: When accessing ``models.FileField`` Django returns ``models.FieldFile`` as a proxy.
+            meta_data = uploader.io.read_meta_data(self.meta_data_file.file,
+                                                   index_column=settings.BULK_UPLOAD_INDEX_COLUMN_NAME)
+            spec_data = uploader.io.read_spectral_data_table(self.spectral_data_file.file,
+                                                             index_column=settings.BULK_UPLOAD_INDEX_COLUMN_NAME)
+            # Validate.
+            UploadedFile.validate_lengths(meta_data, spec_data)
+            # This uses a join so returns the joined data so that it doesn't go to waste if needed, which it is here.
+            joined_data = UploadedFile.join_with_validation(meta_data, spec_data)
 
-        # Ingest into DB.
-        save_data_to_db(None, None, center=self.center, joined_data=joined_data, dry_run=dry_run)
+            # Ingest into DB.
+            save_data_to_db(None, None, center=self.center, joined_data=joined_data, dry_run=dry_run)
+        except ValidationError:
+            raise
+        except Exception:
+            raise ValidationError("An error occurred, check the file content is correct.")
 
     def clean(self):
         """ Model validation. """
