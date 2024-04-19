@@ -19,6 +19,13 @@ from user.admin import CenterAdmin as UserCenterAdmin
 User = get_user_model()
 
 
+class ModelAdmin(admin.ModelAdmin):
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj=obj, **kwargs)
+        setattr(form, "_post_clean", ModelForm._post_clean)
+        return form
+
+
 class RestrictedByCenterMixin:
     """ Restrict admin access to objects belong to user's center. """
     def _has_perm(self, request, obj):
@@ -139,7 +146,7 @@ admin.site.register(SpectraMeasurementType)
 
 
 @admin.register(Instrument)
-class InstrumentAdmin(RestrictedByCenterMixin, admin.ModelAdmin):
+class InstrumentAdmin(RestrictedByCenterMixin, ModelAdmin):
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     list_display = ["id", "manufacturer", "model"]
     list_filter = ("manufacturer", "model")
@@ -207,7 +214,7 @@ class UploadedFileForm(ModelForm):
 
 
 @admin.register(UploadedFile)
-class UploadedFileAdmin(RestrictedByCenterMixin, admin.ModelAdmin):
+class UploadedFileAdmin(RestrictedByCenterMixin, ModelAdmin):
     form = UploadedFileForm
     search_fields = ["created_at"]
     search_help_text = "Creation timestamp"
@@ -237,7 +244,7 @@ class QCAnnotationInline(RestrictedByCenterMixin, NestedTabularInline):
 
 
 @admin.register(QCAnnotation)
-class QCAnnotationAdmin(RestrictedByCenterMixin, admin.ModelAdmin):
+class QCAnnotationAdmin(RestrictedByCenterMixin, ModelAdmin):
     search_fields = ["annotator__name",
                      "spectral_data__bio_sample__visit__patient__patient_id",
                      "spectral_data__bio_sample__visit__patient__patient_cid"]
@@ -265,7 +272,7 @@ class QCAnnotationAdmin(RestrictedByCenterMixin, admin.ModelAdmin):
 
 
 @admin.register(QCAnnotator)
-class QCAnnotatorAdmin(RestrictedByCenterMixin, admin.ModelAdmin):
+class QCAnnotatorAdmin(RestrictedByCenterMixin, ModelAdmin):
     search_fields = ["name"]
     search_help_text = "Name"
     # TODO: Might need specific user group for timestamps.)
