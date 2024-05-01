@@ -1,14 +1,8 @@
 Welcome to biospecdb's documentation!
 ==========================================
 
-**biospecdb** is a Django application for collecting patient biosample data.
+`biospecdb <https://github.com/RISPaDD/biospecdb>`_ is a `Django <https://www.djangoproject.com/>`_ application for collecting patient biosample and spectroscopy data.
 
-Check out the :doc:`usage` section for further information, including
-how to :ref:`installation` the project.
-
-.. note::
-
-   This project is under active development.
 
 Contents
 --------
@@ -16,4 +10,7 @@ Contents
 .. toctree::
 
    usage
+   install
+   deploy
+   management
    api

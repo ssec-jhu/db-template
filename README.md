@@ -61,7 +61,7 @@ For additional cmds see the [Conda cheat-sheet](https://docs.conda.io/projects/c
 
   #### with Python ecosystem (for development):
   * Follow the above [Build with Python ecosystem instructions](#with-python-ecosystem).
-  * For a completely fresh start and rebuild of the database: ``./scripts/dev/rebuild_db.sh``.
+  * For a completely fresh start and rebuild of the database: ``./scripts/dev/rebuild_sqlite.sh``.
   * Run ``DJANGO_SETTINGS_MODULE=biospecdb.settings.dev python manage.py runserver 0.0.0.0:8000``
   * The site can then be accessed using any browser from ``http://localhost:8000``
 
@@ -87,9 +87,11 @@ For additional cmds see the [Conda cheat-sheet](https://docs.conda.io/projects/c
 # DB Management
 We're currently using sqlite requiring the following setup instructions:
 
-For a quickstart run the provided script [rebuild_db.sh](scripts/dev/rebuild_db.sh), otherwise follow the instructions
+For a quickstart run the provided script [rebuild_sqlite.sh](scripts/dev/rebuild_sqlite.sh), otherwise follow the instructions
 below. The default superuser credentials are username: admin, password: admin. Set the env var
-``DJANGO_SUPERUSER_PASSWORD`` to override the default given in [rebuild_db.sh](scripts/dev/rebuild_db.sh).
+``DJANGO_SUPERUSER_PASSWORD`` to override the default given in [rebuild_sqlite.sh](scripts/dev/rebuild_sqlite.sh).
+
+_NOTE: For postgresql usage, run the provided script [rebuild_postgres.sh](scripts/dev/rebuild_postgres.sh).
 
 * cd into repo
 * ``python manage.py migrate``

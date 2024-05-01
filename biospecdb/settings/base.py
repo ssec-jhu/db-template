@@ -219,7 +219,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_ROOT = BASE_DIR / "static/"
-STATICFILES_DIRS = [APPS_DIR / "uploader/templates/static"]
+STATICFILES_DIRS = [APPS_DIR / "uploader/templates/static", BASE_DIR / "docs/_build/html/"]
 STATIC_URL = "/static/"
 
 # Default primary key field type
