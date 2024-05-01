@@ -1,4 +1,4 @@
-boto3==1.34.95
+boto3==1.34.96
 django==4.2.11
 django-crontab==0.7.1
 django-decorator-include==3.0
