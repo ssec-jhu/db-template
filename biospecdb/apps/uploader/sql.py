@@ -9,11 +9,14 @@ from explorer.schema import connection_schema_cache_key
 
 
 def secure_name(name):
+    """ Parse SQL table or view name and raise ``SuspiciousOperation`` if not alphanumeric. """
     if re.search(r"[^_a-zA-Z0-9]", name):
         raise SuspiciousOperation(f"SQL security issue! Expected name consisting of only [_a-zA-Z] but got '{name}'")
 
 
 def execute_sql(sql, db=None, params=None):
+    """ Execute raw SQL against the database (db). """
+
     con = connections[db] if db else connection
     with con.cursor() as cursor:
         cursor.execute(sql, params=params)
@@ -31,6 +34,7 @@ def execute_sql(sql, db=None, params=None):
 
 
 def drop_view(view, db=None):
+    """ Drop a SQL view from the database (db). """
     secure_name(view)
     if connection.vendor == "postgresql":
         execute_sql(f"drop view if exists {view} cascade", db=db)  # nosec B608
@@ -43,7 +47,10 @@ def drop_view(view, db=None):
 
 
 def update_view(view, sql, db=None, params=None, check=True, limit=1):
-    """ SQLite can't alter views, so they must first be dropped and then re-added. """
+    """ Update an SQL view on the database (db)
+
+        Note: SQLite can't alter views, so they must first be dropped and then re-added.
+    """
     # django-sql-explorer caches schemas, so invalidate entries to trigger schema rebuild.
     key = connection_schema_cache_key(db)
     cache.delete(key)  # Doesn't raise.
@@ -71,6 +78,8 @@ def update_view(view, sql, db=None, params=None, check=True, limit=1):
 
 
 def create_view(view, sql, db=None, params=None, check=True, limit=1):
+    """ Create an SQL view on the database (db). """
+
     with transaction.atomic(using="bsr"):
         execute_sql(sql, db=db, params=params)
 

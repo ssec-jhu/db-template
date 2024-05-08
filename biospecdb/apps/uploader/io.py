@@ -129,6 +129,7 @@ def _read_raw_data(file, ext=None):
 
 
 def read_meta_data(file, index_column=settings.BULK_UPLOAD_INDEX_COLUMN_NAME):
+    """ Read in bulk upload meta data file of all Observations and parsable model fields. """
     df = _read_raw_data(file)
 
     # Set index.

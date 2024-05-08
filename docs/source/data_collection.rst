@@ -11,7 +11,7 @@ The central `data collection page <../../data/>`_  looks like the following.
 From the central `data collection page <../../data/>`_ you can view, add, and edit (permissions required) the following types of data forms.
 Each form below includes all forms for those listed below it, excluding that for Bulk Data Uploads.
 
- - Patients_: This is the principle form for collecting data for new (or returning) individual patients. **This is probably the only form you need to use.**
+ - Patients_: This is the principle form for collecting data for new (or returning) individual patients. **This is probably the only form you need to use, because it's all forms rolled in to one.**
  - Visits_: Every patient's data is contained within the concept of a "visit". This form can be used for collecting additional data for returning patients already in the database.
  - Observations_: Use this form to collect a patient's "observables" that represent a variety of types of meta data. E.g., age, blood pressure, lab test results, comorbidities etc.
  - BioSamples_: Use this form to collect information in regard to how the biological sample was taken, e.g., blood, nasal swab, urine etc. This sample is that processed to collect a patient's spectroscopy data.

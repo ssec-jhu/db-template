@@ -21,6 +21,7 @@ from django.utils.translation import gettext_lazy as _
 # python manage.py migrate
 
 def validate_country(value):
+    """ Validate ``center.country`` field. """
     if value.lower() in ("us", "usa", "america"):
         raise ValidationError(_("This repository is not HIPAA compliant and cannot be used to collect health data from"
                                 " the USA"),
@@ -57,7 +58,7 @@ class BaseCenter(models.Model):
     __hash__ = models.Model.__hash__
 
     def save_replica(self, *args, **kwargs):
-        # Replicate action to other database.
+        """ Replicate save action on other database. """
         try:
             # Save is used to update fields, so we need to account for this.
             # Note: We can't use get_or_create() since the fields passed in might not match existing DB
@@ -73,7 +74,9 @@ class BaseCenter(models.Model):
             center.save(*args, **kwargs)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        """ When saving user.Center also replicate for uploader.Center.
+        """ Save database instance.
+
+            Note: When saving user.Center also replicate for uploader.Center.
 
             Note: DB replication to the "bsr" database doesn't happen if explicitly stating the use of the "default"
             DB, i.e., ``save(using="default")`` will not save to the "bsr" DB and vice versa for ``using="bsr"``.
@@ -101,6 +104,7 @@ class BaseCenter(models.Model):
         raise NotImplementedError
 
     def delete_replica(self, *args, **kwargs):
+        """ Replicate delete action on other database. """
         try:
             # This should definitely exist but sanity check via a try-except.
             center = self.replica_model.objects.get(id=self.id)
@@ -110,7 +114,10 @@ class BaseCenter(models.Model):
             center.delete(*args, using=self.replica_db, **kwargs)
 
     def delete(self, using=None, keep_parents=False):
-        """ When deleting user.Center also replicate for uploader.Center. """
+        """ Delete database instance.
+
+            NOTE: When deleting user.Center also replicate for uploader.Center.
+        """
 
         delete = partial(super().delete, keep_parents=keep_parents)
 
@@ -144,6 +151,17 @@ class BaseCenter(models.Model):
 
 
 class Center(BaseCenter):
+    """ A center, institution, or hospital etc., from which patient data has been collected.
+
+        This is also used to specify data visibility such that only users of a given center can access
+        patient data from that center.
+
+        Attributes:
+            id (:obj:`django.models.UUIDField`): Database primary key. Auto generated if not provided.
+            name (:obj:`django.models.CharField`): The name of the center.
+            country (:obj:`django.models.CharField`): The country in which the center is located. This can be used to
+                determine data compliance, i.e., GDPR and HIPAA etc.
+     """
     @property
     def replica_model(self):
         from uploader.models import Center as UploaderCenter
@@ -177,7 +195,19 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
     An abstract base class implementing a fully featured User model with
     admin-compliant permissions.
 
-    Username and password are required. Other fields are optional.
+    Note: This is an almost verbatim copy from Django, with the addition of ``center``. Due to Django's user creation
+    pattern and use for this app to be pluggable with others, they advise copying the class.
+
+    Attributes:
+        username (:obj:`django.models.CharField`): Username for login.
+        first_name (:obj:`django.models.CharField`, optional): User's first name.
+        last_name (:obj:`django.models.CharField`, optional): User's last name.
+        email (:obj:`django.models.EmailField`, optional): User's email. Used to send forgotten password links.
+        center (:obj:`django.models.ForeignKey` of :obj:`Center`): User's associated center.
+        is_staff (:obj:`django.models.BooleanField`): Designates whether the user can log into this admin site.
+        is_active (:obj:`django.models.BooleanField`): Designates whether this user should be treated as active.
+            Unselect this instead of deleting accounts.
+        date_joined (:obj:`django.models.DateTimeField`): The user's registration date.
     """
 
     username_validator = UnicodeUsernameValidator()
@@ -253,7 +283,19 @@ class User(AbstractUser):
     Users within the Django authentication system are represented by this
     model.
 
-    Username and password are required. Other fields are optional.
+    Attributes:
+        username (:obj:`django.models.CharField`): Username for login.
+        first_name (:obj:`django.models.CharField`, optional): User's first name.
+        last_name (:obj:`django.models.CharField`, optional): User's last name.
+        email (:obj:`django.models.EmailField`, optional): User's email. Used to send forgotten password links.
+        center (:obj:`django.models.ForeignKey` of :obj:`Center`): User's associated center.
+        is_staff (:obj:`django.models.BooleanField`): Designates whether the user can log into this admin site.
+        is_active (:obj:`django.models.BooleanField`): Designates whether this user should be treated as active.
+            Unselect this instead of deleting accounts.
+        date_joined (:obj:`django.models.DateTimeField`): The user's registration date.
+        is_sqluser_view (:obj:`django.models.BooleanField`): SQL explorer user status (view/execute existing queries only)
+        is_sqluser_change (:obj:`django.models.BooleanField`): SQL explorer user status (view/add/change/delete/execute)
+        is_catalogviewer (:obj:`django.models.BooleanField`): Dataset Catalog user status (readonly)
     """
 
     class Meta(AbstractUser.Meta):

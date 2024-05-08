@@ -11,6 +11,8 @@ class QcFilter(ABC):
     @abstractmethod
     def run(self, spectral_data):
         """
+            Implement this method to return the actual annotation value(s).
+
             param: spectral_data - uploader.models.SpectralData
 
             Raises QCValidationError.
