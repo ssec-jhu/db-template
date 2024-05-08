@@ -10,6 +10,12 @@
 
 Spectroscopy for Patient Diagnosis Database (SPaDDa)
 
+# Research Project
+
+This database application stands as an online community collection point for patient biosample spectral data and metadata,
+to be used as an AI training set, generating a tool for easy disease detection from future patient biosamples.
+Further details for the science goals of this application can be found at [SSEC@JHU research projects: BSR](https://ai.jhu.edu/ssec/research/biosample-spectral-repository/).
+
 # Installation, Build, & Run instructions
 
 ### Conda:
