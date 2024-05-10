@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 def fig_to_html(fig) -> str:
+    """ Convert a ploty figure to html.  """
     buffer = StringIO()
     fig.write_html(buffer, auto_open=False, full_html=False)
     buffer.seek(0)
@@ -23,6 +24,7 @@ def fig_to_html(fig) -> str:
 
 
 def count_bool_observables(result: "QueryResult"):  # noqa: F821
+    """ Count boolean observables present in data result. """
     if len(result.data) < 1:
         return
 
@@ -37,6 +39,7 @@ def count_bool_observables(result: "QueryResult"):  # noqa: F821
 
 
 def get_pie_chart(result: "QueryResult") -> Optional[str]:  # noqa: F821
+    """ Generate ploty pi chart of boolean Observation data present in data result. """
     try:
         counts = count_bool_observables(result)
 
@@ -51,6 +54,8 @@ def get_pie_chart(result: "QueryResult") -> Optional[str]:  # noqa: F821
 
 
 def get_line_chart(result: "QueryResult") -> Optional[str]:  # noqa: F821
+    """ Generate ploty line chart of spectral data present in data result. """
+
     if len(result.data) < 1:
         return
 

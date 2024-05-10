@@ -64,6 +64,7 @@ epub_show_urls = 'footnote'
 # -- Optiosn for autosummary
 
 autosummary_generate = True
+autodoc_inherit_docstrings = True
 
 # -- Custom stuff for django.
 # Borrowed from https://daniel.feldroy.com/posts/2023-01-configuring-sphinx-auto-doc-with-django
