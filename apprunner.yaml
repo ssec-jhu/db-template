@@ -8,7 +8,7 @@ build:
     post-build:
       - pipenv install -r requirements/docs.txt
       - cd docs/
-      - make html
+      - pipenv run make html
       - cd ../
   env:
     - name: DJANGO_SETTINGS_MODULE
