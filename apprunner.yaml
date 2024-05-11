@@ -8,6 +8,8 @@ build:
     post-build:
       - pipenv install -r requirements/docs.txt
       - cd docs/
+      - pwd
+      - ls
       - pipenv run make html
       - cd ../
   env:
