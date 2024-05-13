@@ -5,6 +5,28 @@ import sys
 
 import django
 
+# Note: You may need to change the path to match
+# your project's structure
+
+# For discovery of Python modules when building from with docs/.
+sys.path.insert(0, os.path.abspath(".."))
+# For discovery of Python modules when building from root using make -C docs/ (which makes the CWD docs/source, i.e.,
+# where this file is).
+sys.path.insert(1, os.path.abspath("../.."))
+
+# -- Custom stuff for django.
+# Borrowed from https://daniel.feldroy.com/posts/2023-01-configuring-sphinx-auto-doc-with-django
+
+# This tells Django where to find the settings file
+os.environ["DJANGO_SETTINGS_MODULE"] = "biospecdb.settings.dev"
+
+print(os.environ["DJANGO_SETTINGS_MODULE"], sys.path)
+
+
+# This activates Django and makes it possible for Sphinx to
+# autodoc your project
+django.setup()
+# -- END Custom stuff for django.
 
 # -- Project information
 from biospecdb import __project__, __version__
@@ -65,16 +87,3 @@ epub_show_urls = 'footnote'
 
 autosummary_generate = True
 autodoc_inherit_docstrings = True
-
-# -- Custom stuff for django.
-# Borrowed from https://daniel.feldroy.com/posts/2023-01-configuring-sphinx-auto-doc-with-django
-
-# Note: You may need to change the path to match
-# your project's structure
-sys.path.insert(0, os.path.abspath(".."))  # For discovery of Python modules
-
-# This tells Django where to find the settings file
-os.environ["DJANGO_SETTINGS_MODULE"] = "biospecdb.settings.dev"
-# This activates Django and makes it possible for Sphinx to
-# autodoc your project
-django.setup()
