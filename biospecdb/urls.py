@@ -17,11 +17,12 @@ Including another URLconf
 from decorator_include import decorator_include
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic.base import RedirectView
+from django.views.static import serve
 
 from uploader import views
 from uploader.admin import data_admin
@@ -65,6 +66,10 @@ urlpatterns = [
     path('admin/', admin.site.urls)
 ]
 
-if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+@login_required(login_url="/admin/login/")
+def protected_serve(request, path, document_root=None, show_indexes=False):
+    return serve(request, path, document_root, show_indexes)
+
+
+urlpatterns += static(settings.MEDIA_URL, view=protected_serve, document_root=settings.MEDIA_ROOT)
