@@ -15,6 +15,7 @@ STORAGES = {
             "default_acl": "private",  # https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html#canned-acl
             "querystring_auth": True,  # Query parameter authentication from generated URLs.
             "querystring_expire": os.getenv("AWS_QUERYSTRING_AUTH"),  # The number of seconds that a generated URL is valid for.
+            "object_parameters": {"Cache-Control": "no-cache"}
         },
     },
     "staticfiles": {
