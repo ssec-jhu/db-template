@@ -1,9 +1,5 @@
 #!/bin/bash
 
-ls
-
-ls docs/
-
 set -e
 
 # Collect static files.
