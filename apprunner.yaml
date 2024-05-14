@@ -79,3 +79,5 @@ run:
       value-from: "arn:aws:secretsmanager:eu-west-2:339712857727:secret:EMAIL_HOST_PASSWORD-kPI0AW"
     - name: EMAIL_SUBJECT_PREFIX
       value-from: "arn:aws:secretsmanager:eu-west-2:339712857727:secret:EMAIL_SUBJECT_PREFIX-9oWLpA"
+    - name: AWS_QUERYSTRING_AUTH
+      value-from: "arn:aws:secretsmanager:eu-west-2:339712857727:secret:AWS_QUERYSTRING_AUTH-VxbRLV"

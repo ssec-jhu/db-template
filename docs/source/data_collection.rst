@@ -37,6 +37,14 @@ In the example below we filter patients by those that have results for a Covid `
 
 .. image:: ../_static/patient_list_filtered.png
 
+Downloading
+^^^^^^^^^^^
+
+When viewing data, both the SpectralData_ and `Bulk Data Uploads`_ files can be downloaded by clicking on the relevant URL link for the given view.
+
+.. note:: As a security measure the download URLs are only temporary. Attempting to use them once they have expired will not work and will result in a ``AccessDenied`` error. To generate new ones, please refresh the page.
+
+
 Adding
 ^^^^^^
 
@@ -165,6 +173,9 @@ The data is expected to be of the following table layout of just two rows. The f
 Specific examples for each format can be found on `GitHub <https://github.com/RISPaDD/biospecdb/tree/main/biospecdb/apps/uploader/tests/data>`_.
 E.g., `sample.csv <https://github.com/RISPaDD/biospecdb/blob/main/biospecdb/apps/uploader/tests/data/sample.csv>`_.
 
+.. note:: As a security measure the download URLs are only temporary. Attempting to use them once they have expired will not work and will result in a ``AccessDenied`` error. To generate new ones, please refresh the page.
+
+
 Bulk Data Uploads
 ^^^^^^^^^^^^^^^^^
 
@@ -186,7 +197,7 @@ The ``Meta data file`` will include patient ``observations`` with a column heade
 The observable names are aliased to more human readable names, and since these are dynamic within the database they cannot be statically listed within this manual.
 Furthermore, since privileged permissions are required to use this form, please reach out to the site administrator for a list of all meta data column names.
 
-
 Specific examples for each format can be found on `GitHub <https://github.com/RISPaDD/biospecdb/tree/main/biospecdb/apps/uploader/tests/data>`_.
 E.g., `meta_data.csv <https://github.com/RISPaDD/biospecdb/blob/main/biospecdb/apps/uploader/tests/data/meta_data.csv>`_ and `spectral_data.csv <https://github.com/RISPaDD/biospecdb/blob/main/biospecdb/apps/uploader/tests/data/spectral_data.csv>`_.
 
+.. note:: As a security measure the download URLs are only temporary. Attempting to use them once they have expired will not work and will result in a ``AccessDenied`` error. To generate new ones, please refresh the page.

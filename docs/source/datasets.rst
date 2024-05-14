@@ -20,6 +20,8 @@ From there the datasets themselves can be downloaded as zip files by clicking on
 
 .. image:: ../_static/dataset_list_download.png
 
+.. note:: As a security measure the download URLs are only temporary. Attempting to use them once they have expired will not work and will result in a ``AccessDenied`` error. To generate new ones, please refresh the page.
+
 Datasets can be filtered by name.
 
 .. image:: ../_static/dataset_filter.png
