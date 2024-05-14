@@ -10,7 +10,11 @@ STORAGES = {
             "bucket_name": os.getenv("AWS_STORAGE_BUCKET_NAME"),
             "region_name": os.getenv("AWS_S3_REGION_NAME"),
             "use_ssl": True,
-            "url_protocol": "https"
+            "url_protocol": "https",
+            "file_overwrite": False,  # Set this to False to have extra characters appended.
+            "default_acl": "private",  # https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html#canned-acl
+            "querystring_auth": True,  # Query parameter authentication from generated URLs.
+            "querystring_expire": 60  # The number of seconds that a generated URL is valid for.
         },
     },
     "staticfiles": {
