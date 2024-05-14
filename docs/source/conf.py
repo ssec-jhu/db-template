@@ -20,9 +20,6 @@ sys.path.insert(1, os.path.abspath("../.."))
 # This tells Django where to find the settings file
 os.environ["DJANGO_SETTINGS_MODULE"] = "biospecdb.settings.dev"
 
-print(os.environ["DJANGO_SETTINGS_MODULE"], sys.path)
-
-
 # This activates Django and makes it possible for Sphinx to
 # autodoc your project
 django.setup()
