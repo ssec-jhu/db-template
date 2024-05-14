@@ -5,6 +5,7 @@ build:
     build:
       - pip3 install pipenv
       - pipenv install -r requirements/prd.txt
+      - pipenv run pip install --no-deps .
     post-build:
       - pipenv install -r requirements/docs.txt
       - pipenv run make -C docs html
