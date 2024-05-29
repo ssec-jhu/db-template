@@ -2,7 +2,7 @@ import logging
 
 from django.conf import settings
 
-from biospecdb.qc.qcfilter import QcFilter, QCValidationError
+from biodb.qc.qcfilter import QcFilter, QCValidationError
 from uploader.models import SpectralData
 
 log = logging.getLogger()
@@ -13,7 +13,7 @@ class QcManager:
     def __init__(self):
         if settings.DISABLE_QC_MANAGER:
             # Disable this class for now as #69 made it obsolete, however, there's a very good chance it will be needed
-            # when implementing background tasks for https://github.com/rispadd/biospecdb/pull/77.
+            # when implementing background tasks for https://github.com/rispadd/biodb/pull/77.
             raise NotImplementedError()
 
         self._validators = {}

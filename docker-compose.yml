@@ -2,11 +2,11 @@ version: '3.8'
 
 services:
   db-setup:
-    image: biospecdb
+    image: biodb
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: biospecdb-db-initializer
+    container_name: biodb-db-initializer
     restart: "no"
     volumes:
       - db-data:/app/db
@@ -14,7 +14,7 @@ services:
       - bulk-upload-files:/app/raw_data
       - spectaldata-files:/app/datasets
     environment:
-      DJANGO_SETTINGS_MODULE: biospecdb.settings.prd
+      DJANGO_SETTINGS_MODULE: biodb.settings.prd
     secrets:
       - superuser_password
       - django_secret_key
@@ -39,7 +39,7 @@ services:
     depends_on:
       db-setup:
         condition: service_completed_successfully
-    image: biospecdb
+    image: biodb
     deploy:
       mode: global
       restart_policy:
@@ -56,7 +56,7 @@ services:
       - dataset-catalog-files:/app/datasets
       - static_files:/app/static
     environment:
-      DJANGO_SETTINGS_MODULE: biospecdb.settings.prd
+      DJANGO_SETTINGS_MODULE: biodb.settings.prd
     secrets:
       - django_secret_key
       - email_api_key
@@ -81,7 +81,7 @@ services:
         delay: 5s
         max_attempts: 3
         window: 10s
-    container_name: biospecdb-nginx
+    container_name: biodb-nginx
     ports:
       - "80:80"
       - "443:443"

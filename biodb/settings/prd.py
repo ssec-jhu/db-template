@@ -5,7 +5,7 @@ from .base import *  # noqa F403
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-# e.g., python manage.py check --deploy --settings=biospecdb.settings.prd
+# e.g., python manage.py check --deploy --settings=biodb.settings.prd
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ["SECRET_KEY"]

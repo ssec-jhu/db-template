@@ -13,7 +13,7 @@ from factory.django import DjangoModelFactory
 import pytest
 
 
-from biospecdb.util import find_package_location
+from biodb.util import find_package_location
 from uploader.models import SpectralData, UploadedFile, Center
 from user.models import Center as UserCenter
 

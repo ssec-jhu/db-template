@@ -16,6 +16,6 @@ authors:
 - family-names: "Mitschang"
   given-names: "Arik"
   orcid: "https://orcid.org/0000-0001-9239-012X"
-title: "BioSpecDB"
+title: "biodb"
 doi: "10048241"
-url: "https://github.com/rispadd/biospecdb"
+url: "https://github.com/rispadd/biodb"

@@ -6,7 +6,7 @@ from django.core.files.base import ContentFile
 from django.db import transaction
 from django.db.models import Q
 
-from biospecdb.util import get_object_or_raise_validation
+from biodb.util import get_object_or_raise_validation
 import uploader.io
 
 
@@ -107,7 +107,7 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                         continue
 
                     # TODO: Should the following logic belong to Observation.__init__()?
-                    #  See https://github.com/rispadd/biospecdb/issues/42
+                    #  See https://github.com/rispadd/biodb/issues/42
                     observation_value = Observable.Types(observable.value_class).cast(observation_value)
                     observation = Observation(observable=observable,
                                               visit=visit,

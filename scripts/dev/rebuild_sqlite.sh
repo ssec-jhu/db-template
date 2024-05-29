@@ -10,7 +10,7 @@ rm db/*.sqlite3
 set -e
 
 export DB_VENDOR=sqlite
-export DJANGO_SETTINGS_MODULE=biospecdb.settings.dev
+export DJANGO_SETTINGS_MODULE=biodb.settings.dev
 
 # Collect all static files to be served.
 # NOTE: `manage.py runserver` does this automatically, however, serving from gunicorn obviously doesn't.

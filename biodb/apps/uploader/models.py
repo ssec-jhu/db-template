@@ -15,8 +15,8 @@ from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 import pandas as pd
 
-from biospecdb.util import get_field_value, get_object_or_raise_validation, is_valid_uuid, lower, to_uuid
-from biospecdb.qc.qcfilter import QcFilter
+from biodb.util import get_field_value, get_object_or_raise_validation, is_valid_uuid, lower, to_uuid
+from biodb.qc.qcfilter import QcFilter
 import uploader.io
 from uploader.loaddata import save_data_to_db
 from uploader.sql import secure_name
@@ -26,7 +26,7 @@ from user.models import BaseCenter as UserBaseCenter
 # Changes here need to be migrated, committed, and activated.
 # See https://docs.djangoproject.com/en/4.2/intro/tutorial02/#activating-models
 # python manage.py makemigrations uploader
-# git add biospecdb/apps/uploader/migrations
+# git add biodb/apps/uploader/migrations
 # git commit -asm"Update uploader model(s)"
 # python manage.py migrate --database=bsr
 
@@ -898,11 +898,11 @@ class SpectralData(DatedModel):
             self.data = cleaned_file
 
     #@transaction.atomic(using="bsr")  # Really? Not sure if this even can be if run in background...
-    # See https://github.com/rispadd/biospecdb/issues/77
+    # See https://github.com/rispadd/biodb/issues/77
     def annotate(self, annotator=None, force=False) -> list:
         """ Run the quality control annotation on the spectral data. """
         # TODO: This needs to return early and run in the background.
-        # See https://github.com/rispadd/biospecdb/issues/77
+        # See https://github.com/rispadd/biodb/issues/77
 
         existing_annotators = self.get_annotators()
 
@@ -939,7 +939,7 @@ class SpectralData(DatedModel):
         # such that new data is complete such that it has associated QC metrics.
         if settings.AUTO_ANNOTATE:
             # TODO: This should return early and runs async in the background.
-            # See https://github.com/rispadd/biospecdb/issues/77
+            # See https://github.com/rispadd/biodb/issues/77
             self.annotate()
 
     def asave(self, *args, **kwargs):
@@ -1204,7 +1204,7 @@ class QCAnnotation(DatedModel):
             return self.annotator.cast(self.value)
 
     def run(self, save=True):
-        # NOTE: This waits. See https://github.com/rispadd/biospecdb/issues/77
+        # NOTE: This waits. See https://github.com/rispadd/biodb/issues/77
         value = self.annotator.run(self.spectral_data)
         self.value = value
 

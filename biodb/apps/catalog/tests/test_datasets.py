@@ -5,7 +5,7 @@ import zipfile
 
 import pytest
 
-from biospecdb import __version__
+from biodb import __version__
 from catalog.models import Dataset
 from explorer.models import Query
 from uploader.models import SpectralData

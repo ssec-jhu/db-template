@@ -16,7 +16,7 @@ from uploader.models import BioSample, BioSampleType, Observable, Instrument, Pa
 from uploader.loaddata import save_data_to_db
 from user.models import Center as UserCenter
 from uploader.models import Center as UploaderCenter
-import biospecdb.util
+import biodb.util
 from uploader.tests.conftest import bulk_upload, DATA_PATH
 
 
@@ -342,7 +342,7 @@ class TestSpectralData:
 
     def test_no_file_validation(self, db):
         """ Test that a validation error is raised rather than any other python exception which would indicate a bug.
-            See https://github.com/rispadd/biospecdb/pull/181
+            See https://github.com/rispadd/biodb/pull/181
         """
         data = SpectralData()
         with pytest.raises(ValidationError):
@@ -366,7 +366,7 @@ class TestSpectralData:
 
     @pytest.mark.skip("Unimplemented See #141")
     def test_all_files_deleted_upon_transaction_failure(self):
-        # I'm not sure how to mock this... See https://github.com/rispadd/biospecdb/issues/141
+        # I'm not sure how to mock this... See https://github.com/rispadd/biodb/issues/141
         ...
 
     @pytest.mark.parametrize("ext", uploader.io.FileFormats.list())
@@ -487,7 +487,7 @@ class TestUploadedFile:
     def test_index_match_validation(self, db, observables, instruments, file_ext, tmp_path):
         meta_data_path = (DATA_PATH / "meta_data").with_suffix(file_ext)
 
-        biospecdb.util.mock_bulk_spectral_data(path=tmp_path)
+        biodb.util.mock_bulk_spectral_data(path=tmp_path)
         spectral_file_path = tmp_path / "spectral_data.csv"
         with meta_data_path.open(mode="rb") as meta_data, spectral_file_path.open(mode="rb") as spectral_data:
             data_upload = UploadedFile(meta_data_file=django.core.files.File(meta_data,

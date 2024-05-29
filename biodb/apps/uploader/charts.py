@@ -8,7 +8,7 @@ import plotly.graph_objects as go
 
 import uploader.io
 from uploader.models import Observable, Patient, SpectralData
-from biospecdb.util import to_uuid
+from biodb.util import to_uuid
 
 logger = logging.getLogger(__name__)
 

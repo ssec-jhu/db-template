@@ -1,4 +1,4 @@
-__project__ = "biospecdb"
+__project__ = "biodb"
 
 try:
     from ._version import __version__

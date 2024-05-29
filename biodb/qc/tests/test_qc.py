@@ -2,8 +2,8 @@ import pytest
 
 from django.conf import settings
 
-from biospecdb.qc.qcmanager import QcManager
-from biospecdb.qc.qcfilter import QcFilter, QCValidationError
+from biodb.qc.qcmanager import QcManager
+from biodb.qc.qcfilter import QcFilter, QCValidationError
 
 
 class TestFilter(QcFilter):

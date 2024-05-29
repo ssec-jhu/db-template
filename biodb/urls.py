@@ -1,4 +1,4 @@
-"""biospecdb URL Configuration
+"""biodb URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.1/topics/http/urls/
@@ -36,7 +36,7 @@ urlpatterns = [
     path("version/", views.version, name="version"),
     path("favicon.ico", views.favicon),
     path('', RedirectView.as_view(pattern_name="home", permanent=True)),
-    path('uploader/', include('biospecdb.apps.uploader.urls')),
+    path('uploader/', include('biodb.apps.uploader.urls')),
     path('home/', views.home, name='home'),
 
     # Note: The following perms are also specified by settings.EXPLORER_PERMISSION_VIEW and

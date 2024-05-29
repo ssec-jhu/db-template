@@ -7,9 +7,9 @@ from django.core.management import call_command
 from django.utils.module_loading import import_string
 
 from uploader.models import QCAnnotation, QCAnnotator, SpectralData
-import biospecdb.qc.qcfilter
+import biodb.qc.qcfilter
 
-import biospecdb.util
+import biodb.util
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
@@ -25,13 +25,13 @@ class TestQCFunctionality:
 
     def test_unique_annotator(self, qcannotators):
         with pytest.raises(ValidationError, match="already exists"):
-            QCAnnotator(name="sum", fully_qualified_class_name="biospecdb.qc.qcfilter.QcSum").full_clean()
+            QCAnnotator(name="sum", fully_qualified_class_name="biodb.qc.qcfilter.QcSum").full_clean()
 
         with pytest.raises(ValidationError, match="already exists"):
-            QCAnnotator(name="huh", fully_qualified_class_name="biospecdb.qc.qcfilter.QcSum").full_clean()
+            QCAnnotator(name="huh", fully_qualified_class_name="biodb.qc.qcfilter.QcSum").full_clean()
 
         with pytest.raises(ValidationError, match="already exists"):
-            QCAnnotator(name="sum", fully_qualified_class_name="biospecdb.qc.qcfilter.QcFilter").full_clean()
+            QCAnnotator(name="sum", fully_qualified_class_name="biodb.qc.qcfilter.QcFilter").full_clean()
 
     def test_new_annotation(self, qcannotators, mock_data_from_files):
         annotator = QCAnnotator.objects.get(name="sum")
@@ -89,7 +89,7 @@ class TestQCFunctionality:
         monkeypatch.setattr(settings, "RUN_DEFAULT_ANNOTATORS_WHEN_SAVED", True)
 
         annotator = QCAnnotator(name="sum",
-                                fully_qualified_class_name="biospecdb.qc.qcfilter.QcSum",
+                                fully_qualified_class_name="biodb.qc.qcfilter.QcSum",
                                 value_type="FLOAT")
         annotator.full_clean()
         annotator.save()
@@ -119,7 +119,7 @@ class TestQCFunctionality:
         monkeypatch.setattr(settings, "RUN_DEFAULT_ANNOTATORS_WHEN_SAVED", False)
 
         annotator = QCAnnotator(name="test",
-                                fully_qualified_class_name="biospecdb.qc.qcfilter.QcTestDummyTrue",
+                                fully_qualified_class_name="biodb.qc.qcfilter.QcTestDummyTrue",
                                 value_type="BOOL")
         annotator.full_clean()
         annotator.save()
@@ -135,7 +135,7 @@ class TestQCFunctionality:
         monkeypatch.setattr(settings, "RUN_DEFAULT_ANNOTATORS_WHEN_SAVED", True)
 
         annotator = QCAnnotator(name="test",
-                                fully_qualified_class_name="biospecdb.qc.qcfilter.QcTestDummyTrue",
+                                fully_qualified_class_name="biodb.qc.qcfilter.QcTestDummyTrue",
                                 value_type="BOOL")
         annotator.full_clean()
         annotator.save()
@@ -169,11 +169,11 @@ class TestQCFunctionality:
             assert pytest.approx(annotation.get_value()) == expected_results
 
         # We'll need this later.
-        old_QcSum_run = biospecdb.qc.qcfilter.QcSum.run
+        old_QcSum_run = biodb.qc.qcfilter.QcSum.run
 
         # monkeypatch existing annotator class to QcTestDummyTrue.
-        monkeypatch.setattr(biospecdb.qc.qcfilter.QcSum, "run", biospecdb.qc.qcfilter.QcTestDummyTrue.run)
-        obj = import_string("biospecdb.qc.qcfilter.QcSum")
+        monkeypatch.setattr(biodb.qc.qcfilter.QcSum, "run", biodb.qc.qcfilter.QcTestDummyTrue.run)
+        obj = import_string("biodb.qc.qcfilter.QcSum")
         assert obj.run(obj, None) is True
 
         # Note: Using ``subprocess.call`` won't work since the new process re-imports and the
@@ -185,7 +185,7 @@ class TestQCFunctionality:
             assert annotation.value == "True"
 
         # Revert patch.
-        monkeypatch.setattr(biospecdb.qc.qcfilter.QcSum, "run", old_QcSum_run)
+        monkeypatch.setattr(biodb.qc.qcfilter.QcSum, "run", old_QcSum_run)
 
         # Run again.
         call_command("run_qc_annotators")
@@ -196,7 +196,7 @@ class TestQCFunctionality:
 
         # Now this is the actual test... (everything above was just a sanity check for the test itself)
         # Re-patch with QcTestDummyTrue
-        monkeypatch.setattr(biospecdb.qc.qcfilter.QcSum, "run", biospecdb.qc.qcfilter.QcTestDummyTrue.run)
+        monkeypatch.setattr(biodb.qc.qcfilter.QcSum, "run", biodb.qc.qcfilter.QcTestDummyTrue.run)
 
         # ...and test that ``--no_reruns`` works as annotations != True.
         call_command("run_qc_annotators", "--no_reruns")
@@ -205,7 +205,7 @@ class TestQCFunctionality:
 
     def test_no_file_validation(self, qcannotators):
         """ Test that a validation error is raised rather than any other python exception which would indicate a bug.
-            See https://github.com/rispadd/biospecdb/pull/182
+            See https://github.com/rispadd/biodb/pull/182
         """
         annotation = QCAnnotation(annotator=QCAnnotator.objects.get(name="sum"))
         with pytest.raises(ValidationError):
@@ -213,7 +213,7 @@ class TestQCFunctionality:
 
     def test_no_file_related_error(self, qcannotators):
         """ Test that a validation error is raised rather than any other python exception which would indicate a bug.
-            See https://github.com/rispadd/biospecdb/pull/182
+            See https://github.com/rispadd/biodb/pull/182
         """
         annotation = QCAnnotation(annotator=QCAnnotator.objects.get(name="sum"))
         with pytest.raises(QCAnnotation.spectral_data.RelatedObjectDoesNotExist):

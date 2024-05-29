@@ -14,7 +14,7 @@ from django.db import models
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 
-from biospecdb import __version__
+from biodb import __version__
 from explorer.models import Query
 from uploader.base_models import DatedModel
 

@@ -1,7 +1,7 @@
 """Gunicorn *development* config file"""
 
 # Django WSGI application path in pattern MODULE_NAME:VARIABLE_NAME
-wsgi_app = "biospecdb.wsgi:application"
+wsgi_app = "biodb.wsgi:application"
 
 # The socket to bind
 bind = "0.0.0.0:8000"

@@ -10,7 +10,7 @@ from django.db.utils import OperationalError, ProgrammingError
 from django import forms
 from nested_admin import NestedStackedInline, NestedTabularInline, NestedModelAdmin
 
-from biospecdb.util import to_bool
+from biodb.util import to_bool
 from .models import BioSample, Observable, Instrument, Patient, SpectralData, Observation, UploadedFile, Visit,\
     QCAnnotator, QCAnnotation, Center, get_center, BioSampleType, SpectraMeasurementType
 from uploader.forms import ModelForm

@@ -4,5 +4,5 @@ IO & File Storage Utilities
 .. autosummary::
    :toctree: generated
 
-   biospecdb.apps.uploader.io
-   biospecdb.apps.uploader.loaddata
+   biodb.apps.uploader.io
+   biodb.apps.uploader.loaddata

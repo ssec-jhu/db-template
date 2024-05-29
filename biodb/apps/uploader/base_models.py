@@ -5,7 +5,7 @@ from django.core.exceptions import NON_FIELD_ERRORS, ValidationError
 from django.db import connection, models, transaction
 from django.utils.module_loading import import_string
 
-import biospecdb.util
+import biodb.util
 from uploader.sql import drop_view, update_view
 
 
@@ -131,7 +131,7 @@ class Types(TextChoices):
             return
 
         if self.name == "BOOL":
-            return biospecdb.util.to_bool(value)
+            return biodb.util.to_bool(value)
         elif self.name == "STR":
             return str(value)
         elif self.name == "INT":
@@ -217,4 +217,4 @@ class ModelWithViewDependency(DatedModel):
                 sql_view.update_view()
 
     def asave(self, *args, **kwargs):
-        raise NotImplementedError("See https://github.com/rispadd/biospecdb/issues/66")
+        raise NotImplementedError("See https://github.com/rispadd/biodb/issues/66")

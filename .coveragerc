@@ -5,7 +5,7 @@ omit =
     */migrations/*
     manage.py
     _version.py
-    biospecdb/apps/dash/*
-    biospecdb/asgi.py
-    biospecdb/wsgi.py
-    biospecdb/settings/*
+    biodb/apps/dash/*
+    biodb/asgi.py
+    biodb/wsgi.py
+    biodb/settings/*

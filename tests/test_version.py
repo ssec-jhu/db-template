@@ -1,4 +1,4 @@
-from biospecdb import __version__
+from biodb import __version__
 
 from django.test import Client
 

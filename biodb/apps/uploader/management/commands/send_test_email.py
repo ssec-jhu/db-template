@@ -36,7 +36,7 @@ class Command(BaseCommand):
                 form.save(**opts)
             else:
                 email_from = settings.EMAIL_FROM
-                send_mail("BiospecDB test email", "This is just a test.", email_from, [email_address],
+                send_mail("biodb test email", "This is just a test.", email_from, [email_address],
                           fail_silently=False)
             self.stdout.write(self.style.SUCCESS(f"Test email sent to {email_address}, check inbox for verification."))
         except CommandError:

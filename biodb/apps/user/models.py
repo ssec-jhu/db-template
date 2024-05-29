@@ -16,7 +16,7 @@ from django.utils.translation import gettext_lazy as _
 # Changes here need to be migrated, committed, and activated.
 # See https://docs.djangoproject.com/en/4.2/intro/tutorial02/#activating-models
 # python manage.py makemigrations user
-# git add biospecdb/apps/user/migrations
+# git add biodb/apps/user/migrations
 # git commit -asm"Update user model(s)"
 # python manage.py migrate
 
