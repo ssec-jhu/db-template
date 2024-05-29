@@ -1,10 +1,10 @@
 User Manual
 ===========
 
-**Welcome to SPaDDa's documentation!**
+**Welcome to package_name's documentation!**
 
 
-Spectroscopy for Patient Diagnosis Database  `SPaDDa <../../>`_ is a website for collecting patient biosample and spectroscopy data.
+A base template for creating Django applications for collecting patient data.
 
 Contents
 --------

@@ -32,7 +32,7 @@ services:
       && python manage.py update_sql_views flat_view
       && python manage.py crontab add
       && python manage.py prune_files
-      && DJANGO_SUPERUSER_PASSWORD=$(cat /run/secrets/superuser_password) python manage.py createsuperuser --noinput --username=admin --email=admin@spadda.org --center=16721944-ff91-4adf-8fb3-323b99aba801
+      && DJANGO_SUPERUSER_PASSWORD=$(cat /run/secrets/superuser_password) python manage.py createsuperuser --noinput --username=admin --email=admin@jhu.org --center=16721944-ff91-4adf-8fb3-323b99aba801
       && touch /app/db/setup_complete.txt || echo done!"
 
   web:

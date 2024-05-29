@@ -19,7 +19,7 @@
     "model": "user.Center",
     "pk": "16721944-ff91-4adf-8fb3-323b99aba801",
     "fields": {
-      "name": "spadda",
+      "name": "jhu",
       "country": "UK"
     }
   },
@@ -43,7 +43,7 @@
     "model": "uploader.Center",
     "pk": "16721944-ff91-4adf-8fb3-323b99aba801",
     "fields": {
-      "name": "spadda",
+      "name": "jhu",
       "country": "UK"
     }
   }

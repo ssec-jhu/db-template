@@ -9,12 +9,12 @@ from uploader.models import Center as UploaderCenter
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestCenters:
     def test_centers_fixture(self, centers):
-        spadda_from_user_table = UserCenter.objects.get(name="spadda")
-        spadda_from_uploader_table = UploaderCenter.objects.get(name="spadda")
+        jhu_from_user_table = UserCenter.objects.get(name="jhu")
+        jhu_from_uploader_table = UploaderCenter.objects.get(name="jhu")
 
-        assert spadda_from_user_table.pk == spadda_from_uploader_table.pk
-        assert spadda_from_user_table.name == spadda_from_uploader_table.name
-        assert spadda_from_user_table.country == spadda_from_uploader_table.country
+        assert jhu_from_user_table.pk == jhu_from_uploader_table.pk
+        assert jhu_from_user_table.name == jhu_from_uploader_table.name
+        assert jhu_from_user_table.country == jhu_from_uploader_table.country
 
     def test_validation(self):
         UserCenter.objects.create(name="test", country="nowhere")

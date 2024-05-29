@@ -4,7 +4,7 @@ dynamic = ["version"]
 authors = [
     {name = "Scientifc Software Engineering Center at JHU", email = "ssec@jhu.edu"},
 ]
-description = "Spectroscopy for Patient Diagnosis Database (SPaDDa)"
+description = "A base template for creating Django applications for collecting patient data."
 readme = "README.md"
 license = {file = "LICENSE"}
 

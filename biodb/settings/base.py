@@ -17,7 +17,7 @@ import sys
 from biodb import __project__
 
 
-SITE_HEADER = "Spectroscopy for Patient Diagnosis Database (SPaDDa)"
+SITE_HEADER = "A base template for creating Django applications for collecting patient data."
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent

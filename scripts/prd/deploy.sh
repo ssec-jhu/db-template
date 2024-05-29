@@ -29,6 +29,6 @@ pipenv run python3 manage.py crontab add
 pipenv run python3 manage.py prune_files
 
 # Create superuser.
-pipenv run python3 manage.py makesuperuser --noinput --username=admin --email=admin@spadda.org --center=16721944-ff91-4adf-8fb3-323b99aba801
+pipenv run python3 manage.py makesuperuser --noinput --username=admin --email=admin@jhu.org --center=16721944-ff91-4adf-8fb3-323b99aba801
 
 pipenv run gunicorn -c config/gunicorn/prd.py

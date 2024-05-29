@@ -8,7 +8,7 @@
 
 ![SSEC-JHU Logo](docs/_static/SSEC_logo_horiz_blue_1152x263.png)
 
-Spectroscopy for Patient Diagnosis Database (SPaDDa)
+A base template for creating Django applications for collecting patient data.
 
 # Research Project
 

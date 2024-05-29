@@ -53,7 +53,7 @@ def staffuser(centers):
     user = User.objects.create(username="staff",
                                email="staff@jhu.edu",
                                password="secret",
-                               center=UserCenter.objects.get(name="spadda"),
+                               center=UserCenter.objects.get(name="jhu"),
                                is_staff=True,
                                is_superuser=False)
     return user
@@ -64,7 +64,7 @@ def superuser(centers):
     return User.objects.create(username="admin",
                                email="admin@jhu.edu",
                                password="secret",
-                               center=UserCenter.objects.get(name="spadda"),
+                               center=UserCenter.objects.get(name="jhu"),
                                is_staff=True,
                                is_superuser=True)
 
@@ -194,7 +194,7 @@ class TestRestrictedByCenterMixin:
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestUploadedFile:
     def test_non_form_field_validation(self, mock_data_from_files):
-        # Note: ``mock_data_from_files`` uses Center(name="spadda")``, so create a new user of a different center.
+        # Note: ``mock_data_from_files`` uses Center(name="jhu")``, so create a new user of a different center.
         user = User.objects.create(username="staff2",
                                    email="staff2@jhu.edu",
                                    password="secret",
