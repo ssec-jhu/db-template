@@ -5,7 +5,7 @@ import multiprocessing
 
 
 # Django WSGI application path in pattern MODULE_NAME:VARIABLE_NAME
-wsgi_app = "biospecdb.wsgi:application"
+wsgi_app = "biodb.wsgi:application"
 
 # The socket to bind
 bind = f"0.0.0.0:{os.getenv('HOST_PORT', 8000)}"

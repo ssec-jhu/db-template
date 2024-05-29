@@ -1,4 +1,4 @@
 Management
 ------------
 
-See `Biospecdb.README:DB Management <https://github.com/RISPaDD/biospecdb?tab=readme-ov-file#db-management>`_.
+See `biodb.README:DB Management <https://github.com/ssec-jhu/biodb?tab=readme-ov-file#db-management>`_.

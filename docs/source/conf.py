@@ -18,7 +18,7 @@ sys.path.insert(1, os.path.abspath("../.."))
 # Borrowed from https://daniel.feldroy.com/posts/2023-01-configuring-sphinx-auto-doc-with-django
 
 # This tells Django where to find the settings file
-os.environ["DJANGO_SETTINGS_MODULE"] = "biospecdb.settings.dev"
+os.environ["DJANGO_SETTINGS_MODULE"] = "biodb.settings.dev"
 
 # This activates Django and makes it possible for Sphinx to
 # autodoc your project
@@ -26,7 +26,7 @@ django.setup()
 # -- END Custom stuff for django.
 
 # -- Project information
-from biospecdb import __project__, __version__
+from biodb import __project__, __version__
 
 project = __project__
 copyright = '2023, SSEC-JHU'
@@ -72,7 +72,7 @@ if html_theme == 'sphinx_book_theme':
             'image_dark': '../_static/SSEC_logo_vert_white_lg_1184x661.png',
             'text': f'{html_title}',
         },
-        'repository_url': 'https://github.com/rispadd/biospecdb',
+        'repository_url': 'https://github.com/ssec-jhu/biodb',
         'use_repository_button': True,
     })
 

@@ -1,0 +1,50 @@
+[
+  {
+    "model": "user.Center",
+    "pk": "94762eea-8d53-4251-9f0b-807dd66f97a1",
+    "fields": {
+      "name": "Imperial College London",
+      "country": "UK"
+    }
+  },
+  {
+    "model": "user.Center",
+    "pk": "d2160c33-0bbc-4605-a2ce-7e83296e7c84",
+    "fields": {
+      "name": "Oxford University",
+      "country": "UK"
+    }
+  },
+    {
+    "model": "user.Center",
+    "pk": "16721944-ff91-4adf-8fb3-323b99aba801",
+    "fields": {
+      "name": "jhu",
+      "country": "UK"
+    }
+  },
+  {
+    "model": "uploader.Center",
+    "pk": "94762eea-8d53-4251-9f0b-807dd66f97a1",
+    "fields": {
+      "name": "Imperial College London",
+      "country": "UK"
+    }
+  },
+  {
+    "model": "uploader.Center",
+    "pk": "d2160c33-0bbc-4605-a2ce-7e83296e7c84",
+    "fields": {
+      "name": "Oxford University",
+      "country": "UK"
+    }
+  },
+  {
+    "model": "uploader.Center",
+    "pk": "16721944-ff91-4adf-8fb3-323b99aba801",
+    "fields": {
+      "name": "jhu",
+      "country": "UK"
+    }
+  }
+]

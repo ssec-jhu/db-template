@@ -1,14 +1,14 @@
-# SSEC-JHU BioSpecDB
+# SSEC-JHU BioDB
 
-[![CI](https://github.com/rispadd/biospecdb/actions/workflows/ci.yml/badge.svg)](https://github.com/rispadd/biospecdb/actions/workflows/ci.yml)
-[![Documentation Status](https://readthedocs.org/projects/biospecdb/badge/?version=latest)](https://biospecdb.readthedocs.io/en/latest/?badge=latest)
-[![codecov](https://codecov.io/gh/RISPaDD/biospecdb/graph/badge.svg?token=Ld95EDCYNZ)](https://codecov.io/gh/RISPaDD/biospecdb)
-[![Security](https://github.com/rispadd/biospecdb/actions/workflows/security.yml/badge.svg)](https://github.com/rispadd/biospecdb/actions/workflows/security.yml)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10048241.svg)](https://doi.org/10.5281/zenodo.10048241)
+[![CI](https://github.com/ssec-jhu/biodb/actions/workflows/ci.yml/badge.svg)](https://github.com/ssec-jhu/biodb/actions/workflows/ci.yml)
+[![Documentation Status](https://readthedocs.org/projects/biodb/badge/?version=latest)](https://biodb.readthedocs.io/en/latest/?badge=latest)
+[![codecov](https://codecov.io/gh/ssec-jhu/biodb/graph/badge.svg?token=EvpEdPLDKG)](https://codecov.io/gh/ssec-jhu/biodb)
+[![Security](https://github.com/ssec-jhu/biodb/actions/workflows/security.yml/badge.svg)](https://github.com/ssec-jhu/biodb/actions/workflows/security.yml)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.11391203.svg)](https://doi.org/10.5281/zenodo.11391203)
 
 ![SSEC-JHU Logo](docs/_static/SSEC_logo_horiz_blue_1152x263.png)
 
-Spectroscopy for Patient Diagnosis Database (SPaDDa)
+A base template for creating Django applications for collecting patient data.
 
 # Research Project
 
@@ -62,7 +62,7 @@ For additional cmds see the [Conda cheat-sheet](https://docs.conda.io/projects/c
   #### with Python ecosystem (for development):
   * Follow the above [Build with Python ecosystem instructions](#with-python-ecosystem).
   * For a completely fresh start and rebuild of the database: ``./scripts/dev/rebuild_sqlite.sh``.
-  * Run ``DJANGO_SETTINGS_MODULE=biospecdb.settings.dev python manage.py runserver 0.0.0.0:8000``
+  * Run ``DJANGO_SETTINGS_MODULE=biodb.settings.dev python manage.py runserver 0.0.0.0:8000``
   * The site can then be accessed using any browser from ``http://localhost:8000``
 
   ### Self signed SSL certificates:
@@ -117,8 +117,8 @@ When the models are changed only the following migration commands are required:
 * ``python manage.py makemigrations user``
 * ``python manage.py makemigrations uploader``
 * ``python manage.py makemigrations catalog``
-* ``git add biospecdb/apps/uploader/migrations``
-* ``git add biospecdb/apps/user/migrations``
+* ``git add biodb/apps/uploader/migrations``
+* ``git add biodb/apps/user/migrations``
 * ``git commit -asm"Update model migrations"``
 * ``python manage.py migrate``
 * ``python manage.py migrate --database=bsr``
@@ -157,7 +157,7 @@ _NOTE: These commands must be run from the ``/app/`` directory on the server.
 
 The above management commands (and others) can be run in production from an EC2 instance correctly configured. To
 aid in shell setup, the following script can be executed:
- * ``source repo/biospecdb/scripts/prd/ec2_init.sh``
+ * ``source repo/biodb/scripts/prd/ec2_init.sh``
 
 _NOTE: ``scripts/prd/ec2_init.sh`` will export all AWS secrets as shell environment variables. 
 
@@ -180,7 +180,7 @@ Entries in the ``SpectralData`` table can be annotated by running ``QCAnnotators
 stored as an ``ACAnnotation`` associated with the ``SpectralData`` entry. The ``SpectralData`` table contains the actual
 spectral data file containing the wavelength and intensity values. It may be desirable to annotate this data with
 certain quality control metrics that can later be used to filter the data. Such quality control functions are to be
-implemented as a subclass of ``Biospecdb.app.uploader.qc.qcfilter.QcFilter``.
+implemented as a subclass of ``biodb.app.uploader.qc.qcfilter.QcFilter``.
 They can then be added to the database belonging to the ``QCAnnotator``
 table. Annotations of this annotators can then either be manually associated with a ``SpectralData`` entry manually via
 the admin form, or by "default" if the ``QCAnnotator.default = True``. They can also be run by using the
@@ -189,7 +189,7 @@ population of the ``QCAnnotation`` table is configurable and is described below.
 
 #### Settings:
 
-The following QC annotator settings are available in ``biospecdb.settings.base``:
+The following QC annotator settings are available in ``biodb.settings.base``:
 
  * ``AUTO_ANNOTATE``: If ``True`` and if default annotators exist in the DB, they will be automatically run upon
                       adding/updating ``SpectralData`` entries. _(Default: True)_
@@ -220,7 +220,7 @@ Facilitates in testing typos, syntax, style, and other simple code analysis test
 ### Security Checks:
 Facilitates in checking for security concerns using [Bandit](https://bandit.readthedocs.io/en/latest/index.html).
  * ``cd`` into repo dir.
- * ``bandit -c pyproject.toml --severity-level=medium -r biospecdb``
+ * ``bandit -c pyproject.toml --severity-level=medium -r biodb``
 
 ### Unit Tests:
 Facilitates in testing core package functionality at a modular level.
@@ -245,10 +245,6 @@ Facilitates in building, testing & viewing the docs.
  * ``make html``
  * To view the docs in your default browser run ``open docs/_build/html/index.html``.
 
-
-# The DB Model:
-
-![BioSpecDB Model.jpg](..%2F..%2F..%2FDownloads%2FBioSpecDB%20Model.jpg)
 
 ## Column Names:
 

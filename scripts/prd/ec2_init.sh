@@ -1,12 +1,12 @@
 #!/bin/bash
 
-conda activate biospecdb
+conda activate biodb
 
-cd repo/biospecdb
+cd repo/biodb
 git fetch
 git checkout origin/main -f
 
 export DB_VENDOR=postgresql
-export DJANGO_SETTINGS_MODULE=biospecdb.settings.aws
+export DJANGO_SETTINGS_MODULE=biodb.settings.aws
 
-export $(python -c "from biospecdb.util import print_aws_secrets;print_aws_secrets()")
+export $(python -c "from biodb.util import print_aws_secrets;print_aws_secrets()")

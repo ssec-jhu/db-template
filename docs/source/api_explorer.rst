@@ -36,7 +36,7 @@ Charts
 SQL
 ---
 
-.. currentmodule:: biospecdb
+.. currentmodule:: biodb
 .. autosummary::
    :toctree: generated
 

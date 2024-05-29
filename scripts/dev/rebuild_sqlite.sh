@@ -10,7 +10,7 @@ rm db/*.sqlite3
 set -e
 
 export DB_VENDOR=sqlite
-export DJANGO_SETTINGS_MODULE=biospecdb.settings.dev
+export DJANGO_SETTINGS_MODULE=biodb.settings.dev
 
 # Collect all static files to be served.
 # NOTE: `manage.py runserver` does this automatically, however, serving from gunicorn obviously doesn't.
@@ -34,5 +34,5 @@ python manage.py update_sql_views flat_view
 python manage.py prune_files
 
 # Creat superuser.
-# Note: This center ID is that for the spadda and the default password is "admin".
+# Note: This center ID is that for the jhu and the default password is "admin".
 DJANGO_SUPERUSER_PASSWORD="${DJANGO_SUPERUSER_PASSWORD:-admin}" python manage.py createsuperuser --noinput --username=admin --email=admin@jhu.edu --center=16721944-ff91-4adf-8fb3-323b99aba801

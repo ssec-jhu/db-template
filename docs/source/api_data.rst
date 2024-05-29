@@ -53,6 +53,6 @@ Quality Control Annotations
 .. autosummary::
    :toctree: generated
 
-   biospecdb.qc.qcfilter.QcFilter
+   biodb.qc.qcfilter.QcFilter
    uploader.models.QCAnnotator
    uploader.models.QCAnnotation

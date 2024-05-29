@@ -1,4 +1,4 @@
 Deployment
 ------------
 
-See `Biospecdb.README:Run instructions <https://github.com/RISPaDD/biospecdb?tab=readme-ov-file#run>`_.
+See `biodb.README:Run instructions <https://github.com/ssec-jhu/biodb?tab=readme-ov-file#run>`_.

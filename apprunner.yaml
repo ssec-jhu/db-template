@@ -10,7 +10,7 @@ build:
       - pipenv run make -C docs html
   env:
     - name: DJANGO_SETTINGS_MODULE
-      value: "biospecdb.settings.aws"
+      value: "biodb.settings.aws"
 run:
   runtime-version: 3.11
   pre-run:
@@ -24,7 +24,7 @@ run:
     - name: DB_VENDOR
       value: "postgresql"
     - name: DJANGO_SETTINGS_MODULE
-      value: "biospecdb.settings.aws"
+      value: "biodb.settings.aws"
   secrets:
     - name: EMAIL_USE_TLS
       value-from: "arn:aws:secretsmanager:eu-west-2:339712857727:secret:EMAIL_USE_TLS-KbwnER"
