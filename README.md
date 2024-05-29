@@ -1,4 +1,4 @@
-# SSEC-JHU biodb
+# SSEC-JHU BioDB
 
 [![CI](https://github.com/ssec-jhu/biodb/actions/workflows/ci.yml/badge.svg)](https://github.com/ssec-jhu/biodb/actions/workflows/ci.yml)
 [![Documentation Status](https://readthedocs.org/projects/biodb/badge/?version=latest)](https://biodb.readthedocs.io/en/latest/?badge=latest)
@@ -245,10 +245,6 @@ Facilitates in building, testing & viewing the docs.
  * ``make html``
  * To view the docs in your default browser run ``open docs/_build/html/index.html``.
 
-
-# The DB Model:
-
-![biodb Model.jpg](..%2F..%2F..%2FDownloads%2Fbiodb%20Model.jpg)
 
 ## Column Names:
 
