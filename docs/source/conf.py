@@ -72,7 +72,7 @@ if html_theme == 'sphinx_book_theme':
             'image_dark': '../_static/SSEC_logo_vert_white_lg_1184x661.png',
             'text': f'{html_title}',
         },
-        'repository_url': 'https://github.com/rispadd/biodb',
+        'repository_url': 'https://github.com/ssec-jhu/biodb',
         'use_repository_button': True,
     })
 

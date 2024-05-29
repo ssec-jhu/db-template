@@ -342,7 +342,6 @@ class TestSpectralData:
 
     def test_no_file_validation(self, db):
         """ Test that a validation error is raised rather than any other python exception which would indicate a bug.
-            See https://github.com/rispadd/biodb/pull/181
         """
         data = SpectralData()
         with pytest.raises(ValidationError):
@@ -366,7 +365,7 @@ class TestSpectralData:
 
     @pytest.mark.skip("Unimplemented See #141")
     def test_all_files_deleted_upon_transaction_failure(self):
-        # I'm not sure how to mock this... See https://github.com/rispadd/biodb/issues/141
+        # I'm not sure how to mock this...
         ...
 
     @pytest.mark.parametrize("ext", uploader.io.FileFormats.list())

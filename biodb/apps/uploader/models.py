@@ -898,11 +898,9 @@ class SpectralData(DatedModel):
             self.data = cleaned_file
 
     #@transaction.atomic(using="bsr")  # Really? Not sure if this even can be if run in background...
-    # See https://github.com/rispadd/biodb/issues/77
     def annotate(self, annotator=None, force=False) -> list:
         """ Run the quality control annotation on the spectral data. """
         # TODO: This needs to return early and run in the background.
-        # See https://github.com/rispadd/biodb/issues/77
 
         existing_annotators = self.get_annotators()
 
@@ -939,7 +937,6 @@ class SpectralData(DatedModel):
         # such that new data is complete such that it has associated QC metrics.
         if settings.AUTO_ANNOTATE:
             # TODO: This should return early and runs async in the background.
-            # See https://github.com/rispadd/biodb/issues/77
             self.annotate()
 
     def asave(self, *args, **kwargs):
@@ -1204,7 +1201,6 @@ class QCAnnotation(DatedModel):
             return self.annotator.cast(self.value)
 
     def run(self, save=True):
-        # NOTE: This waits. See https://github.com/rispadd/biodb/issues/77
         value = self.annotator.run(self.spectral_data)
         self.value = value
 

@@ -107,7 +107,6 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                         continue
 
                     # TODO: Should the following logic belong to Observation.__init__()?
-                    #  See https://github.com/rispadd/biodb/issues/42
                     observation_value = Observable.Types(observable.value_class).cast(observation_value)
                     observation = Observation(observable=observable,
                                               visit=visit,

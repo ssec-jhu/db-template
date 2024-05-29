@@ -50,9 +50,9 @@ docs = [
 ]
 
 [project.urls]
-homepage = "https://github.com/rispadd/biodb"
-documentation = "https://github.com/rispadd/biodb"
-repository = "https://github.com/rispadd/biodb"
+homepage = "https://github.com/ssec-jhu/biodb"
+documentation = "https://github.com/ssec-jhu/biodb"
+repository = "https://github.com/ssec-jhu/biodb"
 
 [build-system]
 requires = ["setuptools>=61.2", "setuptools_scm[toml]>=8.0"]

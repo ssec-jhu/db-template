@@ -318,7 +318,7 @@ AUTO_ANNOTATE = True
 RUN_DEFAULT_ANNOTATORS_WHEN_SAVED = False
 
 # Disable this class for now as #69 made it obsolete, however, there's a very good chance it will be needed
-# when implementing background tasks for https://github.com/rispadd/biodb/pull/77.
+# when implementing background tasks.
 DISABLE_QC_MANAGER = True
 
 # Auto-populate the model field ``Visit.previous_visit`` by searching for existing older visits and choosing the last.

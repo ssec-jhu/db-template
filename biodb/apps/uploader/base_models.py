@@ -217,4 +217,4 @@ class ModelWithViewDependency(DatedModel):
                 sql_view.update_view()
 
     def asave(self, *args, **kwargs):
-        raise NotImplementedError("See https://github.com/rispadd/biodb/issues/66")
+        raise NotImplementedError()

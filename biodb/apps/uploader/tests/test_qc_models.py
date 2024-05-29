@@ -204,17 +204,13 @@ class TestQCFunctionality:
             assert pytest.approx(annotation.get_value()) == expected_results
 
     def test_no_file_validation(self, qcannotators):
-        """ Test that a validation error is raised rather than any other python exception which would indicate a bug.
-            See https://github.com/rispadd/biodb/pull/182
-        """
+        """ Test that a validation error is raised rather than any other python exception which would indicate a bug. """
         annotation = QCAnnotation(annotator=QCAnnotator.objects.get(name="sum"))
         with pytest.raises(ValidationError):
             annotation.full_clean()
 
     def test_no_file_related_error(self, qcannotators):
-        """ Test that a validation error is raised rather than any other python exception which would indicate a bug.
-            See https://github.com/rispadd/biodb/pull/182
-        """
+        """ Test that a validation error is raised rather than any other python exception which would indicate a bug. """
         annotation = QCAnnotation(annotator=QCAnnotator.objects.get(name="sum"))
         with pytest.raises(QCAnnotation.spectral_data.RelatedObjectDoesNotExist):
             annotation.save()
