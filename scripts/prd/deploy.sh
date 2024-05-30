@@ -17,7 +17,7 @@ pipenv run python3 manage.py migrate --database=bsr
 # Don't do this on deployment so as not to clobber any live alterations. Instead, call these manually from the ec2
 # instance connected to the RDS instance.
 #pipenv run python3 manage.py loaddata centers queries
-#pipenv run python3 manage.py loaddata --database=bsr centers observables instruments qcannotators biosampletypes spectrameasurementtypes
+#pipenv run python3 manage.py loaddata --database=bsr centers observables instruments qcannotators biosampletypes arraymeasurementtypes
 
 # Update SQL views.
 pipenv run python3 manage.py update_sql_views flat_view

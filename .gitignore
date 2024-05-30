@@ -170,7 +170,7 @@ cython_debug/
 
 # Project stuff
 raw_data/
-spectral_data/
+array_data/
 datasets/
 log/
 run/
