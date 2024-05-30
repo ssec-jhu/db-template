@@ -8,7 +8,7 @@ When landing on the `/catalog/ <../../catalog/>`_ page you should expect to see 
 
 .. image:: ../_static/dataset_catalog.png
 
-.. note:: "**BSR**" stands for Biosample Spectral Repository.
+.. note:: "**BSR**" stands for Bio-Sample Repository.
 
 .. note:: Privileged permissions are required to add cataloged datasets, so don't worry if you don't see the ``+Add`` button.
 
@@ -50,8 +50,8 @@ Fields
  - **App version:** The version of the application deployed and thus used to generate the dataset.
  - **ID:** The primary key for the dataset as stored in the website's main database.
  - **N rows:** The number of rows in the zipped data file. Depending on the query, this could be the total number of patients or something else.
- - **N spectral data files:** The number of individual spectral data files zipped within the downloadable zip file.
- - **Spectral data filenames:** A list of all the file names for all individual spectral data files zipped within the downloadable zip file.
+ - **N array data files:** The number of individual array data files zipped within the downloadable zip file.
+ - **Array data filenames:** A list of all the file names for all individual array data files zipped within the downloadable zip file.
 
 
 Computing Data File Integrity
@@ -69,5 +69,5 @@ Using a Windows CMD prompt::
 
 Similarly the **Data SHA-256** field is the checksum for the data table file archived within the zip file, e.g., "BSR.csv".
 
-.. note:: "**BSR**" stands for Biosample Spectral Repository.
+.. note:: "**BSR**" stands for Bio-Sample Repository.
 
