@@ -10,7 +10,7 @@ services:
     restart: "no"
     volumes:
       - db-data:/app/db
-      - spectaldata-files:/app/spectral_data
+      - arraydata-files:/app/array_data
       - bulk-upload-files:/app/raw_data
       - spectaldata-files:/app/datasets
     environment:
@@ -28,7 +28,7 @@ services:
       && python manage.py migrate
       && python manage.py migrate --database=bsr
       && python manage.py loaddata centers queries
-      && python manage.py loaddata --database=bsr centers observables instruments qcannotators biosampletypes spectrameasurementtypes
+      && python manage.py loaddata --database=bsr centers observables instruments qcannotators biosampletypes arraymeasurementtypes
       && python manage.py update_sql_views flat_view
       && python manage.py crontab add
       && python manage.py prune_files
@@ -51,7 +51,7 @@ services:
       - 8000
     volumes:
       - db-data:/app/db
-      - spectaldata-files:/app/spectral_data
+      - arraydata-files:/app/array_data
       - bulk-upload-files:/app/raw_data
       - dataset-catalog-files:/app/datasets
       - static_files:/app/static
@@ -87,7 +87,7 @@ services:
       - "443:443"
     volumes:
       - static_files:/static
-      - spectaldata-files:/spectral_data
+      - arraydata-files:/array_data
       - bulk-upload-files:/raw_data
       - dataset-catalog-files:/datasets
     depends_on:
@@ -105,7 +105,7 @@ secrets:
 
 volumes:
   db-data:
-  spectaldata-files:
+  arraydata-files:
   bulk-upload-files:
   dataset-catalog-files:
   static_files:

@@ -1,5 +1,5 @@
 # Delete uploaded data files.
-rm spectra_data/*
+rm array_data/*
 rm raw_data/*
 rm datasets/*
 
@@ -25,7 +25,7 @@ python manage.py migrate --database=bsr
 
 # Load initial data fixtures.
 python manage.py loaddata centers queries
-python manage.py loaddata --database=bsr centers observables instruments qcannotators biosampletypes spectrameasurementtypes
+python manage.py loaddata --database=bsr centers observables instruments qcannotators biosampletypes arraymeasurementtypes
 
 # Update SQL views.
 python manage.py update_sql_views flat_view

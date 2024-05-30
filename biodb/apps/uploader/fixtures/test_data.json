@@ -3175,15 +3175,9 @@
     "pk": "4205d8ac-90c1-4529-90b2-6751f665c403",
     "fields": {
       "cid": "",
-      "manufacturer": "Agilent",
-      "model": "Cary 630",
+      "manufacturer": "JHU",
+      "model": "Analyzer1000",
       "serial_number": "",
-      "spectrometer_manufacturer": "",
-      "spectrometer_model": "",
-      "spectrometer_serial_number": "",
-      "laser_manufacturer": "",
-      "laser_model": "",
-      "laser_serial_number": "",
       "created_at": "2013-09-06T00:00:00+00:00",
       "updated_at": "2013-09-06T00:00:00+00:00"
     }
@@ -3328,16 +3322,16 @@
     }
 },
 {
-    "model": "uploader.spectrameasurementtype",
+    "model": "uploader.arraymeasurementtype",
     "pk": 1,
     "fields": {
-        "name": "atr-ftir",
+        "name": "magic",
         "created_at": "2013-09-06T00:00:00+00:00",
         "updated_at": "2013-09-06T00:00:00+00:00"
     }
 },
 {
-    "model": "uploader.spectraldata",
+    "model": "uploader.arraydata",
     "pk": 1117,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -3346,13 +3340,12 @@
         "bio_sample": 1117,
         "measurement_type": 1,
         "acquisition_time": null,
-        "n_coadditions": 32,
         "resolution": null,
-        "data": "spectral_data/class_uploader.models_7GOLfEP.csv"
+        "data": "array_data/class_uploader.models_7GOLfEP.csv"
     }
 },
 {
-    "model": "uploader.spectraldata",
+    "model": "uploader.arraydata",
     "pk": 1118,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -3361,13 +3354,12 @@
         "bio_sample": 1118,
         "measurement_type": 1,
         "acquisition_time": null,
-        "n_coadditions": 32,
         "resolution": null,
-        "data": "spectral_data/class_uploader.models_02z3Zqt.csv"
+        "data": "array_data/class_uploader.models_02z3Zqt.csv"
     }
 },
 {
-    "model": "uploader.spectraldata",
+    "model": "uploader.arraydata",
     "pk": 1119,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -3376,13 +3368,12 @@
         "bio_sample": 1119,
         "measurement_type": 1,
         "acquisition_time": null,
-        "n_coadditions": 32,
         "resolution": null,
-        "data": "spectral_data/class_uploader.models_y6CI6Qs.csv"
+        "data": "array_data/class_uploader.models_y6CI6Qs.csv"
     }
 },
 {
-    "model": "uploader.spectraldata",
+    "model": "uploader.arraydata",
     "pk": 1120,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -3391,13 +3382,12 @@
         "bio_sample": 1120,
         "measurement_type": 1,
         "acquisition_time": null,
-        "n_coadditions": 32,
         "resolution": null,
-        "data": "spectral_data/class_uploader.models_8bK4evK.csv"
+        "data": "array_data/class_uploader.models_8bK4evK.csv"
     }
 },
 {
-    "model": "uploader.spectraldata",
+    "model": "uploader.arraydata",
     "pk": 1121,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -3406,13 +3396,12 @@
         "bio_sample": 1121,
         "measurement_type": 1,
         "acquisition_time": null,
-        "n_coadditions": 32,
         "resolution": null,
-        "data": "spectral_data/class_uploader.models_83JcnDj.csv"
+        "data": "array_data/class_uploader.models_83JcnDj.csv"
     }
 },
 {
-    "model": "uploader.spectraldata",
+    "model": "uploader.arraydata",
     "pk": 1122,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -3421,13 +3410,12 @@
         "bio_sample": 1122,
         "measurement_type": 1,
         "acquisition_time": null,
-        "n_coadditions": 32,
         "resolution": null,
-        "data": "spectral_data/class_uploader.models_oTQYhIJ.csv"
+        "data": "array_data/class_uploader.models_oTQYhIJ.csv"
     }
 },
 {
-    "model": "uploader.spectraldata",
+    "model": "uploader.arraydata",
     "pk": 1123,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -3436,13 +3424,12 @@
         "bio_sample": 1123,
         "measurement_type": 1,
         "acquisition_time": null,
-        "n_coadditions": 32,
         "resolution": null,
-        "data": "spectral_data/class_uploader.models_n8JSA1k.csv"
+        "data": "array_data/class_uploader.models_n8JSA1k.csv"
     }
 },
 {
-    "model": "uploader.spectraldata",
+    "model": "uploader.arraydata",
     "pk": 1124,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -3451,13 +3438,12 @@
         "bio_sample": 1124,
         "measurement_type": 1,
         "acquisition_time": null,
-        "n_coadditions": 32,
         "resolution": null,
-        "data": "spectral_data/class_uploader.models_xsCNQjJ.csv"
+        "data": "array_data/class_uploader.models_xsCNQjJ.csv"
     }
 },
 {
-    "model": "uploader.spectraldata",
+    "model": "uploader.arraydata",
     "pk": 1125,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -3466,13 +3452,12 @@
         "bio_sample": 1125,
         "measurement_type": 1,
         "acquisition_time": null,
-        "n_coadditions": 32,
         "resolution": null,
-        "data": "spectral_data/class_uploader.models_QkF6GzX.csv"
+        "data": "array_data/class_uploader.models_QkF6GzX.csv"
     }
 },
 {
-    "model": "uploader.spectraldata",
+    "model": "uploader.arraydata",
     "pk": 1126,
     "fields": {
         "created_at": "2013-09-06T00:00:00+00:00",
@@ -3481,9 +3466,8 @@
         "bio_sample": 1126,
         "measurement_type": 1,
         "acquisition_time": null,
-        "n_coadditions": 32,
         "resolution": null,
-        "data": "spectral_data/class_uploader.models_qrNWV5h.csv"
+        "data": "array_data/class_uploader.models_qrNWV5h.csv"
     }
 }
 ]

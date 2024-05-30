@@ -1,9 +1,9 @@
 from django.core.management.base import BaseCommand, CommandError
-from uploader.models import SpectralData, QCAnnotator
+from uploader.models import ArrayData, QCAnnotator
 
 
 class Command(BaseCommand):
-    help = "Run all Quality Control annotators on the SpectralData database table."
+    help = "Run all Quality Control annotators on the ArrayData database table."
 
     def add_arguments(self, parser):
         parser.add_argument("--no_reruns",
@@ -24,14 +24,14 @@ class Command(BaseCommand):
             return
 
         try:
-            all_data = SpectralData.objects.all()
+            all_data = ArrayData.objects.all()
         except Exception:
             raise CommandError(f"An error occurred when trying to retrieve all entries from the"
-                               f" {SpectralData.__name__} table.")
+                               f" {ArrayData.__name__} table.")
 
         if not all_data:
             self.stdout.write(
-                self.style.WARNING("No SpectralData exists to annotate.")
+                self.style.WARNING("No ArrayData exists to annotate.")
             )
             return
 
@@ -39,7 +39,7 @@ class Command(BaseCommand):
         n_annotators = all_annotators.count()
         n_data = all_data.count()
         self.stdout.write(f"There are {n_annotators} annotators and {n_data} entries in the"
-                          f" '{SpectralData.__name__}' table to annotate."
+                          f" '{ArrayData.__name__}' table to annotate."
                           f"\nThat's {n_annotators * n_data} annotations in total.")
 
         for i, data in enumerate(all_data):

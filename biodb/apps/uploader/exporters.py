@@ -7,11 +7,11 @@ from django.utils.module_loading import import_string
 import explorer.exporters
 import pandas as pd
 
-from uploader.models import SpectralData
+from uploader.models import ArrayData
 
 
-class ZipSpectralDataMixin:
-    """ A custom mixin for explorer.exporters.BaseExporter used to collect SpectralData.data files and zip them with
+class ZipArrayDataMixin:
+    """ A custom mixin for explorer.exporters.BaseExporter used to collect ArrayData.data files and zip them with
         query output data for download.
     """
 
@@ -61,7 +61,7 @@ class ZipSpectralDataMixin:
         output = self._get_output(res, **kwargs)
 
         n_rows = len(res.data)
-        spectral_data_filenames = None
+        array_data_filenames = None
         # Compute data checksum
         output.seek(0)
 
@@ -73,20 +73,20 @@ class ZipSpectralDataMixin:
 
         data_files = []
         if include_data_files:
-            storage = SpectralData.data.field.storage
-            # Collect SpectralData files and zip along with query data from self._get_output().
+            storage = ArrayData.data.field.storage
+            # Collect ArrayData files and zip along with query data from self._get_output().
             if settings.EXPLORER_DATA_EXPORTERS_ALLOW_DATA_FILE_ALIAS:
-                # Spectral data files are modeled by the Spectraldata.data field, however, the sql query could have
+                # Array data files are modeled by the Arraydata.data field, however, the sql query could have
                 # aliased these so it wouldn't be safe to search by column name. Instead, we can only exhaustively
-                # search all entries for some marker indicating that they are spectral data files, where this "marker"
-                # is the upload directory - SpectralData.data.field.upload_to.
-                upload_dir = SpectralData.data.field.upload_to  # NOTE: We don't need to inc. the MEDIA_ROOT for this.
+                # search all entries for some marker indicating that they are array data files, where this "marker"
+                # is the upload directory - ArrayData.data.field.upload_to.
+                upload_dir = ArrayData.data.field.upload_to  # NOTE: We don't need to inc. the MEDIA_ROOT for this.
                 for row in res.data:
                     for item in row:
                         if isinstance(item, str) and item.startswith(upload_dir):
                             data_files.append(item)
             else:
-                if (col_name := SpectralData.data.field.name) in res.header_strings:
+                if (col_name := ArrayData.data.field.name) in res.header_strings:
                     df = pd.DataFrame(res.data, columns=res.header_strings)
                     df = df[col_name]
                     # There could be multiple "col_name" (aka "data") columns so flatten first.
@@ -95,7 +95,7 @@ class ZipSpectralDataMixin:
         if data_files or always_zip:
             # Dedupe and sort.
             data_files = sorted(set(data_files))
-            spectral_data_filenames = data_files
+            array_data_filenames = data_files
 
             # Zip everything together.
             temp = tempfile.TemporaryFile()
@@ -120,16 +120,16 @@ class ZipSpectralDataMixin:
             output = temp
             self.is_zip = True
 
-        return (output, (n_rows, data_sha256, spectral_data_filenames)) if return_info else output
+        return (output, (n_rows, data_sha256, array_data_filenames)) if return_info else output
 
 
-class CSVExporter(ZipSpectralDataMixin, explorer.exporters.CSVExporter):
+class CSVExporter(ZipArrayDataMixin, explorer.exporters.CSVExporter):
     ...
 
 
-class ExcelExporter(ZipSpectralDataMixin, explorer.exporters.ExcelExporter):
+class ExcelExporter(ZipArrayDataMixin, explorer.exporters.ExcelExporter):
     ...
 
 
-class JSONExporter(ZipSpectralDataMixin, explorer.exporters.JSONExporter):
+class JSONExporter(ZipArrayDataMixin, explorer.exporters.JSONExporter):
     ...

@@ -8,7 +8,7 @@ from django.core.management import call_command, CommandError
 from django.db.models import Q
 from django.db.utils import OperationalError
 
-from uploader.models import Center, Observable, UploadedFile, SpectralData
+from uploader.models import Center, Observable, UploadedFile, ArrayData
 from uploader.sql import execute_sql
 
 User = get_user_model()
@@ -69,11 +69,11 @@ class TestPruneFiles:
 
         # Check objects exist.
         assert UploadedFile.objects.count() == 1
-        assert SpectralData.objects.count() == 10
+        assert ArrayData.objects.count() == 10
 
         # Check files exist.
         assert get_file_count(UploadedFile.UPLOAD_DIR) == 2
-        assert get_file_count(SpectralData.UPLOAD_DIR) == 10
+        assert get_file_count(ArrayData.UPLOAD_DIR) == 10
 
         # Delete objects and files (if delete).
         def delete_objs(model):
@@ -81,7 +81,7 @@ class TestPruneFiles:
                 obj.delete(delete_files=delete)
             assert model.objects.count() == 0
         delete_objs(UploadedFile)
-        delete_objs(SpectralData)
+        delete_objs(ArrayData)
 
         # Run prune_files command.
         out = StringIO()
@@ -89,7 +89,7 @@ class TestPruneFiles:
 
         # Check files have been deleted.
         assert get_file_count(UploadedFile.UPLOAD_DIR) == expected[0]
-        assert get_file_count(SpectralData.UPLOAD_DIR) == expected[1]
+        assert get_file_count(ArrayData.UPLOAD_DIR) == expected[1]
 
         out.seek(0)
         assert len(out.readlines()) == 1 if delete else 13
@@ -97,7 +97,7 @@ class TestPruneFiles:
 
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestGetColumnNames:
-    n_non_observables = 28  # 39 including instrument fields.
+    n_non_observables = 22
 
     @pytest.fixture
     def more_observables(self, centers):
@@ -140,7 +140,7 @@ class TestGetColumnNames:
         out.seek(0)
         assert len(out.readlines()) == Observable.objects.count() + self.n_non_observables
 
-    @pytest.mark.parametrize("center_filter", ("jhu",
+    @pytest.mark.parametrize("center_filter", ("JHU",
                                                "imperial college london",
                                                "oxford university",
                                                "d2160c33-0bbc-4605-a2ce-7e83296e7c84",
@@ -158,7 +158,7 @@ class TestGetColumnNames:
         out.seek(0)
         assert len(out.readlines()) == queryset.count()
 
-    @pytest.mark.parametrize(("center_filter", "category_filter"), (("jhu", "bloodwork"),
+    @pytest.mark.parametrize(("center_filter", "category_filter"), (("JHU", "bloodwork"),
                                                                     ("imperial college london", "comorbidity"),
                                                                     ("oxford university", "drug"),
                                                                     ("d2160c33-0bbc-4605-a2ce-7e83296e7c84", "bloodwork")))

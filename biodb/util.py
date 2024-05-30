@@ -51,7 +51,7 @@ def to_bool(value):
             raise ValueError(f"Bool aliases are '{TRUE}|{FALSE}', not '{value}'")
 
 
-def mock_bulk_spectral_data(path=Path.home(),
+def mock_bulk_array_data(path=Path.home(),
                             max_wavelength=4000,
                             min_wavelength=651,
                             n_bins=1798,
@@ -62,8 +62,8 @@ def mock_bulk_spectral_data(path=Path.home(),
     data.index.name = settings.BULK_UPLOAD_INDEX_COLUMN_NAME
     data.index += 1  # Make index 1 based.
 
-    data.to_excel(path / "spectral_data.xlsx")
-    data.to_csv(path / "spectral_data.csv")
+    data.to_excel(path / "array_data.xlsx")
+    data.to_csv(path / "array_data.csv")
 
     return data
 

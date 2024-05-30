@@ -20,7 +20,7 @@ Data Exporters
     CSVExporter
     ExcelExporter
     JSONExporter
-    ZipSpectralDataMixin
+    ZipArrayDataMixin
 
 Charts
 ------

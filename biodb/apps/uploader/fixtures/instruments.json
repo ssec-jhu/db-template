@@ -4,15 +4,9 @@
     "pk": "4205d8ac-90c1-4529-90b2-6751f665c403",
     "fields": {
       "cid": "",
-      "manufacturer": "Agilent",
-      "model": "Cary 630",
+      "manufacturer": "JHU",
+      "model": "Analyzer1000",
       "serial_number": "",
-      "spectrometer_manufacturer": "",
-      "spectrometer_model": "",
-      "spectrometer_serial_number": "",
-      "laser_manufacturer": "",
-      "laser_model": "",
-      "laser_serial_number": "",
       "created_at": "2013-09-06T00:00:00+00:00",
       "updated_at": "2013-09-06T00:00:00+00:00"
     }

@@ -22,7 +22,7 @@ PATIENT_UUID_STR_ALLOWED_ALIASES = {"patient_id": ["patient id", "Patient ID", "
 
 
 @dataclasses.dataclass
-class SpectralData:
+class ArrayData:
     patient_id: UUID
     wavelength: list
     intensity: list
@@ -31,7 +31,7 @@ class SpectralData:
         self.patient_id = to_uuid(self.patient_id)
 
     def to_json(self, filename, **kwargs):
-        return spectral_data_to_json(filename, data=self, **kwargs)
+        return array_data_to_json(filename, data=self, **kwargs)
 
 
 JSON_OPTS = {"indent": None, "force_ascii": True}  # jsonlines.
@@ -143,7 +143,7 @@ def read_meta_data(file, index_column=settings.BULK_UPLOAD_INDEX_COLUMN_NAME):
     return cleaned_data
 
 
-def read_spectral_data_table(file, index_column=DEFAULT_PATIENT_ID_STR):
+def read_array_data_table(file, index_column=DEFAULT_PATIENT_ID_STR):
     """ Read in multiple rows of data returning a pandas.DataFrame.
 
         The data to be read in, needs to be of the following table layout for .csv & .xlsx:
@@ -156,7 +156,7 @@ def read_spectral_data_table(file, index_column=DEFAULT_PATIENT_ID_STR):
         For .jsonl each line/row must be of the following:
         {"patient_id": value, wavelength_value: intensity_value, wavelength_value: intensity_value, ...}
 
-        For json data of the following form use ``read_spectral_data()``.
+        For json data of the following form use ``read_array_data()``.
         {"patient_id": value, "wavelength": [values], "intensity": [values]}
     """
     df = _read_raw_data(file)
@@ -175,13 +175,13 @@ def read_spectral_data_table(file, index_column=DEFAULT_PATIENT_ID_STR):
     return df
 
 
-def read_single_row_spectral_data_table(file, index_column=DEFAULT_PATIENT_ID_STR):
-    """ Read in single row spectral data.
+def read_single_row_array_data_table(file, index_column=DEFAULT_PATIENT_ID_STR):
+    """ Read in single row array data.
 
         The data to be read in, needs to be of the following table layout for .csv & .xlsx:
         Note: Commas need to be present for CSV data.
         Note: The following docstring uses markdown table syntax.
-        Note: This is as for ``read_spectral_data_table`` except that it contains data for only a single
+        Note: This is as for ``read_array_data_table`` except that it contains data for only a single
         patient, i.e., just a single row:
         | patient_id | min_lambda | ... | max_lambda |
         | ---------- | ---------- | --- | ---------- |
@@ -190,20 +190,20 @@ def read_single_row_spectral_data_table(file, index_column=DEFAULT_PATIENT_ID_ST
         For .jsonl each line/row must be:
         {"patient_id": value, wavelength_value: intensity_values, wavelength_value: intensity_values, ...}
 
-        For json data of the following form use ``read_spectral_data()``.
+        For json data of the following form use ``read_array_data()``.
         {"patient_id": value, "wavelength": [values], "intensity": [values]}
     """
 
-    df = read_spectral_data_table(file, index_column=index_column)
+    df = read_array_data_table(file, index_column=index_column)
 
     if (length := len(df)) != 1:
         raise ValueError(f"The file read should contain only a single row not '{length}'")
 
     data = df.iloc[0]
-    return SpectralData(data.patient_id, data.wavelength, data.intensity)
+    return ArrayData(data.patient_id, data.wavelength, data.intensity)
 
 
-def spectral_data_to_json(file, data: SpectralData, patient_id=None, wavelength=None, intensity=None, **kwargs):
+def array_data_to_json(file, data: ArrayData, patient_id=None, wavelength=None, intensity=None, **kwargs):
     """ Convert data to json equivalent to {"patient_id": value, "wavelength": [values], "intensity": [values]}
         Returns json str and/or writes to file.
     """
@@ -214,7 +214,7 @@ def spectral_data_to_json(file, data: SpectralData, patient_id=None, wavelength=
         assert intensity is not None
         data = dict(patient_id=patient_id, wavelength=wavelength, intensity=intensity)
 
-    if isinstance(data, SpectralData):
+    if isinstance(data, ArrayData):
         data = dataclasses.asdict(data)
 
     opts = dict(indent=JSON_OPTS["indent"], ensure_ascii=JSON_OPTS["force_ascii"], cls=DjangoJSONEncoder)
@@ -229,9 +229,9 @@ def spectral_data_to_json(file, data: SpectralData, patient_id=None, wavelength=
         json.dump(data, file, **opts)
 
 
-def spectral_data_from_json(file):
-    """ Read spectral data of the form {"patient_id": value, "wavelength": [values], "intensity": [values]}
-        and return data SpectralData instance.
+def array_data_from_json(file):
+    """ Read array data of the form {"patient_id": value, "wavelength": [values], "intensity": [values]}
+        and return data ArrayData instance.
     """
     # Determine whether file obj (fp) or filename.
     fp, filename = _get_file_info(file)
@@ -250,19 +250,19 @@ def spectral_data_from_json(file):
         raise ValueError("A path-like or file-like object must be specified.")
 
     # Check that the json is as expected. This is needed for validation when a user provides json data.
-    if (fields := {x.name for x in dataclasses.fields(SpectralData)}) != data.keys():
+    if (fields := {x.name for x in dataclasses.fields(ArrayData)}) != data.keys():
         raise DataSchemaError(f"Schema error: expected only the fields '{fields}' but got '{data.keys()}'")
 
-    return SpectralData(**data)
+    return ArrayData(**data)
 
 
-def read_spectral_data(file):
-    """ General purpose reader to handle multiple file formats returning SpectralData instance.
+def read_array_data(file):
+    """ General purpose reader to handle multiple file formats returning ArrayData instance.
 
         The data to be read in, needs to be of the following table layout for .csv & .xlsx:
         Note: Commas need to be present for CSV data.
         Note: The following docstring uses markdown table syntax.
-        Note: This is as for ``read_spectral_data_table`` except that it contains data for only a single
+        Note: This is as for ``read_array_data_table`` except that it contains data for only a single
         patient, i.e., just a single row:
         | patient_id | min_lambda | ... | max_lambda |
         | ---------- | ---------- | --- | ---------- |
@@ -274,7 +274,7 @@ def read_spectral_data(file):
     _fp, filename = _get_file_info(file)
     ext = filename.suffix
 
-    data = spectral_data_from_json(file) if ext == FileFormats.JSONL else read_single_row_spectral_data_table(file)
+    data = array_data_from_json(file) if ext == FileFormats.JSONL else read_single_row_array_data_table(file)
     return data
 
 

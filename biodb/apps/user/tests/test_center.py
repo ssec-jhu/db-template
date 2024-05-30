@@ -9,8 +9,8 @@ from uploader.models import Center as UploaderCenter
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestCenters:
     def test_centers_fixture(self, centers):
-        jhu_from_user_table = UserCenter.objects.get(name="jhu")
-        jhu_from_uploader_table = UploaderCenter.objects.get(name="jhu")
+        jhu_from_user_table = UserCenter.objects.get(name="JHU")
+        jhu_from_uploader_table = UploaderCenter.objects.get(name="JHU")
 
         assert jhu_from_user_table.pk == jhu_from_uploader_table.pk
         assert jhu_from_user_table.name == jhu_from_uploader_table.name

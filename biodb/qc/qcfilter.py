@@ -9,11 +9,11 @@ class QCValidationError(Exception):
 
 class QcFilter(ABC):
     @abstractmethod
-    def run(self, spectral_data):
+    def run(self, array_data):
         """
             Implement this method to return the actual annotation value(s).
 
-            param: spectral_data - uploader.models.SpectralData
+            param: array_data - uploader.models.ArrayData
 
             Raises QCValidationError.
         """
@@ -21,19 +21,19 @@ class QcFilter(ABC):
 
 
 class QcSum(QcFilter):
-    def run(self, spectral_data: "SpectralData"):  # noqa: F821
-        data = spectral_data.get_spectral_data()
+    def run(self, array_data: "ArrayData"):  # noqa: F821
+        data = array_data.get_array_data()
         res = np.sum(data.intensity)
         return res
 
 
 class QcTestDummyTrue(QcFilter):
     """ For testing purposes only. """
-    def run(self, spectral_data):
+    def run(self, array_data):
         return True
 
 
 class QcTestDummyFalse(QcFilter):
     """ For testing purposes only. """
-    def run(self, spectral_data):
+    def run(self, array_data):
         return False

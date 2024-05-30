@@ -13,7 +13,7 @@ coverage.*
 __pycache__
 *.sqlite3
 db
-spectral_data
+array_data
 raw_data
 datasets
 log

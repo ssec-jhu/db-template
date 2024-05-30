@@ -17,7 +17,7 @@ DATA_PATH = Path(__file__).parent / "data"
 
 User = get_user_model()
 
-SKIP_MODELS = [uploader.models.BioSampleType, uploader.models.SpectraMeasurementType]
+SKIP_MODELS = [uploader.models.BioSampleType, uploader.models.ArrayMeasurementType]
 
 
 uploader_models = []
@@ -53,7 +53,7 @@ def staffuser(centers):
     user = User.objects.create(username="staff",
                                email="staff@jhu.edu",
                                password="secret",
-                               center=UserCenter.objects.get(name="jhu"),
+                               center=UserCenter.objects.get(name="JHU"),
                                is_staff=True,
                                is_superuser=False)
     return user
@@ -64,7 +64,7 @@ def superuser(centers):
     return User.objects.create(username="admin",
                                email="admin@jhu.edu",
                                password="secret",
-                               center=UserCenter.objects.get(name="jhu"),
+                               center=UserCenter.objects.get(name="JHU"),
                                is_staff=True,
                                is_superuser=True)
 
@@ -194,7 +194,7 @@ class TestRestrictedByCenterMixin:
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestUploadedFile:
     def test_non_form_field_validation(self, mock_data_from_files):
-        # Note: ``mock_data_from_files`` uses Center(name="jhu")``, so create a new user of a different center.
+        # Note: ``mock_data_from_files`` uses Center(name="JHU")``, so create a new user of a different center.
         user = User.objects.create(username="staff2",
                                    email="staff2@jhu.edu",
                                    password="secret",
@@ -207,14 +207,14 @@ class TestUploadedFile:
         c.force_login(user)
 
         meta_data_path = (DATA_PATH / "meta_data").with_suffix(uploader.models.UploadedFile.FileFormats.XLSX)
-        spectral_file_path = (DATA_PATH / "spectral_data").with_suffix(uploader.models.UploadedFile.FileFormats.XLSX)
+        array_file_path = (DATA_PATH / "array_data").with_suffix(uploader.models.UploadedFile.FileFormats.XLSX)
         with meta_data_path.open(mode="rb") as meta_data:
-            with spectral_file_path.open(mode="rb") as spectral_data:
+            with array_file_path.open(mode="rb") as array_data:
                 meta_data_file = django.core.files.File(meta_data, name=meta_data_path.name)
-                spectral_data_file = django.core.files.File(spectral_data, name=spectral_file_path.name)
+                array_data_file = django.core.files.File(array_data, name=array_file_path.name)
                 response = c.post("/data/uploader/uploadedfile/add/",
                                   follow=True,
                                   data={"meta_data_file": meta_data_file,
-                                        "spectral_data_file": spectral_data_file,
+                                        "array_data_file": array_data_file,
                                         "center": user.center.pk})
         assert response.status_code == 200

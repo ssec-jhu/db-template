@@ -300,7 +300,7 @@ EXPLORER_CHARTS_ENABLED = True
 
 # NOTE: The following two settings don't actually belong to explorer.
 
-# Include the spectral data files, if present in query results, for download as zip file.
+# Include the array data files, if present in query results, for download as zip file.
 EXPLORER_DATA_EXPORTERS_INCLUDE_DATA_FILES = True
 # Exhaustively scan query result values for relevant filepaths to collect data files. Does nothing when
 # EXPLORER_DATA_EXPORTERS_INCLUDE_DATA_FILES == False.
@@ -308,13 +308,13 @@ EXPLORER_DATA_EXPORTERS_ALLOW_DATA_FILE_ALIAS = False
 
 # Custom settings:
 
-# Automatically run "default" annotators when new spectral data is saved. Note: Annotators are always run when new
+# Automatically run "default" annotators when new array data is saved. Note: Annotators are always run when new
 # annotations are explicitly created and saved regardless of the below setting.
 AUTO_ANNOTATE = True
 
-# Run newly added/updated annotator on all spectral data if annotator.default is True.
+# Run newly added/updated annotator on all array data if annotator.default is True.
 # WARNING: This may be time-consuming if the annotators takes a while to run and there are a lot of
-# spectral data samples in the database.
+# array data samples in the database.
 RUN_DEFAULT_ANNOTATORS_WHEN_SAVED = False
 
 # Disable this class for now as #69 made it obsolete, however, there's a very good chance it will be needed

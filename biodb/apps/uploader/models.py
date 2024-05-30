@@ -81,12 +81,12 @@ def center_deletion_handler(sender, **kwargs):
 
 
 class UploadedFile(DatedModel):
-    """ Model for ingesting bulk data uploads of both spectral and meta data files.
+    """ Model for ingesting bulk data uploads of both array data and meta data files.
 
         Attributes:
             meta_data_file (:obj:`django.models.FileField`): The uploaded file containing rows of patient meta-data,
                 e.g., observations, biosample collection info, etc.
-            spectral_data_file (:obj:`django.models.FileField`): The uploaded file containing rows of patient spectral
+            array_data_file (:obj:`django.models.FileField`): The uploaded file containing rows of patient array
                 data.
             center (:obj:`django.models.ForeignKey` of :obj:`user.models.Center`): The center that all new uploaded
                 patients will be associated to.
@@ -104,17 +104,17 @@ class UploadedFile(DatedModel):
                                       validators=[FileExtensionValidator(uploader.io.FileFormats.choices())],
                                       help_text="File containing rows of all patient, observation, and other meta"
                                                 " data.")
-    spectral_data_file = models.FileField(upload_to=UPLOAD_DIR,
-                                          validators=[FileExtensionValidator(uploader.io.FileFormats.choices())],
-                                          help_text="File containing rows of spectral intensities for the corresponding"
-                                                    " meta data file.")
+    array_data_file = models.FileField(upload_to=UPLOAD_DIR,
+                                       validators=[FileExtensionValidator(uploader.io.FileFormats.choices())],
+                                       help_text="File containing rows of array data for the corresponding"
+                                                 " meta data file.")
     center = models.ForeignKey(Center, null=False, blank=False, on_delete=models.PROTECT)
 
     @staticmethod
     def validate_lengths(meta_data, spec_data):
         """ Validate that files must be of equal length (same number of rows). """
         if len(meta_data) != len(spec_data):
-            raise ValidationError(_("meta and spectral data must be of equal length (%(a)i!=%(b)i)."),
+            raise ValidationError(_("meta and array data must be of equal length (%(a)i!=%(b)i)."),
                                   params={"a": len(meta_data), "b": len(spec_data)},
                                   code="invalid")
 
@@ -124,14 +124,14 @@ class UploadedFile(DatedModel):
         if not meta_data.index.equals(spec_data.index):
             raise ValidationError(_("Patient index mismatch. indexes from %(a)s must exactly match all those from %(b)s"),
                                   params=dict(a=UploadedFile.meta_data_file.field.name,
-                                              b=UploadedFile.spectral_data_file.field.name),
+                                              b=UploadedFile.array_data_file.field.name),
                                   code="invalid")
 
         try:
             # The simplest way to do this is to utilize pandas.DataFrame.join().
             return meta_data.join(spec_data, how="left", validate="1:1")  # Might as well return the join.
         except pd.errors.MergeError as error:
-            raise ValidationError(_("meta and spectral data must have unique and identical patient identifiers")) from error
+            raise ValidationError(_("meta and array data must have unique and identical patient identifiers")) from error
 
     def _validate_and_save_data_to_db(self, dry_run=False):
         try:
@@ -139,12 +139,12 @@ class UploadedFile(DatedModel):
             # Note: When accessing ``models.FileField`` Django returns ``models.FieldFile`` as a proxy.
             meta_data = uploader.io.read_meta_data(self.meta_data_file.file,
                                                    index_column=settings.BULK_UPLOAD_INDEX_COLUMN_NAME)
-            spec_data = uploader.io.read_spectral_data_table(self.spectral_data_file.file,
-                                                             index_column=settings.BULK_UPLOAD_INDEX_COLUMN_NAME)
+            array_data = uploader.io.read_array_data_table(self.array_data_file.file,
+                                                              index_column=settings.BULK_UPLOAD_INDEX_COLUMN_NAME)
             # Validate.
-            UploadedFile.validate_lengths(meta_data, spec_data)
+            UploadedFile.validate_lengths(meta_data, array_data)
             # This uses a join so returns the joined data so that it doesn't go to waste if needed, which it is here.
-            joined_data = UploadedFile.join_with_validation(meta_data, spec_data)
+            joined_data = UploadedFile.join_with_validation(meta_data, array_data)
 
             # Ingest into DB.
             save_data_to_db(None, None, center=self.center, joined_data=joined_data, dry_run=dry_run)
@@ -170,7 +170,7 @@ class UploadedFile(DatedModel):
         if count == 1:
             if delete_files:
                 self.meta_data_file.storage.delete(self.meta_data_file.name)
-                self.spectral_data_file.storage.delete(self.spectral_data_file.name)
+                self.array_data_file.storage.delete(self.array_data_file.name)
         return count, deleted
 
     def adelete(self, *args, **kwargs):
@@ -187,9 +187,9 @@ class UploadedFile(DatedModel):
             return storage, {}
         # Collect all media files referenced in the DB.
         meta_data_files = set(x.meta_data_file.name for x in cls.objects.all())
-        spectral_data_files = set(x.spectral_data_file.name for x in cls.objects.all())
+        array_data_files = set(x.array_data_file.name for x in cls.objects.all())
         # Compute orphaned file list.
-        orphaned_files = fs_files - (meta_data_files | spectral_data_files)
+        orphaned_files = fs_files - (meta_data_files | array_data_files)
         return storage, orphaned_files
 
 
@@ -247,7 +247,7 @@ class Patient(DatedModel):
 
 
 class Visit(DatedModel):
-    """ Model a patient's visitation to collect health data and biological samples.
+    """ Model a patient's visitation to collect health data and biological data.
 
         Attributes:
             patient (:obj:`django.models.ForeignKey` of :obj:`Patient`): The patient that this visit belongs to.
@@ -567,12 +567,9 @@ class Observation(DatedModel):
 
 
 class Instrument(DatedModel):
-    """ Model the instrument/device used to measure spectral data.
+    """ Model the instrument/device used to measure array data.
 
-        Instruments are often comprised of both a spectrometer and laser source for which both of these may have their
-        own model and SN, etc.
-
-        Note: This is not the collection method of the bio sample but the device used to spectroscopically analyze the
+        Note: This is not the collection method of the bio sample but the device used to analyze the
         biosample.
 
         Attributes:
@@ -581,12 +578,6 @@ class Instrument(DatedModel):
             manufacturer (:obj:`django.models.CharField`): Instrument manufacturer name.
             model (:obj:`django.models.CharField`): Instrument model name.
             serial_number (:obj:`django.models.CharField`): Instrument serial number (SN#).
-            spectrometer_manufacturer (:obj:`django.models.CharField`): Spectrometer manufacturer name.
-            spectrometer_model (:obj:`django.models.CharField`): Spectrometer model name.
-            spectrometer_serial_number (:obj:`django.models.CharField`): Spectrometer serial number (SN#).
-            laser_manufacturer (:obj:`django.models.CharField`): Laser manufacturer name.
-            laser_model (:obj:`django.models.CharField`): Laser model name.
-            laser_serial_number (:obj:`django.models.CharField`): Laser serial number (SN#).
             center (:obj:`django.models.ForeignKey` of :obj:`user.models.Center`, optional): The center that this
                 instrument belongs to. If ``null`` this instrument belongs to all centers, e.g., one used at a central
                 processing lab.
@@ -603,23 +594,12 @@ class Instrument(DatedModel):
     model = models.CharField(max_length=128, verbose_name="Instrument model")
     serial_number = models.CharField(max_length=128, verbose_name="Instrument SN#")
 
-    # Spectrometer.
-    spectrometer_manufacturer = models.CharField(max_length=128, verbose_name="Spectrometer manufacturer")
-    spectrometer_model = models.CharField(max_length=128, verbose_name="Spectrometer model")
-    spectrometer_serial_number = models.CharField(max_length=128, verbose_name="Spectrometer SN#")
-
-    # Laser.
-    laser_manufacturer = models.CharField(max_length=128, verbose_name="Laser manufacturer")
-    laser_model = models.CharField(max_length=128, verbose_name="Laser model")
-    laser_serial_number = models.CharField(max_length=128, verbose_name="Laser SN#")
-
     center = models.ForeignKey(Center, null=True, blank=True, on_delete=models.PROTECT)
 
     @classmethod
     def parse_fields_from_pandas_series(cls, series):
         """ Parse the pandas series for field values returning a dict. """
-        return dict(spectrometer__iexact=get_field_value(series, cls, "spectrometer"),
-                    atr_crystal__iexact=get_field_value(series, cls, "atr_crystal"))
+        return {}
 
     def __str__(self):
         return f"{self.manufacturer}_{self.model}_{self.id}"
@@ -732,69 +712,60 @@ class BioSample(DatedModel):
         return f"{self.visit}_type:{self.sample_type}_pk{self.pk}"  # NOTE: str(self.visit) contains patient ID.
 
 
-class SpectraMeasurementType(DatedModel):
-    """ Spectral measurement type.
+class ArrayMeasurementType(DatedModel):
+    """ Array measurement type.
 
         Attributes:
-            name (:obj:`django.models.CharField`): Name of type, e.g., atr-ftir.
+            name (:obj:`django.models.CharField`): Name of type.
     """
 
     class Meta:
-        db_table = "spectra_measurement_type"
+        db_table = "array_measurement_type"
         get_latest_by = "updated_at"
 
-    name = models.CharField(max_length=128, verbose_name="Spectra Measurement")
+    name = models.CharField(max_length=128, verbose_name="Array Measurement")
 
     def __str__(self):
         return self.name
 
 
-class SpectralData(DatedModel):
-    """ Model spectral data measured by spectrometer instrument.
+class ArrayData(DatedModel):
+    """ Model array data measured by instrument from biosample data.
 
         Attributes:
             id (:obj:`django.models.UUIDField`): The database primary key for the entry, Autogenerated if not provided.
-            data (:obj:`django.models.FileField`): The uploaded file containing the spectral data.
-            instrument (:obj:`django.models.ForeignKey` of :obj:`Instrument`): The instrument used to spectroscopically
-                produce the data.
+            data (:obj:`django.models.FileField`): The uploaded file containing the array data.
+            instrument (:obj:`django.models.ForeignKey` of :obj:`Instrument`): The instrument used to measure and
+                produce the array data.
             bio_sample (:obj:`django.models.CharField` of :obj:`BioSample`): The biosample that was analyzed.
-            measurement_type (:obj:`django.models.ForeignKey`  of :obj:`SpectralMeasurementType`): The measurement type
-                e.g., atr-ftir.
+            measurement_type (:obj:`django.models.ForeignKey`  of :obj:`ArrayMeasurementType`): The measurement type.
             measurement_id (:obj:`django.models.CharField`, optional): Identifier string for data.
-            atr_crystal (:obj:`django.models.CharField`, optional): The ATR crystal used (if at all).
-            n_coadditions (:obj:`django.models.IntegerField`, optional): The number of co-additions (if relevant).
             acquisition_time (:obj:`django.models.IntegerField`, optional): The acquisition time [s].
             resolution (:obj:`django.models.CharField`, IntegerField): The resolution [1/cm]
             power (:obj:`django.models.FloatField`, optional): Power incident to the sample [mW]
             temperature (:obj:`django.models.FloatField`, optional: Temperature [C].
             pressure (:obj:`django.models.FloatField`, optional): Pressure [bar].
             date (:obj:`django.models.DateTimeField`, optional): Humidity [%].
-            sers_description (:obj:`django.models.CharField`, optional): SERS description.
-            sers_particle_material (:obj:`django.models.CharField`, optional): SERS particle material.
-            sers_particle_size (:obj:`django.models.CharField`, optional): SERS particle size [\u03BCm].
-            sers_particle_concentration (:obj:`django.models.CharField`, optional): SERS particle concentration.
     """
 
     class Meta:
-        db_table = "spectral_data"
-        verbose_name = "Spectral Data"
+        db_table = "array_data"
+        verbose_name = "Array Data"
         verbose_name_plural = verbose_name
         get_latest_by = "updated_at"
 
-    UPLOAD_DIR = "spectral_data/"  # MEDIA_ROOT/spectral_data
+    UPLOAD_DIR = "array_data/"  # MEDIA_ROOT/array_data
 
     id = models.UUIDField(unique=True, primary_key=True, default=uuid.uuid4)
-    instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE, related_name="spectral_data")
-    bio_sample = models.ForeignKey(BioSample, on_delete=models.CASCADE, related_name="spectral_data")
+    instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE, related_name="array_data")
+    bio_sample = models.ForeignKey(BioSample, on_delete=models.CASCADE, related_name="array_data")
 
     # Measurement info
     measurement_id = models.CharField(max_length=128, blank=True, null=True)
-    measurement_type = models.ForeignKey(SpectraMeasurementType,
+    measurement_type = models.ForeignKey(ArrayMeasurementType,
                                          on_delete=models.CASCADE,
                                          verbose_name="Measurement type",
-                                         related_name="spectral_data")
-    atr_crystal = models.CharField(max_length=128, blank=True, null=True, verbose_name="ATR Crystal")
-    n_coadditions = models.IntegerField(blank=True, null=True, verbose_name="Number of coadditions")
+                                         related_name="array_data")
     acquisition_time = models.IntegerField(blank=True, null=True, verbose_name="Acquisition time [s]")
     resolution = models.IntegerField(blank=True, null=True, verbose_name="Resolution [1/cm]")
     power = models.FloatField(max_length=128, blank=True, null=True, verbose_name="Power incident to the sample [mW]")
@@ -803,39 +774,24 @@ class SpectralData(DatedModel):
     humidity = models.FloatField(max_length=128, blank=True, null=True, verbose_name="Humidity [%]")
     date = models.DateTimeField(blank=True, null=True)
 
-    # SERS info.
-    sers_description = models.CharField(max_length=128, blank=True, null=True, verbose_name="SERS description")
-    sers_particle_material = models.CharField(max_length=128,
-                                              blank=True,
-                                              null=True,
-                                              verbose_name="SERS particle material")
-    sers_particle_size = models.FloatField(blank=True, null=True, verbose_name="SERS particle size [\u03BCm]")
-    sers_particle_concentration = models.FloatField(blank=True, null=True, verbose_name="SERS particle concentration")
-
     data = models.FileField(upload_to=UPLOAD_DIR,
                             validators=[FileExtensionValidator(UploadedFile.FileFormats.choices())],
                             max_length=256,
-                            verbose_name="Spectral data file")
+                            verbose_name="Array data file")
 
     @classmethod
     def parse_fields_from_pandas_series(cls, series):
         """ Parse the pandas series for field values returning a dict. """
         measurement_type = lower(get_field_value(series, cls, "measurement_type"))
-        measurement_type = get_object_or_raise_validation(SpectraMeasurementType, name=measurement_type)
+        measurement_type = get_object_or_raise_validation(ArrayMeasurementType, name=measurement_type)
         return dict(measurement_type=measurement_type,
                     acquisition_time=get_field_value(series, cls, "acquisition_time"),
-                    n_coadditions=get_field_value(series, cls, "n_coadditions"),
                     resolution=get_field_value(series, cls, "resolution"),
-                    atr_crystal=get_field_value(series, cls, "atr_crystal"),
                     power=get_field_value(series, cls, "power"),
                     temperature=get_field_value(series, cls, "temperature"),
                     pressure=get_field_value(series, cls, "pressure"),
                     humidity=get_field_value(series, cls, "humidity"),
-                    date=get_field_value(series, cls, "date"),
-                    sers_description=get_field_value(series, cls, "sers_description"),
-                    sers_particle_material=get_field_value(series, cls, "sers_particle_material"),
-                    sers_particle_size=get_field_value(series, cls, "sers_particle_size"),
-                    sers_particle_concentration=get_field_value(series, cls, "sers_particle_concentration"))
+                    date=get_field_value(series, cls, "date"))
 
     @property
     def center(self):
@@ -859,9 +815,9 @@ class SpectralData(DatedModel):
 
         return list(set(all_default_annotators) - set(existing_annotators))
 
-    def get_spectral_data(self):
-        """ Return spectral data as instance of uploader.io.SpectralData. """
-        return uploader.io.spectral_data_from_json(self.data)
+    def get_array_data(self):
+        """ Return array data as instance of uploader.io.ArrayData. """
+        return uploader.io.array_data_from_json(self.data)
 
     def generate_filename(self):
         return Path(f"{self.bio_sample.visit.patient.patient_id}_{self.bio_sample.pk}_{self.id}")\
@@ -870,7 +826,7 @@ class SpectralData(DatedModel):
     def clean_data_file(self):
         """ Read in data from uploaded file and store as json.
 
-            The schema is equivalent to `json.dumps(dataclasses.asdict(uploader.io.SpectralData))``.
+            The schema is equivalent to `json.dumps(dataclasses.asdict(uploader.io.ArrayData))``.
         """
 
         # Note: self.data is a FieldFile and is never None so check is "empty" instead, i.e., self.data.name is None.
@@ -878,7 +834,7 @@ class SpectralData(DatedModel):
             return
 
         try:
-            data = uploader.io.read_spectral_data(self.data)
+            data = uploader.io.read_array_data(self.data)
         except uploader.io.DataSchemaError as error:
             raise ValidationError(_("%(msg)s"), params={"msg": error})
 
@@ -887,7 +843,7 @@ class SpectralData(DatedModel):
             filename = self.data.name
         else:
             filename = self.generate_filename()
-        json_str = uploader.io.spectral_data_to_json(file=None, data=data)
+        json_str = uploader.io.array_data_to_json(file=None, data=data)
 
         return ContentFile(json_str, name=filename)
 
@@ -899,7 +855,7 @@ class SpectralData(DatedModel):
 
     #@transaction.atomic(using="bsr")  # Really? Not sure if this even can be if run in background...
     def annotate(self, annotator=None, force=False) -> list:
-        """ Run the quality control annotation on the spectral data. """
+        """ Run the quality control annotation on the array data. """
         # TODO: This needs to return early and run in the background.
 
         existing_annotators = self.get_annotators()
@@ -911,7 +867,7 @@ class SpectralData(DatedModel):
                     return
                 annotation = self.qc_annotation.get(annotator=annotator)
             else:
-                annotation = QCAnnotation(annotator=annotator, spectral_data=self)
+                annotation = QCAnnotation(annotator=annotator, array_data=self)
             return [annotation.run()]
 
         annotations = []
@@ -924,7 +880,7 @@ class SpectralData(DatedModel):
 
         # Create new annotations.
         for annotator in new_annotators:
-            annotation = QCAnnotation(annotator=annotator, spectral_data=self)
+            annotation = QCAnnotation(annotator=annotator, array_data=self)
             annotations.append(annotation.run())
 
         return annotations if annotations else None  # Don't ret empty list.
@@ -1058,7 +1014,7 @@ class FullPatientView(SqlView, models.Model):
 
     @classmethod
     def sql(cls):
-        # WARNING: The data exporters and charts rely on the spectral data column := "data", so we special case this
+        # WARNING: The data exporters and charts rely on the array data column := "data", so we special case this
         # instead of using ``_create_field_str_list``. The charts also rely on the field "patient_id" being present, so
         # that too we special case. Besides, patient.center shouldn't be included and that's the only other field.
         sql = f"""
@@ -1071,10 +1027,10 @@ class FullPatientView(SqlView, models.Model):
                                                                                "sample_cid",
                                                                                "sample_study_name"])},
                        {cls._create_field_str_list("i", Instrument, extra_excluded_field_names=["id", "cid"])},
-                       {cls._create_field_str_list("smt", SpectraMeasurementType, extra_excluded_field_names=["id"])},
+                       {cls._create_field_str_list("smt", ArrayMeasurementType, extra_excluded_field_names=["id"])},
                        {cls._create_field_str_list("sd",
-                                                   SpectralData,
-                                                   extra_excluded_field_names=[SpectralData.data.field.name,
+                                                   ArrayData,
+                                                   extra_excluded_field_names=[ArrayData.data.field.name,
                                                                                "id",
                                                                                "measurement_id",
                                                                                "date"])},
@@ -1084,8 +1040,8 @@ class FullPatientView(SqlView, models.Model):
                   join visit v on p.patient_id=v.patient_id
                   join bio_sample bs on bs.visit_id=v.id
                   join bio_sample_type bst on bst.id=bs.sample_type_id
-                  join spectral_data sd on sd.bio_sample_id=bs.id
-                  join spectra_measurement_type smt on smt.id=sd.measurement_type_id
+                  join array_data sd on sd.bio_sample_id=bs.id
+                  join array_measurement_type smt on smt.id=sd.measurement_type_id
                   join instrument i on i.id=sd.instrument_id
                   left outer join v_visit_observations vs on vs.visit_id=v.id
                 """  # nosec B608
@@ -1118,7 +1074,7 @@ class QCAnnotator(DatedModel):
             value_type (:obj:`django.models.CharField`): Value type selected from: BOOL, STR, INT, FLOAT.
             description (:obj:`django.models.CharField`, optional): A verbose description of the annotator's semantics.
             default (:obj:`django.models.BooleanField`, optional): Specifies whether this annotator is considered a
-                "default" or "global" annotator that will can be automatically applied to all spectral data entries.
+                "default" or "global" annotator that will can be automatically applied to all array data entries.
     """
 
     class Meta:
@@ -1141,7 +1097,7 @@ class QCAnnotator(DatedModel):
     default = models.BooleanField(default=True,
                                   blank=False,
                                   null=False,
-                                  help_text="If True it will apply to all spectral data samples.")
+                                  help_text="If True it will apply to all array data samples.")
 
     def __str__(self):
         return f"{self.name}: {self.fully_qualified_class_name}"
@@ -1158,26 +1114,26 @@ class QCAnnotator(DatedModel):
         super().save(*args, **kwargs)
 
         if settings.RUN_DEFAULT_ANNOTATORS_WHEN_SAVED and self.default:
-            # Run annotator on all spectral data samples.
-            for data in SpectralData.objects.all():
+            # Run annotator on all array data samples.
+            for data in ArrayData.objects.all():
                 # Since this annotator could have been altered (from django) rather than being new, annotations
                 # of this annotator may already exist, thus we need to force them to be re-run.
                 data.annotate(annotator=self, force=True)
 
 
 class QCAnnotation(DatedModel):
-    """ A Quality Control annotation of a spectral data entry.
+    """ A Quality Control annotation of a array data entry.
 
         Attributes:
             value (:obj:`django.models.CharField`): The actual annotation value/data/result.
             annotator (:obj:`django.models.ForeignKey` of :obj:`QCAnnotator`): The quality control annotator used to
-                produce annotate the spectral data entry.
-            spectral_data (:obj:`django.models.ForeignKey` of :obj:`SpectralData`): The annotated spectral data entry.
+                produce annotate the array data entry.
+            array_data (:obj:`django.models.ForeignKey` of :obj:`ArrayData`): The annotated array data entry.
     """
 
     class Meta:
         db_table = "qc_annotation"
-        unique_together = [["annotator", "spectral_data"]]
+        unique_together = [["annotator", "array_data"]]
         get_latest_by = "updated_at"
 
     value = models.CharField(blank=True, null=True, max_length=128)
@@ -1187,11 +1143,11 @@ class QCAnnotation(DatedModel):
                                   null=False,
                                   on_delete=models.CASCADE,
                                   related_name="qc_annotation")
-    spectral_data = models.ForeignKey(SpectralData, on_delete=models.CASCADE, related_name="qc_annotation")
+    array_data = models.ForeignKey(ArrayData, on_delete=models.CASCADE, related_name="qc_annotation")
 
     @property
     def center(self):
-        return self.spectral_data.bio_samaple.visit.patient.center
+        return self.array_data.bio_samaple.visit.patient.center
 
     def __str__(self):
         return f"{self.annotator.name}: {self.value}"
@@ -1201,7 +1157,7 @@ class QCAnnotation(DatedModel):
             return self.annotator.cast(self.value)
 
     def run(self, save=True):
-        value = self.annotator.run(self.spectral_data)
+        value = self.annotator.run(self.array_data)
         self.value = value
 
         if save:

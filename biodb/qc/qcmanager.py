@@ -3,7 +3,7 @@ import logging
 from django.conf import settings
 
 from biodb.qc.qcfilter import QcFilter, QCValidationError
-from uploader.models import SpectralData
+from uploader.models import ArrayData
 
 log = logging.getLogger()
 
@@ -35,7 +35,7 @@ class QcManager:
 
         self._validators[name] = filter
 
-    def validate(self, data: SpectralData) -> dict:
+    def validate(self, data: ArrayData) -> dict:
         results = {}
         for name, filter in self.validators.items():
             try:

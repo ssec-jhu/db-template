@@ -28,15 +28,15 @@ Observations
    uploader.models.Observable
    uploader.models.Observation
 
-SpectralData
+ArrayData
 ------------
 
 .. autosummary::
    :toctree: generated
 
    uploader.models.Instrument
-   uploader.models.SpectraMeasurementType
-   uploader.models.SpectralData
+   uploader.models.ArrayMeasurementType
+   uploader.models.ArrayData
 
 
 Bulk Data Uploads

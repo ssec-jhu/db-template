@@ -8,7 +8,7 @@ import pytest
 from biodb import __version__
 from catalog.models import Dataset
 from explorer.models import Query
-from uploader.models import SpectralData
+from uploader.models import ArrayData
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
@@ -49,7 +49,7 @@ class TestDataset:
                 namelist = z.namelist()
                 namelist.remove(str(Path(saved_dataset.name).with_suffix(file_ext)))
                 namelist.remove("INFO.json")
-                data_dir = Path(SpectralData.UPLOAD_DIR)
+                data_dir = Path(ArrayData.UPLOAD_DIR)
                 for file in namelist:
                     assert Path(file).parent == data_dir
 
