@@ -10,7 +10,8 @@
 
 A base template for creating Django applications for collecting patient data.
 
-_
+> [!NOTE]
+> This repo is an adaptation of https://github.com/ssec-jhu/biospecdb. 
 
 # Research Project
 
