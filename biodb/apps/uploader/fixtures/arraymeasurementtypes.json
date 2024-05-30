@@ -1,9 +1,9 @@
 [
   {
-    "model": "uploader.SpectraMeasurementType",
+    "model": "uploader.ArrayMeasurementType",
     "pk": 1,
     "fields": {
-      "name": "atr-ftir",
+      "name": "magic",
       "created_at": "2013-09-06T00:00:00+00:00",
       "updated_at": "2013-09-06T00:00:00+00:00"
     }

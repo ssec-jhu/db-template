@@ -53,7 +53,7 @@ class TestPatient:
         assert Patient.objects.get(pk=patient_id)
 
     def test_center_validation(self, centers):
-        center = UploaderCenter.objects.get(name="jhu")
+        center = UploaderCenter.objects.get(name="JHU")
         assert UserCenter.objects.filter(pk=center.pk).exists()
         assert UploaderCenter.objects.filter(pk=center.pk).exists()
 
@@ -66,10 +66,10 @@ class TestPatient:
         patient_id = uuid4()
         with pytest.raises(ValueError, match="Cannot assign"):
             patient = Patient(patient_id=patient_id,
-                              center=UserCenter.objects.get(name="jhu"))
+                              center=UserCenter.objects.get(name="JHU"))
 
     def test_unique_cid_center_id(self, centers):
-        center = UploaderCenter.objects.get(name="jhu")
+        center = UploaderCenter.objects.get(name="JHU")
         cid = uuid4()
         Patient.objects.create(patient_id=uuid4(),
                                center=center,
@@ -94,7 +94,7 @@ class TestPatient:
         id = uuid4()
         patient = Patient(patient_id=id,
                           patient_cid=id,
-                          center=Center.objects.get(name="jhu"))
+                          center=Center.objects.get(name="JHU"))
         with pytest.raises(ValidationError, match="Patient ID and patient CID cannot be the same"):
             patient.full_clean()
 
@@ -274,7 +274,7 @@ class TestObservation:
         assert observation.observable_value is value
 
     def test_center_validation(self, centers):
-        center = Center.objects.get(name="jhu")
+        center = Center.objects.get(name="JHU")
         patient = Patient.objects.create(center=center)
         visit = Visit.objects.create(patient=patient)
 
@@ -369,19 +369,19 @@ class TestArrayData:
         ...
 
     @pytest.mark.parametrize("ext", uploader.io.FileFormats.list())
-    def test_clean(self, centers, instruments, ext, bio_sample_types, spectra_measurement_types):
+    def test_clean(self, centers, instruments, ext, bio_sample_types, array_measurement_types):
         data_file = (DATA_PATH/"sample").with_suffix(ext)
         data = uploader.io.read_array_data(data_file)
 
         patient = Patient.objects.create(patient_id=data.patient_id,
-                                         center=Center.objects.get(name="jhu"))
+                                         center=Center.objects.get(name="JHU"))
         visit = patient.visit.create()
         bio_sample = visit.bio_sample.create(sample_type=BioSampleType.objects.get(name="pharyngeal swab"))
 
         array_data = ArrayData(instrument=Instrument.objects.get(pk="4205d8ac-90c1-4529-90b2-6751f665c403"),
                                      bio_sample=bio_sample,
                                      data=ContentFile(data_file.read_bytes(), name=data_file),
-                                     measurement_type=ArrayMeasurementType.objects.get(name="atr-ftir"))
+                                     measurement_type=ArrayMeasurementType.objects.get(name="magic"))
         array_data.full_clean()
         array_data.save()
 
@@ -408,7 +408,7 @@ class TestUploadedFile:
                                   file_ext,
                                   center,
                                   bio_sample_types,
-                                  spectra_measurement_types):
+                                  array_measurement_types):
         meta_data_path = (DATA_PATH/"meta_data").with_suffix(file_ext)
         array_file_path = (DATA_PATH / "array_data").with_suffix(file_ext)
         with meta_data_path.open(mode="rb") as meta_data, array_file_path.open(mode="rb") as array_data:
@@ -431,7 +431,7 @@ class TestUploadedFile:
     def test_center(self, mock_data_from_files):
         n_patients = Patient.objects.count()
         assert n_patients == 10
-        center = Center.objects.get(name="jhu")
+        center = Center.objects.get(name="JHU")
         assert n_patients == Patient.objects.filter(center=center).count()
         assert not Patient.objects.filter(center=None)
 
@@ -448,7 +448,7 @@ class TestUploadedFile:
                                  instruments,
                                  center,
                                  bio_sample_types,
-                                 spectra_measurement_types):
+                                 array_measurement_types):
         """ The total number of observations := N_patients * N_observables. """
         assert Patient.objects.count() == 0  # Assert empty.
 
@@ -565,7 +565,7 @@ class TestUploadedFile:
                      instruments,
                      center,
                      bio_sample_types,
-                     spectra_measurement_types):
+                     array_measurement_types):
         meta_data_path = (DATA_PATH/"meta_data").with_suffix(UploadedFile.FileFormats.CSV)
         array_file_path = (DATA_PATH / "array_data").with_suffix(UploadedFile.FileFormats.CSV)
 
@@ -587,7 +587,7 @@ class TestUploadedFile:
 
 @pytest.mark.django_db(databases=["default", "bsr"])
 def test_get_center(centers, mock_data_from_files):
-    center = Center.objects.get(name="jhu")
+    center = Center.objects.get(name="JHU")
     assert get_center(center) is center
 
     from user.models import Center as UserCenter

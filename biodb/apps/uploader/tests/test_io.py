@@ -10,12 +10,12 @@ import uploader.io
 from uploader.tests.conftest import DATA_PATH
 
 
-SPECTRAL_FILE_PATH = (DATA_PATH/"sample")
+ARRAY_FILE_PATH = (DATA_PATH/"sample")
 
 
 @pytest.fixture(scope="module")
 def json_data():
-    filename = SPECTRAL_FILE_PATH.with_suffix(uploader.io.FileFormats.JSONL)
+    filename = ARRAY_FILE_PATH.with_suffix(uploader.io.FileFormats.JSONL)
     with open(filename, mode="r") as fp:
         return json.load(fp)
 
@@ -23,7 +23,7 @@ def json_data():
 class TestReadSingleRowArrayDataTable:
     @pytest.mark.parametrize("ext", uploader.io.FileFormats.list())
     def test_read(self, json_data, ext):
-        filename = SPECTRAL_FILE_PATH.with_suffix(ext)
+        filename = ARRAY_FILE_PATH.with_suffix(ext)
         data = uploader.io.read_single_row_array_data_table(filename)
         assert str(data.patient_id) == json_data["patient_id"]
 
@@ -36,7 +36,7 @@ class TestReadSingleRowArrayDataTable:
 
 class TestArrayDataFromJson:
     def test_read(self, json_data):
-        filename = SPECTRAL_FILE_PATH.with_suffix(uploader.io.FileFormats.JSONL)
+        filename = ARRAY_FILE_PATH.with_suffix(uploader.io.FileFormats.JSONL)
         assert uploader.io.array_data_from_json(filename) == uploader.io.ArrayData(**json_data)
 
     def test_array_data_from_json_key_validation(self):

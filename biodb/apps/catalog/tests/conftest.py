@@ -5,7 +5,7 @@ from django.core.management import call_command
 
 from catalog.models import Dataset
 from uploader.tests.conftest import bio_sample_types, centers, instruments, mock_data_from_files, observables, \
-    SimpleQueryFactory, spectra_measurement_types, sql_views, mock_data  # noqa: F401
+    SimpleQueryFactory, array_measurement_types, sql_views, mock_data  # noqa: F401
 from user.models import Center as UserCenter
 
 
@@ -23,7 +23,7 @@ def staffuser(centers):  # noqa: F811
     return User.objects.create(username="staff",
                                email="staff@jhu.edu",
                                password="secret",
-                               center=UserCenter.objects.get(name="jhu"),
+                               center=UserCenter.objects.get(name="JHU"),
                                is_staff=True,
                                is_superuser=False)
 
@@ -33,7 +33,7 @@ def cataloguser(centers):  # noqa: F811
     return User.objects.create(username="analyst",
                                email="analyst@jhu.edu",
                                password="secret",
-                               center=UserCenter.objects.get(name="jhu"),
+                               center=UserCenter.objects.get(name="JHU"),
                                is_staff=True,
                                is_superuser=False,
                                is_catalogviewer=True)
@@ -44,7 +44,7 @@ def superuser(centers):  # noqa: F811
     return User.objects.create(username="admin",
                                email="admin@jhu.edu",
                                password="secret",
-                               center=UserCenter.objects.get(name="jhu"),
+                               center=UserCenter.objects.get(name="JHU"),
                                is_staff=True,
                                is_superuser=True)
 

@@ -599,8 +599,7 @@ class Instrument(DatedModel):
     @classmethod
     def parse_fields_from_pandas_series(cls, series):
         """ Parse the pandas series for field values returning a dict. """
-        return dict(spectrometer__iexact=get_field_value(series, cls, "spectrometer"),
-                    atr_crystal__iexact=get_field_value(series, cls, "atr_crystal"))
+        return {}
 
     def __str__(self):
         return f"{self.manufacturer}_{self.model}_{self.id}"
@@ -868,7 +867,7 @@ class ArrayData(DatedModel):
                     return
                 annotation = self.qc_annotation.get(annotator=annotator)
             else:
-                annotation = QCAnnotation(annotator=annotator, arary_data=self)
+                annotation = QCAnnotation(annotator=annotator, array_data=self)
             return [annotation.run()]
 
         annotations = []
@@ -1042,7 +1041,7 @@ class FullPatientView(SqlView, models.Model):
                   join bio_sample bs on bs.visit_id=v.id
                   join bio_sample_type bst on bst.id=bs.sample_type_id
                   join array_data sd on sd.bio_sample_id=bs.id
-                  join spectra_measurement_type smt on smt.id=sd.measurement_type_id
+                  join array_measurement_type smt on smt.id=sd.measurement_type_id
                   join instrument i on i.id=sd.instrument_id
                   left outer join v_visit_observations vs on vs.visit_id=v.id
                 """  # nosec B608

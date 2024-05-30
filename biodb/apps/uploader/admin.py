@@ -164,18 +164,6 @@ class InstrumentAdmin(RestrictedByCenterMixin, ModelAdmin):
             }
         ),
         (
-            "Spectrometer",
-            {
-                "fields": ["spectrometer_manufacturer", "spectrometer_model", "spectrometer_serial_number"],
-            }
-        ),
-        (
-            "Laser",
-            {
-                "fields": ["laser_manufacturer", "laser_model", "laser_serial_number"],
-            }
-        ),
-        (
             "More Details",
             {
                 "classes": ["collapse"],
@@ -468,8 +456,6 @@ class ArrayDataMixin:
             {
                 "fields": ["measurement_id",
                            "measurement_type",
-                           "atr_crystal",
-                           "n_coadditions",
                            "acquisition_time",
                            "resolution",
                            "power",
@@ -477,16 +463,6 @@ class ArrayDataMixin:
                            "pressure",
                            "humidity",
                            "date"],
-            }
-        ),
-        (
-            "SERS Details",
-            {
-                "classes": ["collapse"],
-                "fields": ["sers_description",
-                           "sers_particle_material",
-                           "sers_particle_size",
-                           "sers_particle_concentration"],
             }
         ),
         (

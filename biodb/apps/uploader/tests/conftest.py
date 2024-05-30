@@ -79,7 +79,7 @@ class SimpleQueryFactory(DjangoModelFactory):
 def django_request(center):
     request = RequestFactory()
     user = UserFactory()
-    user.center = UserCenter.objects.get(name="jhu")
+    user.center = UserCenter.objects.get(name="JHU")
     request.user = user
     return request
 
@@ -93,7 +93,7 @@ def centers(django_db_blocker):
 
 @pytest.fixture(scope="function")
 def center(centers):
-    return Center.objects.get(name="jhu")
+    return Center.objects.get(name="JHU")
 
 
 @pytest.fixture(scope="function")
@@ -109,9 +109,9 @@ def bio_sample_types(django_db_blocker):
 
 
 @pytest.fixture(scope="function")
-def spectra_measurement_types(django_db_blocker):
+def array_measurement_types(django_db_blocker):
     with django_db_blocker.unblock():
-        call_command('loaddata', "--database=bsr", 'spectrameasurementtypes.json')
+        call_command('loaddata', "--database=bsr", 'arraymeasurementtypes.json')
 
 
 @pytest.fixture(scope="function")
@@ -163,7 +163,7 @@ def bulk_upload():
                                                                              name=meta_data_path.name),
                                        array_data_file=django.core.files.File(array_data,
                                                                                  name=array_file_path.name),
-                                       center=Center.objects.get(name="jhu"))
+                                       center=Center.objects.get(name="JHU"))
             data_upload.clean()
             data_upload.save()
 
@@ -177,7 +177,7 @@ def mock_data_from_files(request,
                          django_db_blocker,
                          instruments,
                          bio_sample_types,
-                         spectra_measurement_types):
+                         array_measurement_types):
     # patch MEDIA_ROOT
     media_root = request.node.get_closest_marker("media_root")
     if media_root:
