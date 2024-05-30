@@ -35,6 +35,12 @@ author = 'SSEC-JHU'
 release = __version__
 version = __version__
 
+rst_prolog = """.. attention::
+    This repo is an adaption of https://github.com/ssec-jhu/biospecdb.
+    Images present within this documentation may not entirely reflect the exact working content of this application.
+"""
+
+
 # -- General configuration
 
 extensions = [

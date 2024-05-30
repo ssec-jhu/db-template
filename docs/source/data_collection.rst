@@ -15,7 +15,7 @@ Each form below includes all forms for those listed below it, excluding that for
  - Visits_: Every patient's data is contained within the concept of a "visit". This form can be used for collecting additional data for returning patients already in the database.
  - Observations_: Use this form to collect a patient's "observables" that represent a variety of types of meta data. E.g., age, blood pressure, lab test results, comorbidities etc.
  - BioSamples_: Use this form to collect information in regard to how the biological sample was taken, e.g., blood, nasal swab, urine etc. This sample is that processed to collect a patient's spectroscopy data.
- - SpectralData_: Use this form to upload a patient's spectroscopy data associated with the above observables taken at a given visit.
+ - ArrayData_: Use this form to upload a patient's spectroscopy data associated with the above observables taken at a given visit.
  - `Bulk Data Uploads`_: Use this form for convenience to upload multiple patients at the same time (privileged permission required).
 
 Viewing
@@ -40,7 +40,7 @@ In the example below we filter patients by those that have results for a Covid `
 Downloading
 ^^^^^^^^^^^
 
-When viewing data, both the SpectralData_ and `Bulk Data Uploads`_ files can be downloaded by clicking on the relevant URL link for the given view.
+When viewing data, both the ArrayData_ and `Bulk Data Uploads`_ files can be downloaded by clicking on the relevant URL link for the given view.
 
 .. note:: As a security measure the download URLs are only temporary. Attempting to use them once they have expired will not work and will result in a ``AccessDenied`` error. To generate new ones, please refresh the page.
 
@@ -142,21 +142,21 @@ BioSamples
 ^^^^^^^^^^
 
 A "BioSample" is all the data relevant to the physical biological sample taken from the patient.
-This biological sample will then be spectroscopically analyzed and uploaded on the SpectralData_ page.
+This biological sample will then be spectroscopically analyzed and uploaded on the ArrayData_ page.
 
 Below is an example of the ``BioSample`` collection form.
 
 .. image:: ../_static/biosample.png
 
-SpectralData
+ArrayData
 ^^^^^^^^^^^^
 
 This is the *actual* spectroscopy data file.
 Spectroscopy data is one of the two principle data types collected.
 
-Below is an example of the ``SpectralData`` collection form. The principle fields here are the ``Instrument`` used to spectroscopically analyze the biosample and the ``Spectral data file`` field used to upload the data file.
+Below is an example of the ``ArrayData`` collection form. The principle fields here are the ``Instrument`` used to spectroscopically analyze the biosample and the ``Array data file`` field used to upload the data file.
 
-.. image:: ../_static/spectraldata.png
+.. image:: ../_static/arraydata.png
 
 .. note:: Privileged permissions are required to add ``Instruments`` to the database. If you do not see your specific instrument in the selection box, please reach out to the website administrator.
 
@@ -189,7 +189,7 @@ Below is an example of the ``Bulk Data Upload`` collection form.
 
 The allowed file formats both data files are ``.csv``, ``.xlsx``, and ``.json``.
 
-The expected data table layout for the ``Spectral data file`` is the same as that stated above for SpectralData_, however, multiple rows are allowed with each representing a single patient's data file.
+The expected data table layout for the ``Array data file`` is the same as that stated above for ArrayData_, however, multiple rows are allowed with each representing a single patient's data file.
 
 The ``Meta data file`` contains *all* other data to be uploaded as a table where each column represents a specific field to be parsed and a row per patient containing the field values.
 
@@ -198,6 +198,6 @@ The observable names are aliased to more human readable names, and since these a
 Furthermore, since privileged permissions are required to use this form, please reach out to the site administrator for a list of all meta data column names.
 
 Specific examples for each format can be found on `GitHub <https://github.com/ssec-jhu/biodb/tree/main/biodb/apps/uploader/tests/data>`_.
-E.g., `meta_data.csv <https://github.com/ssec-jhu/biodb/blob/main/biodb/apps/uploader/tests/data/meta_data.csv>`_ and `spectral_data.csv <https://github.com/ssec-jhu/biodb/blob/main/biodb/apps/uploader/tests/data/spectral_data.csv>`_.
+E.g., `meta_data.csv <https://github.com/ssec-jhu/biodb/blob/main/biodb/apps/uploader/tests/data/meta_data.csv>`_ and `array_data.csv <https://github.com/ssec-jhu/biodb/blob/main/biodb/apps/uploader/tests/data/array_data.csv>`_.
 
 .. note:: As a security measure the download URLs are only temporary. Attempting to use them once they have expired will not work and will result in a ``AccessDenied`` error. To generate new ones, please refresh the page.
