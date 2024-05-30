@@ -83,10 +83,10 @@ def save_data_to_db(meta_data, array_data, center=None, joined_data=None, dry_ru
 
                 # Create datafile
                 json_str = uploader.io.array_data_to_json(file=None,
-                                                             data=None,
-                                                             patient_id=patient.patient_id,
-                                                             wavelength=row["wavelength"],
-                                                             intensity=row["intensity"])
+                                                          data=None,
+                                                          patient_id=patient.patient_id,
+                                                          x=row["x"],
+                                                          y=row["y"])
 
                 arraydata = ArrayData(instrument=instrument,
                                             bio_sample=biosample,

@@ -52,13 +52,13 @@ def to_bool(value):
 
 
 def mock_bulk_array_data(path=Path.home(),
-                            max_wavelength=4000,
-                            min_wavelength=651,
-                            n_bins=1798,
-                            n_patients=10):
+                         max_x=4000,
+                         min_x=651,
+                         n_bins=1798,
+                         n_patients=10):
     path = Path(path)
     data = pd.DataFrame(data=np.random.rand(n_patients, n_bins),
-                        columns=np.arange(max_wavelength, min_wavelength, (min_wavelength - max_wavelength) / n_bins))
+                        columns=np.arange(max_x, min_x, (min_x - max_x) / n_bins))
     data.index.name = settings.BULK_UPLOAD_INDEX_COLUMN_NAME
     data.index += 1  # Make index 1 based.
 

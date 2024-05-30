@@ -162,7 +162,7 @@ Below is an example of the ``SpectralData`` collection form. The principle field
 
 The allowed file formats for this data file are ``.csv``, ``.xlsx``, and ``.json``.
 
-The data is expected to be of the following table layout of just two rows. The first colum is the ``Patient ID`` with all other column headers being the wavelength value and the second row their amplitude values.
+The data is expected to be of the following table layout of just two rows. The first colum is the ``Patient ID`` with all other column headers being the x value and the second row their y values.
 
 +--------------------------------------+-------------+-------------+-------------+-----+-------------+-------------+-------------+
 | Patient ID                           | 4000        | 3998.137375 | 3996.27475  | ... | 656.5878754 | 654.7252503 | 652.8626251 |

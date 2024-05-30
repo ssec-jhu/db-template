@@ -40,7 +40,7 @@ class TestArrayDataFromJson:
         assert uploader.io.array_data_from_json(filename) == uploader.io.ArrayData(**json_data)
 
     def test_array_data_from_json_key_validation(self):
-        fake_data = ContentFile(json.dumps({"blah": "huh?", "wavelength": [], "something else": 1.0}),
+        fake_data = ContentFile(json.dumps({"blah": "huh?", "x": [], "something else": 1.0}),
                                 name=Path("fake_json").with_suffix(uploader.io.FileFormats.JSONL))
         with pytest.raises(uploader.io.DataSchemaError, match="Schema error:"):
             uploader.io.array_data_from_json(fake_data)

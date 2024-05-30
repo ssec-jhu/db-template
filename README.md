@@ -12,9 +12,9 @@ A base template for creating Django applications for collecting patient data.
 
 # Research Project
 
-This database application stands as an online community collection point for patient biosample spectral data and metadata,
+This database application stands as an online community collection point for patient biosample array data and metadata,
 to be used as an AI training set, generating a tool for easy disease detection from future patient biosamples.
-Further details for the science goals of this application can be found at [SSEC@JHU research projects: BSR](https://ai.jhu.edu/ssec/research/biosample-spectral-repository/).
+Further details for the science goals of this application can be found at [SSEC@JHU research projects: BSR](https://ai.jhu.edu/ssec/research/biosample-array-repository/).
 
 # Installation, Build, & Run instructions
 
@@ -75,12 +75,12 @@ For additional cmds see the [Conda cheat-sheet](https://docs.conda.io/projects/c
 
 ### Custom Deployment Settings:
 
-  * ``EXPLORER_CHARTS_ENABLED``: Include the spectral data files, if present in query results, for download as zip file.
+  * ``EXPLORER_CHARTS_ENABLED``: Include the array data files, if present in query results, for download as zip file.
   * ``EXPLORER_DATA_EXPORTERS_ALLOW_DATA_FILE_ALIAS``: Exhaustively scan query result values for relevant filepaths to
     collect data files. Does nothing when ``EXPLORER_DATA_EXPORTERS_INCLUDE_DATA_FILES is False``.
-  * ``AUTO_ANNOTATE``: Automatically run "default" annotators when new spectral data is added. [Quality Control Annotations](#quality-control-annotations).
-  * ``RUN_DEFAULT_ANNOTATORS_WHEN_SAVED``: Run newly added/updated annotator on all spectral data if annotator.default 
-    is True. WARNING: This may be time-consuming if the annotators takes a while to run and there are a lot of spectral
+  * ``AUTO_ANNOTATE``: Automatically run "default" annotators when new array data is added. [Quality Control Annotations](#quality-control-annotations).
+  * ``RUN_DEFAULT_ANNOTATORS_WHEN_SAVED``: Run newly added/updated annotator on all array data if annotator.default 
+    is True. WARNING: This may be time-consuming if the annotators takes a while to run and there are a lot of array
     data samples in the database. See [Quality Control Annotations](#quality-control-annotations).
 
 
@@ -98,7 +98,7 @@ _NOTE: For postgresql usage, run the provided script [rebuild_postgres.sh](scrip
 * ``python manage.py migrate --database=bsr``
 * ``python manage.py createsuperuser``
 * ``python manage.py loaddata centers queries``
-* ``python manage.py loaddata --database=bsr centers observables instruments qcannotators biosampletypes spectrameasurementtypes``
+* ``python manage.py loaddata --database=bsr centers observables instruments qcannotators biosampletypes arraymeasurementtypes``
 * ``python manage.py update_sql_views flat_view``
 * ``python manage.py runserver``
 
@@ -134,7 +134,7 @@ The DB can be dumped to a file using the following:
    * ``--dry_run``: Output files to be deleted but don't actually delete anything.
  * ``python manage.py update_sql_views <view>``: Create/update the custom SQL view provided and its view dependencies if any.
    * ``--drop_only``: Drop SQL view (and dependencies) but don't re-create.
- * ``python manage.py run_qc_annotators [--no_reruns]``: Run all Quality Control annotators on the SpectralData database table.
+ * ``python manage.py run_qc_annotators [--no_reruns]``: Run all Quality Control annotators on the ArrayData database table.
    * ``--no_reruns``: Don't run annotators on existing annotations, leave computed values as is.
  * ``python manage.py get_column_names [--exlcude_observables] [--exclude_non_observables] [--center=<name|id>]``
    * ``--exlcude_observables``: Only output column names for all observables currently in the database.
@@ -176,13 +176,13 @@ _NOTE: ``scripts/prd/ec2_init.sh`` will export all AWS secrets as shell environm
 
 # Quality Control Annotations
 
-Entries in the ``SpectralData`` table can be annotated by running ``QCAnnotators`` on them, thus producing a value
-stored as an ``ACAnnotation`` associated with the ``SpectralData`` entry. The ``SpectralData`` table contains the actual
-spectral data file containing the wavelength and intensity values. It may be desirable to annotate this data with
+Entries in the ``ArrayData`` table can be annotated by running ``QCAnnotators`` on them, thus producing a value
+stored as an ``ACAnnotation`` associated with the ``ArrayData`` entry. The ``ArrayData`` table contains the actual
+array data values. It may be desirable to annotate this data with
 certain quality control metrics that can later be used to filter the data. Such quality control functions are to be
 implemented as a subclass of ``biodb.app.uploader.qc.qcfilter.QcFilter``.
 They can then be added to the database belonging to the ``QCAnnotator``
-table. Annotations of this annotators can then either be manually associated with a ``SpectralData`` entry manually via
+table. Annotations of this annotators can then either be manually associated with a ``ArrayData`` entry manually via
 the admin form, or by "default" if the ``QCAnnotator.default = True``. They can also be run by using the
 ``run_qc_annotator`` Django management command. The behavior for running these annotators and
 population of the ``QCAnnotation`` table is configurable and is described below.
@@ -192,15 +192,15 @@ population of the ``QCAnnotation`` table is configurable and is described below.
 The following QC annotator settings are available in ``biodb.settings.base``:
 
  * ``AUTO_ANNOTATE``: If ``True`` and if default annotators exist in the DB, they will be automatically run upon
-                      adding/updating ``SpectralData`` entries. _(Default: True)_
- * ``RUN_DEFAULT_ANNOTATORS_WHEN_SAVED``: If ``True`` and ``SpectralData`` entries exist in the DB, newly added/updated
-                                          default annotators will be run on all ``SpectralData`` entries.
+                      adding/updating ``ArrayData`` entries. _(Default: True)_
+ * ``RUN_DEFAULT_ANNOTATORS_WHEN_SAVED``: If ``True`` and ``ArrayData`` entries exist in the DB, newly added/updated
+                                          default annotators will be run on all ``ArrayData`` entries.
                                           _(Default: False)_
 
 #### Management Command:
 
 Running ``python manage.py run_qc_annotors`` will run all existing default annotators and re-run existing annotations on
-all relevant ``SpectralData`` table entries. The option ``--no_reruns`` can be used to prevent re-running existing
+all relevant ``ArrayData`` table entries. The option ``--no_reruns`` can be used to prevent re-running existing
 annotations and only run default annotators that have not yet been run.
 NOTE: If ``AUTO_ANNOTATE = RUN_DEFAULT_ANNOTATORS_WHEN_SAVED = False`` using the ``run_qc_annotors`` management command
 is the only mechanism for creating quality control annotations.
