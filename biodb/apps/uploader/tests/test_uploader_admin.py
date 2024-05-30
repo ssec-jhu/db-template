@@ -17,7 +17,7 @@ DATA_PATH = Path(__file__).parent / "data"
 
 User = get_user_model()
 
-SKIP_MODELS = [uploader.models.BioSampleType, uploader.models.SpectraMeasurementType]
+SKIP_MODELS = [uploader.models.BioSampleType, uploader.models.ArrayMeasurementType]
 
 
 uploader_models = []
@@ -207,14 +207,14 @@ class TestUploadedFile:
         c.force_login(user)
 
         meta_data_path = (DATA_PATH / "meta_data").with_suffix(uploader.models.UploadedFile.FileFormats.XLSX)
-        spectral_file_path = (DATA_PATH / "spectral_data").with_suffix(uploader.models.UploadedFile.FileFormats.XLSX)
+        array_file_path = (DATA_PATH / "array_data").with_suffix(uploader.models.UploadedFile.FileFormats.XLSX)
         with meta_data_path.open(mode="rb") as meta_data:
-            with spectral_file_path.open(mode="rb") as spectral_data:
+            with array_file_path.open(mode="rb") as array_data:
                 meta_data_file = django.core.files.File(meta_data, name=meta_data_path.name)
-                spectral_data_file = django.core.files.File(spectral_data, name=spectral_file_path.name)
+                array_data_file = django.core.files.File(array_data, name=array_file_path.name)
                 response = c.post("/data/uploader/uploadedfile/add/",
                                   follow=True,
                                   data={"meta_data_file": meta_data_file,
-                                        "spectral_data_file": spectral_data_file,
+                                        "array_data_file": array_data_file,
                                         "center": user.center.pk})
         assert response.status_code == 200

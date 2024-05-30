@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 from django.core.management import call_command
 from django.utils.module_loading import import_string
 
-from uploader.models import QCAnnotation, QCAnnotator, SpectralData
+from uploader.models import QCAnnotation, QCAnnotator, ArrayData
 import biodb.qc.qcfilter
 
 import biodb.util
@@ -35,8 +35,8 @@ class TestQCFunctionality:
 
     def test_new_annotation(self, qcannotators, mock_data_from_files):
         annotator = QCAnnotator.objects.get(name="sum")
-        spectral_data = SpectralData.objects.all()[0]
-        annotation = QCAnnotation(annotator=annotator, spectral_data=spectral_data)
+        array_data = ArrayData.objects.all()[0]
+        annotation = QCAnnotation(annotator=annotator, array_data=array_data)
         assert annotation.value is None
         annotation.full_clean()
         annotation.save()
@@ -78,7 +78,7 @@ class TestQCFunctionality:
         assert annotation.get_value() == 3.14
 
     @pytest.mark.parametrize("mock_data_from_files", [True], indirect=True)  # AUTO_ANNOTATE = True
-    def test_auto_annotate_with_new_spectral_data(self, qcannotators, mock_data_from_files):
+    def test_auto_annotate_with_new_array_data(self, qcannotators, mock_data_from_files):
         for expected_results, annotation in zip(self.expected_sum_results, QCAnnotation.objects.all()):
             assert pytest.approx(annotation.get_value()) == expected_results
 
@@ -98,22 +98,22 @@ class TestQCFunctionality:
             assert pytest.approx(annotation.get_value()) == expected_results
 
     def test_empty_get_annotators(self, mock_data_from_files):
-        for data in SpectralData.objects.all():
+        for data in ArrayData.objects.all():
             assert len(data.get_annotators()) == 0
 
     @pytest.mark.parametrize("mock_data_from_files", [True], indirect=True)  # AUTO_ANNOTATE = True
     def test_get_annotators(self, qcannotators, mock_data_from_files):
-        for data in SpectralData.objects.all():
+        for data in ArrayData.objects.all():
             assert len(data.get_annotators()) == 1
 
     @pytest.mark.parametrize("mock_data_from_files", [True], indirect=True)  # AUTO_ANNOTATE = True
     def test_get_zero_unrun_annotators(self, qcannotators, mock_data_from_files):
-        for data in SpectralData.objects.all():
+        for data in ArrayData.objects.all():
             assert len(data.get_unrun_annotators()) == 0
 
     @pytest.mark.parametrize("mock_data_from_files", [True], indirect=True)  # AUTO_ANNOTATE = True
     def test_get_unrun_annotators(self, monkeypatch, qcannotators, mock_data_from_files):
-        for data in SpectralData.objects.all():
+        for data in ArrayData.objects.all():
             assert len(data.get_unrun_annotators()) == 0
 
         monkeypatch.setattr(settings, "RUN_DEFAULT_ANNOTATORS_WHEN_SAVED", False)
@@ -124,12 +124,12 @@ class TestQCFunctionality:
         annotator.full_clean()
         annotator.save()
 
-        for data in SpectralData.objects.all():
+        for data in ArrayData.objects.all():
             assert len(data.get_unrun_annotators()) == 1
 
     @pytest.mark.parametrize("mock_data_from_files", [True], indirect=True)  # AUTO_ANNOTATE = True
     def test_get_new_unrun_annotators(self, monkeypatch, qcannotators, mock_data_from_files):
-        for data in SpectralData.objects.all():
+        for data in ArrayData.objects.all():
             assert len(data.get_unrun_annotators()) == 0
 
         monkeypatch.setattr(settings, "RUN_DEFAULT_ANNOTATORS_WHEN_SAVED", True)
@@ -140,7 +140,7 @@ class TestQCFunctionality:
         annotator.full_clean()
         annotator.save()
 
-        for data in SpectralData.objects.all():
+        for data in ArrayData.objects.all():
             assert len(data.get_unrun_annotators()) == 0
 
     def test_management_command_no_annotators(self, db):
@@ -151,7 +151,7 @@ class TestQCFunctionality:
     def test_management_command_no_data(self, qcannotators):
         out = StringIO()
         call_command("run_qc_annotators", stdout=out)
-        assert "No SpectralData exists to annotate." in out.getvalue()
+        assert "No ArrayData exists to annotate." in out.getvalue()
 
     def test_management_command(self, mock_data_from_files, qcannotators):
         for annotation in QCAnnotation.objects.all():
@@ -212,5 +212,5 @@ class TestQCFunctionality:
     def test_no_file_related_error(self, qcannotators):
         """ Test that a validation error is raised rather than any other python exception which would indicate a bug. """
         annotation = QCAnnotation(annotator=QCAnnotator.objects.get(name="sum"))
-        with pytest.raises(QCAnnotation.spectral_data.RelatedObjectDoesNotExist):
+        with pytest.raises(QCAnnotation.array_data.RelatedObjectDoesNotExist):
             annotation.save()

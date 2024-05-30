@@ -14,17 +14,17 @@ class ExitTransaction(Exception):
     ...
 
 
-def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry_run=False) -> dict:
+def save_data_to_db(meta_data, array_data, center=None, joined_data=None, dry_run=False) -> dict:
 
     """
     Ingest into the database large tables of observation & observable data (aka "meta" data) along with associated
-    spectral data.
+    array data.
 
     Note: Data can be passed in pre-joined, i.e., save_data_to_db(None, None, joined_data). If so, data can't be
           validated.
     Note: This func is called by UploadedFile.clean() which, therefore, can't also be called here.
     """
-    from uploader.models import BioSample, Observable, Instrument, Patient, SpectralData, Observation, UploadedFile,\
+    from uploader.models import BioSample, Observable, Instrument, Patient, ArrayData, Observation, UploadedFile,\
         Visit, Center as UploaderCenter
     from user.models import Center as UserCenter
 
@@ -39,15 +39,15 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
         # Read in all data.
         meta_data = meta_data if isinstance(meta_data, pd.DataFrame) else \
             uploader.io.read_meta_data(meta_data, index_column=index_column)
-        spec_data = spectral_data if isinstance(spectral_data, pd.DataFrame) else \
-            uploader.io.read_spectral_data_table(spectral_data, index_column=index_column)
+        spec_data = array_data if isinstance(array_data, pd.DataFrame) else \
+            uploader.io.read_array_data_table(array_data, index_column=index_column)
 
         UploadedFile.validate_lengths(meta_data, spec_data)
         joined_data = UploadedFile.join_with_validation(meta_data, spec_data)
 
     try:
         with transaction.atomic(using="bsr"):
-            spectral_data_files = []
+            array_data_files = []
 
             # Ingest into db.
             for index, row in joined_data.iterrows():
@@ -78,27 +78,27 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
                 biosample.save()
                 visit.bio_sample.add(biosample, bulk=False)
 
-                # SpectralData
+                # ArrayData
                 instrument = get_object_or_raise_validation(Instrument, pk=row.get("instrument"))
 
                 # Create datafile
-                json_str = uploader.io.spectral_data_to_json(file=None,
+                json_str = uploader.io.array_data_to_json(file=None,
                                                              data=None,
                                                              patient_id=patient.patient_id,
                                                              wavelength=row["wavelength"],
                                                              intensity=row["intensity"])
 
-                spectraldata = SpectralData(instrument=instrument,
+                arraydata = ArrayData(instrument=instrument,
                                             bio_sample=biosample,
-                                            **SpectralData.parse_fields_from_pandas_series(row))
-                filename = f"{uploader.io.TEMP_FILENAME_PREFIX if dry_run else ''}{spectraldata.generate_filename()}"
-                spectraldata.data = ContentFile(json_str, name=filename)
-                spectraldata.full_clean()
-                spectraldata.save()
-                spectral_data_files.append(spectraldata.data)
+                                            **ArrayData.parse_fields_from_pandas_series(row))
+                filename = f"{uploader.io.TEMP_FILENAME_PREFIX if dry_run else ''}{arraydata.generate_filename()}"
+                arraydata.data = ContentFile(json_str, name=filename)
+                arraydata.full_clean()
+                arraydata.save()
+                array_data_files.append(arraydata.data)
 
-                biosample.spectral_data.add(spectraldata, bulk=False)
-                instrument.spectral_data.add(spectraldata, bulk=False)
+                biosample.array_data.add(arraydata, bulk=False)
+                instrument.array_data.add(arraydata, bulk=False)
 
                 # Observations
                 for observable in Observable.objects.filter(Q(center=center) | Q(center=None)):
@@ -121,16 +121,16 @@ def save_data_to_db(meta_data, spectral_data, center=None, joined_data=None, dry
         pass
     except Exception:
         # Something went wrong and the above transaction was aborted so delete uncommitted and now orphaned files.
-        while spectral_data_files:
-            file = spectral_data_files.pop()
+        while array_data_files:
+            file = array_data_files.pop()
             if not file.closed:
                 file.close()
-            SpectralData.data.field.storage.delete(file.name)  # Pop to avoid repetition in finally branch.
+            ArrayData.data.field.storage.delete(file.name)  # Pop to avoid repetition in finally branch.
         raise
     finally:
         # Delete unwanted temporary files.
-        for file in spectral_data_files:
+        for file in array_data_files:
             if (filename := Path(file.name)).name.startswith(uploader.io.TEMP_FILENAME_PREFIX):
                 if not file.closed:
                     file.close()
-                SpectralData.data.field.storage.delete(filename)
+                ArrayData.data.field.storage.delete(filename)

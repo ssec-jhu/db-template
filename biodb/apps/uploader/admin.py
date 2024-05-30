@@ -11,8 +11,8 @@ from django import forms
 from nested_admin import NestedStackedInline, NestedTabularInline, NestedModelAdmin
 
 from biodb.util import to_bool
-from .models import BioSample, Observable, Instrument, Patient, SpectralData, Observation, UploadedFile, Visit,\
-    QCAnnotator, QCAnnotation, Center, get_center, BioSampleType, SpectraMeasurementType
+from .models import BioSample, Observable, Instrument, Patient, ArrayData, Observation, UploadedFile, Visit,\
+    QCAnnotator, QCAnnotation, Center, get_center, BioSampleType, ArrayMeasurementType
 from uploader.forms import ModelForm
 from user.admin import CenterAdmin as UserCenterAdmin
 
@@ -127,10 +127,10 @@ class RestrictedByCenterMixin:
             field.queryset = field.queryset.filter(visit__center=center)
         elif db_field.name == "bio_sample":
             field.queryset = field.queryset.filter(visit__patient__center=center)
-        elif db_field.name == "spectral_data":
+        elif db_field.name == "array_data":
             field.queryset = field.queryset.filter(bio_sample__visit__patient__center=center)
         elif db_field.name == "qc_annotation":
-            field.queryset = field.queryset.filter(spectral_data__bio_sample__visit__patient__center=center)
+            field.queryset = field.queryset.filter(array_data__bio_sample__visit__patient__center=center)
         elif db_field.name in ("annotator", "measurement_type", "sample_type"):
             # These aren't limited/restricted by center.
             pass
@@ -142,7 +142,7 @@ class RestrictedByCenterMixin:
 
 
 admin.site.register(BioSampleType)
-admin.site.register(SpectraMeasurementType)
+admin.site.register(ArrayMeasurementType)
 
 
 @admin.register(Instrument)
@@ -218,7 +218,7 @@ class UploadedFileAdmin(RestrictedByCenterMixin, ModelAdmin):
     form = UploadedFileForm
     search_fields = ["created_at"]
     search_help_text = "Creation timestamp"
-    list_display = ["pk", "created_at", "meta_data_file", "spectral_data_file", "center"]
+    list_display = ["pk", "created_at", "meta_data_file", "array_data_file", "center"]
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     date_hierarchy = "created_at"
     ordering = ("-updated_at",)
@@ -246,13 +246,13 @@ class QCAnnotationInline(RestrictedByCenterMixin, NestedTabularInline):
 @admin.register(QCAnnotation)
 class QCAnnotationAdmin(RestrictedByCenterMixin, ModelAdmin):
     search_fields = ["annotator__name",
-                     "spectral_data__bio_sample__visit__patient__patient_id",
-                     "spectral_data__bio_sample__visit__patient__patient_cid"]
+                     "array_data__bio_sample__visit__patient__patient_id",
+                     "array_data__bio_sample__visit__patient__patient_cid"]
     search_help_text = "Annotator Name, Patient ID or CID"
     readonly_fields = ("value", "created_at", "updated_at")  # TODO: Might need specific user group for timestamps.
     list_display = ["annotator_name", "value", "annotator_value_type", "updated_at"]
     ordering = ("-updated_at",)
-    list_filter = ("spectral_data__bio_sample__visit__patient__center", "annotator__name")
+    list_filter = ("array_data__bio_sample__visit__patient__center", "annotator__name")
 
     @admin.display
     def annotator_name(self, obj):
@@ -268,7 +268,7 @@ class QCAnnotationAdmin(RestrictedByCenterMixin, ModelAdmin):
         if request.user.is_superuser:
             return qs
         center = Center.objects.get(pk=request.user.center.pk)
-        return qs.filter(spectral_data__bio_sample__visit__patient__center=center)
+        return qs.filter(array_data__bio_sample__visit__patient__center=center)
 
 
 @admin.register(QCAnnotator)
@@ -452,7 +452,7 @@ class ObservationAdmin(ObservationMixin, RestrictedByCenterMixin, NestedModelAdm
     list_display = ["patient_id", "observable_name", "visit"]
 
 
-class SpectralDataMixin:
+class ArrayDataMixin:
     ordering = ("-updated_at",)
     readonly_fields = ["created_at", "updated_at"]
 
@@ -510,8 +510,8 @@ class SpectralDataMixin:
         return qs.filter(bio_sample__visit__patient__center=Center.objects.get(pk=request.user.center.pk))
 
 
-@admin.register(SpectralData)
-class SpectralDataAdmin(SpectralDataMixin, RestrictedByCenterMixin, NestedModelAdmin):
+@admin.register(ArrayData)
+class ArrayDataAdmin(ArrayDataMixin, RestrictedByCenterMixin, NestedModelAdmin):
     search_fields = ["bio_sample__visit__patient__patient_id", "bio_sample__visit__patient__patient_cid"]
     search_help_text = "Patient ID or CID"
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
@@ -525,12 +525,12 @@ class SpectralDataAdmin(SpectralDataMixin, RestrictedByCenterMixin, NestedModelA
                    "bio_sample__visit__observation__observable")
 
 
-class SpectralDataAdminWithInlines(SpectralDataAdmin):
+class ArrayDataAdminWithInlines(ArrayDataAdmin):
     inlines = [QCAnnotationInline]
 
 
-class SpectralDataInline(SpectralDataMixin, RestrictedByCenterMixin, NestedStackedInline):
-    model = SpectralData
+class ArrayDataInline(ArrayDataMixin, RestrictedByCenterMixin, NestedStackedInline):
+    model = ArrayData
     extra = 1
     min_num = 0
     show_change_link = True
@@ -538,7 +538,7 @@ class SpectralDataInline(SpectralDataMixin, RestrictedByCenterMixin, NestedStack
 
     def get_extra(self, request, obj=None, **kwargs):
         # Only display inlines for those that exist, i.e., no expanded extras (if they exist).
-        return 0 if obj and obj.pk and obj.spectral_data.count() else self.extra
+        return 0 if obj and obj.pk and obj.array_data.count() else self.extra
 
 
 class BioSampleMixin:
@@ -600,7 +600,7 @@ class BioSampleAdmin(BioSampleMixin, RestrictedByCenterMixin, NestedModelAdmin):
 
 
 class BioSampleAdminWithInlines(BioSampleAdmin):
-    inlines = [SpectralDataInline]
+    inlines = [ArrayDataInline]
 
 
 class BioSampleInline(BioSampleMixin, RestrictedByCenterMixin, NestedStackedInline):
@@ -609,7 +609,7 @@ class BioSampleInline(BioSampleMixin, RestrictedByCenterMixin, NestedStackedInli
     min_num = 0
     show_change_link = True
     fk_name = "visit"
-    inlines = [SpectralDataInline]
+    inlines = [ArrayDataInline]
 
     def get_extra(self, request, obj=None, **kwargs):
         # Only display inlines for those that exist, i.e., no expanded extras (if they exist).
@@ -796,7 +796,7 @@ class DataAdminSite(admin.AdminSite):
                    Visit,
                    Observation,
                    BioSample,
-                   SpectralData,
+                   ArrayData,
                    UploadedFile
                    ]
 
@@ -815,7 +815,7 @@ data_admin.register(Patient, admin_class=PatientAdminWithInlines)
 data_admin.register(Visit, admin_class=VisitAdminWithInlines)
 data_admin.register(Observation, admin_class=ObservationAdmin)
 data_admin.register(BioSample, admin_class=BioSampleAdminWithInlines)
-data_admin.register(SpectralData, admin_class=SpectralDataAdminWithInlines)
+data_admin.register(ArrayData, admin_class=ArrayDataAdminWithInlines)
 data_admin.register(UploadedFile, admin_class=UploadedFileAdmin)
 # data_admin.register(Instrument, admin_class=InstrumentAdmin)
 # data_admin.register(QCAnnotation, admin_class=QCAnnotationAdmin)

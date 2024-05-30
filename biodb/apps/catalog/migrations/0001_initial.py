@@ -30,8 +30,8 @@ class Migration(migrations.Migration):
                 ('app_version', models.CharField(blank=True, default=catalog.models.get_app_version, editable=False, help_text='App version used to create data product', max_length=32)),
                 ('sha256', models.CharField(blank=True, editable=False, help_text='Checksum of downloadable file', max_length=64, validators=[django.core.validators.MinLengthValidator(64)], verbose_name='SHA-256')),
                 ('n_rows', models.IntegerField(blank=True, editable=False, help_text='Number of data rows')),
-                ('data_sha256', models.CharField(blank=True, editable=False, help_text='Checksum of data table (not including any spectral data files).', max_length=64, validators=[django.core.validators.MinLengthValidator(64)], verbose_name='Data SHA-256')),
-                ('spectral_data_filenames', models.JSONField(blank=True, default=catalog.models.empty_list, editable=False, encoder=catalog.models.CustomDjangoJsonEncoder, help_text='List of spectral data filenames')),
+                ('data_sha256', models.CharField(blank=True, editable=False, help_text='Checksum of data table (not including any array data files).', max_length=64, validators=[django.core.validators.MinLengthValidator(64)], verbose_name='Data SHA-256')),
+                ('array_data_filenames', models.JSONField(blank=True, default=catalog.models.empty_list, editable=False, encoder=catalog.models.CustomDjangoJsonEncoder, help_text='List of array data filenames')),
                 ('query', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='dataset', to='explorer.query')),
             ],
             options={

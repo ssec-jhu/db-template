@@ -27,7 +27,7 @@ class AuthMixin:
 @admin.register(Dataset)
 class DatasetAdmin(AuthMixin, admin.ModelAdmin):
     search_fields = ["created_at", "name", "version", "query__name"]
-    list_display = ["name", "version", "file", "created_at", "size", "n_rows", "n_spectral_data_files"]
+    list_display = ["name", "version", "file", "created_at", "size", "n_rows", "n_array_data_files"]
     date_hierarchy = "created_at"
     ordering = ("-updated_at",)
     list_filter = ("name",)
@@ -40,8 +40,8 @@ class DatasetAdmin(AuthMixin, admin.ModelAdmin):
                        "updated_at",
                        "id",
                        "n_rows",
-                       "n_spectral_data_files",
-                       "spectral_data_filenames",
+                       "n_array_data_files",
+                       "array_data_filenames",
                        "data_sha256"]
 
     fieldsets = [
@@ -73,14 +73,14 @@ class DatasetAdmin(AuthMixin, admin.ModelAdmin):
                            "app_version",
                            "id",
                            "n_rows",
-                           "n_spectral_data_files"],
+                           "n_array_data_files"],
             }
         ),
         (
-            "Spectral Data Filenames",
+            "Array Data Filenames",
             {
                 "classes": ["collapse"],
-                "fields": ["spectral_data_filenames"],
+                "fields": ["array_data_filenames"],
             }
         ),
     ]
@@ -91,9 +91,9 @@ class DatasetAdmin(AuthMixin, admin.ModelAdmin):
             return f"{int(obj.file.size / 1e6)} MB"
 
     @admin.display
-    def n_spectral_data_files(self, obj):
-        if obj.spectral_data_filenames:
-            return len(obj.spectral_data_filenames)
+    def n_array_data_files(self, obj):
+        if obj.array_data_filenames:
+            return len(obj.array_data_filenames)
         return 0
 
 

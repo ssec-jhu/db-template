@@ -7,7 +7,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 import uploader.io
-from uploader.models import Observable, Patient, SpectralData
+from uploader.models import Observable, Patient, ArrayData
 from biodb.util import to_uuid
 
 logger = logging.getLogger(__name__)
@@ -54,7 +54,7 @@ def get_pie_chart(result: "QueryResult") -> Optional[str]:  # noqa: F821
 
 
 def get_line_chart(result: "QueryResult") -> Optional[str]:  # noqa: F821
-    """ Generate ploty line chart of spectral data present in data result. """
+    """ Generate ploty line chart of array data present in data result. """
 
     if len(result.data) < 1:
         return
@@ -62,19 +62,19 @@ def get_line_chart(result: "QueryResult") -> Optional[str]:  # noqa: F821
     try:
         df = pd.DataFrame(result.data, columns=result.header_strings)
 
-        if Patient.patient_id.field.name not in df.columns or SpectralData.data.field.name not in df.columns:
+        if Patient.patient_id.field.name not in df.columns or ArrayData.data.field.name not in df.columns:
             return
-        df = df[[Patient.patient_id.field.name, SpectralData.data.field.name]]
+        df = df[[Patient.patient_id.field.name, ArrayData.data.field.name]]
 
         fig = go.Figure()
         fig.update_layout(xaxis_title="Wavelength",
                           yaxis_title="Intensity",
-                          title=f"Spectral Data for SQL query: '{result.sql}'")
+                          title=f"Array Data for SQL query: '{result.sql}'")
         for row in df.itertuples():
-            spectral_data = uploader.io.read_spectral_data(row.data)
-            assert to_uuid(spectral_data.patient_id) == to_uuid(row.patient_id)
-            fig.add_scatter(x=spectral_data.wavelength,
-                            y=spectral_data.intensity,
+            array_data = uploader.io.read_array_data(row.data)
+            assert to_uuid(array_data.patient_id) == to_uuid(row.patient_id)
+            fig.add_scatter(x=array_data.wavelength,
+                            y=array_data.intensity,
                             name=str(row.patient_id))
 
         return fig_to_html(fig)

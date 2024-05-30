@@ -11,8 +11,8 @@ from django.db.utils import IntegrityError
 import pytest
 
 import uploader.io
-from uploader.models import BioSample, BioSampleType, Observable, Instrument, Patient, SpectralData, Observation,\
-    Visit, UploadedFile, get_center, Center, SpectraMeasurementType
+from uploader.models import BioSample, BioSampleType, Observable, Instrument, Patient, ArrayData, Observation,\
+    Visit, UploadedFile, get_center, Center, ArrayMeasurementType
 from uploader.loaddata import save_data_to_db
 from user.models import Center as UserCenter
 from uploader.models import Center as UploaderCenter
@@ -333,32 +333,32 @@ class TestBioSample:
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
-class TestSpectralData:
+class TestArrayData:
     def test_files_added(self, mock_data_from_files):
         n_patients = 10
-        assert SpectralData.objects.count() == n_patients
-        for obj in SpectralData.objects.all():
+        assert ArrayData.objects.count() == n_patients
+        for obj in ArrayData.objects.all():
             assert Path(obj.data.name).exists()
 
     def test_no_file_validation(self, db):
         """ Test that a validation error is raised rather than any other python exception which would indicate a bug.
         """
-        data = SpectralData()
+        data = ArrayData()
         with pytest.raises(ValidationError):
             data.full_clean()
 
     def test_temp_files_deleted(self, mock_data_from_files):
         n_patients = 10
-        assert SpectralData.objects.count() == n_patients
-        filename = Path(SpectralData.objects.all()[0].data.name)
+        assert ArrayData.objects.count() == n_patients
+        filename = Path(ArrayData.objects.all()[0].data.name)
         assert filename.parent.exists()
         assert filename.parent.is_dir()
         assert not list(filename.parent.glob(f"{uploader.io.TEMP_FILENAME_PREFIX}*"))
 
     def test_no_duplicate_data_files(self, mock_data_from_files):
         n_patients = 10
-        assert SpectralData.objects.count() == n_patients
-        filename = Path(SpectralData.objects.all()[0].data.name)
+        assert ArrayData.objects.count() == n_patients
+        filename = Path(ArrayData.objects.all()[0].data.name)
         assert filename.parent.exists()
         assert filename.parent.is_dir()
         assert len(list(filename.parent.glob('*'))) == n_patients
@@ -371,31 +371,31 @@ class TestSpectralData:
     @pytest.mark.parametrize("ext", uploader.io.FileFormats.list())
     def test_clean(self, centers, instruments, ext, bio_sample_types, spectra_measurement_types):
         data_file = (DATA_PATH/"sample").with_suffix(ext)
-        data = uploader.io.read_spectral_data(data_file)
+        data = uploader.io.read_array_data(data_file)
 
         patient = Patient.objects.create(patient_id=data.patient_id,
                                          center=Center.objects.get(name="jhu"))
         visit = patient.visit.create()
         bio_sample = visit.bio_sample.create(sample_type=BioSampleType.objects.get(name="pharyngeal swab"))
 
-        spectral_data = SpectralData(instrument=Instrument.objects.get(pk="4205d8ac-90c1-4529-90b2-6751f665c403"),
+        array_data = ArrayData(instrument=Instrument.objects.get(pk="4205d8ac-90c1-4529-90b2-6751f665c403"),
                                      bio_sample=bio_sample,
                                      data=ContentFile(data_file.read_bytes(), name=data_file),
-                                     measurement_type=SpectraMeasurementType.objects.get(name="atr-ftir"))
-        spectral_data.full_clean()
-        spectral_data.save()
+                                     measurement_type=ArrayMeasurementType.objects.get(name="atr-ftir"))
+        array_data.full_clean()
+        array_data.save()
 
-        assert Path(spectral_data.data.name).suffix == uploader.io.FileFormats.JSONL
-        cleaned_data = spectral_data.get_spectral_data()
+        assert Path(array_data.data.name).suffix == uploader.io.FileFormats.JSONL
+        cleaned_data = array_data.get_array_data()
         assert cleaned_data == data
 
     def test_deletion(self, mock_data_from_files):
-        spectral_data = SpectralData.objects.all()
-        for item in spectral_data:
-            assert SpectralData.data.field.storage.exists(item.data.name)
+        array_data = ArrayData.objects.all()
+        for item in array_data:
+            assert ArrayData.data.field.storage.exists(item.data.name)
             item.delete()
-            assert not SpectralData.data.field.storage.exists(item.data.name)
-        assert not SpectralData.objects.count()
+            assert not ArrayData.data.field.storage.exists(item.data.name)
+        assert not ArrayData.objects.count()
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
@@ -410,12 +410,12 @@ class TestUploadedFile:
                                   bio_sample_types,
                                   spectra_measurement_types):
         meta_data_path = (DATA_PATH/"meta_data").with_suffix(file_ext)
-        spectral_file_path = (DATA_PATH / "spectral_data").with_suffix(file_ext)
-        with meta_data_path.open(mode="rb") as meta_data, spectral_file_path.open(mode="rb") as spectral_data:
+        array_file_path = (DATA_PATH / "array_data").with_suffix(file_ext)
+        with meta_data_path.open(mode="rb") as meta_data, array_file_path.open(mode="rb") as array_data:
             data_upload = UploadedFile(meta_data_file=django.core.files.File(meta_data,
                                                                              name=meta_data_path.name),
-                                       spectral_data_file=django.core.files.File(spectral_data,
-                                                                                 name=spectral_file_path.name),
+                                       array_data_file=django.core.files.File(array_data,
+                                                                                 name=array_file_path.name),
                                        center=center)
             data_upload.clean()
             data_upload.save()
@@ -426,7 +426,7 @@ class TestUploadedFile:
         assert Patient.objects.count() == n_patients
         assert Visit.objects.count() == n_patients
         assert BioSample.objects.count() == n_patients
-        assert SpectralData.objects.count() == n_patients
+        assert ArrayData.objects.count() == n_patients
 
     def test_center(self, mock_data_from_files):
         n_patients = Patient.objects.count()
@@ -440,7 +440,7 @@ class TestUploadedFile:
         assert Patient.objects.count() == n_patients
         assert Visit.objects.count() == n_patients
         assert BioSample.objects.count() == n_patients
-        assert SpectralData.objects.count() == n_patients
+        assert ArrayData.objects.count() == n_patients
 
     def test_number_observations(self,
                                  db,
@@ -453,7 +453,7 @@ class TestUploadedFile:
         assert Patient.objects.count() == 0  # Assert empty.
 
         save_data_to_db(DATA_PATH / "meta_data.csv",
-                        DATA_PATH / "spectral_data.csv",
+                        DATA_PATH / "array_data.csv",
                         center=center)
 
         n_patients = Patient.objects.count()
@@ -486,13 +486,13 @@ class TestUploadedFile:
     def test_index_match_validation(self, db, observables, instruments, file_ext, tmp_path):
         meta_data_path = (DATA_PATH / "meta_data").with_suffix(file_ext)
 
-        biodb.util.mock_bulk_spectral_data(path=tmp_path)
-        spectral_file_path = tmp_path / "spectral_data.csv"
-        with meta_data_path.open(mode="rb") as meta_data, spectral_file_path.open(mode="rb") as spectral_data:
+        biodb.util.mock_bulk_array_data(path=tmp_path)
+        array_file_path = tmp_path / "array_data.csv"
+        with meta_data_path.open(mode="rb") as meta_data, array_file_path.open(mode="rb") as array_data:
             data_upload = UploadedFile(meta_data_file=django.core.files.File(meta_data,
                                                                              name=meta_data_path.name),
-                                       spectral_data_file=django.core.files.File(spectral_data,
-                                                                                 name=spectral_file_path.name))
+                                       array_data_file=django.core.files.File(array_data,
+                                                                                 name=array_file_path.name))
             with pytest.raises(ValidationError, match="Patient index mismatch."):
                 data_upload.clean()
 
@@ -552,11 +552,11 @@ class TestUploadedFile:
     def test_deletion(self, mock_data_from_files):
         bulk_upload = UploadedFile.objects.all()[0]
         assert os.path.exists(bulk_upload.meta_data_file.name)
-        assert os.path.exists(bulk_upload.spectral_data_file.name)
+        assert os.path.exists(bulk_upload.array_data_file.name)
         bulk_upload.delete()
         assert not UploadedFile.objects.count()
         assert not os.path.exists(bulk_upload.meta_data_file.name)
-        assert not os.path.exists(bulk_upload.spectral_data_file.name)
+        assert not os.path.exists(bulk_upload.array_data_file.name)
 
     def test_bad_ext(self,
                      db,
@@ -567,19 +567,19 @@ class TestUploadedFile:
                      bio_sample_types,
                      spectra_measurement_types):
         meta_data_path = (DATA_PATH/"meta_data").with_suffix(UploadedFile.FileFormats.CSV)
-        spectral_file_path = (DATA_PATH / "spectral_data").with_suffix(UploadedFile.FileFormats.CSV)
+        array_file_path = (DATA_PATH / "array_data").with_suffix(UploadedFile.FileFormats.CSV)
 
         new_meta_data_path = tmp_path / meta_data_path.with_suffix(".blah")
-        new_spectral_file_path = tmp_path / spectral_file_path.with_suffix(".blah")
+        new_array_file_path = tmp_path / array_file_path.with_suffix(".blah")
 
         shutil.copyfile(meta_data_path, new_meta_data_path)
-        shutil.copyfile(spectral_file_path, new_spectral_file_path)
+        shutil.copyfile(array_file_path, new_array_file_path)
 
-        with new_meta_data_path.open(mode="rb") as meta_data, new_spectral_file_path.open(mode="rb") as spectral_data:
+        with new_meta_data_path.open(mode="rb") as meta_data, new_array_file_path.open(mode="rb") as array_data:
             data_upload = UploadedFile(meta_data_file=django.core.files.File(meta_data,
                                                                              name=new_meta_data_path.name),
-                                       spectral_data_file=django.core.files.File(spectral_data,
-                                                                                 name=new_spectral_file_path.name),
+                                       array_data_file=django.core.files.File(array_data,
+                                                                                 name=new_array_file_path.name),
                                        center=center)
             with pytest.raises(ValidationError, match="Allowed extensions"):
                 data_upload.full_clean()
@@ -606,8 +606,8 @@ def test_get_center(centers, mock_data_from_files):
     for bio_sample in visit.bio_sample.all():
         assert get_center(bio_sample) is center
 
-    for spectral_data in bio_sample.spectral_data.all():
-        assert get_center(spectral_data) is center
+    for array_data in bio_sample.array_data.all():
+        assert get_center(array_data) is center
 
     for observation in Observation.objects.filter(visit__patient__center=center):
         assert get_center(observation) == center

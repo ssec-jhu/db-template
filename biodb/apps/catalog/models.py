@@ -46,7 +46,7 @@ class Dataset(DatedModel):
             sha256 (:obj:`django.models.CharField`): The SHA-256 checksum of the entire zip file.
             n_rows (:obj:`django.models.IntegerField`): The number of rows in the zipped data file. Depending on the query, this could be the total number of patients or something else.
             data_sha256 (:obj:`django.models.IntegerField`): The SHA-256 checksum of the data file archived within the zip file.
-            spectral_data_filenames (:obj:`django.models.JSONField`): A list of all the file names for all individual spectral data files zipped within the downloadable zip file.
+            array_data_filenames (:obj:`django.models.JSONField`): A list of all the file names for all individual array data files zipped within the downloadable zip file.
     """
 
     class Meta:
@@ -99,13 +99,13 @@ class Dataset(DatedModel):
                                    null=False,
                                    blank=True,
                                    verbose_name="Data SHA-256",
-                                   help_text="Checksum of data table (not including any spectral data files).",
+                                   help_text="Checksum of data table (not including any array data files).",
                                    validators=[MinLengthValidator(64)])
-    spectral_data_filenames = models.JSONField(null=False,
+    array_data_filenames = models.JSONField(null=False,
                                                default=empty_list,
                                                blank=True,
                                                editable=False,
-                                               help_text="List of spectral data filenames",
+                                               help_text="List of array data filenames",
                                                encoder=CustomDjangoJsonEncoder)
 
     def __str__(self):
@@ -124,7 +124,7 @@ class Dataset(DatedModel):
         if not self.file:
             # Create file from query.
             file, info = self.execute_query()
-            filename, n_rows, data_sha256, spectral_data_filenames = info
+            filename, n_rows, data_sha256, array_data_filenames = info
 
             if not n_rows:
                 raise ValidationError(_("Query returned no data."))
@@ -133,7 +133,7 @@ class Dataset(DatedModel):
             self._filename = filename
             self.n_rows = n_rows
             self.data_sha256 = data_sha256
-            self.spectral_data_filenames = spectral_data_filenames
+            self.array_data_filenames = array_data_filenames
 
         super().clean(*args, **kwargs)
 
@@ -182,9 +182,9 @@ class Dataset(DatedModel):
                     app_version=self.app_version,
                     id=str(self.id),
                     n_rows=self.n_rows,
-                    n_spectral_data_files=len(self.spectral_data_filenames),
+                    n_array_data_files=len(self.array_data_filenames),
                     timestamp=str(datetime.datetime.now()),
-                    spectral_data_filenames=self.spectral_data_filenames)
+                    array_data_filenames=self.array_data_filenames)
         info.update(kwargs)
         return info
 

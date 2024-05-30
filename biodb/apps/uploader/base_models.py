@@ -20,7 +20,7 @@ class BasedModel(models.Model):
                    "data",
                    "date",
                    "id",
-                   "spectral data file",
+                   "array data file",
                    "updated at"}
 
         if hasattr(cls, "parse_fields_from_pandas_series"):  # Only models with this func have bulk data upload columns.

@@ -14,7 +14,7 @@ import pytest
 
 
 from biodb.util import find_package_location
-from uploader.models import SpectralData, UploadedFile, Center
+from uploader.models import ArrayData, UploadedFile, Center
 from user.models import Center as UserCenter
 
 DATA_PATH = Path(__file__).parent / "data"
@@ -53,7 +53,7 @@ def rm_all_media_dirs():
     from catalog.models import Dataset
     # Tidy up any created files.
     rm_dir(Path(UploadedFile.UPLOAD_DIR))
-    rm_dir(Path(SpectralData.UPLOAD_DIR))
+    rm_dir(Path(ArrayData.UPLOAD_DIR))
     rm_dir(Path(Dataset.UPLOAD_DIR))
 
 
@@ -69,7 +69,7 @@ class SimpleQueryFactory(DjangoModelFactory):
         model = Query
 
     title = Sequence(lambda n: f'My simple query {n}')
-    sql = "select * from spectral_data"
+    sql = "select * from array_data"
     description = "Stuff"
     connection = settings.EXPLORER_DEFAULT_CONNECTION
     created_by_user = SubFactory(UserFactory)
@@ -149,20 +149,20 @@ def qcannotators(db, django_db_blocker):
 @pytest.fixture(scope="function")
 def mock_data(db, django_db_blocker, centers):
     # NOTE: Since this loads directly to the DB without any validation and thus call to loaddata(), no data files are
-    # present. If you need actual spectral data, use ``mock_data_from_files`` below instead.
+    # present. If you need actual array data, use ``mock_data_from_files`` below instead.
     with django_db_blocker.unblock():
         call_command('loaddata', "--database=bsr", 'test_data.json')
 
 
 def bulk_upload():
     meta_data_path = (DATA_PATH / "meta_data").with_suffix(UploadedFile.FileFormats.XLSX)
-    spectral_file_path = (DATA_PATH / "spectral_data").with_suffix(UploadedFile.FileFormats.XLSX)
+    array_file_path = (DATA_PATH / "array_data").with_suffix(UploadedFile.FileFormats.XLSX)
     with meta_data_path.open(mode="rb") as meta_data:
-        with spectral_file_path.open(mode="rb") as spectral_data:
+        with array_file_path.open(mode="rb") as array_data:
             data_upload = UploadedFile(meta_data_file=django.core.files.File(meta_data,
                                                                              name=meta_data_path.name),
-                                       spectral_data_file=django.core.files.File(spectral_data,
-                                                                                 name=spectral_file_path.name),
+                                       array_data_file=django.core.files.File(array_data,
+                                                                                 name=array_file_path.name),
                                        center=Center.objects.get(name="jhu"))
             data_upload.clean()
             data_upload.save()
