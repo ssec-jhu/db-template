@@ -67,14 +67,14 @@ def get_line_chart(result: "QueryResult") -> Optional[str]:  # noqa: F821
         df = df[[Patient.patient_id.field.name, ArrayData.data.field.name]]
 
         fig = go.Figure()
-        fig.update_layout(xaxis_title="Wavelength",
-                          yaxis_title="Intensity",
+        fig.update_layout(xaxis_title="x",
+                          yaxis_title="y",
                           title=f"Array Data for SQL query: '{result.sql}'")
         for row in df.itertuples():
             array_data = uploader.io.read_array_data(row.data)
             assert to_uuid(array_data.patient_id) == to_uuid(row.patient_id)
-            fig.add_scatter(x=array_data.wavelength,
-                            y=array_data.intensity,
+            fig.add_scatter(x=array_data.x,
+                            y=array_data.y,
                             name=str(row.patient_id))
 
         return fig_to_html(fig)

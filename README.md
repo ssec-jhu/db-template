@@ -178,7 +178,7 @@ _NOTE: ``scripts/prd/ec2_init.sh`` will export all AWS secrets as shell environm
 
 Entries in the ``ArrayData`` table can be annotated by running ``QCAnnotators`` on them, thus producing a value
 stored as an ``ACAnnotation`` associated with the ``ArrayData`` entry. The ``ArrayData`` table contains the actual
-array data file containing the wavelength and intensity values. It may be desirable to annotate this data with
+array data values. It may be desirable to annotate this data with
 certain quality control metrics that can later be used to filter the data. Such quality control functions are to be
 implemented as a subclass of ``biodb.app.uploader.qc.qcfilter.QcFilter``.
 They can then be added to the database belonging to the ``QCAnnotator``

@@ -81,10 +81,10 @@ class TestExporters:
             data = uploader.io.read_array_data(filename)
             assert isinstance(data, uploader.io.ArrayData)
 
-            assert {x.name for x in dataclasses.fields(data)} == {"patient_id", "wavelength", "intensity"}
+            assert {x.name for x in dataclasses.fields(data)} == {"patient_id", "x", "y"}
             assert data.patient_id == ArrayData.objects.get(data=filename).bio_sample.visit.patient.patient_id
-            assert len(data.wavelength) == 1798
-            assert len(data.intensity) == 1798
+            assert len(data.x) == 1798
+            assert len(data.y) == 1798
 
     @pytest.mark.include_data_files(True)
     @pytest.mark.sql("select * from patient")  # uploader_patient contains no array data.

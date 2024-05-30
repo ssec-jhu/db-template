@@ -24,8 +24,8 @@ PATIENT_UUID_STR_ALLOWED_ALIASES = {"patient_id": ["patient id", "Patient ID", "
 @dataclasses.dataclass
 class ArrayData:
     patient_id: UUID
-    wavelength: list
-    intensity: list
+    x: list
+    y: list
 
     def __post_init__(self):
         self.patient_id = to_uuid(self.patient_id)
@@ -149,27 +149,27 @@ def read_array_data_table(file, index_column=DEFAULT_PATIENT_ID_STR):
         The data to be read in, needs to be of the following table layout for .csv & .xlsx:
         Note: Commas need to be present for CSV data.
         Note: The following docstring uses markdown table syntax.
-        | patient_id | min_lambda | ... | max_lambda |
+        | patient_id | min_x | ... | max_x |
         | ---------- | ---------- | --- | ---------- |
-        |<some UUID> | intensity  | ... | intensity  |
+        |<some UUID> | y  | ... | y  |
 
         For .jsonl each line/row must be of the following:
-        {"patient_id": value, wavelength_value: intensity_value, wavelength_value: intensity_value, ...}
+        {"patient_id": value, x_value: y_value, x_value: y_value, ...}
 
         For json data of the following form use ``read_array_data()``.
-        {"patient_id": value, "wavelength": [values], "intensity": [values]}
+        {"patient_id": value, "x": [values], "y": [values]}
     """
     df = _read_raw_data(file)
 
     # Clean.
-    spec_only = df.drop(columns=[index_column], inplace=False, errors="raise")
-    wavelengths = spec_only.columns.tolist()
-    specv = spec_only.values.tolist()
-    freqs = [wavelengths for i in range(len(specv))]
+    data_only = df.drop(columns=[index_column], inplace=False, errors="raise")
+    x = data_only.columns.tolist()
+    y = data_only.values.tolist()
+    x = [x for i in range(len(y))]
 
     df = pd.DataFrame({index_column: [to_uuid(x) for x in df[index_column]],
-                       "wavelength": freqs,
-                       "intensity": specv})
+                       "x": x,
+                       "y": y})
 
     df.set_index(index_column, inplace=True, drop=False)
     return df
@@ -183,15 +183,15 @@ def read_single_row_array_data_table(file, index_column=DEFAULT_PATIENT_ID_STR):
         Note: The following docstring uses markdown table syntax.
         Note: This is as for ``read_array_data_table`` except that it contains data for only a single
         patient, i.e., just a single row:
-        | patient_id | min_lambda | ... | max_lambda |
+        | patient_id | min_x | ... | max_x |
         | ---------- | ---------- | --- | ---------- |
-        |<some UUID> | intensity  | ... | intensity  |
+        |<some UUID> | y  | ... | y  |
 
         For .jsonl each line/row must be:
-        {"patient_id": value, wavelength_value: intensity_values, wavelength_value: intensity_values, ...}
+        {"patient_id": value, x_value: y_values, x_value: y_values, ...}
 
         For json data of the following form use ``read_array_data()``.
-        {"patient_id": value, "wavelength": [values], "intensity": [values]}
+        {"patient_id": value, "x": [values], "y": [values]}
     """
 
     df = read_array_data_table(file, index_column=index_column)
@@ -200,19 +200,19 @@ def read_single_row_array_data_table(file, index_column=DEFAULT_PATIENT_ID_STR):
         raise ValueError(f"The file read should contain only a single row not '{length}'")
 
     data = df.iloc[0]
-    return ArrayData(data.patient_id, data.wavelength, data.intensity)
+    return ArrayData(data.patient_id, data.x, data.y)
 
 
-def array_data_to_json(file, data: ArrayData, patient_id=None, wavelength=None, intensity=None, **kwargs):
-    """ Convert data to json equivalent to {"patient_id": value, "wavelength": [values], "intensity": [values]}
+def array_data_to_json(file, data: ArrayData, patient_id=None, x=None, y=None, **kwargs):
+    """ Convert data to json equivalent to {"patient_id": value, "x": [values], "y": [values]}
         Returns json str and/or writes to file.
     """
 
     if not data:
         assert patient_id is not None
-        assert wavelength is not None
-        assert intensity is not None
-        data = dict(patient_id=patient_id, wavelength=wavelength, intensity=intensity)
+        assert x is not None
+        assert y is not None
+        data = dict(patient_id=patient_id, x=x, y=y)
 
     if isinstance(data, ArrayData):
         data = dataclasses.asdict(data)
@@ -230,7 +230,7 @@ def array_data_to_json(file, data: ArrayData, patient_id=None, wavelength=None, 
 
 
 def array_data_from_json(file):
-    """ Read array data of the form {"patient_id": value, "wavelength": [values], "intensity": [values]}
+    """ Read array data of the form {"patient_id": value, "x": [values], "y": [values]}
         and return data ArrayData instance.
     """
     # Determine whether file obj (fp) or filename.
@@ -264,12 +264,12 @@ def read_array_data(file):
         Note: The following docstring uses markdown table syntax.
         Note: This is as for ``read_array_data_table`` except that it contains data for only a single
         patient, i.e., just a single row:
-        | patient_id | min_lambda | ... | max_lambda |
+        | patient_id | min_x | ... | max_x |
         | ---------- | ---------- | --- | ---------- |
-        |<some UUID> | intensity  | ... | intensity  |
+        |<some UUID> | y  | ... | y  |
 
         For .jsonl data must be of the following form:
-        {"patient_id": value, "wavelength": [values], "intensity": [values]}
+        {"patient_id": value, "x": [values], "y": [values]}
     """
     _fp, filename = _get_file_info(file)
     ext = filename.suffix

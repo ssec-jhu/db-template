@@ -23,7 +23,7 @@ class QcFilter(ABC):
 class QcSum(QcFilter):
     def run(self, array_data: "ArrayData"):  # noqa: F821
         data = array_data.get_array_data()
-        res = np.sum(data.intensity)
+        res = np.sum(data.y)
         return res
 
 
