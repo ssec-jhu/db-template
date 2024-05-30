@@ -10,11 +10,12 @@
 
 A base template for creating Django applications for collecting patient data.
 
+_
+
 # Research Project
 
 This database application stands as an online community collection point for patient biosample array data and metadata,
 to be used as an AI training set, generating a tool for easy disease detection from future patient biosamples.
-Further details for the science goals of this application can be found at [SSEC@JHU research projects: BSR](https://ai.jhu.edu/ssec/research/biosample-array-repository/).
 
 # Installation, Build, & Run instructions
 
