@@ -81,6 +81,23 @@ exclude_dirs = ["tests"]
 
 [tool.ruff]
 line-length = 120
+
+lint.select = ["ALL"]
+lint.ignore = [
+    "ANN002",  # https://docs.astral.sh/ruff/rules/missing-type-args/
+    "ANN003",  # https://docs.astral.sh/ruff/rules/missing-type-kwargs/
+    "ANN101",  # https://docs.astral.sh/ruff/rules/missing-type-self/
+    "ANN102",  # https://docs.astral.sh/ruff/rules/missing-type-cls/
+    "ANN401",  # https://docs.astral.sh/ruff/rules/any-type/
+    "PLR0913",  # https://docs.astral.sh/ruff/rules/too-many-arguments/
+    "EM101",  # https://docs.astral.sh/ruff/rules/raw-string-in-exception/
+    "EM102",  # https://docs.astral.sh/ruff/rules/f-string-in-exception/
+    "TRY003",  # https://docs.astral.sh/ruff/rules/raise-vanilla-args/
+    "D407",  # https://docs.astral.sh/ruff/rules/dashed-underline-after-section/
+    "COM812", # https://docs.astral.sh/ruff/rules/missing-trailing-comma/
+    "ISC001", # https://docs.astral.sh/ruff/rules/single-line-implicit-string-concatenation/
+]
+
 exclude = [
     ".bzr",
     ".direnv",
@@ -108,6 +125,18 @@ exclude = [
 ]
 
 ignore = [
+]
+
+[tool.ruff.lint.pydocstyle] # https://docs.astral.sh/ruff/settings/#lint_pydocstyle_convention
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"**/test{s,}/*.py" = [
+    "S101",  # https://docs.astral.sh/ruff/rules/assert/
+    "D",  # https://docs.astral.sh/ruff/rules/#pydocstyle-d
+    "ARG001",  # https://docs.astral.sh/ruff/rules/unused-function-argument/
+    "INP",  # https://docs.astral.sh/ruff/rules/#flake8-no-pep420-inp
+    "ANN",  # https://docs.astral.sh/ruff/rules/#flake8-annotations-ann
 ]
 
 target-version = "py311"
