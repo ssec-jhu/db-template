@@ -1,6 +1,6 @@
-from biodb import __version__
-
 from django.test import Client
+
+from biodb import __version__
 
 
 def test_version():

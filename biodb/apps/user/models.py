@@ -1,17 +1,16 @@
+import uuid
 from abc import abstractmethod
 from functools import partial
-import uuid
 
-from django.db import models, transaction
-from django.db.models.signals import post_delete
-from django.dispatch import receiver
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
+from django.db import models, transaction
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-
 
 # Changes here need to be migrated, committed, and activated.
 # See https://docs.djangoproject.com/en/4.2/intro/tutorial02/#activating-models
@@ -20,12 +19,14 @@ from django.utils.translation import gettext_lazy as _
 # git commit -asm"Update user model(s)"
 # python manage.py migrate
 
+
 def validate_country(value):
-    """ Validate ``center.country`` field. """
+    """Validate ``center.country`` field."""
     if value.lower() in ("us", "usa", "america"):
-        raise ValidationError(_("This repository is not HIPAA compliant and cannot be used to collect health data from"
-                                " the USA"),
-                              code="invalid")
+        raise ValidationError(
+            _("This repository is not HIPAA compliant and cannot be used to collect health data from" " the USA"),
+            code="invalid",
+        )
 
 
 class BaseCenter(models.Model):
@@ -41,13 +42,12 @@ class BaseCenter(models.Model):
         return f"{self.name}, {self.country}"
 
     def __eq__(self, other):
-        """ Copied from models.Model """
+        """Copied from models.Model"""
         if not isinstance(other, models.Model):
             return NotImplemented
 
         # NOTE: Added ``not isinstance(other, BaseCenter)`` condition.
-        if (not isinstance(other, BaseCenter)) and \
-                (self._meta.concrete_model != other._meta.concrete_model):
+        if (not isinstance(other, BaseCenter)) and (self._meta.concrete_model != other._meta.concrete_model):
             return False
 
         my_pk = self.pk
@@ -58,7 +58,7 @@ class BaseCenter(models.Model):
     __hash__ = models.Model.__hash__
 
     def save_replica(self, *args, **kwargs):
-        """ Replicate save action on other database. """
+        """Replicate save action on other database."""
         try:
             # Save is used to update fields, so we need to account for this.
             # Note: We can't use get_or_create() since the fields passed in might not match existing DB
@@ -74,18 +74,15 @@ class BaseCenter(models.Model):
             center.save(*args, **kwargs)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        """ Save database instance.
+        """Save database instance.
 
-            Note: When saving user.Center also replicate for uploader.Center.
+        Note: When saving user.Center also replicate for uploader.Center.
 
-            Note: DB replication to the "bsr" database doesn't happen if explicitly stating the use of the "default"
-            DB, i.e., ``save(using="default")`` will not save to the "bsr" DB and vice versa for ``using="bsr"``.
+        Note: DB replication to the "bsr" database doesn't happen if explicitly stating the use of the "default"
+        DB, i.e., ``save(using="default")`` will not save to the "bsr" DB and vice versa for ``using="bsr"``.
         """
 
-        save = partial(super().save,
-                       force_insert=force_insert,
-                       force_update=force_update,
-                       update_fields=update_fields)
+        save = partial(super().save, force_insert=force_insert, force_update=force_update, update_fields=update_fields)
 
         # Save to the default intended DB. Do this first so self.pk is generated.
         if using in (None, self.replica_db):
@@ -104,7 +101,7 @@ class BaseCenter(models.Model):
         raise NotImplementedError
 
     def delete_replica(self, *args, **kwargs):
-        """ Replicate delete action on other database. """
+        """Replicate delete action on other database."""
         try:
             # This should definitely exist but sanity check via a try-except.
             center = self.replica_model.objects.get(id=self.id)
@@ -114,9 +111,9 @@ class BaseCenter(models.Model):
             center.delete(*args, using=self.replica_db, **kwargs)
 
     def delete(self, using=None, keep_parents=False):
-        """ Delete database instance.
+        """Delete database instance.
 
-            NOTE: When deleting user.Center also replicate for uploader.Center.
+        NOTE: When deleting user.Center also replicate for uploader.Center.
         """
 
         delete = partial(super().delete, keep_parents=keep_parents)
@@ -141,30 +138,30 @@ class BaseCenter(models.Model):
 
     @property
     @abstractmethod
-    def replica_model(self):
-        ...
+    def replica_model(self): ...
 
     @property
     @abstractmethod
-    def replica_db(self):
-        ...
+    def replica_db(self): ...
 
 
 class Center(BaseCenter):
-    """ A center, institution, or hospital etc., from which patient data has been collected.
+    """A center, institution, or hospital etc., from which patient data has been collected.
 
-        This is also used to specify data visibility such that only users of a given center can access
-        patient data from that center.
+    This is also used to specify data visibility such that only users of a given center can access
+    patient data from that center.
 
-        Attributes:
-            id (:obj:`django.models.UUIDField`): Database primary key. Auto generated if not provided.
-            name (:obj:`django.models.CharField`): The name of the center.
-            country (:obj:`django.models.CharField`): The country in which the center is located. This can be used to
-                determine data compliance, i.e., GDPR and HIPAA etc.
-     """
+    Attributes:
+        id (:obj:`django.models.UUIDField`): Database primary key. Auto generated if not provided.
+        name (:obj:`django.models.CharField`): The name of the center.
+        country (:obj:`django.models.CharField`): The country in which the center is located. This can be used to
+            determine data compliance, i.e., GDPR and HIPAA etc.
+    """
+
     @property
     def replica_model(self):
         from uploader.models import Center as UploaderCenter
+
         return UploaderCenter
 
     @property
@@ -216,9 +213,7 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
         _("username"),
         max_length=150,
         unique=True,
-        help_text=_(
-            "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
-        ),
+        help_text=_("Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."),
         validators=[username_validator],
         error_messages={
             "unique": _("A user with that username already exists."),
@@ -240,8 +235,7 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
         _("active"),
         default=True,
         help_text=_(
-            "Designates whether this user should be treated as active. "
-            "Unselect this instead of deleting accounts."
+            "Designates whether this user should be treated as active. " "Unselect this instead of deleting accounts."
         ),
     )
     date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
@@ -304,16 +298,23 @@ class User(AbstractUser):
     is_sqluser_view = models.BooleanField(
         _("SQL explorer user status (view/execute existing queries only)"),
         default=False,
-        help_text=_("Designates whether the user can log into the SQL explorer app with permissions to only view "
-                    "and execute existing queries."))
+        help_text=_(
+            "Designates whether the user can log into the SQL explorer app with permissions to only view "
+            "and execute existing queries."
+        ),
+    )
 
     is_sqluser_change = models.BooleanField(
         _("SQL explorer user status (view/add/change/delete/execute)"),
         default=False,
-        help_text=_("Designates whether the user can log into the SQL explorer app with permissions to "
-                    "view/add/change/delete/execute queries."))
+        help_text=_(
+            "Designates whether the user can log into the SQL explorer app with permissions to "
+            "view/add/change/delete/execute queries."
+        ),
+    )
 
     is_catalogviewer = models.BooleanField(
         _("Dataset Catalog user status (readonly)"),
         default=False,
-        help_text=_("Designates whether the user can log into the Dataset Catalog app. (readonly)"))
+        help_text=_("Designates whether the user can log into the Dataset Catalog app. (readonly)"),
+    )

@@ -1,20 +1,20 @@
-from io import StringIO
 import logging
+from io import StringIO
 from typing import Optional
 
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-
 import uploader.io
-from uploader.models import Observable, Patient, ArrayData
+from uploader.models import ArrayData, Observable, Patient
+
 from biodb.util import to_uuid
 
 logger = logging.getLogger(__name__)
 
 
 def fig_to_html(fig) -> str:
-    """ Convert a ploty figure to html.  """
+    """Convert a ploty figure to html."""
     buffer = StringIO()
     fig.write_html(buffer, auto_open=False, full_html=False)
     buffer.seek(0)
@@ -24,7 +24,7 @@ def fig_to_html(fig) -> str:
 
 
 def count_bool_observables(result: "QueryResult"):  # noqa: F821
-    """ Count boolean observables present in data result. """
+    """Count boolean observables present in data result."""
     if len(result.data) < 1:
         return
 
@@ -39,7 +39,7 @@ def count_bool_observables(result: "QueryResult"):  # noqa: F821
 
 
 def get_pie_chart(result: "QueryResult") -> Optional[str]:  # noqa: F821
-    """ Generate ploty pi chart of boolean Observation data present in data result. """
+    """Generate ploty pi chart of boolean Observation data present in data result."""
     try:
         counts = count_bool_observables(result)
 
@@ -54,7 +54,7 @@ def get_pie_chart(result: "QueryResult") -> Optional[str]:  # noqa: F821
 
 
 def get_line_chart(result: "QueryResult") -> Optional[str]:  # noqa: F821
-    """ Generate ploty line chart of array data present in data result. """
+    """Generate ploty line chart of array data present in data result."""
 
     if len(result.data) < 1:
         return
@@ -67,15 +67,11 @@ def get_line_chart(result: "QueryResult") -> Optional[str]:  # noqa: F821
         df = df[[Patient.patient_id.field.name, ArrayData.data.field.name]]
 
         fig = go.Figure()
-        fig.update_layout(xaxis_title="x",
-                          yaxis_title="y",
-                          title=f"Array Data for SQL query: '{result.sql}'")
+        fig.update_layout(xaxis_title="x", yaxis_title="y", title=f"Array Data for SQL query: '{result.sql}'")
         for row in df.itertuples():
             array_data = uploader.io.read_array_data(row.data)
             assert to_uuid(array_data.patient_id) == to_uuid(row.patient_id)
-            fig.add_scatter(x=array_data.x,
-                            y=array_data.y,
-                            name=str(row.patient_id))
+            fig.add_scatter(x=array_data.x, y=array_data.y, name=str(row.patient_id))
 
         return fig_to_html(fig)
     except Exception as error:

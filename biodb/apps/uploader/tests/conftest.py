@@ -1,21 +1,20 @@
-from pathlib import Path
 import shutil
+from pathlib import Path
 from uuid import uuid4
 
-from django.conf import settings
 import django.core.files
+import pytest
+from django.conf import settings
 from django.core.management import call_command
 from django.test import RequestFactory
 from explorer.models import Query
 from explorer.tests.factories import UserFactory as ExplorerUserFactory
 from factory import Sequence, SubFactory
 from factory.django import DjangoModelFactory
-import pytest
-
+from uploader.models import ArrayData, Center, UploadedFile
+from user.models import Center as UserCenter
 
 from biodb.util import find_package_location
-from uploader.models import ArrayData, UploadedFile, Center
-from user.models import Center as UserCenter
 
 DATA_PATH = Path(__file__).parent / "data"
 
@@ -30,13 +29,12 @@ def exec_custom_markers(request, monkeypatch):
 
 
 class CenterFactory(DjangoModelFactory):
-
     class Meta:
         model = UserCenter
 
     id = uuid4()
-    name = Sequence(lambda n: 'name %03d' % n)
-    country = Sequence(lambda n: 'country %03d' % n)
+    name = Sequence(lambda n: "name %03d" % n)
+    country = Sequence(lambda n: "country %03d" % n)
 
 
 class UserFactory(ExplorerUserFactory):
@@ -51,6 +49,7 @@ def rm_dir(path):
 
 def rm_all_media_dirs():
     from catalog.models import Dataset
+
     # Tidy up any created files.
     rm_dir(Path(UploadedFile.UPLOAD_DIR))
     rm_dir(Path(ArrayData.UPLOAD_DIR))
@@ -64,11 +63,10 @@ def clean_up():
 
 
 class SimpleQueryFactory(DjangoModelFactory):
-
     class Meta:
         model = Query
 
-    title = Sequence(lambda n: f'My simple query {n}')
+    title = Sequence(lambda n: f"My simple query {n}")
     sql = "select * from array_data"
     description = "Stuff"
     connection = settings.EXPLORER_DEFAULT_CONNECTION
@@ -87,8 +85,8 @@ def django_request(center):
 @pytest.fixture(scope="function")
 def centers(django_db_blocker):
     with django_db_blocker.unblock():
-        call_command('loaddata', "centers")
-        call_command("loaddata",  "--database=bsr", "centers")
+        call_command("loaddata", "centers")
+        call_command("loaddata", "--database=bsr", "centers")
 
 
 @pytest.fixture(scope="function")
@@ -105,45 +103,47 @@ def sql_views(django_db_blocker):
 @pytest.fixture(scope="function")
 def bio_sample_types(django_db_blocker):
     with django_db_blocker.unblock():
-        call_command('loaddata', "--database=bsr", 'biosampletypes.json')
+        call_command("loaddata", "--database=bsr", "biosampletypes.json")
 
 
 @pytest.fixture(scope="function")
 def array_measurement_types(django_db_blocker):
     with django_db_blocker.unblock():
-        call_command('loaddata', "--database=bsr", 'arraymeasurementtypes.json')
+        call_command("loaddata", "--database=bsr", "arraymeasurementtypes.json")
 
 
 @pytest.fixture(scope="function")
 def observables(django_db_blocker):
     with django_db_blocker.unblock():
-        call_command('loaddata', "--database=bsr", 'observables.json')
+        call_command("loaddata", "--database=bsr", "observables.json")
 
 
 @pytest.fixture(scope="function")
 def instruments(django_db_blocker):
     with django_db_blocker.unblock():
-        call_command('loaddata', "--database=bsr", 'instruments.json')
+        call_command("loaddata", "--database=bsr", "instruments.json")
 
 
 @pytest.fixture(scope="function")
 def patients(django_db_blocker, centers):
     with django_db_blocker.unblock():
-        call_command('loaddata', "--database=bsr",
-                     str(find_package_location() / 'apps/uploader/tests/data/patients.json'))
+        call_command(
+            "loaddata", "--database=bsr", str(find_package_location() / "apps/uploader/tests/data/patients.json")
+        )
 
 
 @pytest.fixture(scope="function")
 def visits(patients, django_db_blocker):
     with django_db_blocker.unblock():
-        call_command('loaddata', "--database=bsr",
-                     str(find_package_location() / 'apps/uploader/tests/data/visits.json'))
+        call_command(
+            "loaddata", "--database=bsr", str(find_package_location() / "apps/uploader/tests/data/visits.json")
+        )
 
 
 @pytest.fixture(scope="function")
 def qcannotators(db, django_db_blocker):
     with django_db_blocker.unblock():
-        call_command('loaddata', "--database=bsr", 'qcannotators.json')
+        call_command("loaddata", "--database=bsr", "qcannotators.json")
 
 
 @pytest.fixture(scope="function")
@@ -151,7 +151,7 @@ def mock_data(db, django_db_blocker, centers):
     # NOTE: Since this loads directly to the DB without any validation and thus call to loaddata(), no data files are
     # present. If you need actual array data, use ``mock_data_from_files`` below instead.
     with django_db_blocker.unblock():
-        call_command('loaddata', "--database=bsr", 'test_data.json')
+        call_command("loaddata", "--database=bsr", "test_data.json")
 
 
 def bulk_upload():
@@ -159,25 +159,27 @@ def bulk_upload():
     array_file_path = (DATA_PATH / "array_data").with_suffix(UploadedFile.FileFormats.XLSX)
     with meta_data_path.open(mode="rb") as meta_data:
         with array_file_path.open(mode="rb") as array_data:
-            data_upload = UploadedFile(meta_data_file=django.core.files.File(meta_data,
-                                                                             name=meta_data_path.name),
-                                       array_data_file=django.core.files.File(array_data,
-                                                                                 name=array_file_path.name),
-                                       center=Center.objects.get(name="JHU"))
+            data_upload = UploadedFile(
+                meta_data_file=django.core.files.File(meta_data, name=meta_data_path.name),
+                array_data_file=django.core.files.File(array_data, name=array_file_path.name),
+                center=Center.objects.get(name="JHU"),
+            )
             data_upload.clean()
             data_upload.save()
 
 
 @pytest.fixture(scope="function")
-def mock_data_from_files(request,
-                         monkeypatch,
-                         db,
-                         centers,
-                         observables,
-                         django_db_blocker,
-                         instruments,
-                         bio_sample_types,
-                         array_measurement_types):
+def mock_data_from_files(
+    request,
+    monkeypatch,
+    db,
+    centers,
+    observables,
+    django_db_blocker,
+    instruments,
+    bio_sample_types,
+    array_measurement_types,
+):
     # patch MEDIA_ROOT
     media_root = request.node.get_closest_marker("media_root")
     if media_root:

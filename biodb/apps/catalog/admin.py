@@ -1,11 +1,11 @@
-from django.contrib import admin
-from django.conf import settings
-
 from catalog.models import Dataset
+from django.conf import settings
+from django.contrib import admin
 
 
 class AuthMixin:
-    """ Restrict admin access to User.is_catalogviewer. """
+    """Restrict admin access to User.is_catalogviewer."""
+
     def has_view_permission(self, request, obj=None):
         user = request.user
         return getattr(user, "is_catalogviewer", False) or user.is_superuser
@@ -31,57 +31,56 @@ class DatasetAdmin(AuthMixin, admin.ModelAdmin):
     date_hierarchy = "created_at"
     ordering = ("-updated_at",)
     list_filter = ("name",)
-    readonly_fields = ["file",
-                       "sql",
-                       "app_version",
-                       "sha256",
-                       "size",
-                       "created_at",
-                       "updated_at",
-                       "id",
-                       "n_rows",
-                       "n_array_data_files",
-                       "array_data_filenames",
-                       "data_sha256"]
+    readonly_fields = [
+        "file",
+        "sql",
+        "app_version",
+        "sha256",
+        "size",
+        "created_at",
+        "updated_at",
+        "id",
+        "n_rows",
+        "n_array_data_files",
+        "array_data_filenames",
+        "data_sha256",
+    ]
 
     fieldsets = [
-        (
-            None,
-            {
-                "fields": ["query", "name", "version", "description"]
-            }
-        ),
+        (None, {"fields": ["query", "name", "version", "description"]}),
         (
             "Data Product",
             {
                 "fields": ["file", "sha256", "size"],
-            }
+            },
         ),
         (
             "SQL",
             {
                 "classes": ["collapse"],
                 "fields": ["sql"],
-            }
+            },
         ),
         (
             "More Details",
             {
                 "classes": ["collapse"],
-                "fields": [("created_at", "updated_at"),
-                           "data_sha256",
-                           "app_version",
-                           "id",
-                           "n_rows",
-                           "n_array_data_files"],
-            }
+                "fields": [
+                    ("created_at", "updated_at"),
+                    "data_sha256",
+                    "app_version",
+                    "id",
+                    "n_rows",
+                    "n_array_data_files",
+                ],
+            },
         ),
         (
             "Array Data Filenames",
             {
                 "classes": ["collapse"],
                 "fields": ["array_data_filenames"],
-            }
+            },
         ),
     ]
 

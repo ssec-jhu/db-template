@@ -2,13 +2,11 @@ from io import StringIO
 from pathlib import Path
 
 import pytest
-
 from django.contrib.auth import get_user_model
-from django.core.management import call_command, CommandError
+from django.core.management import CommandError, call_command
 from django.db.models import Q
 from django.db.utils import OperationalError
-
-from uploader.models import Center, Observable, UploadedFile, ArrayData
+from uploader.models import ArrayData, Center, Observable, UploadedFile
 from uploader.sql import execute_sql
 
 User = get_user_model()
@@ -52,20 +50,23 @@ class TestUpdateSqlViews:
 
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestPruneFiles:
-
     def test_empty(self):
         out = StringIO()
         call_command("prune_files", stdout=out)
         assert "No orphaned files detected." in out.getvalue()
 
-    @pytest.mark.parametrize(("cmd", "delete", "expected"),
-                             ((("prune_files",), True, (0, 0)),
-                              (("prune_files", "--dry_run"), True, (0, 0)),
-                              (("prune_files",), False, (0, 0)),
-                              (("prune_files", "--dry_run"), False, (2, 10))))
+    @pytest.mark.parametrize(
+        ("cmd", "delete", "expected"),
+        (
+            (("prune_files",), True, (0, 0)),
+            (("prune_files", "--dry_run"), True, (0, 0)),
+            (("prune_files",), False, (0, 0)),
+            (("prune_files", "--dry_run"), False, (2, 10)),
+        ),
+    )
     def test_core(self, mock_data_from_files, cmd, delete, expected):
         def get_file_count(path):
-            return len(list(Path(path).glob('*')))
+            return len(list(Path(path).glob("*")))
 
         # Check objects exist.
         assert UploadedFile.objects.count() == 1
@@ -80,6 +81,7 @@ class TestPruneFiles:
             for obj in model.objects.all():
                 obj.delete(delete_files=delete)
             assert model.objects.count() == 0
+
         delete_objs(UploadedFile)
         delete_objs(ArrayData)
 
@@ -105,10 +107,7 @@ class TestGetColumnNames:
         names = iter(("blah", "foo", "bar", "huh"))
         for center in Center.objects.all():
             name = next(names)
-            observable = Observable.objects.create(name=name,
-                                                   alias=name,
-                                                   description=name,
-                                                   category=next(category))
+            observable = Observable.objects.create(name=name, alias=name, description=name, category=next(category))
             observable.center.set([center])
             observable.full_clean()
             observable.save()
@@ -140,11 +139,10 @@ class TestGetColumnNames:
         out.seek(0)
         assert len(out.readlines()) == Observable.objects.count() + self.n_non_observables
 
-    @pytest.mark.parametrize("center_filter", ("JHU",
-                                               "imperial college london",
-                                               "oxford university",
-                                               "d2160c33-0bbc-4605-a2ce-7e83296e7c84",
-                                               "None"))
+    @pytest.mark.parametrize(
+        "center_filter",
+        ("JHU", "imperial college london", "oxford university", "d2160c33-0bbc-4605-a2ce-7e83296e7c84", "None"),
+    )
     def test_center_filter(self, observables, more_observables, center_filter):
         out = StringIO()
         call_command("get_column_names", "--exclude_non_observables", f"--center={center_filter}", stdout=out)
@@ -152,39 +150,42 @@ class TestGetColumnNames:
         if center_filter == "None":
             queryset = Observable.objects.filter(center=None)
         else:
-            queryset = Observable.objects.filter(Q(center__name__iexact=center_filter) |
-                                                 Q(center__id__iexact=center_filter))
+            queryset = Observable.objects.filter(
+                Q(center__name__iexact=center_filter) | Q(center__id__iexact=center_filter)
+            )
         assert queryset.count()
         out.seek(0)
         assert len(out.readlines()) == queryset.count()
 
-    @pytest.mark.parametrize(("center_filter", "category_filter"), (("JHU", "bloodwork"),
-                                                                    ("imperial college london", "comorbidity"),
-                                                                    ("oxford university", "drug"),
-                                                                    ("d2160c33-0bbc-4605-a2ce-7e83296e7c84", "bloodwork")))
+    @pytest.mark.parametrize(
+        ("center_filter", "category_filter"),
+        (
+            ("JHU", "bloodwork"),
+            ("imperial college london", "comorbidity"),
+            ("oxford university", "drug"),
+            ("d2160c33-0bbc-4605-a2ce-7e83296e7c84", "bloodwork"),
+        ),
+    )
     def test_category_and_center_filter(self, observables, more_observables, center_filter, category_filter):
         out = StringIO()
-        call_command("get_column_names",
-                     "--exclude_non_observables",
-                     f"--center={center_filter}",
-                     f"--category={category_filter}",
-                     stdout=out)
+        call_command(
+            "get_column_names",
+            "--exclude_non_observables",
+            f"--center={center_filter}",
+            f"--category={category_filter}",
+            stdout=out,
+        )
 
-        queryset = Observable.objects.filter(Q(center__name__iexact=center_filter) |
-                                             Q(center__id__iexact=center_filter)).filter(
-            category__iexact=category_filter)
+        queryset = Observable.objects.filter(
+            Q(center__name__iexact=center_filter) | Q(center__id__iexact=center_filter)
+        ).filter(category__iexact=category_filter)
         out.seek(0)
         assert len(out.readlines()) == queryset.count()
 
-    @pytest.mark.parametrize("category_filter", ("symptom",
-                                                 "comorbidity",
-                                                 "test"))
+    @pytest.mark.parametrize("category_filter", ("symptom", "comorbidity", "test"))
     def test_category(self, observables, category_filter):
         out = StringIO()
-        call_command("get_column_names",
-                     "--exclude_non_observables",
-                     f"--category={category_filter}",
-                     stdout=out)
+        call_command("get_column_names", "--exclude_non_observables", f"--category={category_filter}", stdout=out)
 
         queryset = Observable.objects.filter(category__iexact=category_filter)
         assert queryset.count()
@@ -194,24 +195,20 @@ class TestGetColumnNames:
     def test_exception(self):
         with pytest.raises(CommandError, match="Unrecognized observable category"):
             out = StringIO()
-            call_command("get_column_names",
-                         "--exclude_non_observables",
-                         f"--category={'this is not a category '}",
-                         stdout=out)
+            call_command(
+                "get_column_names", "--exclude_non_observables", f"--category={'this is not a category '}", stdout=out
+            )
 
     def test_descriptions(self, observables):
         out = StringIO()
-        call_command("get_column_names",
-                     "--exclude_non_observables",
-                     "--descriptions",
-                     stdout=out)
+        call_command("get_column_names", "--exclude_non_observables", "--descriptions", stdout=out)
         queryset = Observable.objects.all()
         assert queryset.count()
         out.seek(0)
         info = out.readlines()
         assert len(info) == queryset.count()
         for line in info:
-            name, description = line.split(',')
+            name, description = line.split(",")
             assert Observable.objects.get(alias__iexact=name.strip()).description.strip() == description.strip()
 
     @pytest.mark.parametrize("include", (True, False))
@@ -234,10 +231,12 @@ class TestMakeSuperUser:
         user = "admin"
         assert not User.objects.count()
 
-        options = [f"--username={user}",
-                   "--noinput",
-                   "--email=admin@site.com",
-                   "--center=16721944-ff91-4adf-8fb3-323b99aba801"]
+        options = [
+            f"--username={user}",
+            "--noinput",
+            "--email=admin@site.com",
+            "--center=16721944-ff91-4adf-8fb3-323b99aba801",
+        ]
 
         cmd = ("createsuperuser", *options)
         call_command(*cmd)

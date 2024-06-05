@@ -4,9 +4,9 @@ from django.conf import settings
 from django.core.exceptions import NON_FIELD_ERRORS, ValidationError
 from django.db import connection, models, transaction
 from django.utils.module_loading import import_string
+from uploader.sql import drop_view, update_view
 
 import biodb.util
-from uploader.sql import drop_view, update_view
 
 
 class BasedModel(models.Model):
@@ -16,17 +16,13 @@ class BasedModel(models.Model):
     @classmethod
     def get_column_names(cls, help_text=False):
         # Note: This is a set of model.field.name and not model.field.verbose_name.
-        exclude = {"created at",
-                   "data",
-                   "date",
-                   "id",
-                   "array data file",
-                   "updated at"}
+        exclude = {"created at", "data", "date", "id", "array data file", "updated at"}
 
         if hasattr(cls, "parse_fields_from_pandas_series"):  # Only models with this func have bulk data upload columns.
             if help_text:
-                info = {field.verbose_name.lower(): field.help_text for field in cls._meta.fields
-                        if not field.is_relation}
+                info = {
+                    field.verbose_name.lower(): field.help_text for field in cls._meta.fields if not field.is_relation
+                }
                 fields = info.keys() - exclude
 
                 return [(k, v) for k, v in info.items() if k in fields]
@@ -35,11 +31,13 @@ class BasedModel(models.Model):
 
         return set()
 
-    def full_clean(self,
-                   exclude=None,
-                   validate_unique=True,
-                   validate_constraints=True,
-                   fail_early=settings.FAIL_EARLY_IN_FULL_CLEAN):
+    def full_clean(
+        self,
+        exclude=None,
+        validate_unique=True,
+        validate_constraints=True,
+        fail_early=settings.FAIL_EARLY_IN_FULL_CLEAN,
+    ):
         # Pulled directly from django.db.models.Model.full_clean with added custom option to fail early.
         """
         Call clean_fields(), clean(), validate_unique(), and
@@ -111,12 +109,14 @@ class TextChoices(models.TextChoices):
             return
 
         for item in cls:
-            if value.lower() in (item.name.lower(),
-                                 item.label.lower(),
-                                 item.value.lower(),
-                                 item.name.lower().replace('_', '-'),
-                                 item.label.lower().replace('_', '-'),
-                                 item.value.lower().replace('_', '-')):
+            if value.lower() in (
+                item.name.lower(),
+                item.label.lower(),
+                item.value.lower(),
+                item.name.lower().replace("_", "-"),
+                item.label.lower().replace("_", "-"),
+                item.value.lower().replace("_", "-"),
+            ):
                 return item
 
 
@@ -154,13 +154,17 @@ class SqlView:
         if extra_excluded_field_names:
             excluded_field_names.extend(extra_excluded_field_names)
         excluded_field_names = [x.lower() for x in excluded_field_names]
-        return ','.join([f'{prefix}.{field.name} as {model.__name__.lower()}_{field.name}'
-                        for field in model._meta.fields
-                        if (not field.is_relation and field.name.lower() not in excluded_field_names)])
+        return ",".join(
+            [
+                f"{prefix}.{field.name} as {model.__name__.lower()}_{field.name}"
+                for field in model._meta.fields
+                if (not field.is_relation and field.name.lower() not in excluded_field_names)
+            ]
+        )
 
     @classmethod
     def sql(cls):
-        """ Returns the SQL string and an optional list of params used in string. """
+        """Returns the SQL string and an optional list of params used in string."""
         raise NotImplementedError
 
     @classmethod
@@ -177,11 +181,11 @@ class SqlView:
     @classmethod
     @transaction.atomic(using="bsr")
     def update_view(cls, *args, **kwargs):
-        """ Update view and view dependencies.
+        """Update view and view dependencies.
 
-            NOTE: This func is transactional such that all views are updated or non are. However, also note that this
-                  can result in the views being rolled back to, being stale and outdated (depending on the cause of the
-                  update).
+        NOTE: This func is transactional such that all views are updated or non are. However, also note that this
+              can result in the views being rolled back to, being stale and outdated (depending on the cause of the
+              update).
         """
         if "db" not in kwargs:
             kwargs["db"] = cls.db

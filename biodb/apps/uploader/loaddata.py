@@ -1,21 +1,19 @@
 from pathlib import Path
 
 import pandas as pd
+import uploader.io
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import transaction
 from django.db.models import Q
 
 from biodb.util import get_object_or_raise_validation
-import uploader.io
 
 
-class ExitTransaction(Exception):
-    ...
+class ExitTransaction(Exception): ...
 
 
 def save_data_to_db(meta_data, array_data, center=None, joined_data=None, dry_run=False) -> dict:
-
     """
     Ingest into the database large tables of observation & observable data (aka "meta" data) along with associated
     array data.
@@ -24,8 +22,19 @@ def save_data_to_db(meta_data, array_data, center=None, joined_data=None, dry_ru
           validated.
     Note: This func is called by UploadedFile.clean() which, therefore, can't also be called here.
     """
-    from uploader.models import BioSample, Observable, Instrument, Patient, ArrayData, Observation, UploadedFile,\
-        Visit, Center as UploaderCenter
+    from uploader.models import (
+        ArrayData,
+        BioSample,
+        Instrument,
+        Observable,
+        Observation,
+        Patient,
+        UploadedFile,
+        Visit,
+    )
+    from uploader.models import (
+        Center as UploaderCenter,
+    )
     from user.models import Center as UserCenter
 
     # Only user.models.User can relate to user.models,Center, all uploader models must use uploader.models.Center since
@@ -37,10 +46,16 @@ def save_data_to_db(meta_data, array_data, center=None, joined_data=None, dry_ru
 
     if joined_data is None:
         # Read in all data.
-        meta_data = meta_data if isinstance(meta_data, pd.DataFrame) else \
-            uploader.io.read_meta_data(meta_data, index_column=index_column)
-        spec_data = array_data if isinstance(array_data, pd.DataFrame) else \
-            uploader.io.read_array_data_table(array_data, index_column=index_column)
+        meta_data = (
+            meta_data
+            if isinstance(meta_data, pd.DataFrame)
+            else uploader.io.read_meta_data(meta_data, index_column=index_column)
+        )
+        spec_data = (
+            array_data
+            if isinstance(array_data, pd.DataFrame)
+            else uploader.io.read_array_data_table(array_data, index_column=index_column)
+        )
 
         UploadedFile.validate_lengths(meta_data, spec_data)
         joined_data = UploadedFile.join_with_validation(meta_data, spec_data)
@@ -82,15 +97,13 @@ def save_data_to_db(meta_data, array_data, center=None, joined_data=None, dry_ru
                 instrument = get_object_or_raise_validation(Instrument, pk=row.get("instrument"))
 
                 # Create datafile
-                json_str = uploader.io.array_data_to_json(file=None,
-                                                          data=None,
-                                                          patient_id=patient.patient_id,
-                                                          x=row["x"],
-                                                          y=row["y"])
+                json_str = uploader.io.array_data_to_json(
+                    file=None, data=None, patient_id=patient.patient_id, x=row["x"], y=row["y"]
+                )
 
-                arraydata = ArrayData(instrument=instrument,
-                                            bio_sample=biosample,
-                                            **ArrayData.parse_fields_from_pandas_series(row))
+                arraydata = ArrayData(
+                    instrument=instrument, bio_sample=biosample, **ArrayData.parse_fields_from_pandas_series(row)
+                )
                 filename = f"{uploader.io.TEMP_FILENAME_PREFIX if dry_run else ''}{arraydata.generate_filename()}"
                 arraydata.data = ContentFile(json_str, name=filename)
                 arraydata.full_clean()
@@ -108,9 +121,7 @@ def save_data_to_db(meta_data, array_data, center=None, joined_data=None, dry_ru
 
                     # TODO: Should the following logic belong to Observation.__init__()?
                     observation_value = Observable.Types(observable.value_class).cast(observation_value)
-                    observation = Observation(observable=observable,
-                                              visit=visit,
-                                              observable_value=observation_value)
+                    observation = Observation(observable=observable, visit=visit, observable_value=observation_value)
                     observation.full_clean()
                     observation.save()
                     observable.observation.add(observation, bulk=False)

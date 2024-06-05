@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext_lazy as _
-
 from user.models import Center, User
 
 
@@ -13,6 +12,7 @@ class CenterAdmin(admin.ModelAdmin):
 
     def patient_count(self, obj):
         from uploader.models import Patient
+
         return Patient.objects.filter(center=obj.pk).count()
 
 

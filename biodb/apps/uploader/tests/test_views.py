@@ -1,8 +1,6 @@
 import pytest
-
 from django.db.utils import OperationalError
-
-from uploader.models import Observable, FullPatientView, ObservationsView, VisitObservationsView, Observation
+from uploader.models import FullPatientView, Observable, Observation, ObservationsView, VisitObservationsView
 from uploader.sql import execute_sql
 
 
@@ -22,12 +20,14 @@ class TestViews:
 
     def test_observations_view_django_model_filter(self, mock_data, sql_views):
         ObservationsView.update_view()
-        week_long_observations_1 = execute_sql(f"""
+        week_long_observations_1 = execute_sql(
+            f"""
                                            select *
                                            from {ObservationsView._meta.db_table}
                                            where days_observed = 7
                                            """,
-                                           db=ObservationsView.db)
+            db=ObservationsView.db,
+        )
         week_long_observations_2 = ObservationsView.objects.filter(days_observed=7)
         assert len(week_long_observations_1) > 1  # Check non-empty.
         assert len(week_long_observations_1) == week_long_observations_2.count()
@@ -62,10 +62,10 @@ class TestViews:
 
     def test_view_caching(self, mock_data):
         """
-            FullPatientView depends on VisitObservationsView, if VisitObservationsView is updated does FullPatientView
-            see the updated view or does it point to some older cached/inlined view?
-            With sqlite, it sees the newer updated view, but we should test to help us detect otherwise if we change the
-            DB backend.
+        FullPatientView depends on VisitObservationsView, if VisitObservationsView is updated does FullPatientView
+        see the updated view or does it point to some older cached/inlined view?
+        With sqlite, it sees the newer updated view, but we should test to help us detect otherwise if we change the
+        DB backend.
         """
 
         FullPatientView.update_view()

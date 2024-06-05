@@ -1,23 +1,35 @@
 import os
-from pathlib import Path
 import shutil
+from pathlib import Path
 from uuid import uuid4
 
+import django.core.files
+import pytest
+import uploader.io
 from django.conf import settings
 from django.core.exceptions import ValidationError
-import django.core.files
 from django.core.files.base import ContentFile
 from django.db.utils import IntegrityError
-import pytest
-
-import uploader.io
-from uploader.models import BioSample, BioSampleType, Observable, Instrument, Patient, ArrayData, Observation,\
-    Visit, UploadedFile, get_center, Center, ArrayMeasurementType
 from uploader.loaddata import save_data_to_db
-from user.models import Center as UserCenter
+from uploader.models import (
+    ArrayData,
+    ArrayMeasurementType,
+    BioSample,
+    BioSampleType,
+    Center,
+    Instrument,
+    Observable,
+    Observation,
+    Patient,
+    UploadedFile,
+    Visit,
+    get_center,
+)
 from uploader.models import Center as UploaderCenter
+from uploader.tests.conftest import DATA_PATH, bulk_upload
+from user.models import Center as UserCenter
+
 import biodb.util
-from uploader.tests.conftest import bulk_upload, DATA_PATH
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
@@ -65,36 +77,27 @@ class TestPatient:
         # Not OK.
         patient_id = uuid4()
         with pytest.raises(ValueError, match="Cannot assign"):
-            patient = Patient(patient_id=patient_id,
-                              center=UserCenter.objects.get(name="JHU"))
+            patient = Patient(patient_id=patient_id, center=UserCenter.objects.get(name="JHU"))
 
     def test_unique_cid_center_id(self, centers):
         center = UploaderCenter.objects.get(name="JHU")
         cid = uuid4()
-        Patient.objects.create(patient_id=uuid4(),
-                               center=center,
-                               patient_cid=cid)
+        Patient.objects.create(patient_id=uuid4(), center=center, patient_cid=cid)
         # OK.
-        Patient.objects.create(patient_id=uuid4(),
-                               center=center,
-                               patient_cid=uuid4())
+        Patient.objects.create(patient_id=uuid4(), center=center, patient_cid=uuid4())
 
         # OK.
-        Patient.objects.create(patient_id=uuid4(),
-                               center=UploaderCenter.objects.get(name="Imperial College London"),
-                               patient_cid=cid)
+        Patient.objects.create(
+            patient_id=uuid4(), center=UploaderCenter.objects.get(name="Imperial College London"), patient_cid=cid
+        )
 
         # Not OK.
         with pytest.raises(IntegrityError, match="UNIQUE constraint failed:"):
-            Patient.objects.create(patient_id=uuid4(),
-                                   center=center,
-                                   patient_cid=cid)
+            Patient.objects.create(patient_id=uuid4(), center=center, patient_cid=cid)
 
     def test_pi_cid_validation(self, centers):
         id = uuid4()
-        patient = Patient(patient_id=id,
-                          patient_cid=id,
-                          center=Center.objects.get(name="JHU"))
+        patient = Patient(patient_id=id, patient_cid=id, center=Center.objects.get(name="JHU"))
         with pytest.raises(ValidationError, match="Patient ID and patient CID cannot be the same"):
             patient.full_clean()
 
@@ -151,21 +154,25 @@ class TestVisit:
         visit.full_clean()
         assert visit.previous_visit == Visit.objects.get(pk=2)
 
-    @pytest.mark.parametrize(tuple(),
-                             [pytest.param(marks=pytest.mark.auto_find_previous_visit(False)),
-                              pytest.param(marks=pytest.mark.auto_find_previous_visit(True))])
+    @pytest.mark.parametrize(
+        tuple(),
+        [
+            pytest.param(marks=pytest.mark.auto_find_previous_visit(False)),
+            pytest.param(marks=pytest.mark.auto_find_previous_visit(True)),
+        ],
+    )
     def test_previous_visit_patient_age_validation(self, db, visits, observables):
         previous_visit = Visit.objects.get(pk=1)
         age = 10
-        patient_age = Observation.objects.create(visit=previous_visit,
-                                                 observable=Observable.objects.get(name="patient_age"),
-                                                 observable_value=age)
+        patient_age = Observation.objects.create(
+            visit=previous_visit, observable=Observable.objects.get(name="patient_age"), observable_value=age
+        )
         previous_visit.observation.add(patient_age, bulk=False)
 
         visit = Visit.objects.create(patient=previous_visit.patient, previous_visit=previous_visit)
-        patient_age = Observation.objects.create(visit=visit,
-                                                 observable=Observable.objects.get(name="patient_age"),
-                                                 observable_value=age - 1)
+        patient_age = Observation.objects.create(
+            visit=visit, observable=Observable.objects.get(name="patient_age"), observable_value=age - 1
+        )
         visit.observation.add(patient_age, bulk=False)
 
         with pytest.raises(ValidationError, match="Previous visit must NOT be older than this one"):
@@ -209,39 +216,45 @@ class TestObservable:
 
     def test_djangofy_choices(self):
         choices = "this, or, that"
-        assert Observable.djangofy_choices(choices) == [("THIS", "THIS"),
-                                                        ("OR", "OR"),
-                                                        ("THAT", "THAT")]
+        assert Observable.djangofy_choices(choices) == [("THIS", "THIS"), ("OR", "OR"), ("THAT", "THAT")]
 
     def test_validator_import_validation(self):
-        Observable(name="A",
-                   description="blah",
-                   alias="a",
-                   category=Observable.Category.COMORBIDITY,
-                   validator="django.core.validators.validate_email").full_clean()
+        Observable(
+            name="A",
+            description="blah",
+            alias="a",
+            category=Observable.Category.COMORBIDITY,
+            validator="django.core.validators.validate_email",
+        ).full_clean()
 
         with pytest.raises(ValidationError, match="cannot be imported"):
-            Observable(name="A",
-                       description="blah",
-                       alias="a",
-                       category=Observable.Category.COMORBIDITY,
-                       validator="some.random.method").full_clean()
+            Observable(
+                name="A",
+                description="blah",
+                alias="a",
+                category=Observable.Category.COMORBIDITY,
+                validator="some.random.method",
+            ).full_clean()
 
     def test_choices_str_validation(self):
-        Observable(name="A",
-                   description="blah",
-                   alias="a",
-                   category=Observable.Category.COMORBIDITY,
-                   value_class="STR",
-                   value_choices="this,or,that").full_clean()
+        Observable(
+            name="A",
+            description="blah",
+            alias="a",
+            category=Observable.Category.COMORBIDITY,
+            value_class="STR",
+            value_choices="this,or,that",
+        ).full_clean()
 
         with pytest.raises(ValidationError, match="Observable choices are only permitted of STR value_class"):
-            Observable(name="A",
-                       description="blah",
-                       alias="a",
-                       category=Observable.Category.COMORBIDITY,
-                       value_class="BOOL",
-                       value_choices="this,or,that").full_clean()
+            Observable(
+                name="A",
+                description="blah",
+                alias="a",
+                category=Observable.Category.COMORBIDITY,
+                value_class="BOOL",
+                value_choices="this,or,that",
+            ).full_clean()
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
@@ -257,19 +270,23 @@ class TestInstrument:
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestObservation:
     def test_observable_value_validation(self, db, observables, visits):
-        observation = Observation.objects.create(visit=Visit.objects.get(pk=1),
-                                         observable=Observable.objects.get(name="Ct_gene_N"),
-                                         days_observed=7,
-                                         observable_value="strings can't cast to floats")
+        observation = Observation.objects.create(
+            visit=Visit.objects.get(pk=1),
+            observable=Observable.objects.get(name="Ct_gene_N"),
+            days_observed=7,
+            observable_value="strings can't cast to floats",
+        )
         with pytest.raises(ValidationError):
             observation.full_clean()
 
     @pytest.mark.parametrize("value", (True, False))
     def test_observable_value_bool_cast(self, db, observables, visits, value):
-        observation = Observation.objects.create(visit=Visit.objects.get(pk=1),
-                                         observable=Observable.objects.get(name="fever"),
-                                         days_observed=7,
-                                         observable_value=str(value))
+        observation = Observation.objects.create(
+            visit=Visit.objects.get(pk=1),
+            observable=Observable.objects.get(name="fever"),
+            days_observed=7,
+            observable_value=str(value),
+        )
         observation.full_clean()
         assert observation.observable_value is value
 
@@ -279,57 +296,54 @@ class TestObservation:
         visit = Visit.objects.create(patient=patient)
 
         # OK.
-        observable = Observable.objects.create(name="snuffles",
-                                               alias="snuffles",
-                                               category=Observable.Category.SYMPTOM)
+        observable = Observable.objects.create(name="snuffles", alias="snuffles", category=Observable.Category.SYMPTOM)
         observable.center.set([center])
         Observation(visit=visit, observable=observable).full_clean()
 
         # OK.
-        observable = Observable.objects.create(name="extra_snuffles",
-                                               alias="extra snuffles",
-                                               category=Observable.Category.SYMPTOM)
+        observable = Observable.objects.create(
+            name="extra_snuffles", alias="extra snuffles", category=Observable.Category.SYMPTOM
+        )
         Observation(visit=visit, observable=observable).full_clean()
 
         # Not OK.
-        observable = Observable.objects.create(name="even_more_snuffles",
-                                               alias="even more snuffles",
-                                               category=Observable.Category.SYMPTOM)
+        observable = Observable.objects.create(
+            name="even_more_snuffles", alias="even more snuffles", category=Observable.Category.SYMPTOM
+        )
         observable.center.set([Center.objects.get(name="Imperial College London")])
         with pytest.raises(ValidationError, match="Patient observation.observable must belong to patient's center"):
             Observation(visit=visit, observable=observable).full_clean()
 
     def test_observable_choices(self, observables, visits):
-        Observation(visit=Visit.objects.last(),
-                    observable=Observable.objects.get(name="gender"),
-                    observable_value="non-binary").full_clean()
+        Observation(
+            visit=Visit.objects.last(), observable=Observable.objects.get(name="gender"), observable_value="non-binary"
+        ).full_clean()
 
         with pytest.raises(ValidationError, match="Value must be one of"):
-            Observation(visit=Visit.objects.last(),
-                        observable=Observable.objects.get(name="gender"),
-                        observable_value="blah-blah").full_clean()
+            Observation(
+                visit=Visit.objects.last(),
+                observable=Observable.objects.get(name="gender"),
+                observable_value="blah-blah",
+            ).full_clean()
 
     def test_observable_validator(self, visits):
-        observable = Observable.objects.create(name="A",
-                                               description="blah",
-                                               alias="a",
-                                               category=Observable.Category.COMORBIDITY,
-                                               value_class="STR",
-                                               validator="django.core.validators.validate_email")
+        observable = Observable.objects.create(
+            name="A",
+            description="blah",
+            alias="a",
+            category=Observable.Category.COMORBIDITY,
+            value_class="STR",
+            validator="django.core.validators.validate_email",
+        )
 
-        Observation(visit=Visit.objects.last(),
-                    observable=observable,
-                    observable_value="rando@gmail.com").full_clean()
+        Observation(visit=Visit.objects.last(), observable=observable, observable_value="rando@gmail.com").full_clean()
 
         with pytest.raises(ValidationError, match="Enter a valid email address"):
-            Observation(visit=Visit.objects.last(),
-                        observable=observable,
-                        observable_value="blahblah").full_clean()
+            Observation(visit=Visit.objects.last(), observable=observable, observable_value="blahblah").full_clean()
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
-class TestBioSample:
-    ...
+class TestBioSample: ...
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
@@ -341,8 +355,7 @@ class TestArrayData:
             assert Path(obj.data.name).exists()
 
     def test_no_file_validation(self, db):
-        """ Test that a validation error is raised rather than any other python exception which would indicate a bug.
-        """
+        """Test that a validation error is raised rather than any other python exception which would indicate a bug."""
         data = ArrayData()
         with pytest.raises(ValidationError):
             data.full_clean()
@@ -361,7 +374,7 @@ class TestArrayData:
         filename = Path(ArrayData.objects.all()[0].data.name)
         assert filename.parent.exists()
         assert filename.parent.is_dir()
-        assert len(list(filename.parent.glob('*'))) == n_patients
+        assert len(list(filename.parent.glob("*"))) == n_patients
 
     @pytest.mark.skip("Unimplemented See #141")
     def test_all_files_deleted_upon_transaction_failure(self):
@@ -370,18 +383,19 @@ class TestArrayData:
 
     @pytest.mark.parametrize("ext", uploader.io.FileFormats.list())
     def test_clean(self, centers, instruments, ext, bio_sample_types, array_measurement_types):
-        data_file = (DATA_PATH/"sample").with_suffix(ext)
+        data_file = (DATA_PATH / "sample").with_suffix(ext)
         data = uploader.io.read_array_data(data_file)
 
-        patient = Patient.objects.create(patient_id=data.patient_id,
-                                         center=Center.objects.get(name="JHU"))
+        patient = Patient.objects.create(patient_id=data.patient_id, center=Center.objects.get(name="JHU"))
         visit = patient.visit.create()
         bio_sample = visit.bio_sample.create(sample_type=BioSampleType.objects.get(name="pharyngeal swab"))
 
-        array_data = ArrayData(instrument=Instrument.objects.get(pk="4205d8ac-90c1-4529-90b2-6751f665c403"),
-                                     bio_sample=bio_sample,
-                                     data=ContentFile(data_file.read_bytes(), name=data_file),
-                                     measurement_type=ArrayMeasurementType.objects.get(name="magic"))
+        array_data = ArrayData(
+            instrument=Instrument.objects.get(pk="4205d8ac-90c1-4529-90b2-6751f665c403"),
+            bio_sample=bio_sample,
+            data=ContentFile(data_file.read_bytes(), name=data_file),
+            measurement_type=ArrayMeasurementType.objects.get(name="magic"),
+        )
         array_data.full_clean()
         array_data.save()
 
@@ -401,22 +415,17 @@ class TestArrayData:
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestUploadedFile:
     @pytest.mark.parametrize("file_ext", UploadedFile.FileFormats.list())
-    def test_upload_without_error(self,
-                                  db,
-                                  observables,
-                                  instruments,
-                                  file_ext,
-                                  center,
-                                  bio_sample_types,
-                                  array_measurement_types):
-        meta_data_path = (DATA_PATH/"meta_data").with_suffix(file_ext)
+    def test_upload_without_error(
+        self, db, observables, instruments, file_ext, center, bio_sample_types, array_measurement_types
+    ):
+        meta_data_path = (DATA_PATH / "meta_data").with_suffix(file_ext)
         array_file_path = (DATA_PATH / "array_data").with_suffix(file_ext)
         with meta_data_path.open(mode="rb") as meta_data, array_file_path.open(mode="rb") as array_data:
-            data_upload = UploadedFile(meta_data_file=django.core.files.File(meta_data,
-                                                                             name=meta_data_path.name),
-                                       array_data_file=django.core.files.File(array_data,
-                                                                                 name=array_file_path.name),
-                                       center=center)
+            data_upload = UploadedFile(
+                meta_data_file=django.core.files.File(meta_data, name=meta_data_path.name),
+                array_data_file=django.core.files.File(array_data, name=array_file_path.name),
+                center=center,
+            )
             data_upload.clean()
             data_upload.save()
 
@@ -442,19 +451,11 @@ class TestUploadedFile:
         assert BioSample.objects.count() == n_patients
         assert ArrayData.objects.count() == n_patients
 
-    def test_number_observations(self,
-                                 db,
-                                 observables,
-                                 instruments,
-                                 center,
-                                 bio_sample_types,
-                                 array_measurement_types):
-        """ The total number of observations := N_patients * N_observables. """
+    def test_number_observations(self, db, observables, instruments, center, bio_sample_types, array_measurement_types):
+        """The total number of observations := N_patients * N_observables."""
         assert Patient.objects.count() == 0  # Assert empty.
 
-        save_data_to_db(DATA_PATH / "meta_data.csv",
-                        DATA_PATH / "array_data.csv",
-                        center=center)
+        save_data_to_db(DATA_PATH / "meta_data.csv", DATA_PATH / "array_data.csv", center=center)
 
         n_patients = Patient.objects.count()
         n_observables = Observable.objects.count()
@@ -467,8 +468,9 @@ class TestUploadedFile:
 
         # When Covid_RT_qPCR is negative both Ct_gene_N & Ct_gene_ORF1ab observations will be null and omitted.
         # This must be accounted for in the total.
-        n_empty_covid_observations = Observation.objects.filter(observable__name="Covid_RT_qPCR")\
-            .filter(observable_value="Negative").count()
+        n_empty_covid_observations = (
+            Observation.objects.filter(observable__name="Covid_RT_qPCR").filter(observable_value="Negative").count()
+        )
         assert n_observations == n_patients * n_observables - n_empty_covid_observations * 2
 
     @pytest.mark.parametrize("file_ext", UploadedFile.FileFormats.list())
@@ -489,10 +491,10 @@ class TestUploadedFile:
         biodb.util.mock_bulk_array_data(path=tmp_path)
         array_file_path = tmp_path / "array_data.csv"
         with meta_data_path.open(mode="rb") as meta_data, array_file_path.open(mode="rb") as array_data:
-            data_upload = UploadedFile(meta_data_file=django.core.files.File(meta_data,
-                                                                             name=meta_data_path.name),
-                                       array_data_file=django.core.files.File(array_data,
-                                                                                 name=array_file_path.name))
+            data_upload = UploadedFile(
+                meta_data_file=django.core.files.File(meta_data, name=meta_data_path.name),
+                array_data_file=django.core.files.File(array_data, name=array_file_path.name),
+            )
             with pytest.raises(ValidationError, match="Patient index mismatch."):
                 data_upload.clean()
 
@@ -523,8 +525,7 @@ class TestUploadedFile:
         old_pids = []
         for patient in Patient.objects.select_related("center").all():
             old_pids.append(patient.patient_id)
-            new_patient_list.append(Patient(patient_cid=patient.patient_id,
-                                            center=patient.center))
+            new_patient_list.append(Patient(patient_cid=patient.patient_id, center=patient.center))
             patient.delete()
 
         # Check old patients successfully deleted.
@@ -558,15 +559,8 @@ class TestUploadedFile:
         assert not os.path.exists(bulk_upload.meta_data_file.name)
         assert not os.path.exists(bulk_upload.array_data_file.name)
 
-    def test_bad_ext(self,
-                     db,
-                     tmp_path,
-                     observables,
-                     instruments,
-                     center,
-                     bio_sample_types,
-                     array_measurement_types):
-        meta_data_path = (DATA_PATH/"meta_data").with_suffix(UploadedFile.FileFormats.CSV)
+    def test_bad_ext(self, db, tmp_path, observables, instruments, center, bio_sample_types, array_measurement_types):
+        meta_data_path = (DATA_PATH / "meta_data").with_suffix(UploadedFile.FileFormats.CSV)
         array_file_path = (DATA_PATH / "array_data").with_suffix(UploadedFile.FileFormats.CSV)
 
         new_meta_data_path = tmp_path / meta_data_path.with_suffix(".blah")
@@ -576,11 +570,11 @@ class TestUploadedFile:
         shutil.copyfile(array_file_path, new_array_file_path)
 
         with new_meta_data_path.open(mode="rb") as meta_data, new_array_file_path.open(mode="rb") as array_data:
-            data_upload = UploadedFile(meta_data_file=django.core.files.File(meta_data,
-                                                                             name=new_meta_data_path.name),
-                                       array_data_file=django.core.files.File(array_data,
-                                                                                 name=new_array_file_path.name),
-                                       center=center)
+            data_upload = UploadedFile(
+                meta_data_file=django.core.files.File(meta_data, name=new_meta_data_path.name),
+                array_data_file=django.core.files.File(array_data, name=new_array_file_path.name),
+                center=center,
+            )
             with pytest.raises(ValidationError, match="Allowed extensions"):
                 data_upload.full_clean()
 
@@ -591,6 +585,7 @@ def test_get_center(centers, mock_data_from_files):
     assert get_center(center) is center
 
     from user.models import Center as UserCenter
+
     assert get_center(UserCenter.objects.get(pk=center.pk)) == center
 
     patient = Patient.objects.all()[0]

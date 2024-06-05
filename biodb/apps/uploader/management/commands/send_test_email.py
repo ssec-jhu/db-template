@@ -8,13 +8,13 @@ class Command(BaseCommand):
     help = "Test email server by sending a test email."
 
     def add_arguments(self, parser):
-        parser.add_argument("email_address",
-                            default=None,
-                            help="Send test email to this email address.")
-        parser.add_argument("--mimic_password_reset",
-                            action="store_true",
-                            default=False,
-                            help="Send test email to this email address, via the Django's password reset mechanism.")
+        parser.add_argument("email_address", default=None, help="Send test email to this email address.")
+        parser.add_argument(
+            "--mimic_password_reset",
+            action="store_true",
+            default=False,
+            help="Send test email to this email address, via the Django's password reset mechanism.",
+        )
 
     def handle(self, *args, **options):
         email_address = options["email_address"]
@@ -29,19 +29,20 @@ class Command(BaseCommand):
                     "subject_template_name": PasswordResetView.subject_template_name,
                     "html_email_template_name": PasswordResetView.html_email_template_name,
                     "extra_email_context": PasswordResetView.extra_email_context,
-                    "domain_override": settings.HOST_DOMAIN
+                    "domain_override": settings.HOST_DOMAIN,
                 }
                 form = PasswordResetView.form_class(data={"email": email_address})
                 form.is_valid()
                 form.save(**opts)
             else:
                 email_from = settings.EMAIL_FROM
-                send_mail("biodb test email", "This is just a test.", email_from, [email_address],
-                          fail_silently=False)
+                send_mail("biodb test email", "This is just a test.", email_from, [email_address], fail_silently=False)
             self.stdout.write(self.style.SUCCESS(f"Test email sent to {email_address}, check inbox for verification."))
         except CommandError:
             raise
         except Exception as error:
             raise
-            raise CommandError(f"An error occurred whilst trying to send a test email to '{email_address}': "
-                               f"{type(error).__name__}: {error}")
+            raise CommandError(
+                f"An error occurred whilst trying to send a test email to '{email_address}': "
+                f"{type(error).__name__}: {error}"
+            )
