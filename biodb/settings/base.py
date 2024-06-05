@@ -234,13 +234,11 @@ else:
     EXPLORER_DEFAULT_CONNECTION = "bsr"
 
 # Note: The following perms are duplicated in biodb.urls.
-EXPLORER_PERMISSION_VIEW = lambda r: (
-    r.user.is_active  # noqa:  E731
-    and r.user.is_staff
+EXPLORER_PERMISSION_VIEW = lambda r: (  # noqa:  E731
+    r.user.is_active and r.user.is_staff
 ) and (r.user.is_sqluser_view or r.user.is_sqluser_change or r.user.is_superuser)
-EXPLORER_PERMISSION_CHANGE = lambda r: (
-    r.user.is_active  # noqa:  E731
-    and r.user.is_staff
+EXPLORER_PERMISSION_CHANGE = lambda r: (  # noqa:  E731
+    r.user.is_active and r.user.is_staff
 ) and (r.user.is_sqluser_change or r.user.is_superuser)
 
 EXPLORER_DEFAULT_ROWS = 1000

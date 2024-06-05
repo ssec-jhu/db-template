@@ -2,7 +2,7 @@ import pytest
 from catalog.models import Dataset
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
-from uploader.tests.conftest import (
+from uploader.tests.conftest import (  # noqa: F401
     SimpleQueryFactory,
     array_measurement_types,
     bio_sample_types,
@@ -13,8 +13,6 @@ from uploader.tests.conftest import (
     observables,
     sql_views,
 )
-
-# noqa: F401
 from user.models import Center as UserCenter
 
 User = get_user_model()
