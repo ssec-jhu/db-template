@@ -97,7 +97,6 @@ lint.ignore = [
     "COM812", # https://docs.astral.sh/ruff/rules/missing-trailing-comma/
     "ISC001", # https://docs.astral.sh/ruff/rules/single-line-implicit-string-concatenation/
 ]
-
 exclude = [
     ".bzr",
     ".direnv",
@@ -123,9 +122,7 @@ exclude = [
     "venv",
     "_version.py"
 ]
-
-ignore = [
-]
+target-version = "py311"
 
 [tool.ruff.lint.pydocstyle] # https://docs.astral.sh/ruff/settings/#lint_pydocstyle_convention
 convention = "google"
@@ -138,5 +135,3 @@ convention = "google"
     "INP",  # https://docs.astral.sh/ruff/rules/#flake8-no-pep420-inp
     "ANN",  # https://docs.astral.sh/ruff/rules/#flake8-annotations-ann
 ]
-
-target-version = "py311"
