@@ -1,8 +1,6 @@
 import pytest
-
 from django.core.exceptions import SuspiciousOperation
 from django.db.utils import OperationalError
-
 from uploader.models import Observable
 from uploader.sql import drop_view, execute_sql, secure_name, update_view
 
@@ -29,16 +27,17 @@ class TestSQL:
 
     def test_update_view(self, db, observables):
         view = "my_view"
-        resp1 = update_view(view,
-                            f"""
+        resp1 = update_view(
+            view,
+            f"""
                             create view {view} as
                             select *
                             from observable
                             """,
-                            check=True,
-                            limit=None,
-                            db=self.db
-                            )
+            check=True,
+            limit=None,
+            db=self.db,
+        )
 
         resp2 = execute_sql(f"select * from {view}", db=self.db)
         assert resp1 == resp2
@@ -51,55 +50,59 @@ class TestSQL:
         view = "my_view"
         limit = 1
 
-        resp1 = update_view(view,
-                            f"""
+        resp1 = update_view(
+            view,
+            f"""
                             create view {view} as
                             select *
                             from observable
                             """,
-                            check=True,
-                            limit=limit,
-                            db=self.db
-                            )
+            check=True,
+            limit=limit,
+            db=self.db,
+        )
         assert len(resp1) == limit
 
     def test_update_view_check(self, db, observables):
         view = "my_view"
 
         with pytest.raises(OperationalError, match="syntax error"):
-            update_view(view,
-                        f"""
+            update_view(
+                view,
+                f"""
                         ceate view {view} as -- note typo in create
                         select *
                         from observable
                         """,
-                        check=True,
-                        db=self.db
-                        )
+                check=True,
+                db=self.db,
+            )
 
     def test_update_view_check_transactional(self, db, observables):
         view = "my_view"
 
-        update_view(view,
-                    f"""
+        update_view(
+            view,
+            f"""
                     create view {view} as
                     select *
                     from observable
                     """,
-                    check=True,
-                    db=self.db
-                    )
+            check=True,
+            db=self.db,
+        )
 
         with pytest.raises(OperationalError, match="syntax error"):
-            update_view(view,
-                        f"""
+            update_view(
+                view,
+                f"""
                         ceate view {view} as -- note typo in create
                         select *
                         from observable
                         """,
-                        check=True,
-                        db=self.db
-                        )
+                check=True,
+                db=self.db,
+            )
 
         # With SQLite views need to be dropped then re-added (there's no alter). ``update_view()`` isn't completely
         # transactional such that a failed update won't roll back the previous view state. Therefore, the above failed
@@ -110,14 +113,15 @@ class TestSQL:
 
     def test_drop_view(self, db, observables):
         view = "my_view"
-        update_view(view,
-                    f"""
+        update_view(
+            view,
+            f"""
                         create view {view} as
                         select *
                         from observable
                         """,
-                    db=self.db
-                    )
+            db=self.db,
+        )
         resp = execute_sql(f"select * from {view}", db=self.db)
         assert len(resp) == Observable.objects.count()
         drop_view(view, db=self.db)

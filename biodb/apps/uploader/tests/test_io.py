@@ -1,16 +1,14 @@
 import json
 from pathlib import Path
-import pytest
 
+import pytest
+import uploader.io
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.files.storage import storages
-
-import uploader.io
 from uploader.tests.conftest import DATA_PATH
 
-
-ARRAY_FILE_PATH = (DATA_PATH/"sample")
+ARRAY_FILE_PATH = DATA_PATH / "sample"
 
 
 @pytest.fixture(scope="module")
@@ -30,8 +28,9 @@ class TestReadSingleRowArrayDataTable:
     @pytest.mark.parametrize("ext", uploader.io.FileFormats.list())
     def test_multiple_row_exception(self, ext):
         with pytest.raises(ValueError, match="The file read should contain only a single row"):
-            uploader.io.read_single_row_array_data_table((DATA_PATH/"array_data").with_suffix(ext),
-                                                            index_column=settings.BULK_UPLOAD_INDEX_COLUMN_NAME)
+            uploader.io.read_single_row_array_data_table(
+                (DATA_PATH / "array_data").with_suffix(ext), index_column=settings.BULK_UPLOAD_INDEX_COLUMN_NAME
+            )
 
 
 class TestArrayDataFromJson:
@@ -40,8 +39,10 @@ class TestArrayDataFromJson:
         assert uploader.io.array_data_from_json(filename) == uploader.io.ArrayData(**json_data)
 
     def test_array_data_from_json_key_validation(self):
-        fake_data = ContentFile(json.dumps({"blah": "huh?", "x": [], "something else": 1.0}),
-                                name=Path("fake_json").with_suffix(uploader.io.FileFormats.JSONL))
+        fake_data = ContentFile(
+            json.dumps({"blah": "huh?", "x": [], "something else": 1.0}),
+            name=Path("fake_json").with_suffix(uploader.io.FileFormats.JSONL),
+        )
         with pytest.raises(uploader.io.DataSchemaError, match="Schema error:"):
             uploader.io.array_data_from_json(fake_data)
 
@@ -77,7 +78,7 @@ class TestArrayDataToJson:
     def test_data_as_fp(self, json_data):
         filename = Path("myjson").with_suffix(uploader.io.FileFormats.JSONL)
         # Write data.
-        with storages["default"].open(filename, mode='w') as fp:
+        with storages["default"].open(filename, mode="w") as fp:
             uploader.io.array_data_to_json(fp, json_data)
         # Read data.
         data = uploader.io.array_data_from_json(filename)

@@ -1,8 +1,7 @@
 """Gunicorn *production* config file"""
-import os
 
 import multiprocessing
-
+import os
 
 # Django WSGI application path in pattern MODULE_NAME:VARIABLE_NAME
 wsgi_app = "biodb.wsgi:application"

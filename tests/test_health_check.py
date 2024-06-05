@@ -1,9 +1,8 @@
 import json
-import pytest
 
+import pytest
 from django.db import DatabaseError
 from django.test import Client
-
 from health_check.db.models import TestModel
 
 
@@ -29,8 +28,9 @@ class TestHealthCheck:
         response = getattr(c, method)("/healthz/")
         assert response.status_code == 500
 
-    @pytest.mark.parametrize(("url", "header"), (("/healthz/?format=json", None),
-                                                 ("/healthz/", {"accept": "application/json"})))
+    @pytest.mark.parametrize(
+        ("url", "header"), (("/healthz/?format=json", None), ("/healthz/", {"accept": "application/json"}))
+    )
     def test_healthz_json(self, url, header):
         c = Client()
         response = c.get(url, headers=header)

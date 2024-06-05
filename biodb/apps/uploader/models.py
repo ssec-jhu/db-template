@@ -1,8 +1,10 @@
+import uuid
 from copy import deepcopy
 from enum import auto
 from pathlib import Path
-import uuid
 
+import pandas as pd
+import uploader.io
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
@@ -13,15 +15,13 @@ from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
-import pandas as pd
-
-from biodb.util import get_field_value, get_object_or_raise_validation, is_valid_uuid, lower, to_uuid
-from biodb.qc.qcfilter import QcFilter
-import uploader.io
+from uploader.base_models import DatedModel, ModelWithViewDependency, SqlView, TextChoices, Types
 from uploader.loaddata import save_data_to_db
 from uploader.sql import secure_name
-from uploader.base_models import DatedModel, ModelWithViewDependency, SqlView, TextChoices, Types
 from user.models import BaseCenter as UserBaseCenter
+
+from biodb.qc.qcfilter import QcFilter
+from biodb.util import get_field_value, get_object_or_raise_validation, is_valid_uuid, lower, to_uuid
 
 # Changes here need to be migrated, committed, and activated.
 # See https://docs.djangoproject.com/en/4.2/intro/tutorial02/#activating-models
@@ -68,6 +68,7 @@ class Center(UserBaseCenter):
     @property
     def replica_model(self):
         from user.models import Center as UserCenter
+
         return UserCenter
 
     @property
@@ -81,15 +82,15 @@ def center_deletion_handler(sender, **kwargs):
 
 
 class UploadedFile(DatedModel):
-    """ Model for ingesting bulk data uploads of both array data and meta data files.
+    """Model for ingesting bulk data uploads of both array data and meta data files.
 
-        Attributes:
-            meta_data_file (:obj:`django.models.FileField`): The uploaded file containing rows of patient meta-data,
-                e.g., observations, biosample collection info, etc.
-            array_data_file (:obj:`django.models.FileField`): The uploaded file containing rows of patient array
-                data.
-            center (:obj:`django.models.ForeignKey` of :obj:`user.models.Center`): The center that all new uploaded
-                patients will be associated to.
+    Attributes:
+        meta_data_file (:obj:`django.models.FileField`): The uploaded file containing rows of patient meta-data,
+            e.g., observations, biosample collection info, etc.
+        array_data_file (:obj:`django.models.FileField`): The uploaded file containing rows of patient array
+            data.
+        center (:obj:`django.models.ForeignKey` of :obj:`user.models.Center`): The center that all new uploaded
+            patients will be associated to.
     """
 
     class Meta:
@@ -100,47 +101,56 @@ class UploadedFile(DatedModel):
     FileFormats = uploader.io.FileFormats
     UPLOAD_DIR = "raw_data/"  # MEDIA_ROOT/raw_data
 
-    meta_data_file = models.FileField(upload_to=UPLOAD_DIR,
-                                      validators=[FileExtensionValidator(uploader.io.FileFormats.choices())],
-                                      help_text="File containing rows of all patient, observation, and other meta"
-                                                " data.")
-    array_data_file = models.FileField(upload_to=UPLOAD_DIR,
-                                       validators=[FileExtensionValidator(uploader.io.FileFormats.choices())],
-                                       help_text="File containing rows of array data for the corresponding"
-                                                 " meta data file.")
+    meta_data_file = models.FileField(
+        upload_to=UPLOAD_DIR,
+        validators=[FileExtensionValidator(uploader.io.FileFormats.choices())],
+        help_text="File containing rows of all patient, observation, and other meta" " data.",
+    )
+    array_data_file = models.FileField(
+        upload_to=UPLOAD_DIR,
+        validators=[FileExtensionValidator(uploader.io.FileFormats.choices())],
+        help_text="File containing rows of array data for the corresponding" " meta data file.",
+    )
     center = models.ForeignKey(Center, null=False, blank=False, on_delete=models.PROTECT)
 
     @staticmethod
     def validate_lengths(meta_data, spec_data):
-        """ Validate that files must be of equal length (same number of rows). """
+        """Validate that files must be of equal length (same number of rows)."""
         if len(meta_data) != len(spec_data):
-            raise ValidationError(_("meta and array data must be of equal length (%(a)i!=%(b)i)."),
-                                  params={"a": len(meta_data), "b": len(spec_data)},
-                                  code="invalid")
+            raise ValidationError(
+                _("meta and array data must be of equal length (%(a)i!=%(b)i)."),
+                params={"a": len(meta_data), "b": len(spec_data)},
+                code="invalid",
+            )
 
     @staticmethod
     def join_with_validation(meta_data, spec_data):
-        """ Validate primary keys are unique and associative. """
+        """Validate primary keys are unique and associative."""
         if not meta_data.index.equals(spec_data.index):
-            raise ValidationError(_("Patient index mismatch. indexes from %(a)s must exactly match all those from %(b)s"),
-                                  params=dict(a=UploadedFile.meta_data_file.field.name,
-                                              b=UploadedFile.array_data_file.field.name),
-                                  code="invalid")
+            raise ValidationError(
+                _("Patient index mismatch. indexes from %(a)s must exactly match all those from %(b)s"),
+                params=dict(a=UploadedFile.meta_data_file.field.name, b=UploadedFile.array_data_file.field.name),
+                code="invalid",
+            )
 
         try:
             # The simplest way to do this is to utilize pandas.DataFrame.join().
             return meta_data.join(spec_data, how="left", validate="1:1")  # Might as well return the join.
         except pd.errors.MergeError as error:
-            raise ValidationError(_("meta and array data must have unique and identical patient identifiers")) from error
+            raise ValidationError(
+                _("meta and array data must have unique and identical patient identifiers")
+            ) from error
 
     def _validate_and_save_data_to_db(self, dry_run=False):
         try:
             # Read in all data.
             # Note: When accessing ``models.FileField`` Django returns ``models.FieldFile`` as a proxy.
-            meta_data = uploader.io.read_meta_data(self.meta_data_file.file,
-                                                   index_column=settings.BULK_UPLOAD_INDEX_COLUMN_NAME)
-            array_data = uploader.io.read_array_data_table(self.array_data_file.file,
-                                                              index_column=settings.BULK_UPLOAD_INDEX_COLUMN_NAME)
+            meta_data = uploader.io.read_meta_data(
+                self.meta_data_file.file, index_column=settings.BULK_UPLOAD_INDEX_COLUMN_NAME
+            )
+            array_data = uploader.io.read_array_data_table(
+                self.array_data_file.file, index_column=settings.BULK_UPLOAD_INDEX_COLUMN_NAME
+            )
             # Validate.
             UploadedFile.validate_lengths(meta_data, array_data)
             # This uses a join so returns the joined data so that it doesn't go to waste if needed, which it is here.
@@ -154,7 +164,7 @@ class UploadedFile(DatedModel):
             raise ValidationError("An error occurred, check the file content is correct.")
 
     def clean(self):
-        """ Model validation. """
+        """Model validation."""
         super().clean()
         self._validate_and_save_data_to_db(dry_run=True)
 
@@ -194,15 +204,16 @@ class UploadedFile(DatedModel):
 
 
 class Patient(DatedModel):
-    """ Model an individual patient.
+    """Model an individual patient.
 
-        Attributes:
-            patient_id (:obj:`django.models.UUIDField`): Database primary key for patient entry. Autogenerated if
-                not provided.
-            patient_cid (:obj:`django.models.UUIDField`, optional): Patient identifier provided by associated center.
-            center (:obj:`django.models.ForeignKey` of :obj:`user.models.Center`): Center patient belongs to. Only
-                users belonging to this center will be able to view this patient.
+    Attributes:
+        patient_id (:obj:`django.models.UUIDField`): Database primary key for patient entry. Autogenerated if
+            not provided.
+        patient_cid (:obj:`django.models.UUIDField`, optional): Patient identifier provided by associated center.
+        center (:obj:`django.models.ForeignKey` of :obj:`user.models.Center`): Center patient belongs to. Only
+            users belonging to this center will be able to view this patient.
     """
+
     MIN_AGE = 0
     MAX_AGE = 150  # NOTE: HIPAA requires a max age of 90 to be stored. However, this is GDPR data so... :shrug:
 
@@ -211,18 +222,13 @@ class Patient(DatedModel):
         unique_together = [["patient_cid", "center"]]
         get_latest_by = "updated_at"
 
-    patient_id = models.UUIDField(unique=True,
-                                  primary_key=True,
-                                  default=uuid.uuid4,
-                                  verbose_name="Patient ID")
-    patient_cid = models.UUIDField(null=True,
-                                   blank=True,
-                                   help_text="Patient ID prescribed by the associated center")
+    patient_id = models.UUIDField(unique=True, primary_key=True, default=uuid.uuid4, verbose_name="Patient ID")
+    patient_cid = models.UUIDField(null=True, blank=True, help_text="Patient ID prescribed by the associated center")
     center = models.ForeignKey(Center, null=False, blank=False, on_delete=models.PROTECT)
 
     @classmethod
     def parse_fields_from_pandas_series(cls, series):
-        """ Parse the pandas series for field values returning a dict. """
+        """Parse the pandas series for field values returning a dict."""
         return {}
 
     def __str__(self):
@@ -247,14 +253,14 @@ class Patient(DatedModel):
 
 
 class Visit(DatedModel):
-    """ Model a patient's visitation to collect health data and biological data.
+    """Model a patient's visitation to collect health data and biological data.
 
-        Attributes:
-            patient (:obj:`django.models.ForeignKey` of :obj:`Patient`): The patient that this visit belongs to.
-            previous_visit (:obj:`django.models.ForeignKey` of :obj:`self`, optional): This can be used to reference
-                another ``Visit`` to give order to visitations when collecting dates may not be compliant.
-            days_observed (:obj:`django.models.IntegerField`, optional): The number of days that observations have been
-                observed for. This applies to all observations related to this visit.
+    Attributes:
+        patient (:obj:`django.models.ForeignKey` of :obj:`Patient`): The patient that this visit belongs to.
+        previous_visit (:obj:`django.models.ForeignKey` of :obj:`self`, optional): This can be used to reference
+            another ``Visit`` to give order to visitations when collecting dates may not be compliant.
+        days_observed (:obj:`django.models.IntegerField`, optional): The number of days that observations have been
+            observed for. This applies to all observations related to this visit.
     """
 
     class Meta:
@@ -264,23 +270,26 @@ class Visit(DatedModel):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name="visit")
 
     # NOTE: This has to allow for blank to accommodate the initial vist for which there is no prior.
-    previous_visit = models.ForeignKey("self", default=None, blank=True, null=True, on_delete=models.SET_NULL,
-                                       related_name="next_visit")
+    previous_visit = models.ForeignKey(
+        "self", default=None, blank=True, null=True, on_delete=models.SET_NULL, related_name="next_visit"
+    )
 
-    days_observed = models.IntegerField(default=None,
-                                        blank=True,
-                                        null=True,
-                                        validators=[MinValueValidator(0)],
-                                        verbose_name="Days observed",
-                                        help_text="Applies to all visit observations unless otherwise specified")
+    days_observed = models.IntegerField(
+        default=None,
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(0)],
+        verbose_name="Days observed",
+        help_text="Applies to all visit observations unless otherwise specified",
+    )
 
     @classmethod
     def parse_fields_from_pandas_series(cls, series):
-        """ Parse the pandas series for field values returning a dict. """
+        """Parse the pandas series for field values returning a dict."""
         return dict(days_observed=get_field_value(series, cls, "days_observed"))
 
     def clean(self):
-        """ Model validation. """
+        """Model validation."""
         super().clean()
 
         # Note: Since previous_visit is a foreign key with itself, self.previous_visit is None when blank and doesn't
@@ -288,9 +297,13 @@ class Visit(DatedModel):
         if settings.AUTO_FIND_PREVIOUS_VISIT and not self.previous_visit:
             last_visit, duplicates_exist = self.auto_find_previous_visit()
             if duplicates_exist:
-                raise ValidationError(_("Auto previous visit ambiguity: multiple visits have the exact same"
-                                        "'created_at' timestamp - '%(timestamp)s'"),
-                                      params={"timestamp": last_visit.created_at})
+                raise ValidationError(
+                    _(
+                        "Auto previous visit ambiguity: multiple visits have the exact same"
+                        "'created_at' timestamp - '%(timestamp)s'"
+                    ),
+                    params={"timestamp": last_visit.created_at},
+                )
             self.previous_visit = last_visit
 
         # Validate that previous visit isn't this visit.
@@ -312,23 +325,27 @@ class Visit(DatedModel):
                 pass
             else:
                 try:
-                    previous_visit_patient_age = int(self.previous_visit.observation.get(
-                        observable__name="patient_age").observable_value)
+                    previous_visit_patient_age = int(
+                        self.previous_visit.observation.get(observable__name="patient_age").observable_value
+                    )
                 except Observation.DoesNotExist:
                     pass
                 else:
                     if patient_age < previous_visit_patient_age:
-                        raise ValidationError(_("Previous visit must NOT be older than this one: patient age before"
-                                                "%(prior_age)i > %(current_age)i"),
-                                              params={"current_age": patient_age,
-                                                      "prior_age": previous_visit_patient_age},
-                                              code="invalid")
+                        raise ValidationError(
+                            _(
+                                "Previous visit must NOT be older than this one: patient age before"
+                                "%(prior_age)i > %(current_age)i"
+                            ),
+                            params={"current_age": patient_age, "prior_age": previous_visit_patient_age},
+                            code="invalid",
+                        )
 
     def auto_find_previous_visit(self):
-        """ Find the previous visit.
+        """Find the previous visit.
 
-            This is defined as the last visit with a ``created_at`` timestamp less than that of ``self.created_at``.
-            WARNING! This may give incorrect results.
+        This is defined as the last visit with a ``created_at`` timestamp less than that of ``self.created_at``.
+        WARNING! This may give incorrect results.
         """
 
         # New visits will not yet have a ``created_at`` entry as that happens upon save to the DB. In this case,
@@ -336,10 +353,11 @@ class Visit(DatedModel):
         # this seems sketchy, instead, it's safer to just not filter by creation timestamp since everything present
         # was added in the past. Note: Django fixture data could have future timestamps but that would be a curator bug.
         if self.created_at:
-            previous_visits = Visit.objects.filter(patient_id=self.patient_id,
-                                                   created_at__lt=self.created_at).order_by('created_at')
+            previous_visits = Visit.objects.filter(patient_id=self.patient_id, created_at__lt=self.created_at).order_by(
+                "created_at"
+            )
         else:
-            previous_visits = Visit.objects.filter(patient_id=self.patient_id).order_by('created_at')
+            previous_visits = Visit.objects.filter(patient_id=self.patient_id).order_by("created_at")
 
         if not previous_visits:
             return None, False
@@ -374,34 +392,38 @@ class Visit(DatedModel):
 
 
 def validate_import(value):
-    """ Validate that ``value`` (fully-quilified-name) can be imported. """
+    """Validate that ``value`` (fully-quilified-name) can be imported."""
     try:
         import_string(value)
     except ImportError:
-        raise ValidationError(_("'%(a)s' cannot be imported. Server re-deployment may be required."
-                                " Please reach out to the server admin."),
-                              params=dict(a=value),
-                              code="invalid")
+        raise ValidationError(
+            _(
+                "'%(a)s' cannot be imported. Server re-deployment may be required."
+                " Please reach out to the server admin."
+            ),
+            params=dict(a=value),
+            code="invalid",
+        )
 
 
 class Observable(ModelWithViewDependency):
-    """ Model an individual observable, observation, or health condition.
-        A patient's instances of this are stored as models.Observation.
+    """Model an individual observable, observation, or health condition.
+    A patient's instances of this are stored as models.Observation.
 
-        Attributes:
-            category (:obj:`django.models.CharField`): Observable category selected from: BLOODWORK, COMORBIDITY, DRUG,
-                PATIENT_INFO, PATIENT_INFO_II, PATIENT_PREP, SYMPTOM, TEST, VITALS.
-            name (:obj:`django.models.CharField`): Name of observable, e.g., age, gender, fever, diabetes, etc.
-            description (:obj:`django.models.CharField`): Verbose description of observable semantics.
-            alias (:obj:`django.models.CharField`): Alias column name for bulk data ingestion from .csv, etc.
-            value_class (:obj:`django.models.CharField`): Value type selected from: BOOL, INT, STR, FLOAT.
-            value_choices (:obj:`django.models.CharField`, optional): Supply comma separated text choices for STR value_classes
-                e.g., 'LOW, MEDIUM, HIGH'.
-            validator (:obj:`django.models.CharField`, optional): This must be the fully qualified Python name e.g.,
-                'django.core.validators.validate_email'.
-            center (:obj:`django.models.ManyToManyField` of :obj:`user.models.Center`): Only visible to users of these
-                centers. Selecting none is equivalent to all. When None, blank inline observations of this observable
-                will be automatically added to data input forms.
+    Attributes:
+        category (:obj:`django.models.CharField`): Observable category selected from: BLOODWORK, COMORBIDITY, DRUG,
+            PATIENT_INFO, PATIENT_INFO_II, PATIENT_PREP, SYMPTOM, TEST, VITALS.
+        name (:obj:`django.models.CharField`): Name of observable, e.g., age, gender, fever, diabetes, etc.
+        description (:obj:`django.models.CharField`): Verbose description of observable semantics.
+        alias (:obj:`django.models.CharField`): Alias column name for bulk data ingestion from .csv, etc.
+        value_class (:obj:`django.models.CharField`): Value type selected from: BOOL, INT, STR, FLOAT.
+        value_choices (:obj:`django.models.CharField`, optional): Supply comma separated text choices for STR value_classes
+            e.g., 'LOW, MEDIUM, HIGH'.
+        validator (:obj:`django.models.CharField`, optional): This must be the fully qualified Python name e.g.,
+            'django.core.validators.validate_email'.
+        center (:obj:`django.models.ManyToManyField` of :obj:`user.models.Center`): Only visible to users of these
+            centers. Selecting none is equivalent to all. When None, blank inline observations of this observable
+            will be automatically added to data input forms.
     """
 
     class Category(TextChoices):
@@ -422,10 +444,10 @@ class Observable(ModelWithViewDependency):
     class Meta:
         db_table = "observable"
         get_latest_by = "updated_at"
-        constraints = [models.UniqueConstraint(Lower("name"),
-                                               name="unique_observable_name"),
-                       models.UniqueConstraint(Lower("alias"),
-                                               name="unique_alias_name")]
+        constraints = [
+            models.UniqueConstraint(Lower("name"), name="unique_observable_name"),
+            models.UniqueConstraint(Lower("alias"), name="unique_alias_name"),
+        ]
 
     category = models.CharField(max_length=128, null=False, blank=False, choices=Category.choices)
 
@@ -434,31 +456,34 @@ class Observable(ModelWithViewDependency):
     description = models.CharField(max_length=256)
 
     # NOTE: See meta class constraint for case-insensitive uniqueness.
-    alias = models.CharField(max_length=128,
-                             help_text="Alias column name for bulk data ingestion from .csv, etc.")
+    alias = models.CharField(max_length=128, help_text="Alias column name for bulk data ingestion from .csv, etc.")
 
     # This represents the type/class for Observation.observable_value.
     value_class = models.CharField(max_length=128, default=Types.BOOL, choices=Types.choices)
-    value_choices = models.CharField(max_length=512,
-                                     blank=True,
-                                     null=True,
-                                     help_text="Supply comma separated text choices for STR value_classes."
-                                               " E.g., 'LOW, MEDIUM, HIGH'")
-    validator = models.CharField(max_length=128,
-                                 blank=True,
-                                 null=True,
-                                 help_text="This must be the fully qualified Python name."
-                                           " E.g., 'django.core.validators.validate_email'.",
-                                 validators=[validate_import])
+    value_choices = models.CharField(
+        max_length=512,
+        blank=True,
+        null=True,
+        help_text="Supply comma separated text choices for STR value_classes." " E.g., 'LOW, MEDIUM, HIGH'",
+    )
+    validator = models.CharField(
+        max_length=128,
+        blank=True,
+        null=True,
+        help_text="This must be the fully qualified Python name." " E.g., 'django.core.validators.validate_email'.",
+        validators=[validate_import],
+    )
 
     # An observable without a center is generic and accessible by any and all centers.
-    center = models.ManyToManyField(Center,
-                                    blank=True,
-                                    related_name="observable",
-                                    help_text="Only visible to users of these centers.\n"
-                                              "Selecting none is equivalent to all. When None, blank inline "
-                                              "observations of this observable will be automatically added to data "
-                                              "input forms.")
+    center = models.ManyToManyField(
+        Center,
+        blank=True,
+        related_name="observable",
+        help_text="Only visible to users of these centers.\n"
+        "Selecting none is equivalent to all. When None, blank inline "
+        "observations of this observable will be automatically added to data "
+        "input forms.",
+    )
 
     # default = models.ManyToManyField(Center,
     #                                  blank=True,
@@ -474,36 +499,38 @@ class Observable(ModelWithViewDependency):
         super().clean()
 
         if not self.alias:
-            self.alias = self.name.replace('_', ' ')
+            self.alias = self.name.replace("_", " ")
 
         if self.value_choices and (Observable.Types(self.value_class) is not Observable.Types.STR):
-            raise ValidationError(_("Observable choices are only permitted of STR value_class, not '%(a)s'."),
-                                  params=dict(a=self.value_class))
+            raise ValidationError(
+                _("Observable choices are only permitted of STR value_class, not '%(a)s'."),
+                params=dict(a=self.value_class),
+            )
 
     @staticmethod
     def list_choices(choices):
-        """ Convert a csv string of choices to a list. """
+        """Convert a csv string of choices to a list."""
         if choices:
-            return [x.strip().upper() for x in choices.split(',')]
+            return [x.strip().upper() for x in choices.split(",")]
 
     @staticmethod
     def djangofy_choices(choices):
-        """ Convert a csv string of choices to that needed by Django. """
+        """Convert a csv string of choices to that needed by Django."""
         if choices:
             return [(x, x) for x in Observable.list_choices(choices)]
 
 
 class Observation(DatedModel):
-    """ A patient's instance of a single observable.
+    """A patient's instance of a single observable.
 
-        Attributes:
-            visit (:obj:`django.models.ForeignKey` of :obj:`Visit`): The visit that this observation belongs to.
-            observable (:obj:`django.models.ForeignKey` of :obj:`Observable`): The observable that this is an
-                observation of.
-            days_observed (:obj:`django.models.CharField`, optional): The number of days that this observation has been
-                observed for.
-            observable_value (:obj:`django.models.CharField`): The actual value that is the observation. E.g., True,
-                97.8, etc.
+    Attributes:
+        visit (:obj:`django.models.ForeignKey` of :obj:`Visit`): The visit that this observation belongs to.
+        observable (:obj:`django.models.ForeignKey` of :obj:`Observable`): The observable that this is an
+            observation of.
+        days_observed (:obj:`django.models.CharField`, optional): The number of days that this observation has been
+            observed for.
+        observable_value (:obj:`django.models.CharField`): The actual value that is the observation. E.g., True,
+            97.8, etc.
     """
 
     class Meta:
@@ -513,21 +540,20 @@ class Observation(DatedModel):
     visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="observation")
     observable = models.ForeignKey(Observable, on_delete=models.CASCADE, related_name="observation")
 
-    days_observed = models.IntegerField(default=None,
-                                        blank=True,
-                                        null=True,
-                                        validators=[MinValueValidator(0)],
-                                        verbose_name="Days observed",
-                                        help_text="Supersedes Visit.days_observed")
+    days_observed = models.IntegerField(
+        default=None,
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(0)],
+        verbose_name="Days observed",
+        help_text="Supersedes Visit.days_observed",
+    )
 
     # Str format for actual type/class spec'd by Observable.value_class.
-    observable_value = models.CharField(blank=True,
-                                        null=True,
-                                        default='',
-                                        max_length=128)
+    observable_value = models.CharField(blank=True, null=True, default="", max_length=128)
 
     def clean(self):
-        """ Model validation. """
+        """Model validation."""
         super().clean()
 
         if hasattr(self, "observable"):
@@ -542,17 +568,24 @@ class Observation(DatedModel):
             try:
                 self.observable_value = Observable.Types(self.observable.value_class).cast(self.observable_value)
             except ValueError:
-                raise ValidationError(_("The value '%(value)s' can not be cast to the expected type of '%(type)s' for"
-                                        " '%(observable_name)s'"),
-                                      params={"observable_name": self.observable.name,
-                                              "type": self.observable.value_class,
-                                              "value": self.observable_value},
-                                      code="invalid")
+                raise ValidationError(
+                    _(
+                        "The value '%(value)s' can not be cast to the expected type of '%(type)s' for"
+                        " '%(observable_name)s'"
+                    ),
+                    params={
+                        "observable_name": self.observable.name,
+                        "type": self.observable.value_class,
+                        "value": self.observable_value,
+                    },
+                    code="invalid",
+                )
 
             if choices := self.observable.value_choices:
                 if (value := str(self.observable_value).strip().upper()) not in Observable.list_choices(choices):
-                    raise ValidationError(_("Value must be one of '%(a)s', not '%(b)s'"),
-                                          params=dict(a=choices, b=value))
+                    raise ValidationError(
+                        _("Value must be one of '%(a)s', not '%(b)s'"), params=dict(a=choices, b=value)
+                    )
 
             if self.observable.validator:
                 func = import_string(self.observable.validator)
@@ -567,20 +600,20 @@ class Observation(DatedModel):
 
 
 class Instrument(DatedModel):
-    """ Model the instrument/device used to measure array data.
+    """Model the instrument/device used to measure array data.
 
-        Note: This is not the collection method of the bio sample but the device used to analyze the
-        biosample.
+    Note: This is not the collection method of the bio sample but the device used to analyze the
+    biosample.
 
-        Attributes:
-            id (:obj:`django.models.UUIDField`): Database primary key for instrument. Autogenerated if not provided.
-            cid (:obj:`django.models.CharField`): The instrument ID provided by the center.
-            manufacturer (:obj:`django.models.CharField`): Instrument manufacturer name.
-            model (:obj:`django.models.CharField`): Instrument model name.
-            serial_number (:obj:`django.models.CharField`): Instrument serial number (SN#).
-            center (:obj:`django.models.ForeignKey` of :obj:`user.models.Center`, optional): The center that this
-                instrument belongs to. If ``null`` this instrument belongs to all centers, e.g., one used at a central
-                processing lab.
+    Attributes:
+        id (:obj:`django.models.UUIDField`): Database primary key for instrument. Autogenerated if not provided.
+        cid (:obj:`django.models.CharField`): The instrument ID provided by the center.
+        manufacturer (:obj:`django.models.CharField`): Instrument manufacturer name.
+        model (:obj:`django.models.CharField`): Instrument model name.
+        serial_number (:obj:`django.models.CharField`): Instrument serial number (SN#).
+        center (:obj:`django.models.ForeignKey` of :obj:`user.models.Center`, optional): The center that this
+            instrument belongs to. If ``null`` this instrument belongs to all centers, e.g., one used at a central
+            processing lab.
     """
 
     class Meta:
@@ -598,7 +631,7 @@ class Instrument(DatedModel):
 
     @classmethod
     def parse_fields_from_pandas_series(cls, series):
-        """ Parse the pandas series for field values returning a dict. """
+        """Parse the pandas series for field values returning a dict."""
         return {}
 
     def __str__(self):
@@ -606,11 +639,12 @@ class Instrument(DatedModel):
 
 
 class BioSampleType(DatedModel):
-    """ The type of biosample collected.
+    """The type of biosample collected.
 
-        Attributes:
-            name (:obj:`django.models.CharField`): The type name, e.g., nasal swab, pharyngeal swab, urine, etc.
+    Attributes:
+        name (:obj:`django.models.CharField`): The type name, e.g., nasal swab, pharyngeal swab, urine, etc.
     """
+
     class Meta:
         db_table = "bio_sample_type"
         get_latest_by = "updated_at"
@@ -622,25 +656,25 @@ class BioSampleType(DatedModel):
 
 
 class BioSample(DatedModel):
-    """ Model biological sample and collection method.
+    """Model biological sample and collection method.
 
-        Attributes:
-            visit (:obj:`django.models.ForeignKey` of :obj:`Visit`): The visit that this sample belongs to.
-            sample_cid (:obj:`django.models.CharField`, optional): Sample ID provided by center responsible for sample
-                collection.
-            sample_study_id (:obj:`django.models.CharField`, optional): Sample study ID.
-            sample_study_name (:obj:`django.models.CharField`, optional): Sample study name.
-            sample_type (:obj:`django.models.ForeignKey` of :obj:`BioSampleType`): The type of biosample e.g., nasal
-                swab, pharyngeal swab, urine, etc.
-            sample_processing (:obj:`django.models.CharField`, optional): Sample processing description.
-            sample_extraction (:obj:`django.models.CharField`, optional): Sample extraction description.
-            sample_extraction_tube (:obj:`django.models.CharField`, optional): Sample extraction tube brand name.
-            centrifuge_time (:obj:`django.models.IntegerField`, optional): Extraction tube centrifuge time [seconds].
-            centrifuge_rpm (:obj:`django.models.IntegerField`, optional): Extraction tube centrifuge RPM.
-            freezing_temp (:obj:`django.models.FloatField`, optional): Freezing temperature [C].
-            thawing_temp (:obj:`django.models.FloatField`, optional): Thawing temperature [C].
-            thawing_time (:obj:`django.models.FloatField`, optional): Thawing time [minutes].
-            freezing_time (:obj:`django.models.FloatField`, optional): Freezing time [days].
+    Attributes:
+        visit (:obj:`django.models.ForeignKey` of :obj:`Visit`): The visit that this sample belongs to.
+        sample_cid (:obj:`django.models.CharField`, optional): Sample ID provided by center responsible for sample
+            collection.
+        sample_study_id (:obj:`django.models.CharField`, optional): Sample study ID.
+        sample_study_name (:obj:`django.models.CharField`, optional): Sample study name.
+        sample_type (:obj:`django.models.ForeignKey` of :obj:`BioSampleType`): The type of biosample e.g., nasal
+            swab, pharyngeal swab, urine, etc.
+        sample_processing (:obj:`django.models.CharField`, optional): Sample processing description.
+        sample_extraction (:obj:`django.models.CharField`, optional): Sample extraction description.
+        sample_extraction_tube (:obj:`django.models.CharField`, optional): Sample extraction tube brand name.
+        centrifuge_time (:obj:`django.models.IntegerField`, optional): Extraction tube centrifuge time [seconds].
+        centrifuge_rpm (:obj:`django.models.IntegerField`, optional): Extraction tube centrifuge RPM.
+        freezing_temp (:obj:`django.models.FloatField`, optional): Freezing temperature [C].
+        thawing_temp (:obj:`django.models.FloatField`, optional): Thawing temperature [C].
+        thawing_time (:obj:`django.models.FloatField`, optional): Thawing time [minutes].
+        freezing_time (:obj:`django.models.FloatField`, optional): Freezing time [days].
     """
 
     class Meta:
@@ -650,34 +684,21 @@ class BioSample(DatedModel):
     visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="bio_sample")
 
     # Sample meta.
-    sample_cid = models.CharField(blank=True,
-                                  null=True,
-                                  max_length=256,
-                                  verbose_name="Sample CID")
-    sample_study_id = models.CharField(blank=True,
-                                       null=True,
-                                       max_length=256,
-                                       verbose_name="Sample Study ID")
-    sample_study_name = models.CharField(blank=True,
-                                         null=True,
-                                         max_length=256,
-                                         verbose_name="Sample Study Name")
-    sample_type = models.ForeignKey(BioSampleType,
-                                    on_delete=models.CASCADE,
-                                    related_name="bio_sample",
-                                    verbose_name="Sample Type")
-    sample_processing = models.CharField(blank=True,
-                                         null=True,
-                                         max_length=128,
-                                         verbose_name="Sample Processing Description")
-    sample_extraction = models.CharField(blank=True,
-                                         null=True,
-                                         max_length=128,
-                                         verbose_name="Sample Extraction Description")
-    sample_extraction_tube = models.CharField(blank=True,
-                                              null=True,
-                                              max_length=128,
-                                              verbose_name="Sample Extraction Tube Brand Name")
+    sample_cid = models.CharField(blank=True, null=True, max_length=256, verbose_name="Sample CID")
+    sample_study_id = models.CharField(blank=True, null=True, max_length=256, verbose_name="Sample Study ID")
+    sample_study_name = models.CharField(blank=True, null=True, max_length=256, verbose_name="Sample Study Name")
+    sample_type = models.ForeignKey(
+        BioSampleType, on_delete=models.CASCADE, related_name="bio_sample", verbose_name="Sample Type"
+    )
+    sample_processing = models.CharField(
+        blank=True, null=True, max_length=128, verbose_name="Sample Processing Description"
+    )
+    sample_extraction = models.CharField(
+        blank=True, null=True, max_length=128, verbose_name="Sample Extraction Description"
+    )
+    sample_extraction_tube = models.CharField(
+        blank=True, null=True, max_length=128, verbose_name="Sample Extraction Tube Brand Name"
+    )
     centrifuge_time = models.IntegerField(blank=True, null=True, verbose_name="Extraction Tube Centrifuge Time [s]")
     centrifuge_rpm = models.IntegerField(blank=True, null=True, verbose_name="Extraction Tube Centrifuge RPM")
     freezing_temp = models.FloatField(blank=True, null=True, verbose_name="Freezing Temperature [C]")
@@ -687,22 +708,24 @@ class BioSample(DatedModel):
 
     @classmethod
     def parse_fields_from_pandas_series(cls, series):
-        """ Parse the pandas series for field values returning a dict. """
+        """Parse the pandas series for field values returning a dict."""
         sample_type = lower(get_field_value(series, cls, "sample_type"))
         sample_type = get_object_or_raise_validation(BioSampleType, name=sample_type)
-        return dict(sample_type=sample_type,
-                    sample_cid=get_field_value(series, cls, "sample_cid"),
-                    sample_study_id=get_field_value(series, cls, "sample_study_id"),
-                    sample_study_name=get_field_value(series, cls, "sample_study_name"),
-                    sample_processing=get_field_value(series, cls, "sample_processing"),
-                    sample_extraction=get_field_value(series, cls, "sample_extraction"),
-                    sample_extraction_tube=get_field_value(series, cls, "sample_extraction_tube"),
-                    centrifuge_time=get_field_value(series, cls, "centrifuge_time"),
-                    centrifuge_rpm=get_field_value(series, cls, "centrifuge_rpm"),
-                    freezing_temp=get_field_value(series, cls, "freezing_temp"),
-                    freezing_time=get_field_value(series, cls, "freezing_time"),
-                    thawing_time=get_field_value(series, cls, "thawing_time"),
-                    thawing_temp=get_field_value(series, cls, "thawing_temp"))
+        return dict(
+            sample_type=sample_type,
+            sample_cid=get_field_value(series, cls, "sample_cid"),
+            sample_study_id=get_field_value(series, cls, "sample_study_id"),
+            sample_study_name=get_field_value(series, cls, "sample_study_name"),
+            sample_processing=get_field_value(series, cls, "sample_processing"),
+            sample_extraction=get_field_value(series, cls, "sample_extraction"),
+            sample_extraction_tube=get_field_value(series, cls, "sample_extraction_tube"),
+            centrifuge_time=get_field_value(series, cls, "centrifuge_time"),
+            centrifuge_rpm=get_field_value(series, cls, "centrifuge_rpm"),
+            freezing_temp=get_field_value(series, cls, "freezing_temp"),
+            freezing_time=get_field_value(series, cls, "freezing_time"),
+            thawing_time=get_field_value(series, cls, "thawing_time"),
+            thawing_temp=get_field_value(series, cls, "thawing_temp"),
+        )
 
     @property
     def center(self):
@@ -713,10 +736,10 @@ class BioSample(DatedModel):
 
 
 class ArrayMeasurementType(DatedModel):
-    """ Array measurement type.
+    """Array measurement type.
 
-        Attributes:
-            name (:obj:`django.models.CharField`): Name of type.
+    Attributes:
+        name (:obj:`django.models.CharField`): Name of type.
     """
 
     class Meta:
@@ -730,22 +753,22 @@ class ArrayMeasurementType(DatedModel):
 
 
 class ArrayData(DatedModel):
-    """ Model array data measured by instrument from biosample data.
+    """Model array data measured by instrument from biosample data.
 
-        Attributes:
-            id (:obj:`django.models.UUIDField`): The database primary key for the entry, Autogenerated if not provided.
-            data (:obj:`django.models.FileField`): The uploaded file containing the array data.
-            instrument (:obj:`django.models.ForeignKey` of :obj:`Instrument`): The instrument used to measure and
-                produce the array data.
-            bio_sample (:obj:`django.models.CharField` of :obj:`BioSample`): The biosample that was analyzed.
-            measurement_type (:obj:`django.models.ForeignKey`  of :obj:`ArrayMeasurementType`): The measurement type.
-            measurement_id (:obj:`django.models.CharField`, optional): Identifier string for data.
-            acquisition_time (:obj:`django.models.IntegerField`, optional): The acquisition time [s].
-            resolution (:obj:`django.models.CharField`, IntegerField): The resolution [1/cm]
-            power (:obj:`django.models.FloatField`, optional): Power incident to the sample [mW]
-            temperature (:obj:`django.models.FloatField`, optional: Temperature [C].
-            pressure (:obj:`django.models.FloatField`, optional): Pressure [bar].
-            date (:obj:`django.models.DateTimeField`, optional): Humidity [%].
+    Attributes:
+        id (:obj:`django.models.UUIDField`): The database primary key for the entry, Autogenerated if not provided.
+        data (:obj:`django.models.FileField`): The uploaded file containing the array data.
+        instrument (:obj:`django.models.ForeignKey` of :obj:`Instrument`): The instrument used to measure and
+            produce the array data.
+        bio_sample (:obj:`django.models.CharField` of :obj:`BioSample`): The biosample that was analyzed.
+        measurement_type (:obj:`django.models.ForeignKey`  of :obj:`ArrayMeasurementType`): The measurement type.
+        measurement_id (:obj:`django.models.CharField`, optional): Identifier string for data.
+        acquisition_time (:obj:`django.models.IntegerField`, optional): The acquisition time [s].
+        resolution (:obj:`django.models.CharField`, IntegerField): The resolution [1/cm]
+        power (:obj:`django.models.FloatField`, optional): Power incident to the sample [mW]
+        temperature (:obj:`django.models.FloatField`, optional: Temperature [C].
+        pressure (:obj:`django.models.FloatField`, optional): Pressure [bar].
+        date (:obj:`django.models.DateTimeField`, optional): Humidity [%].
     """
 
     class Meta:
@@ -762,10 +785,9 @@ class ArrayData(DatedModel):
 
     # Measurement info
     measurement_id = models.CharField(max_length=128, blank=True, null=True)
-    measurement_type = models.ForeignKey(ArrayMeasurementType,
-                                         on_delete=models.CASCADE,
-                                         verbose_name="Measurement type",
-                                         related_name="array_data")
+    measurement_type = models.ForeignKey(
+        ArrayMeasurementType, on_delete=models.CASCADE, verbose_name="Measurement type", related_name="array_data"
+    )
     acquisition_time = models.IntegerField(blank=True, null=True, verbose_name="Acquisition time [s]")
     resolution = models.IntegerField(blank=True, null=True, verbose_name="Resolution [1/cm]")
     power = models.FloatField(max_length=128, blank=True, null=True, verbose_name="Power incident to the sample [mW]")
@@ -774,24 +796,28 @@ class ArrayData(DatedModel):
     humidity = models.FloatField(max_length=128, blank=True, null=True, verbose_name="Humidity [%]")
     date = models.DateTimeField(blank=True, null=True)
 
-    data = models.FileField(upload_to=UPLOAD_DIR,
-                            validators=[FileExtensionValidator(UploadedFile.FileFormats.choices())],
-                            max_length=256,
-                            verbose_name="Array data file")
+    data = models.FileField(
+        upload_to=UPLOAD_DIR,
+        validators=[FileExtensionValidator(UploadedFile.FileFormats.choices())],
+        max_length=256,
+        verbose_name="Array data file",
+    )
 
     @classmethod
     def parse_fields_from_pandas_series(cls, series):
-        """ Parse the pandas series for field values returning a dict. """
+        """Parse the pandas series for field values returning a dict."""
         measurement_type = lower(get_field_value(series, cls, "measurement_type"))
         measurement_type = get_object_or_raise_validation(ArrayMeasurementType, name=measurement_type)
-        return dict(measurement_type=measurement_type,
-                    acquisition_time=get_field_value(series, cls, "acquisition_time"),
-                    resolution=get_field_value(series, cls, "resolution"),
-                    power=get_field_value(series, cls, "power"),
-                    temperature=get_field_value(series, cls, "temperature"),
-                    pressure=get_field_value(series, cls, "pressure"),
-                    humidity=get_field_value(series, cls, "humidity"),
-                    date=get_field_value(series, cls, "date"))
+        return dict(
+            measurement_type=measurement_type,
+            acquisition_time=get_field_value(series, cls, "acquisition_time"),
+            resolution=get_field_value(series, cls, "resolution"),
+            power=get_field_value(series, cls, "power"),
+            temperature=get_field_value(series, cls, "temperature"),
+            pressure=get_field_value(series, cls, "pressure"),
+            humidity=get_field_value(series, cls, "humidity"),
+            date=get_field_value(series, cls, "date"),
+        )
 
     @property
     def center(self):
@@ -801,11 +827,11 @@ class ArrayData(DatedModel):
         return str(self.generate_filename())
 
     def get_annotators(self):
-        """ Return list of all quality control annotators. """
+        """Return list of all quality control annotators."""
         return list(set([annotation.annotator for annotation in self.qc_annotation.all()]))
 
     def get_unrun_annotators(self, existing_annotators=None):
-        """ Return list of default quality control annotators that have not yet been run against this data. """
+        """Return list of default quality control annotators that have not yet been run against this data."""
         # Get annotators from existing annotations.
         if existing_annotators is None:
             existing_annotators = self.get_annotators()
@@ -816,17 +842,18 @@ class ArrayData(DatedModel):
         return list(set(all_default_annotators) - set(existing_annotators))
 
     def get_array_data(self):
-        """ Return array data as instance of uploader.io.ArrayData. """
+        """Return array data as instance of uploader.io.ArrayData."""
         return uploader.io.array_data_from_json(self.data)
 
     def generate_filename(self):
-        return Path(f"{self.bio_sample.visit.patient.patient_id}_{self.bio_sample.pk}_{self.id}")\
-            .with_suffix(uploader.io.FileFormats.JSONL)
+        return Path(f"{self.bio_sample.visit.patient.patient_id}_{self.bio_sample.pk}_{self.id}").with_suffix(
+            uploader.io.FileFormats.JSONL
+        )
 
     def clean_data_file(self):
-        """ Read in data from uploaded file and store as json.
+        """Read in data from uploaded file and store as json.
 
-            The schema is equivalent to `json.dumps(dataclasses.asdict(uploader.io.ArrayData))``.
+        The schema is equivalent to `json.dumps(dataclasses.asdict(uploader.io.ArrayData))``.
         """
 
         # Note: self.data is a FieldFile and is never None so check is "empty" instead, i.e., self.data.name is None.
@@ -853,9 +880,9 @@ class ArrayData(DatedModel):
             # Update file.
             self.data = cleaned_file
 
-    #@transaction.atomic(using="bsr")  # Really? Not sure if this even can be if run in background...
+    # @transaction.atomic(using="bsr")  # Really? Not sure if this even can be if run in background...
     def annotate(self, annotator=None, force=False) -> list:
-        """ Run the quality control annotation on the array data. """
+        """Run the quality control annotation on the array data."""
         # TODO: This needs to return early and run in the background.
 
         existing_annotators = self.get_annotators()
@@ -979,13 +1006,14 @@ class VisitObservationsView(SqlView, models.Model):
                 continue
             secure_name(observable.name)
             if observable.value_class == "FLOAT":
-                value = 'cast(observable_value AS REAL)'
+                value = "cast(observable_value AS REAL)"
             elif observable.value_class == "INTEGER":
                 value = "cast(observable_value AS INTEGER)"
             else:
                 value = "observable_value"
-            d.append(f"max(case when observable = '{observable.name}' then {value} else null end) as "
-                     f"{observable.name}")
+            d.append(
+                f"max(case when observable = '{observable.name}' then {value} else null end) as " f"{observable.name}"
+            )
 
         d = "\n,      ".join(d)
 
@@ -1052,29 +1080,34 @@ def validate_qc_annotator_import(value):
     try:
         obj = import_string(value)
     except ImportError:
-        raise ValidationError(_("'%(a)s' cannot be imported. Server re-deployment may be required."
-                                " Please reach out to the server admin."),
-                              params=dict(a=value),
-                              code="invalid")
+        raise ValidationError(
+            _(
+                "'%(a)s' cannot be imported. Server re-deployment may be required."
+                " Please reach out to the server admin."
+            ),
+            params=dict(a=value),
+            code="invalid",
+        )
 
     if obj and not issubclass(obj, QcFilter):  # NOTE: issubclass is used since QcFilter is abstract.
-        raise ValidationError(_("fully_qualified_class_name must be of type %(a)s not"
-                                "'%(b)s'"),
-                              params=dict(a=type(obj), b=QcFilter.__qualname__),
-                              code="invalid")
+        raise ValidationError(
+            _("fully_qualified_class_name must be of type %(a)s not" "'%(b)s'"),
+            params=dict(a=type(obj), b=QcFilter.__qualname__),
+            code="invalid",
+        )
 
 
 class QCAnnotator(DatedModel):
-    """ Quality Control annotator.
+    """Quality Control annotator.
 
-        Attributes:
-            name (:obj:`django.models.CharField`): The name of the annotator.
-            fully_qualified_class_name (:obj:`django.models.CharField`): This must be the fully qualified Python name
-                for an implementation of QCFilter, e.g., 'myProject.qc.myQCFilter'.
-            value_type (:obj:`django.models.CharField`): Value type selected from: BOOL, STR, INT, FLOAT.
-            description (:obj:`django.models.CharField`, optional): A verbose description of the annotator's semantics.
-            default (:obj:`django.models.BooleanField`, optional): Specifies whether this annotator is considered a
-                "default" or "global" annotator that will can be automatically applied to all array data entries.
+    Attributes:
+        name (:obj:`django.models.CharField`): The name of the annotator.
+        fully_qualified_class_name (:obj:`django.models.CharField`): This must be the fully qualified Python name
+            for an implementation of QCFilter, e.g., 'myProject.qc.myQCFilter'.
+        value_type (:obj:`django.models.CharField`): Value type selected from: BOOL, STR, INT, FLOAT.
+        description (:obj:`django.models.CharField`, optional): A verbose description of the annotator's semantics.
+        default (:obj:`django.models.BooleanField`, optional): Specifies whether this annotator is considered a
+            "default" or "global" annotator that will can be automatically applied to all array data entries.
     """
 
     class Meta:
@@ -1084,20 +1117,21 @@ class QCAnnotator(DatedModel):
     Types = Types
 
     name = models.CharField(max_length=128, unique=True, blank=False, null=False)
-    fully_qualified_class_name = models.CharField(max_length=128,
-                                                  blank=False,
-                                                  null=False,
-                                                  unique=True,
-                                                  help_text="This must be the fully qualified Python name for an"
-                                                            " implementation of QCFilter, e.g.,"
-                                                            "'myProject.qc.myQCFilter'.",
-                                                  validators=[validate_qc_annotator_import])
+    fully_qualified_class_name = models.CharField(
+        max_length=128,
+        blank=False,
+        null=False,
+        unique=True,
+        help_text="This must be the fully qualified Python name for an"
+        " implementation of QCFilter, e.g.,"
+        "'myProject.qc.myQCFilter'.",
+        validators=[validate_qc_annotator_import],
+    )
     value_type = models.CharField(blank=False, null=False, max_length=128, default=Types.BOOL, choices=Types.choices)
     description = models.CharField(blank=True, null=True, max_length=256)
-    default = models.BooleanField(default=True,
-                                  blank=False,
-                                  null=False,
-                                  help_text="If True it will apply to all array data samples.")
+    default = models.BooleanField(
+        default=True, blank=False, null=False, help_text="If True it will apply to all array data samples."
+    )
 
     def __str__(self):
         return f"{self.name}: {self.fully_qualified_class_name}"
@@ -1122,13 +1156,13 @@ class QCAnnotator(DatedModel):
 
 
 class QCAnnotation(DatedModel):
-    """ A Quality Control annotation of a array data entry.
+    """A Quality Control annotation of a array data entry.
 
-        Attributes:
-            value (:obj:`django.models.CharField`): The actual annotation value/data/result.
-            annotator (:obj:`django.models.ForeignKey` of :obj:`QCAnnotator`): The quality control annotator used to
-                produce annotate the array data entry.
-            array_data (:obj:`django.models.ForeignKey` of :obj:`ArrayData`): The annotated array data entry.
+    Attributes:
+        value (:obj:`django.models.CharField`): The actual annotation value/data/result.
+        annotator (:obj:`django.models.ForeignKey` of :obj:`QCAnnotator`): The quality control annotator used to
+            produce annotate the array data entry.
+        array_data (:obj:`django.models.ForeignKey` of :obj:`ArrayData`): The annotated array data entry.
     """
 
     class Meta:
@@ -1138,11 +1172,9 @@ class QCAnnotation(DatedModel):
 
     value = models.CharField(blank=True, null=True, max_length=128)
 
-    annotator = models.ForeignKey(QCAnnotator,
-                                  blank=False,
-                                  null=False,
-                                  on_delete=models.CASCADE,
-                                  related_name="qc_annotation")
+    annotator = models.ForeignKey(
+        QCAnnotator, blank=False, null=False, on_delete=models.CASCADE, related_name="qc_annotation"
+    )
     array_data = models.ForeignKey(ArrayData, on_delete=models.CASCADE, related_name="qc_annotation")
 
     @property

@@ -11,18 +11,17 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 import os
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from biodb import __project__
-
 
 SITE_HEADER = "A base template for creating Django applications for collecting patient data."
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 PROJECT_ROOT = BASE_DIR / __project__
-APPS_DIR = PROJECT_ROOT / 'apps'
+APPS_DIR = PROJECT_ROOT / "apps"
 sys.path.insert(0, str(APPS_DIR))
 
 # Quick-start development settings - unsuitable for production
@@ -31,12 +30,12 @@ sys.path.insert(0, str(APPS_DIR))
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
     "storages",
     "nested_admin",
     "explorer",
@@ -48,41 +47,41 @@ INSTALLED_APPS = [
     "health_check.cache",
     "health_check.storage",
     "health_check.contrib.migrations",
-    "django_crontab"
+    "django_crontab",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
+    "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
 AUTH_USER_MODEL = "user.User"
 
-ROOT_URLCONF = 'biodb.urls'
+ROOT_URLCONF = "biodb.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'biodb.wsgi.application'
+WSGI_APPLICATION = "biodb.wsgi.application"
 
 LOGGING = {
     "version": 1,
@@ -120,20 +119,20 @@ db_vendor = os.getenv("DB_VENDOR", "sqlite")
 if db_vendor == "sqlite":
     DB_DIR = "db"
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / DB_DIR / 'admin.sqlite3',
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / DB_DIR / "admin.sqlite3",
         },
         "bsr": {
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": BASE_DIR / DB_DIR / "bsr.sqlite3",
-        }
+        },
     }
 elif db_vendor == "postgresql":
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'admin',
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "admin",
             "HOST": os.getenv("DB_ADMIN_HOST"),
             "PORT": os.getenv("DB_ADMIN_PORT"),
             "USER": os.getenv("DB_ADMIN_USER"),
@@ -154,10 +153,8 @@ elif db_vendor == "postgresql":
             "PORT": os.getenv("DB_BSR_PORT"),
             "USER": os.getenv("DB_BSR_USER"),
             "PASSWORD": os.getenv("DB_BSR_PASSWORD"),
-            'OPTIONS': {
-                'options': '-c default_transaction_read_only=on'
-            }
-        }
+            "OPTIONS": {"options": "-c default_transaction_read_only=on"},
+        },
     }
 else:
     raise NotImplementedError
@@ -172,16 +169,16 @@ DATABASE_ROUTERS = ["biodb.routers.BSRRouter"]
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -206,9 +203,9 @@ EMAIL_TIMEOUT = int(os.getenv("EMAIL_TIMEOUT", 60))
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'EST'
+TIME_ZONE = "EST"
 
 USE_I18N = True
 
@@ -225,7 +222,7 @@ STATIC_URL = "/static/"
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 # SQL explorer settings.
@@ -237,61 +234,58 @@ else:
     EXPLORER_DEFAULT_CONNECTION = "bsr"
 
 # Note: The following perms are duplicated in biodb.urls.
-EXPLORER_PERMISSION_VIEW = lambda r: (r.user.is_active and  # noqa:  E731
-                                      r.user.is_staff) and \
-                                     (r.user.is_sqluser_view or
-                                      r.user.is_sqluser_change or
-                                      r.user.is_superuser)
-EXPLORER_PERMISSION_CHANGE = lambda r: (r.user.is_active and  # noqa:  E731
-                                        r.user.is_staff) and \
-                                       (r.user.is_sqluser_change or
-                                        r.user.is_superuser)
+EXPLORER_PERMISSION_VIEW = lambda r: (
+    r.user.is_active  # noqa:  E731
+    and r.user.is_staff
+) and (r.user.is_sqluser_view or r.user.is_sqluser_change or r.user.is_superuser)
+EXPLORER_PERMISSION_CHANGE = lambda r: (
+    r.user.is_active  # noqa:  E731
+    and r.user.is_staff
+) and (r.user.is_sqluser_change or r.user.is_superuser)
 
 EXPLORER_DEFAULT_ROWS = 1000
 
 EXPLORER_SQL_BLACKLIST = (
-     # DML
-     'COMMIT',
-     'DELETE',
-     'INSERT',
-     'MERGE',
-     'REPLACE',
-     'ROLLBACK',
-     'SET',
-     'START',
-     'UPDATE',
-     'UPSERT',
-
-     # DDL
-     'ALTER',
-     'CREATE',
-     'DROP',
-     'RENAME',
-     'TRUNCATE',
-
-     # DCL
-     'GRANT',
-     'REVOKE',
- )
+    # DML
+    "COMMIT",
+    "DELETE",
+    "INSERT",
+    "MERGE",
+    "REPLACE",
+    "ROLLBACK",
+    "SET",
+    "START",
+    "UPDATE",
+    "UPSERT",
+    # DDL
+    "ALTER",
+    "CREATE",
+    "DROP",
+    "RENAME",
+    "TRUNCATE",
+    # DCL
+    "GRANT",
+    "REVOKE",
+)
 
 EXPLORER_SCHEMA_EXCLUDE_TABLE_PREFIXES = (
-    'auth',
-    'contenttypes',
-    'sessions',
-    'admin',
+    "auth",
+    "contenttypes",
+    "sessions",
+    "admin",
     "django",
     "explorer",
     "user",
     "catalog",
     "uploader_center",
     "health_check",
-    "whitenoise"
+    "whitenoise",
 )
 
 EXPLORER_DATA_EXPORTERS = [
-    ('csv', 'uploader.exporters.CSVExporter'),
-    ('excel', 'uploader.exporters.ExcelExporter'),
-    ('json', 'uploader.exporters.JSONExporter')
+    ("csv", "uploader.exporters.CSVExporter"),
+    ("excel", "uploader.exporters.ExcelExporter"),
+    ("json", "uploader.exporters.JSONExporter"),
 ]
 
 EXPLORER_SCHEMA_INCLUDE_VIEWS = True

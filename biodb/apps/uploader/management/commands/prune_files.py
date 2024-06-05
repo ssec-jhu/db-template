@@ -6,10 +6,12 @@ class Command(BaseCommand):
     help = "Delete any and all orphaned data files."
 
     def add_arguments(self, parser):
-        parser.add_argument("--dry_run",
-                            action="store_true",
-                            default=False,
-                            help="Output files to be deleted but don't actually delete anything.")
+        parser.add_argument(
+            "--dry_run",
+            action="store_true",
+            default=False,
+            help="Output files to be deleted but don't actually delete anything.",
+        )
 
     def handle(self, *args, **options):
         all_orphaned_files = []

@@ -1,17 +1,17 @@
 from inspect import getmembers
 from pathlib import Path
 
+import django.core.files
+import pytest
+import uploader.models
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
-import django.core.files
 from django.db import models
 from django.test import Client
-import pytest
-
-from user.models import BaseCenter, Center as UserCenter
 from uploader.admin import DataAdminSite, RestrictedByCenterMixin
-from uploader.base_models import DatedModel, SqlView, ModelWithViewDependency
-import uploader.models
+from uploader.base_models import DatedModel, ModelWithViewDependency, SqlView
+from user.models import BaseCenter
+from user.models import Center as UserCenter
 
 DATA_PATH = Path(__file__).parent / "data"
 
@@ -22,10 +22,12 @@ SKIP_MODELS = [uploader.models.BioSampleType, uploader.models.ArrayMeasurementTy
 
 uploader_models = []
 for name, obj in getmembers(uploader.models):
-    if isinstance(obj, type)\
-            and issubclass(obj, models.Model)\
-            and not issubclass(obj, (SqlView, BaseCenter)) \
-            and obj not in (BaseCenter, DatedModel, ModelWithViewDependency, SqlView):
+    if (
+        isinstance(obj, type)
+        and issubclass(obj, models.Model)
+        and not issubclass(obj, (SqlView, BaseCenter))
+        and obj not in (BaseCenter, DatedModel, ModelWithViewDependency, SqlView)
+    ):
         uploader_models.append(obj)
 
 
@@ -50,30 +52,34 @@ def add_model_perms(user, model=None, action=None):
 
 @pytest.fixture()
 def staffuser(centers):
-    user = User.objects.create(username="staff",
-                               email="staff@jhu.edu",
-                               password="secret",
-                               center=UserCenter.objects.get(name="JHU"),
-                               is_staff=True,
-                               is_superuser=False)
+    user = User.objects.create(
+        username="staff",
+        email="staff@jhu.edu",
+        password="secret",
+        center=UserCenter.objects.get(name="JHU"),
+        is_staff=True,
+        is_superuser=False,
+    )
     return user
 
 
 @pytest.fixture()
 def superuser(centers):
-    return User.objects.create(username="admin",
-                               email="admin@jhu.edu",
-                               password="secret",
-                               center=UserCenter.objects.get(name="JHU"),
-                               is_staff=True,
-                               is_superuser=True)
+    return User.objects.create(
+        username="admin",
+        email="admin@jhu.edu",
+        password="secret",
+        center=UserCenter.objects.get(name="JHU"),
+        is_staff=True,
+        is_superuser=True,
+    )
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestAdminPage:
     @pytest.mark.parametrize("user", ("staffuser", "superuser"))
     @pytest.mark.parametrize("url_root", ("/data/uploader/", "/admin/uploader/"))
-    @pytest.mark.parametrize("action", ('/', "/add/"))
+    @pytest.mark.parametrize("action", ("/", "/add/"))
     @pytest.mark.parametrize("model", uploader_models)
     def test_admin_pages(self, request, user, url_root, model, action):
         user = request.getfixturevalue(user)
@@ -110,7 +116,6 @@ class TestAdminPage:
     @pytest.mark.parametrize("url_root", ("/data/uploader/", "/admin/uploader/"))
     @pytest.mark.parametrize("model", uploader_models)
     def test_admin_add_perms_pages(self, with_perm, staffuser, url_root, model):
-
         if url_root == "/data/uploader/" and model not in DataAdminSite.model_order:
             pytest.skip("Model not registered with data admin site.")
 
@@ -147,7 +152,6 @@ class TestAdminPage:
     @pytest.mark.parametrize("model", uploader_models)
     @pytest.mark.parametrize("url_root", ("/data/uploader/", "/admin/uploader/"))
     def test_admin_delete_perms_pages(self, with_perm, url_root, staffuser, model, mock_data, qcannotators):
-
         if url_root == "/data/uploader/" and model not in DataAdminSite.model_order:
             pytest.skip("Model not registered with data admin site.")
 
@@ -195,12 +199,14 @@ class TestRestrictedByCenterMixin:
 class TestUploadedFile:
     def test_non_form_field_validation(self, mock_data_from_files):
         # Note: ``mock_data_from_files`` uses Center(name="JHU")``, so create a new user of a different center.
-        user = User.objects.create(username="staff2",
-                                   email="staff2@jhu.edu",
-                                   password="secret",
-                                   center=UserCenter.objects.get(name__iexact="imperial college london"),
-                                   is_staff=True,
-                                   is_superuser=False)
+        user = User.objects.create(
+            username="staff2",
+            email="staff2@jhu.edu",
+            password="secret",
+            center=UserCenter.objects.get(name__iexact="imperial college london"),
+            is_staff=True,
+            is_superuser=False,
+        )
         add_model_perms(user)
 
         c = Client()
@@ -212,9 +218,13 @@ class TestUploadedFile:
             with array_file_path.open(mode="rb") as array_data:
                 meta_data_file = django.core.files.File(meta_data, name=meta_data_path.name)
                 array_data_file = django.core.files.File(array_data, name=array_file_path.name)
-                response = c.post("/data/uploader/uploadedfile/add/",
-                                  follow=True,
-                                  data={"meta_data_file": meta_data_file,
-                                        "array_data_file": array_data_file,
-                                        "center": user.center.pk})
+                response = c.post(
+                    "/data/uploader/uploadedfile/add/",
+                    follow=True,
+                    data={
+                        "meta_data_file": meta_data_file,
+                        "array_data_file": array_data_file,
+                        "center": user.center.pk,
+                    },
+                )
         assert response.status_code == 200

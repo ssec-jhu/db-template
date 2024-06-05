@@ -1,9 +1,7 @@
 import pytest
-
 from django.db.utils import IntegrityError
-
-from user.models import Center as UserCenter
 from uploader.models import Center as UploaderCenter
+from user.models import Center as UserCenter
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
@@ -39,7 +37,7 @@ class TestCenters:
         assert new_center.country == replica_center.country
 
     def test_create_replication(self):
-        """ Create doesn't call save()!!! """
+        """Create doesn't call save()!!!"""
         assert not UserCenter.objects.all()
         assert not UploaderCenter.objects.all()
 
@@ -60,7 +58,7 @@ class TestCenters:
 
     @pytest.mark.parametrize("center", (UserCenter, UploaderCenter))
     def test_bulk_delete_replication(self, center, centers):
-        """ Bulk delete doesn't call delete() so this is handled by a post_delete signale handler. """
+        """Bulk delete doesn't call delete() so this is handled by a post_delete signale handler."""
 
         assert UserCenter.objects.count() == 3
         assert UploaderCenter.objects.count() == 3

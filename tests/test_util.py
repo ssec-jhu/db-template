@@ -2,8 +2,8 @@ from uuid import uuid4
 
 import pytest
 
-from biodb.util import find_package_location, find_repo_location, is_valid_uuid, to_bool, to_uuid
 from biodb import __project__, __version__
+from biodb.util import find_package_location, find_repo_location, is_valid_uuid, to_bool, to_uuid
 
 
 def test_find_repo_location():

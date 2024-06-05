@@ -1,7 +1,6 @@
 import pytest
-
+from uploader.charts import count_bool_observables, get_line_chart, get_pie_chart
 from uploader.tests.conftest import SimpleQueryFactory
-from uploader.charts import count_bool_observables, get_pie_chart, get_line_chart
 
 
 @pytest.fixture()

@@ -2,17 +2,16 @@ import hashlib
 import tempfile
 import zipfile
 
-from django.conf import settings
-from django.utils.module_loading import import_string
 import explorer.exporters
 import pandas as pd
-
+from django.conf import settings
+from django.utils.module_loading import import_string
 from uploader.models import ArrayData
 
 
 class ZipArrayDataMixin:
-    """ A custom mixin for explorer.exporters.BaseExporter used to collect ArrayData.data files and zip them with
-        query output data for download.
+    """A custom mixin for explorer.exporters.BaseExporter used to collect ArrayData.data files and zip them with
+    query output data for download.
     """
 
     @property
@@ -38,13 +37,15 @@ class ZipArrayDataMixin:
             value = value.getvalue()
         return value
 
-    def get_file_output(self,
-                        include_data_files=None,
-                        return_info=False,
-                        always_zip=False,
-                        compression_type=None,
-                        compression_level=None,
-                        **kwargs):
+    def get_file_output(
+        self,
+        include_data_files=None,
+        return_info=False,
+        always_zip=False,
+        compression_type=None,
+        compression_level=None,
+        **kwargs,
+    ):
         self.is_zip = False  # NOTE: This doesn't need resetting anywhere else.
 
         if include_data_files is None:
@@ -99,10 +100,9 @@ class ZipArrayDataMixin:
 
             # Zip everything together.
             temp = tempfile.TemporaryFile()
-            with zipfile.ZipFile(temp,
-                                 mode="w",
-                                 compression=compression_type,
-                                 compresslevel=compression_level) as archive:
+            with zipfile.ZipFile(
+                temp, mode="w", compression=compression_type, compresslevel=compression_level
+            ) as archive:
                 # Add query results to zipfile.
                 archive.writestr(self.get_filename(), output.getvalue())
 
@@ -123,13 +123,10 @@ class ZipArrayDataMixin:
         return (output, (n_rows, data_sha256, array_data_filenames)) if return_info else output
 
 
-class CSVExporter(ZipArrayDataMixin, explorer.exporters.CSVExporter):
-    ...
+class CSVExporter(ZipArrayDataMixin, explorer.exporters.CSVExporter): ...
 
 
-class ExcelExporter(ZipArrayDataMixin, explorer.exporters.ExcelExporter):
-    ...
+class ExcelExporter(ZipArrayDataMixin, explorer.exporters.ExcelExporter): ...
 
 
-class JSONExporter(ZipArrayDataMixin, explorer.exporters.JSONExporter):
-    ...
+class JSONExporter(ZipArrayDataMixin, explorer.exporters.JSONExporter): ...

@@ -1,20 +1,35 @@
 from inspect import signature
 
+from django import forms
 from django.apps import apps
 from django.conf import settings
-from django.core.exceptions import NON_FIELD_ERRORS, ObjectDoesNotExist, ValidationError
 from django.contrib import admin
 from django.contrib.auth import get_user_model
+from django.core.exceptions import NON_FIELD_ERRORS, ObjectDoesNotExist, ValidationError
 from django.db.models import Manager, Q
 from django.db.utils import OperationalError, ProgrammingError
-from django import forms
-from nested_admin import NestedStackedInline, NestedTabularInline, NestedModelAdmin
-
-from biodb.util import to_bool
-from .models import BioSample, Observable, Instrument, Patient, ArrayData, Observation, UploadedFile, Visit,\
-    QCAnnotator, QCAnnotation, Center, get_center, BioSampleType, ArrayMeasurementType
+from nested_admin import NestedModelAdmin, NestedStackedInline, NestedTabularInline
 from uploader.forms import ModelForm
 from user.admin import CenterAdmin as UserCenterAdmin
+
+from biodb.util import to_bool
+
+from .models import (
+    ArrayData,
+    ArrayMeasurementType,
+    BioSample,
+    BioSampleType,
+    Center,
+    Instrument,
+    Observable,
+    Observation,
+    Patient,
+    QCAnnotation,
+    QCAnnotator,
+    UploadedFile,
+    Visit,
+    get_center,
+)
 
 User = get_user_model()
 
@@ -27,10 +42,11 @@ class ModelAdmin(admin.ModelAdmin):
 
 
 class RestrictedByCenterMixin:
-    """ Restrict admin access to objects belong to user's center. """
+    """Restrict admin access to objects belong to user's center."""
+
     def _has_perm(self, request, obj):
         if (request.user is None) or (obj is None):
-            return False # Strict security.
+            return False  # Strict security.
 
         try:
             if not (user_center := request.user.center):
@@ -90,8 +106,8 @@ class RestrictedByCenterMixin:
         return has_base_perm and self._has_perm(request, obj)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        """ Limit center form fields to user's center, and set initial value as such.
-            Exceptions are made for superusers.
+        """Limit center form fields to user's center, and set initial value as such.
+        Exceptions are made for superusers.
         """
         field = super().formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -153,35 +169,26 @@ class InstrumentAdmin(RestrictedByCenterMixin, ModelAdmin):
     ordering = ["manufacturer"]
 
     fieldsets = [
-        (
-            None,
-            {
-                "fields": [("id", "cid"),
-                           "manufacturer",
-                           "model",
-                           "serial_number",
-                           "center"]
-            }
-        ),
+        (None, {"fields": [("id", "cid"), "manufacturer", "model", "serial_number", "center"]}),
         (
             "More Details",
             {
                 "classes": ["collapse"],
                 "fields": [("created_at", "updated_at")],
-            }
+            },
         ),
     ]
 
 
 class UploadedFileForm(ModelForm):
     def add_error(self, field, error):
-        """ Override this method for validation errors that aren't fields of this form.
+        """Override this method for validation errors that aren't fields of this form.
 
-            Django Validation errors contain dicts where the keys are field names and their values a list of exceptions.
-            This is so exceptions are render beside their corresponding field widget in the form.
-            In the case of bulk uploads, validation errors can occur for fields NOT belonging to the form, e.g.,
-            patient_id, visit, etc, - basically everything. When this happens Django will raise an exception which is
-            undesirable. Instead, we map the field to ``NON_FIELD_ERRORS`` which Django then correctly renders in the form.
+        Django Validation errors contain dicts where the keys are field names and their values a list of exceptions.
+        This is so exceptions are render beside their corresponding field widget in the form.
+        In the case of bulk uploads, validation errors can occur for fields NOT belonging to the form, e.g.,
+        patient_id, visit, etc, - basically everything. When this happens Django will raise an exception which is
+        undesirable. Instead, we map the field to ``NON_FIELD_ERRORS`` which Django then correctly renders in the form.
         """
 
         try:
@@ -213,7 +220,7 @@ class UploadedFileAdmin(RestrictedByCenterMixin, ModelAdmin):
     list_filter = ("center",)
 
     def get_queryset(self, request):
-        """ List only objects belonging to user's center. """
+        """List only objects belonging to user's center."""
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
@@ -233,9 +240,11 @@ class QCAnnotationInline(RestrictedByCenterMixin, NestedTabularInline):
 
 @admin.register(QCAnnotation)
 class QCAnnotationAdmin(RestrictedByCenterMixin, ModelAdmin):
-    search_fields = ["annotator__name",
-                     "array_data__bio_sample__visit__patient__patient_id",
-                     "array_data__bio_sample__visit__patient__patient_cid"]
+    search_fields = [
+        "annotator__name",
+        "array_data__bio_sample__visit__patient__patient_id",
+        "array_data__bio_sample__visit__patient__patient_cid",
+    ]
     search_help_text = "Annotator Name, Patient ID or CID"
     readonly_fields = ("value", "created_at", "updated_at")  # TODO: Might need specific user group for timestamps.
     list_display = ["annotator_name", "value", "annotator_value_type", "updated_at"]
@@ -251,7 +260,7 @@ class QCAnnotationAdmin(RestrictedByCenterMixin, ModelAdmin):
         return obj.annotator.value_type
 
     def get_queryset(self, request):
-        """ List only objects belonging to user's center. """
+        """List only objects belonging to user's center."""
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
@@ -283,7 +292,7 @@ class ObservableAdmin(RestrictedByCenterMixin, NestedModelAdmin):
         return obj.observation.count()
 
     def get_queryset(self, request):
-        """ List only objects belonging to user's center. """
+        """List only objects belonging to user's center."""
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
@@ -295,22 +304,8 @@ class ObservationMixin:
     ordering = ("-updated_at",)
 
     fieldsets = [
-        (
-            None,
-            {
-                "fields": ["visit",
-                           "observable",
-                           "observable_value"]
-            }
-        ),
-        (
-            "More details",
-            {
-                "classes": ["collapse"],
-                "fields": ["days_observed",
-                           ("created_at", "updated_at")]
-            }
-        )
+        (None, {"fields": ["visit", "observable", "observable_value"]}),
+        ("More details", {"classes": ["collapse"], "fields": ["days_observed", ("created_at", "updated_at")]}),
     ]
 
     @admin.display
@@ -322,7 +317,7 @@ class ObservationMixin:
         return obj.observable.name
 
     def get_queryset(self, request):
-        """ List only objects belonging to user's center. """
+        """List only objects belonging to user's center."""
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
@@ -365,8 +360,9 @@ class ObservationInlineForm(ModelForm):
 
         if observable:
             self.fields["observable"].queryset = Observable.objects.filter(name=observable.name)
-            self.fields["observable_value"].widget = self._get_widget(observable.value_class,
-                                                                      choices=observable.value_choices)
+            self.fields["observable_value"].widget = self._get_widget(
+                observable.value_class, choices=observable.value_choices
+            )
 
 
 class ObservationInline(ObservationMixin, RestrictedByCenterMixin, NestedTabularInline):
@@ -392,22 +388,23 @@ class ObservationInline(ObservationMixin, RestrictedByCenterMixin, NestedTabular
     fields = ["observable", "observable_value"]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        """ Limit observable to user's center (super's functionality) and admin category. """
+        """Limit observable to user's center (super's functionality) and admin category."""
         field = super().formfield_for_foreignkey(db_field, request, **kwargs)
         if db_field.name == "observable":
             field.queryset = field.queryset.filter(category=self.verbose_name.upper())
         return field
 
     def get_queryset(self, request):
-        """ Limit observable to user's center and admin category. """
+        """Limit observable to user's center and admin category."""
         qs = super().get_queryset(request)
         center = Center.objects.get(pk=request.user.center.pk)
-        query = Q(observable__category=self.verbose_name.upper()) & \
-            (Q(visit__patient__center=center) | Q(visit__patient__center=None))
+        query = Q(observable__category=self.verbose_name.upper()) & (
+            Q(visit__patient__center=center) | Q(visit__patient__center=None)
+        )
         return qs.filter(query)
 
     def get_extra(self, request, obj=None, **kwargs):
-        """ Only list extra inline forms when no data exists, i.e., new patient form. """
+        """Only list extra inline forms when no data exists, i.e., new patient form."""
         if obj and obj.pk and obj.observation.count():
             # Only display inlines for those that exist, i.e., no extras (when self.extra=0).
             return self.extra
@@ -426,9 +423,14 @@ class ObservationInline(ObservationMixin, RestrictedByCenterMixin, NestedTabular
 
     @classmethod
     def factory(cls):
-        return [type(f"{x}ObservationInline", (cls,), dict(verbose_name=x.lower(),
-                                                           verbose_name_plural=x.lower(),
-                                                           classes=("collapse",))) for x in Observable.Category]
+        return [
+            type(
+                f"{x}ObservationInline",
+                (cls,),
+                dict(verbose_name=x.lower(), verbose_name_plural=x.lower(), classes=("collapse",)),
+            )
+            for x in Observable.Category
+        ]
 
 
 @admin.register(Observation)
@@ -445,32 +447,29 @@ class ArrayDataMixin:
     readonly_fields = ["created_at", "updated_at"]
 
     fieldsets = [
-        (
-            None,
-            {
-                "fields": ["instrument", "bio_sample", "data"]
-            }
-        ),
+        (None, {"fields": ["instrument", "bio_sample", "data"]}),
         (
             "Measurement Details",
             {
-                "fields": ["measurement_id",
-                           "measurement_type",
-                           "acquisition_time",
-                           "resolution",
-                           "power",
-                           "temperature",
-                           "pressure",
-                           "humidity",
-                           "date"],
-            }
+                "fields": [
+                    "measurement_id",
+                    "measurement_type",
+                    "acquisition_time",
+                    "resolution",
+                    "power",
+                    "temperature",
+                    "pressure",
+                    "humidity",
+                    "date",
+                ],
+            },
         ),
         (
             "More Details",
             {
                 "classes": ["collapse"],
                 "fields": ["id", ("created_at", "updated_at")],
-            }
+            },
         ),
     ]
 
@@ -479,7 +478,7 @@ class ArrayDataMixin:
         return obj.bio_sample.visit.patient_id
 
     def get_queryset(self, request):
-        """ List only objects belonging to user's center. """
+        """List only objects belonging to user's center."""
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
@@ -493,12 +492,14 @@ class ArrayDataAdmin(ArrayDataMixin, RestrictedByCenterMixin, NestedModelAdmin):
     readonly_fields = ["created_at", "updated_at"]  # TODO: Might need specific user group.
     date_hierarchy = "updated_at"
     list_display = ["patient_id", "instrument", "data"]
-    list_filter = ("bio_sample__visit__patient__center",
-                   "instrument",
-                   "measurement_type",
-                   "bio_sample__sample_type",
-                   "bio_sample__sample_processing",
-                   "bio_sample__visit__observation__observable")
+    list_filter = (
+        "bio_sample__visit__patient__center",
+        "instrument",
+        "measurement_type",
+        "bio_sample__sample_type",
+        "bio_sample__sample_processing",
+        "bio_sample__visit__observation__observable",
+    )
 
 
 class ArrayDataAdminWithInlines(ArrayDataAdmin):
@@ -522,35 +523,28 @@ class BioSampleMixin:
     ordering = ("-updated_at",)
 
     fieldsets = [
-        (
-            None,
-            {
-                "fields": ["visit"]
-            }
-        ),
+        (None, {"fields": ["visit"]}),
         (
             "Sample Tagging",
-            {
-                "fields": [("sample_study_id", "sample_study_name", "sample_cid"),
-                           "sample_type",
-                           "sample_processing"]
-            }
+            {"fields": [("sample_study_id", "sample_study_name", "sample_cid"), "sample_type", "sample_processing"]},
         ),
         (
             "Sample Extraction",
             {
-                "fields": ["sample_extraction",
-                           ("freezing_temp", "freezing_time"),
-                           ("thawing_temp", "thawing_time"),
-                           ("sample_extraction_tube", "centrifuge_rpm", "centrifuge_time")]
-            }
+                "fields": [
+                    "sample_extraction",
+                    ("freezing_temp", "freezing_time"),
+                    ("thawing_temp", "thawing_time"),
+                    ("sample_extraction_tube", "centrifuge_rpm", "centrifuge_time"),
+                ]
+            },
         ),
         (
             "More Details",
             {
                 "classes": ["collapse"],
                 "fields": ["created_at", "updated_at"],
-            }
+            },
         ),
     ]
 
@@ -559,7 +553,7 @@ class BioSampleMixin:
         return obj.visit.patient_id
 
     def get_queryset(self, request):
-        """ List only objects belonging to user's center. """
+        """List only objects belonging to user's center."""
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
@@ -598,7 +592,7 @@ def get_obj_from_request(request):
 
     # Parse the url_name and retrieve the model for the above object_id.
     try:
-        app, model, action = request.resolver_match.url_name.split('_')
+        app, model, action = request.resolver_match.url_name.split("_")
     except ValueError:  # too many values to unpack.
         return None, None
 
@@ -618,18 +612,13 @@ class VisitAdminMixin:
     ordering = ("-updated_at",)
 
     fieldsets = [
-        (
-            None,
-            {
-                "fields": ["patient", "days_observed"]
-            }
-        ),
+        (None, {"fields": ["patient", "days_observed"]}),
         (
             "Advanced",
             {
                 "classes": ["collapse"],
                 "fields": ["previous_visit"],
-            }
+            },
         ),
     ]
 
@@ -649,15 +638,15 @@ class VisitAdminMixin:
             pass
 
     def get_queryset(self, request):
-        """ List only objects belonging to user's center. """
+        """List only objects belonging to user's center."""
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
         return qs.filter(patient__center=Center.objects.get(pk=request.user.center.pk))
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        """ Limit previous_visit to user's center (super's functionality) and only those visits belonging to the same
-            patient.
+        """Limit previous_visit to user's center (super's functionality) and only those visits belonging to the same
+        patient.
         """
         field = super().formfield_for_foreignkey(db_field, request, **kwargs)
         if db_field.name == "previous_visit":
@@ -747,7 +736,7 @@ class PatientAdmin(RestrictedByCenterMixin, NestedModelAdmin):
         return obj.visit.count()
 
     def get_queryset(self, request):
-        """ List only objects belonging to user's center. """
+        """List only objects belonging to user's center."""
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
@@ -759,8 +748,7 @@ class PatientAdminWithInlines(PatientAdmin):
 
 
 @admin.register(Center)
-class CenterAdmin(UserCenterAdmin):
-    ...
+class CenterAdmin(UserCenterAdmin): ...
 
 
 class DataAdminSite(admin.AdminSite):
@@ -768,13 +756,7 @@ class DataAdminSite(admin.AdminSite):
     index_title = "Data Administration"
     site_title = index_title
 
-    model_order = [Patient,
-                   Visit,
-                   Observation,
-                   BioSample,
-                   ArrayData,
-                   UploadedFile
-                   ]
+    model_order = [Patient, Visit, Observation, BioSample, ArrayData, UploadedFile]
 
     def get_app_list(self, request, app_label=None):
         app_list = super().get_app_list(request, app_label=app_label)

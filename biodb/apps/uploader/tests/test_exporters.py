@@ -1,14 +1,12 @@
 import dataclasses
-from pathlib import Path
 import zipfile
+from pathlib import Path
 
 import pytest
-from django.conf import settings
-
-from uploader.exporters import CSVExporter
 import uploader.io
+from django.conf import settings
+from uploader.exporters import CSVExporter
 from uploader.models import ArrayData
-
 from uploader.tests.conftest import SimpleQueryFactory
 
 
@@ -34,11 +32,15 @@ def csv_export(request, monkeypatch, mock_data_from_files):
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])
-@pytest.mark.parametrize(tuple(),
-                         [pytest.param(marks=pytest.mark.allow_aliases(False)),
-                          pytest.param(marks=pytest.mark.allow_aliases(True)),
-                          pytest.param(marks=pytest.mark.media_root("")),
-                          pytest.param(marks=pytest.mark.media_root("my_media/"))])
+@pytest.mark.parametrize(
+    tuple(),
+    [
+        pytest.param(marks=pytest.mark.allow_aliases(False)),
+        pytest.param(marks=pytest.mark.allow_aliases(True)),
+        pytest.param(marks=pytest.mark.media_root("")),
+        pytest.param(marks=pytest.mark.media_root("my_media/")),
+    ],
+)
 class TestExporters:
     @pytest.mark.include_data_files(False)
     def test_without_data_files(self, csv_export):
@@ -46,9 +48,13 @@ class TestExporters:
         assert len(csv_export.splitlines()) == 10 + 1  # +1 for column header.
 
     @pytest.mark.include_data_files(True)
-    @pytest.mark.parametrize(tuple(),
-                             [pytest.param(marks=pytest.mark.sql("select data, data from array_data")),
-                              pytest.param(marks=pytest.mark.sql(None))])
+    @pytest.mark.parametrize(
+        tuple(),
+        [
+            pytest.param(marks=pytest.mark.sql("select data, data from array_data")),
+            pytest.param(marks=pytest.mark.sql(None)),
+        ],
+    )
     def test_no_duplicate_data_files(self, csv_export):
         assert zipfile.is_zipfile(csv_export)
         z = zipfile.ZipFile(csv_export)

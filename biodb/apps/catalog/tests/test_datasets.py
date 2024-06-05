@@ -1,19 +1,18 @@
 import json
 import os.path
-from pathlib import Path
 import zipfile
+from pathlib import Path
 
 import pytest
-
-from biodb import __version__
 from catalog.models import Dataset
 from explorer.models import Query
 from uploader.models import ArrayData
 
+from biodb import __version__
+
 
 @pytest.mark.django_db(databases=["default", "bsr"])
 class TestDataset:
-
     def test_query_fixture(self, queries):
         assert Query.objects.count() == 1
 
@@ -23,9 +22,10 @@ class TestDataset:
         assert query.sql
         version = "2023.0.0"
 
-        dataset = Dataset(query=query,
-                          version=version,
-                          )
+        dataset = Dataset(
+            query=query,
+            version=version,
+        )
         dataset.full_clean()
 
         assert dataset.name == query.title

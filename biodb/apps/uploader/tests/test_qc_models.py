@@ -5,10 +5,9 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.management import call_command
 from django.utils.module_loading import import_string
+from uploader.models import ArrayData, QCAnnotation, QCAnnotator
 
-from uploader.models import QCAnnotation, QCAnnotator, ArrayData
 import biodb.qc.qcfilter
-
 import biodb.util
 
 
@@ -42,16 +41,18 @@ class TestQCFunctionality:
         annotation.save()
         assert pytest.approx(float(annotation.value)) == 915.3270367661034
 
-    expected_sum_results = [915.3270367661034,
-                            905.2060788485444,
-                            897.5824088776908,
-                            876.2542534234417,
-                            902.9216637136165,
-                            915.8926854978613,
-                            895.7923513684976,
-                            885.9432421888927,
-                            913.9661052327297,
-                            902.0836794874253]
+    expected_sum_results = [
+        915.3270367661034,
+        905.2060788485444,
+        897.5824088776908,
+        876.2542534234417,
+        902.9216637136165,
+        915.8926854978613,
+        895.7923513684976,
+        885.9432421888927,
+        913.9661052327297,
+        902.0836794874253,
+    ]
 
     @pytest.mark.parametrize("mock_data_from_files", [False], indirect=True)  # AUTO_ANNOTATE = False
     def test_auto_annotate_settings(self, qcannotators, mock_data_from_files):
@@ -88,9 +89,7 @@ class TestQCFunctionality:
 
         monkeypatch.setattr(settings, "RUN_DEFAULT_ANNOTATORS_WHEN_SAVED", True)
 
-        annotator = QCAnnotator(name="sum",
-                                fully_qualified_class_name="biodb.qc.qcfilter.QcSum",
-                                value_type="FLOAT")
+        annotator = QCAnnotator(name="sum", fully_qualified_class_name="biodb.qc.qcfilter.QcSum", value_type="FLOAT")
         annotator.full_clean()
         annotator.save()
 
@@ -118,9 +117,9 @@ class TestQCFunctionality:
 
         monkeypatch.setattr(settings, "RUN_DEFAULT_ANNOTATORS_WHEN_SAVED", False)
 
-        annotator = QCAnnotator(name="test",
-                                fully_qualified_class_name="biodb.qc.qcfilter.QcTestDummyTrue",
-                                value_type="BOOL")
+        annotator = QCAnnotator(
+            name="test", fully_qualified_class_name="biodb.qc.qcfilter.QcTestDummyTrue", value_type="BOOL"
+        )
         annotator.full_clean()
         annotator.save()
 
@@ -134,9 +133,9 @@ class TestQCFunctionality:
 
         monkeypatch.setattr(settings, "RUN_DEFAULT_ANNOTATORS_WHEN_SAVED", True)
 
-        annotator = QCAnnotator(name="test",
-                                fully_qualified_class_name="biodb.qc.qcfilter.QcTestDummyTrue",
-                                value_type="BOOL")
+        annotator = QCAnnotator(
+            name="test", fully_qualified_class_name="biodb.qc.qcfilter.QcTestDummyTrue", value_type="BOOL"
+        )
         annotator.full_clean()
         annotator.save()
 
@@ -204,13 +203,13 @@ class TestQCFunctionality:
             assert pytest.approx(annotation.get_value()) == expected_results
 
     def test_no_file_validation(self, qcannotators):
-        """ Test that a validation error is raised rather than any other python exception which would indicate a bug. """
+        """Test that a validation error is raised rather than any other python exception which would indicate a bug."""
         annotation = QCAnnotation(annotator=QCAnnotator.objects.get(name="sum"))
         with pytest.raises(ValidationError):
             annotation.full_clean()
 
     def test_no_file_related_error(self, qcannotators):
-        """ Test that a validation error is raised rather than any other python exception which would indicate a bug. """
+        """Test that a validation error is raised rather than any other python exception which would indicate a bug."""
         annotation = QCAnnotation(annotator=QCAnnotator.objects.get(name="sum"))
         with pytest.raises(QCAnnotation.array_data.RelatedObjectDoesNotExist):
             annotation.save()

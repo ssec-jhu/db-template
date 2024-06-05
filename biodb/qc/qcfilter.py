@@ -3,19 +3,18 @@ from abc import ABC, abstractmethod
 import numpy as np
 
 
-class QCValidationError(Exception):
-    ...
+class QCValidationError(Exception): ...
 
 
 class QcFilter(ABC):
     @abstractmethod
     def run(self, array_data):
         """
-            Implement this method to return the actual annotation value(s).
+        Implement this method to return the actual annotation value(s).
 
-            param: array_data - uploader.models.ArrayData
+        param: array_data - uploader.models.ArrayData
 
-            Raises QCValidationError.
+        Raises QCValidationError.
         """
         ...
 
@@ -28,12 +27,14 @@ class QcSum(QcFilter):
 
 
 class QcTestDummyTrue(QcFilter):
-    """ For testing purposes only. """
+    """For testing purposes only."""
+
     def run(self, array_data):
         return True
 
 
 class QcTestDummyFalse(QcFilter):
-    """ For testing purposes only. """
+    """For testing purposes only."""
+
     def run(self, array_data):
         return False

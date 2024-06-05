@@ -3,14 +3,14 @@ import importlib
 import os
 from pathlib import Path
 from uuid import UUID
-import yaml
 
 import boto3
+import numpy as np
+import pandas as pd
+import yaml
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-import numpy as np
-import pandas as pd
 
 from . import __project__  # Keep as relative for templating reasons.
 
@@ -33,7 +33,7 @@ def to_bool(value):
     TRUE = ("true", "yes", True)
     FALSE = ("false", "no", False)
 
-    if value is None or value == '':
+    if value is None or value == "":
         return None
 
     if isinstance(value, str):
@@ -45,20 +45,19 @@ def to_bool(value):
         return False
     else:
         if isinstance(value, (int, float)):
-            raise ValueError(f"int|float casts to bool must have explicit values of 0|1 (inc. their flt equivalents.), "
-                             f"not '{value}'")
+            raise ValueError(
+                f"int|float casts to bool must have explicit values of 0|1 (inc. their flt equivalents.), "
+                f"not '{value}'"
+            )
         else:
             raise ValueError(f"Bool aliases are '{TRUE}|{FALSE}', not '{value}'")
 
 
-def mock_bulk_array_data(path=Path.home(),
-                         max_x=4000,
-                         min_x=651,
-                         n_bins=1798,
-                         n_patients=10):
+def mock_bulk_array_data(path=Path.home(), max_x=4000, min_x=651, n_bins=1798, n_patients=10):
     path = Path(path)
-    data = pd.DataFrame(data=np.random.rand(n_patients, n_bins),
-                        columns=np.arange(max_x, min_x, (min_x - max_x) / n_bins))
+    data = pd.DataFrame(
+        data=np.random.rand(n_patients, n_bins), columns=np.arange(max_x, min_x, (min_x - max_x) / n_bins)
+    )
     data.index.name = settings.BULK_UPLOAD_INDEX_COLUMN_NAME
     data.index += 1  # Make index 1 based.
 
@@ -124,8 +123,8 @@ def get_field_value(series, obj, field, default=None):
 
 def get_aws_secret(arn, region):
     session = boto3.session.Session()
-    client = session.client(service_name='secretsmanager', region_name=region)
-    return client.get_secret_value(SecretId=arn)['SecretString']
+    client = session.client(service_name="secretsmanager", region_name=region)
+    return client.get_secret_value(SecretId=arn)["SecretString"]
 
 
 def parse_secure_secrets_from_apprunner(apprunner_yaml_file=find_repo_location() / "apprunner.yaml"):

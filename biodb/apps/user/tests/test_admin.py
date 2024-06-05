@@ -1,11 +1,10 @@
 import pytest
-
 from django.contrib.admin.sites import AdminSite
-
+from uploader.models import Center as UploaderCenter
+from uploader.models import Patient
 from uploader.tests.conftest import patients  # noqa: F401
-from uploader.models import Patient, Center as UploaderCenter
-from user.models import Center as UserCenter
 from user.admin import CenterAdmin
+from user.models import Center as UserCenter
 
 
 @pytest.mark.django_db(databases=["default", "bsr"])

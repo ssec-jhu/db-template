@@ -1,4 +1,4 @@
-from django.core.management import BaseCommand, call_command, CommandError
+from django.core.management import BaseCommand, CommandError, call_command
 
 
 class Command(BaseCommand):
@@ -7,28 +7,22 @@ class Command(BaseCommand):
     help = "Used to create a superuser. Won't fail if username already exists."
 
     def add_arguments(self, parser):
-        parser.add_argument("--username",
-                            default=None,
-                            help="Specifies the login for the superuser.")
-        parser.add_argument("--noinput", "--no-input",
-                            action="store_true",
-                            default=False,
-                            help="Tells Django to NOT prompt the user for input of any kind. You must use --username "
-                                 "with --noinput, along with an option for any other required field. Superusers created"
-                                 " with --noinput will not be able to log in until they're given a valid password.")
-        parser.add_argument("--database",
-                            default="default",
-                            help="Specifies the database to use. Default is 'default'.")
-        parser.add_argument("--email",
-                            default=None,
-                            help="Specifies the email for the superuser.")
-        parser.add_argument("--center",
-                            default=None,
-                            help="Specifies the center for the superuser.")
-        parser.add_argument("--fail",
-                            action="store_true",
-                            default=False,
-                            help="Fail if user already exists.")
+        parser.add_argument("--username", default=None, help="Specifies the login for the superuser.")
+        parser.add_argument(
+            "--noinput",
+            "--no-input",
+            action="store_true",
+            default=False,
+            help="Tells Django to NOT prompt the user for input of any kind. You must use --username "
+            "with --noinput, along with an option for any other required field. Superusers created"
+            " with --noinput will not be able to log in until they're given a valid password.",
+        )
+        parser.add_argument(
+            "--database", default="default", help="Specifies the database to use. Default is 'default'."
+        )
+        parser.add_argument("--email", default=None, help="Specifies the email for the superuser.")
+        parser.add_argument("--center", default=None, help="Specifies the center for the superuser.")
+        parser.add_argument("--fail", action="store_true", default=False, help="Fail if user already exists.")
 
     def handle(self, *args, **options):
         cmd = ["createsuperuser"]

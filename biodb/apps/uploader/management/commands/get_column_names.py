@@ -1,40 +1,46 @@
 from inspect import getmembers
 
+import uploader.models
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Q
-
-import uploader.models
 
 
 class Command(BaseCommand):
     help = "List all column names usable for bulk data upload files."
 
     def add_arguments(self, parser):
-        parser.add_argument("--exclude_observables",
-                            action="store_true",
-                            default=False,
-                            help="Only output column names for non-observables.")
-        parser.add_argument("--exclude_non_observables",
-                            action="store_true",
-                            default=False,
-                            help="Only output column names for observables currently in the database.")
-        parser.add_argument("--center",
-                            default=None,
-                            help="Filter observables by center name or center ID."
-                                 " Defaults to global observables when center=None.")
-        parser.add_argument("--category",
-                            default=None,
-                            help="Filter observables by category.")
-        parser.add_argument("--descriptions",
-                            action="store_true",
-                            default=False,
-                            help="Also print field.help_text and observation.description.")
-        parser.add_argument("--include_instrument_fields",
-                            action="store_true",
-                            default=False,
-                            help="Also include Instrument fields. Note: These are not used for bulk uploads, only the"
-                                 " database Instrument ID is used. Therefore these aren't that useful to list."
-                                 " Does nothing when used with --exclude_non_observables.")
+        parser.add_argument(
+            "--exclude_observables",
+            action="store_true",
+            default=False,
+            help="Only output column names for non-observables.",
+        )
+        parser.add_argument(
+            "--exclude_non_observables",
+            action="store_true",
+            default=False,
+            help="Only output column names for observables currently in the database.",
+        )
+        parser.add_argument(
+            "--center",
+            default=None,
+            help="Filter observables by center name or center ID." " Defaults to global observables when center=None.",
+        )
+        parser.add_argument("--category", default=None, help="Filter observables by category.")
+        parser.add_argument(
+            "--descriptions",
+            action="store_true",
+            default=False,
+            help="Also print field.help_text and observation.description.",
+        )
+        parser.add_argument(
+            "--include_instrument_fields",
+            action="store_true",
+            default=False,
+            help="Also include Instrument fields. Note: These are not used for bulk uploads, only the"
+            " database Instrument ID is used. Therefore these aren't that useful to list."
+            " Does nothing when used with --exclude_non_observables.",
+        )
 
     def handle(self, *args, **options):
         column_names = []
@@ -45,16 +51,19 @@ class Command(BaseCommand):
                 if center == "None":
                     queryset = uploader.models.Observable.objects.filter(center=None)
                 else:
-                    queryset = uploader.models.Observable.objects.filter(Q(center__name__iexact=center) |
-                                                                         Q(center__id__iexact=center))
+                    queryset = uploader.models.Observable.objects.filter(
+                        Q(center__name__iexact=center) | Q(center__id__iexact=center)
+                    )
 
                 if category := options["category"]:
                     # Validate category.
                     try:
                         uploader.models.Observable.Category(category)
                     except Exception:
-                        raise CommandError(f"Unrecognized observable category '{category}'."
-                                           f" Must be one of {[x.value for x in uploader.models.Observable.Category]}")
+                        raise CommandError(
+                            f"Unrecognized observable category '{category}'."
+                            f" Must be one of {[x.value for x in uploader.models.Observable.Category]}"
+                        )
 
                     # Filter category.
                     queryset = queryset.filter(category__iexact=category)
